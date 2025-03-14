@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d4e24cd2a774e13b82db6a78a36a873, type: 3}
+  m_Name: CommuterBasementIConfig
+  m_EditorClassIdentifier: 
+  Data:
+    LevelSize: 15
+    TreasuresLimit: 3
+    BuisnessLimit: 3
+    StartRooms:
+    - {fileID: 6478966916837685084, guid: 7fa70340802efd8488c4eb1337da3a89, type: 3}
+    Coridors:
+    - {fileID: 4477063926345711946, guid: c95996ab07f64ff44ab43c4a20c6f98b, type: 3}
+    - {fileID: 4477063926345711946, guid: 43f740243cce625448d857f0c1c2e3e5, type: 3}
+    - {fileID: 4477063926345711946, guid: bb4df027ada8162459ec528ff82390bd, type: 3}
+    - {fileID: 4477063926345711946, guid: 3efca5e6609442144b55dd50f34b21f7, type: 3}
+    - {fileID: 4477063926345711946, guid: 3ec40f939320b1a42ae3f113b2f5d924, type: 3}
+    - {fileID: 4477063926345711946, guid: 350e733152deeda41bda3ebd99370533, type: 3}
+    - {fileID: 4477063926345711946, guid: 95c53ef9e9932da46b5675ee808e9ac9, type: 3}
+    - {fileID: 4477063926345711946, guid: 1b2409c5155bf354a948edde74c4db54, type: 3}
+    - {fileID: 4477063926345711946, guid: f82851695b5776d4a8805df958ec8b21, type: 3}
+    - {fileID: 4477063926345711946, guid: c89ae9c6dd4aa474292060b7c8247624, type: 3}
+    GangRooms:
+    - {fileID: 2992025817987453271, guid: c15bfac22bbce1043855fb6bbcd8edc0, type: 3}
+    - {fileID: 7694474421035019386, guid: f6b10ca243cc9d3439dd6e1ef92922d5, type: 3}
+    - {fileID: 2781057996715794328, guid: 4a2a764736695b9429f5a5fb8e8c49b7, type: 3}
+    - {fileID: 2507154442784806195, guid: 639452c99eb87434da2b48ef0fef1c6e, type: 3}
+    TreasureRooms:
+    - {fileID: 4477063926345711946, guid: 6fa402f1e2992c74e8d2f77376a1c14b, type: 3}
+    - {fileID: 4477063926345711946, guid: 1ceb4fbdb06f92f4b933f8775e38b647, type: 3}
+    - {fileID: 4477063926345711946, guid: 23f92b9f320117245a4297f5ebf951e2, type: 3}
+    - {fileID: 2773057086554744372, guid: efb2937b3a83d6f4494176e5c25d02a4, type: 3}
+    BuisnessRooms:
+    - {fileID: 4477063926345711946, guid: ee25ce94d440b6244b85ebc501b09743, type: 3}
+    - {fileID: 4477063926345711946, guid: b1cf14b50c2243844b0a93397c625249, type: 3}
+    - {fileID: 4477063926345711946, guid: 0197469f79b2cfe469eafc580eee43af, type: 3}
+    - {fileID: 2773057086554744372, guid: cb8d9672d07caf94ca9fdb54e3eb5be9, type: 3}
+    FinalRooms:
+    - {fileID: 4477063926345711946, guid: 3cc62aae9744a9e4eadbbc0da6ba3010, type: 3}
+    - {fileID: 4477063926345711946, guid: 8855dca96158a7a44bed7f3f3af75f8c, type: 3}
+    - {fileID: 4477063926345711946, guid: f69d72a414d08e64cbf246527042284f, type: 3}
+    - {fileID: 2773057086554744372, guid: 6ebde830d9a017248a473fb89682e450, type: 3}
+    TopDefaultWall:
+    - {fileID: 11400000, guid: 22e1dd78a1f09a44e8d6085471c03046, type: 2}
+    BottomDefaultWall:
+    - {fileID: 11400000, guid: bd8b848cb5d42aa4da3eb6313c162001, type: 2}
+    LeftDefaultWall:
+    - {fileID: 11400000, guid: adf10c93f41ff2e4e8616f0e2b635a7e, type: 2}
+    RightDefaultWall:
+    - {fileID: 11400000, guid: 01c1c57f991779b4ba095fbc561ff46a, type: 2}
