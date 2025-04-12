@@ -2,7 +2,7 @@ using banging_code.camera_logic;
 using banging_code.common;
 using banging_code.items;
 using banging_code.level.random_gen;
-using banging_code.level.rooms;
+using banging_code.common.rooms;
 using banging_code.player_logic.rat;
 using MothDIed.DI;
 using MothDIed.InputsHandling;

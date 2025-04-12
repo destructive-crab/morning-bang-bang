@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace banging_code.level.rooms
+namespace banging_code.common.rooms
 {
     [CreateAssetMenu(menuName = "Level/Basic Level Config")]
     public sealed class BasicLevelConfigSO : ScriptableObject

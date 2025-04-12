@@ -3,10 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace banging_code.common
+namespace destructive_code.Tilemaps
 {
     public static class TilemapExtensions 
     {
+        public static bool HasTile<TTile>(this Tilemap tilemap, Vector3Int position)
+            where TTile : TileBase =>
+            tilemap.GetTile<TTile>(position) != null;
+
+        //                                                                  we do not give tilemap as parameter in func because
+        //                                                                  TILEMAP SHOULD NOT BE edited in rule func.
+        //                                                                  You should use rules only for some checks like to check some parameters in custom tile
+        public static void Replace(this Tilemap inTilemap, TileBase toReplace, TileBase replacement, Func<Vector3Int, TileBase, TileBase, bool>[] additionalRules = null)
+        {
+            foreach (Vector3Int position in inTilemap.cellBounds.allPositionsWithin)
+            {
+                var currentTile = inTilemap.GetTile(position);
+
+                if(currentTile != toReplace) continue;
+
+                bool passed = true;
+
+                for (var i = 0; additionalRules != null && i < additionalRules.Length; i++) 
+                { if (!additionalRules[i].Invoke(position, currentTile, toReplace)) { passed = false; break; } }
+
+                if(!passed) continue;
+
+                inTilemap.SetTile(position, replacement);
+            }
+        }
+
+        
         //return all tiles and their positions on tilemap with TTile type
         public static List<TilePT<TTile>> FindTilesOfType<TTile>(this Tilemap tilemap)
             where TTile : Tile
@@ -37,28 +64,57 @@ namespace banging_code.common
             tilemap.origin -= new Vector3Int(n, n);           //moving tilemap "center" on n cells down and left
 
             tilemap.ResizeBounds();
-        }   
+        }
+        public static void ForEachCell(this Tilemap tilemap, Action<Vector3Int, TileBase> processTile)
+        {
+             for (int x = (int)tilemap.localBounds.min.x; x < tilemap.localBounds.max.x; x++)
+             {
+                 for (int y = (int)tilemap.localBounds.min.y; y < tilemap.localBounds.max.y; y++)
+                 {
+                     Vector3Int position = new Vector3Int(x, y, 0);
+                     
+                     processTile.Invoke(position, tilemap.GetTile(position));
+                 }
+             }           
+        }
+        public static void ForEachTile<TTile>(this Tilemap tilemap, Action<Vector3Int, TTile> processTile)
+            where TTile : TileBase
+        {
+             for (int x = (int)tilemap.localBounds.min.x; x < tilemap.localBounds.max.x; x++)
+             {
+                 for (int y = (int)tilemap.localBounds.min.y; y < tilemap.localBounds.max.y; y++)
+                 {
+                     Vector3Int position = new Vector3Int(x, y, 0);
+                     
+                     if (!tilemap.HasTile<TTile>(position)) continue;
+
+                     processTile.Invoke(position, tilemap.GetTile<TTile>(position));
+                 }
+             }           
+        }
         
         //all tiles from FROM TILEMAP will be added to TO TILEMAP with saving the position
         public static void CopyTilesTo(this Tilemap from, Tilemap to, Func<Vector3Int, bool> processTile = null)
-         {
-             for (int x = (int)from.localBounds.min.x; x < from.localBounds.max.x; x++)
-             {
-                 for (int y = (int)from.localBounds.min.y; y < from.localBounds.max.y; y++)
-                 {
-                     Vector3Int originalPosition = new Vector3Int(x, y, 0);
-                     
-                     if (!from.HasTile(originalPosition)) continue;
-     
-                     if (processTile != null && !processTile.Invoke(originalPosition))
-                     {
-                         continue;
-                     }
-     
-                     var copyPosition = to.WorldToCell(from.CellToWorld(originalPosition));
-                     to.SetTile(copyPosition, from.GetTile(originalPosition));
-                 }
-             }
-         }
+        {
+            for (int x = (int)from.localBounds.min.x; x < from.localBounds.max.x; x++)
+            {
+                for (int y = (int)from.localBounds.min.y; y < from.localBounds.max.y; y++)
+                {
+                    Vector3Int originalPosition = new Vector3Int(x, y, 0);
+                    
+                    if (!from.HasTile(originalPosition)) continue;
+    
+                    if (processTile != null && !processTile.Invoke(originalPosition))
+                    {
+                        continue;
+                    }
+    
+                    var copyPosition = to.WorldToCell(from.CellToWorld(originalPosition));
+                    to.SetTile(copyPosition, from.GetTile(originalPosition));
+                }
+            }
+        }
+        
+
     }
 }

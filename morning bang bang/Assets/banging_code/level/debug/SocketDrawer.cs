@@ -1,5 +1,5 @@
 using banging_code.common;
-using banging_code.level.rooms;
+using banging_code.common.rooms;
 using UnityEngine;
 
 namespace banging_code.editor.room_builder_tool

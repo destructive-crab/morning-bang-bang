@@ -1,5 +1,5 @@
 using System;
-using banging_code.level.rooms;
+using banging_code.common.rooms;
 using UnityEngine;
 
 using Random = UnityEngine.Random;

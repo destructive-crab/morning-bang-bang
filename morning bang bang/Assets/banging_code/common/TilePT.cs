@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace banging_code.common
+namespace destructive_code.Tilemaps
 {
     [Serializable]
     public sealed class TilePT<TileT>

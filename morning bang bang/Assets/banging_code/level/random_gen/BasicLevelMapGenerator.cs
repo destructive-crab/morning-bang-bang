@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using banging_code.common;
-using banging_code.level.rooms;
+using banging_code.common.rooms;
 using Unity.VisualScripting;
 
 namespace banging_code.level.random_gen

@@ -19,16 +19,14 @@ MonoBehaviour:
     StartRooms:
     - {fileID: 6478966916837685084, guid: 7fa70340802efd8488c4eb1337da3a89, type: 3}
     Coridors:
-    - {fileID: 4477063926345711946, guid: c95996ab07f64ff44ab43c4a20c6f98b, type: 3}
-    - {fileID: 4477063926345711946, guid: 43f740243cce625448d857f0c1c2e3e5, type: 3}
-    - {fileID: 4477063926345711946, guid: bb4df027ada8162459ec528ff82390bd, type: 3}
-    - {fileID: 4477063926345711946, guid: 3efca5e6609442144b55dd50f34b21f7, type: 3}
-    - {fileID: 4477063926345711946, guid: 3ec40f939320b1a42ae3f113b2f5d924, type: 3}
-    - {fileID: 4477063926345711946, guid: 350e733152deeda41bda3ebd99370533, type: 3}
-    - {fileID: 4477063926345711946, guid: 95c53ef9e9932da46b5675ee808e9ac9, type: 3}
-    - {fileID: 4477063926345711946, guid: 1b2409c5155bf354a948edde74c4db54, type: 3}
-    - {fileID: 4477063926345711946, guid: f82851695b5776d4a8805df958ec8b21, type: 3}
-    - {fileID: 4477063926345711946, guid: c89ae9c6dd4aa474292060b7c8247624, type: 3}
+    - {fileID: 5585692304253590829, guid: f93d1b58ae6d65849b7e0dea975677c1, type: 3}
+    - {fileID: 5585692304253590829, guid: eff0ce4c4f928d5418a0cab7ef3f78dd, type: 3}
+    - {fileID: 5585692304253590829, guid: bf3684f9a27e40d459762641f1585dba, type: 3}
+    - {fileID: 5585692304253590829, guid: 7a0a00d1199d7ae4a897d08eee738fc3, type: 3}
+    - {fileID: 5585692304253590829, guid: dc2d1405444bca94a98fc7a088badb3c, type: 3}
+    - {fileID: 5585692304253590829, guid: a9b0cde57a735dc4d98f22958a677c73, type: 3}
+    - {fileID: 5585692304253590829, guid: 9da7bf3c01ffd6048b6e9b98d5f8eeb3, type: 3}
+    - {fileID: 5585692304253590829, guid: 925850e98f580d74da1d5870b1620722, type: 3}
     GangRooms:
     - {fileID: 2992025817987453271, guid: c15bfac22bbce1043855fb6bbcd8edc0, type: 3}
     - {fileID: 7694474421035019386, guid: f6b10ca243cc9d3439dd6e1ef92922d5, type: 3}

@@ -1,6 +1,6 @@
 using MothDIed;
 
-namespace banging_code.level.rooms
+namespace banging_code.common.rooms
 {
     public abstract class Moody : DepressedBehaviour, IOnBreakIntoRoom
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace banging_code.level.rooms
+namespace banging_code.common.rooms
 {
     public class StartRoom : Room 
     {

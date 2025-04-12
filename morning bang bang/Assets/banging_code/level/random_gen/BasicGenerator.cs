@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using banging_code.common;
-using banging_code.level.rooms;
+using banging_code.common.rooms;
+using destructive_code.Tilemaps;
 using MothDIed;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -22,7 +23,8 @@ namespace banging_code.level.random_gen
         private List<Room> dirtyRooms;
         private Room[] spawnedRooms;
         private BasicRoomTypes[] map;
-        
+        private TileBase backgroundTile;
+
         public BasicGenerator(BasicLevelConfig config)
         {
             this.config = config;
@@ -96,7 +98,7 @@ namespace banging_code.level.random_gen
             int recordedCount = 0;
             
             Room startRoom = InstantiateRoomPrefab(UTLS.RandomElement(config.StartRooms), Vector2.zero);
-            RecordRoom(true, BasicRoomTypes.Start, startRoom);
+            RecordRoom(BasicRoomTypes.Start, startRoom);
 
             while (roomsWithUncheckedSockets.Count > 0 && recordedCount < config.LevelSize)
             {
@@ -117,7 +119,7 @@ namespace banging_code.level.random_gen
 
                     if (spawnedRoom == null) { continue; } // skipping this socket, in converting it will be closed
                     
-                    RecordRoom(socket.IsForBud, map[recordedCount], spawnedRoom);
+                    RecordRoom(map[recordedCount], spawnedRoom);
                    
                     if (recordedCount == config.LevelSize) break; //all rooms generated, quiting loop
                 }
@@ -127,13 +129,13 @@ namespace banging_code.level.random_gen
 
             return recordedCount;
 
-            void RecordRoom(bool isBud, BasicRoomTypes type, Room room)
+            void RecordRoom(BasicRoomTypes type, Room room)
             {
                 dirtyRooms.Add(room);
                 room.OnSpawned();
 
-                if (!isBud || type == BasicRoomTypes.Start) 
-                { roomsWithUncheckedSockets.Add(room); if(!isBud) return; } 
+                if (!room.IsBud || type == BasicRoomTypes.Start) 
+                { roomsWithUncheckedSockets.Add(room); if(!room.IsBud) return; } 
             
                 switch (type)
                 {
@@ -143,29 +145,6 @@ namespace banging_code.level.random_gen
                     case BasicRoomTypes.Treasure: recordedCount++; break; 
                     case BasicRoomTypes.Final:    recordedCount++; break;
                 }                
-            }
-        }
-
-        private void DeleteUnusedCorridors()
-        {
-            bool emptyCycle = false;
-            while (!emptyCycle)
-            {
-                emptyCycle = true;
-                for (var i = 0; i < dirtyRooms.Count; i++)
-                {
-                    Room room = dirtyRooms[i];
-                    
-                    if (!room.IsBud && room.connections.Count == 1)
-                    {
-                        room.DisconnectFromAll();
-                        GameObject.DestroyImmediate(room.gameObject);
-                        
-                        dirtyRooms.RemoveAt(i);
-                        i--;
-                        emptyCycle = false;
-                    }
-                }
             }
         }
 
@@ -191,35 +170,73 @@ namespace banging_code.level.random_gen
 
                         roomObstaclesTilemap.Expand(1);
                         
-                        switch (socket.Direction)
-                        {
-                            case GameDirection.Left:    offset = new Vector3Int(-1, 0); break;
-                            case GameDirection.Right:   offset = new Vector3Int( 1, 0); break;
-                            case GameDirection.Bottom:  offset = new Vector3Int(0, -1); break;
-                        }
-                        if (socket.Direction == GameDirection.Bottom)
-                        {
-                            offset = Vector3Int.down;
-                        }
-                        
+//                        switch (socket.Direction)
+//                        {
+//                            case GameDirection.Left:    offset = new Vector3Int(-1, 0); break;
+//                            case GameDirection.Right:   offset = new Vector3Int( 1, 0); break;
+//                            case GameDirection.Bottom:  offset = new Vector3Int(0, -1); break;
+//                        }
+                       
                         roomObstaclesTilemap.SetTile(socket.Tiles[0].Position + offset, config.GetDefaultTileFor(socket.Direction));
+                        roomObstaclesTilemap.SetTile(socket.Tiles[1].Position + offset, config.GetDefaultTileFor(socket.Direction));
+                        
+                        roomObstaclesTilemap.SetTile(socket.Tiles[1].Position + offset, config.GetDefaultTileFor(socket.Direction));
                         roomObstaclesTilemap.SetTile(socket.Tiles[1].Position + offset, config.GetDefaultTileFor(socket.Direction));
                     }
                 }
                 
                 roomFloorTilemap.CopyTilesTo(globalFloorTilemap);
-
-                roomFloorTilemap.CopyTilesTo(globalObstaclesTilemap);
-
+                roomObstaclesTilemap.CopyTilesTo(globalObstaclesTilemap);
+               
                 GameObject.Destroy(roomFloorTilemap.gameObject);
                 GameObject.Destroy(roomObstaclesTilemap.gameObject);
                 GameObject.Destroy(roomGrid);
             }
+            
+            globalFloorTilemap.ForEachCell((position, tile) =>
+            {
+                if(tile == null) globalFloorTilemap.SetTile(position, backgroundTile);
 
+                if (tile is MarkTile markTile)
+                {
+                    globalFloorTilemap.SetTile(position, markTile.GetTile());
+                }
+            });
+            
+            globalObstaclesTilemap.ForEachTile<MarkTile>((position, tile) =>
+            {
+                globalObstaclesTilemap.SetTile(position, tile.GetTile());
+            });
+            
             spawnedRooms = dirtyRooms.ToArray();
             dirtyRooms.Clear();
             dirtyRooms = null;
         }
+
+        private void DeleteUnusedCorridors()
+        {
+            bool emptyCycle = false;
+            
+            while (!emptyCycle)
+            {
+                emptyCycle = true;
+                for (var i = 0; i < dirtyRooms.Count; i++)
+                {
+                    Room room = dirtyRooms[i];
+                    
+                    if (!room.IsBud && room.Connections.Length == 1)
+                    {
+                        room.DisconnectFromAll();
+                        GameObject.DestroyImmediate(room.gameObject);
+                        
+                        dirtyRooms.RemoveAt(i);
+                        i--;
+                        emptyCycle = false;
+                    }
+                }
+            }
+        }
+
         private Room SpawnRoom(Room forRoom, Room.ConnectSocket socket, Room[] fromPool)
         {
             Vector3 spawnPosition =
@@ -266,7 +283,7 @@ namespace banging_code.level.random_gen
                     candidate.SocketsHandler.GetCorrSocket(UTLS.OppositeTo(socket.Direction)),
                     forRoom.transform.position);
 
-                return !CanSpawnRoomInPosition(candidate, spawnPosition, socket.Direction);
+                return !CanSpawnRoomInPosition(socket, candidate, spawnPosition, socket.Direction);
             }
         }
         
@@ -299,15 +316,18 @@ namespace banging_code.level.random_gen
             globalObstaclesTilemapRenderer.sortingLayerName = "Default";
             globalObstaclesTilemapRenderer.sortingOrder = 3;
             globalObstaclesTilemapRenderer.sortOrder = TilemapRenderer.SortOrder.TopLeft;
+            globalObstaclesTilemapRenderer.mode = TilemapRenderer.Mode.Individual;
         }
-        private bool CanSpawnRoomInPosition(Room room, Vector3 position, GameDirection direction)
+        
+        //utility
+        private bool CanSpawnRoomInPosition(Room.ConnectSocket from, Room room, Vector3 position, GameDirection direction)
         {
             switch (direction)
             {
-                case GameDirection.Left:   position += new Vector3(-1, 0, 0); break;
-                case GameDirection.Right:  position += new Vector3(1, 0, 0);  break;
-                case GameDirection.Top:    position += new Vector3(0, 1, 0);  break;
-                case GameDirection.Bottom: position += new Vector3(0, -1, 0); break;
+                case GameDirection.Left:   position += new Vector3(-2, 0, 0); break;
+                case GameDirection.Right:  position += new Vector3(2, 0, 0);  break;
+                case GameDirection.Top:    position += new Vector3(0, 2, 0);  break;
+                case GameDirection.Bottom: position += new Vector3(0, -2, 0); break;
             }
             
             Collider2D collider = GameObject
@@ -324,10 +344,10 @@ namespace banging_code.level.random_gen
             };
 
             var resCount = collider.Overlap(contactFilter, results);
-
+            
             GameObject.Destroy(collider.gameObject);
 
-            return resCount == 0;
+            return (resCount == 0) || (resCount == 1 && results.Contains(from.Owner.RoomShapeCollider));
         }
 
         private Vector3 GetSpawnPositionFor(Room.ConnectSocket firstSocket, Room.ConnectSocket secondSocket, Vector3 centerPosition)
@@ -339,6 +359,7 @@ namespace banging_code.level.random_gen
 
             return spawnPosition;
         }
+        
         private Room InstantiateRoomPrefab(Room prefab, Vector2 position) 
             => Game.CurrentScene.Fabric.Instantiate(prefab, position, roomsContainer);    
     }

@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using banging_code.common;
 using banging_code.editor.room_builder_tool;
 using banging_code.level.random_gen;
+using destructive_code.Tilemaps;
 using UnityEngine;
 
-namespace banging_code.level.rooms
+namespace banging_code.common.rooms
 {
     [Serializable]
     public abstract class Room : MonoBehaviour
     {
-        public List<Room> connections = new();
-
+        [field: SerializeField] public Transform ContentRoot { get; private set; }
         [field: SerializeField] public ConnectSocketsHandler SocketsHandler { get; private set; } = new();
         [field: SerializeField] public PolygonCollider2D RoomShapeCollider { get; set; }
         [field: SerializeField] public bool IsBud { get; set; }
 
-        [field: SerializeField] public Transform ContentRoot { get; private set; }
+        public Room[] Connections => connections.ToArray();
+        private List<Room> connections = new();
 
         public virtual void ProcessContentInRoom()
         {
@@ -63,7 +64,7 @@ namespace banging_code.level.rooms
             public SocketPurpose Purpose;
             public TilePT<ConnectTile>[] Tiles;
             
-            public ConnectSocket ConnectedWith;
+            [HideInInspector] public ConnectSocket ConnectedWith;
             
             public ConnectSocket(Tuple<TilePT<ConnectTile>, TilePT<ConnectTile>> tiles, Vector2 offset, GameDirection direction, SocketPurpose purpose, Room owner)
             {

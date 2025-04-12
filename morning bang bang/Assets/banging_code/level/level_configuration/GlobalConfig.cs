@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.Tilemaps;
 
-namespace banging_code.level.rooms
+namespace banging_code.common.rooms
 {
     public static class GlobalConfig
     {

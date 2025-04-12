@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using banging_code.common;
 using UnityEngine;
 
-namespace banging_code.level.rooms
+namespace banging_code.common.rooms
 {
     [Serializable]
     public sealed class ConnectSocketsHandler

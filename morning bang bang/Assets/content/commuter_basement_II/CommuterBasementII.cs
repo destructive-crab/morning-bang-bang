@@ -1,6 +1,6 @@
 using banging_code.dev;
 using banging_code.level;
-using banging_code.level.rooms;
+using banging_code.common.rooms;
 using MothDIed.DI;
 using UnityEngine;
 

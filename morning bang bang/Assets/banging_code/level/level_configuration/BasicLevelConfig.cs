@@ -3,7 +3,7 @@ using banging_code.common;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace banging_code.level.rooms
+namespace banging_code.common.rooms
 {
     [Serializable]
     public sealed class BasicLevelConfig

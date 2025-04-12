@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36dc6cf10be24869a32702cbb34c15e4, type: 3}
+  m_Name: TilesReplacerSettings
+  m_EditorClassIdentifier: 
+  rules:
+  - WhichTilesWillBeReplaced:
+    - {fileID: 11400000, guid: d873ee52ebe0f2e48ae81216f77fe0e4, type: 2}
+    Replacement: {fileID: 11400000, guid: d873ee52ebe0f2e48ae81216f77fe0e4, type: 2}
+    InTilemaps:
+    - {fileID: 0}
+    WhereToSearch: []
+    Names: []
+    Foldout: 0
+  - WhichTilesWillBeReplaced: []
+    Replacement: {fileID: 0}
+    InTilemaps:
+    - {fileID: 0}
+    WhereToSearch: []
+    Names: []
+    Foldout: 1
