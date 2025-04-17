@@ -26,6 +26,7 @@ namespace Editor.LevelBuildingTools
              {
                  builder.StartEditing(room);
                  builder.CreateRoomSockets();
+                 builder.EndEditing();
              }
          }       
          
@@ -36,6 +37,7 @@ namespace Editor.LevelBuildingTools
               {
                   builder.StartEditing(room);
                   builder.CreateRoomShapeCollider();
+                  builder.EndEditing();
               }           
         }
         
@@ -48,6 +50,8 @@ namespace Editor.LevelBuildingTools
                   
                   builder.CreateRoomSockets();
                   builder.CreateRoomShapeCollider();
+                  
+                  builder.EndEditing();
               }           
         }
         

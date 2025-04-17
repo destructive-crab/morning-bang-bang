@@ -19,7 +19,7 @@ namespace banging_code.player_logic.standard
         public override void FixedUpdate(PlayerRoot playerRoot)
         {
             animator.PlayRun(1);
-            rigidbody2D.linearVelocity = InputService.Movement * 4;
+            rigidbody2D.velocity = InputService.Movement * 4;
             Movement = InputService.Movement;
 
             if (Movement.x > 0) playerRoot.Direction = GameDirection.Right;

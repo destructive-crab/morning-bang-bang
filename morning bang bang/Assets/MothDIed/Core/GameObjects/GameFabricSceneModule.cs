@@ -11,6 +11,6 @@ namespace MothDIed.Core.GameObjects
             => scene.Fabric.RefreshModules();
 
         public virtual void OnInstantiated<TObject>(TObject instance) where TObject : Object { }
-        public virtual async UniTask OnWillBeDestroyed(Object toDestroy) { }
+        public virtual void OnWillBeDestroyed(Object toDestroy) { }
     }
 }

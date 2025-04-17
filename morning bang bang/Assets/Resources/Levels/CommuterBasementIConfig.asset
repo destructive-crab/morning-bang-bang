@@ -47,11 +47,12 @@ MonoBehaviour:
     - {fileID: 4477063926345711946, guid: 8855dca96158a7a44bed7f3f3af75f8c, type: 3}
     - {fileID: 4477063926345711946, guid: f69d72a414d08e64cbf246527042284f, type: 3}
     - {fileID: 2773057086554744372, guid: 6ebde830d9a017248a473fb89682e450, type: 3}
+    FillTile: {fileID: 11400000, guid: c958dbbab9d15704c8e1d4fecc02e5f8, type: 2}
     TopDefaultWall:
-    - {fileID: 11400000, guid: 22e1dd78a1f09a44e8d6085471c03046, type: 2}
+    - {fileID: 11400000, guid: c958dbbab9d15704c8e1d4fecc02e5f8, type: 2}
     BottomDefaultWall:
-    - {fileID: 11400000, guid: bd8b848cb5d42aa4da3eb6313c162001, type: 2}
+    - {fileID: 11400000, guid: c958dbbab9d15704c8e1d4fecc02e5f8, type: 2}
     LeftDefaultWall:
-    - {fileID: 11400000, guid: adf10c93f41ff2e4e8616f0e2b635a7e, type: 2}
+    - {fileID: 11400000, guid: c958dbbab9d15704c8e1d4fecc02e5f8, type: 2}
     RightDefaultWall:
-    - {fileID: 11400000, guid: 01c1c57f991779b4ba095fbc561ff46a, type: 2}
+    - {fileID: 11400000, guid: c958dbbab9d15704c8e1d4fecc02e5f8, type: 2}

@@ -1,5 +1,4 @@
 using System;
-using banging_code.common;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -19,7 +18,9 @@ namespace banging_code.common.rooms
         public Room[] BuisnessRooms;
         public Room[] FinalRooms;
 
-        [Header("Default tiles")]
+        [Header("Default tiles")] 
+        public TileBase FillTile;
+        
         public TileBase[] TopDefaultWall;
         public TileBase[] BottomDefaultWall;
         public TileBase[] LeftDefaultWall;

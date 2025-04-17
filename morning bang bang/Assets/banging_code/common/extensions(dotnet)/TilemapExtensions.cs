@@ -114,7 +114,5 @@ namespace destructive_code.Tilemaps
                 }
             }
         }
-        
-
     }
 }

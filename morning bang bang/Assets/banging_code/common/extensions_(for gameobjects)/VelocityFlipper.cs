@@ -1,4 +1,3 @@
-using banging_code.common;
 using MothDIed.DI;
 using MothDIed.ExtensionSystem;
 using UnityEngine;
@@ -13,9 +12,9 @@ namespace banging_code.common.extensions
        
         public override void Update()
         {
-            if(rigidbody.linearVelocityX != 0) 
+            if(rigidbody.velocity.x != 0) 
             {
-                flipper.FlipAtDirection(rigidbody.linearVelocityX);
+                flipper.FlipAtDirection(rigidbody.velocity.x);
             }
         }
     }

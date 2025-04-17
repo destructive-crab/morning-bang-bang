@@ -17,7 +17,7 @@ namespace banging_code.player_logic.standard
         public override void Enter(PlayerRoot playerRoot)
         {
             playerAnimator.PlayIdle(1);
-            rigidbody.linearVelocity = Vector2.zero;
+            rigidbody.velocity = Vector2.zero;
         }
     }
 }

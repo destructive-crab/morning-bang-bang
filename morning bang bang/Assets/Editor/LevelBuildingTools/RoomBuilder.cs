@@ -8,19 +8,29 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Object = System.Object;
 
 namespace banging_code.editor.room_builder_tool
 {
     public class RoomBuilder 
     {
         public Room editingRoom { get; private set; }
+        public GameObject prefabOrigin;
 
         public void StartEditing(Room room)
         {
-            editingRoom = room;
+            prefabOrigin = room.gameObject;
+            editingRoom = PrefabUtility.InstantiatePrefab(room.gameObject).GetComponent<Room>();
+
             ReloadTilemaps();
         }
-        
+
+        public void EndEditing()
+        {
+            PrefabUtility.SaveAsPrefabAsset(editingRoom.gameObject, AssetDatabase.GetAssetPath(prefabOrigin));
+            GameObject.DestroyImmediate(editingRoom.gameObject);
+        }
+
         public Tilemap obstaclesTilemap { get; private set; }
         public Tilemap floorTilemap { get; private set; }
 
@@ -96,14 +106,14 @@ namespace banging_code.editor.room_builder_tool
                     pair.Item1.Tile.Direction = GameDirection.Top;
                     pair.Item2.Tile.Direction = GameDirection.Top;
 
-                    y -= 0.5f;
+                    y += 0.5f;
                 }
                 else if (!floorTilemap.HasTile(pair.Item1.Position + Vector3Int.down))
                 {
                     pair.Item1.Tile.Direction = GameDirection.Bottom;
                     pair.Item2.Tile.Direction = GameDirection.Bottom;
                     
-                    y += 0.5f;
+                    y -= 0.5f;
                 }
                 
                 int fromX = pair.Item1.Position.x;
@@ -126,14 +136,14 @@ namespace banging_code.editor.room_builder_tool
                     pair.Item1.Tile.Direction = GameDirection.Right;
                     pair.Item2.Tile.Direction = GameDirection.Right;
 
-                    x -= 0.5f;
+                    x += 0.5f;
                 }
                 else if (!floorTilemap.HasTile(pair.Item1.Position + Vector3Int.left))
                 {
                     pair.Item1.Tile.Direction = GameDirection.Left;
                     pair.Item2.Tile.Direction = GameDirection.Left;
                     
-                    x += 0.5f;
+                    x -= 0.5f;
                 }
                 
                 int fromY = pair.Item1.Position.y;
@@ -168,7 +178,7 @@ namespace banging_code.editor.room_builder_tool
                 polyCollider_roomBoundsCollider =
                     new GameObject(G_O_NAMES.ROOM_SHAPE_COLLIDER).AddComponent<PolygonCollider2D>();
 
-                polyCollider_roomBoundsCollider.transform.parent = editingRoom.transform;
+                polyCollider_roomBoundsCollider.transform.SetParent(editingRoom.transform);
                 polyCollider_roomBoundsCollider.gameObject.layer = LayerMask.NameToLayer("RoomBounds");
 
                 Undo.RecordObject(polyCollider_roomBoundsCollider.gameObject, "Room Bounds Collider Creation");
@@ -186,7 +196,7 @@ namespace banging_code.editor.room_builder_tool
                 var _tempTilemap = new GameObject("TEMP TM COLLIDER").AddComponent<Tilemap>();
                 _tilemapCollider = _tempTilemap.gameObject.AddComponent<TilemapCollider2D>();
                 _tempTilemap.gameObject.AddComponent<TilemapRenderer>();
-                _tempTilemap.transform.parent = grid.transform;
+                _tempTilemap.transform.SetParent(grid.transform);
                 _tempTilemap.transform.localPosition = Vector2.zero;
 
                 foreach (var position in floorTilemap.cellBounds.allPositionsWithin)

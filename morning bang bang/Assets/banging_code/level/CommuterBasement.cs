@@ -3,6 +3,7 @@ using banging_code.common;
 using banging_code.items;
 using banging_code.level.random_gen;
 using banging_code.common.rooms;
+using banging_code.level.level_configuration.map;
 using banging_code.player_logic.rat;
 using MothDIed.DI;
 using MothDIed.InputsHandling;
@@ -36,6 +37,7 @@ namespace banging_code.level
             Generator generator = new BasicGenerator(config);
 
             generator.Generate();
+            Map = new TilemapBasedLevelMap((generator as BasicGenerator).LevelGrid);
 
             //4. spawn all enemies, npcs etc
             //5. spawn player

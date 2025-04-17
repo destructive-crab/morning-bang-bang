@@ -3,7 +3,6 @@ using banging_code.items;
 using banging_code.level;
 using banging_code.player_logic;
 using MothDIed;
-using TMPro;
 
 namespace banging_code.inventory
 {

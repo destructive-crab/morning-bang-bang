@@ -26,7 +26,7 @@ namespace banging_code.player_logic.standard
         {
             StartDash();
             {
-                Vector2 velocity = rigidbody.linearVelocity * 0.3f;
+                Vector2 velocity = rigidbody.velocity * 0.3f;
                 var dashStopTime = Time.time + RollTime;
                 
                 while (Time.time < dashStopTime)
@@ -39,7 +39,7 @@ namespace banging_code.player_logic.standard
                     yield return new WaitForFixedUpdate();
                 }
             }
-            rigidbody.linearVelocity = Vector2.zero;
+            rigidbody.velocity = Vector2.zero;
 
             yield return ReleaseDash(rigidbody);
         }

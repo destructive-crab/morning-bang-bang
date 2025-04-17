@@ -1,5 +1,4 @@
 using System;
-using Cysharp.Threading.Tasks;
 using MothDIed.Core.GameObjects;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -68,13 +67,8 @@ namespace MothDIed.Scenes
             }
         }
 
-        public virtual async UniTask Destroy(Object toDestroy)
+        public virtual void Destroy(Object toDestroy)
         {
-            foreach (var module in modules)
-            {
-                await module.OnWillBeDestroyed(toDestroy);
-            }
-            
             OnDestroyed?.Invoke(toDestroy);
             
             if(toDestroy is GameObject gameObject)
