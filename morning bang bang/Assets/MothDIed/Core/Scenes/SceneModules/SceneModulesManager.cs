@@ -69,10 +69,12 @@ namespace MothDIed.Scenes.SceneModules
             }
         }
 
-        public void AddModule<TModule>(TModule module)
+        public TModule AddModule<TModule>(TModule module)
             where TModule : SceneModule
         {
             modules.Register(module);
+
+            return module;
         }
 
         public void RemoveModule<TModule>()

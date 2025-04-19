@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using banging_code.level.level_configuration.map;
+using MothDIed.Scenes.SceneModules;
 using UnityEngine;
 
 namespace banging_code.ai.pathfinding
 {
-    public  abstract class LevelMap
+    public  abstract class LevelMap : SceneModule
     {
-        public Dictionary<Vector2Int, CellData> map = new();
-        protected List<DynamicObstacle> dynamicObstacles;
+        protected readonly Dictionary<Vector2Int, CellData> map = new();
+        protected readonly List<DynamicObstacle> dynamicObstacles = new();
 
         public void NewDynamicObstacle(DynamicObstacle dynamicObstacle)
         {
@@ -36,6 +37,7 @@ namespace banging_code.ai.pathfinding
         }
 
         public abstract void UpdateCell(Vector2Int position);
+        public abstract void Refresh(); //update all cells
 
         public CellData[] GetConnections(int x, int y)
         {
@@ -85,9 +87,6 @@ namespace banging_code.ai.pathfinding
             }
         }
 
-        public class DynamicObstacle : MonoBehaviour
-        {
-            
-        }
+        public abstract class DynamicObstacle : MonoBehaviour { }
     }
 }

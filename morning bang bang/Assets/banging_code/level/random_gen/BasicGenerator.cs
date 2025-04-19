@@ -12,24 +12,17 @@ namespace banging_code.level.random_gen
     public sealed class BasicGenerator : Generator
     {
         private readonly BasicLevelConfig config;
-
-        public Transform RoomsContainer { get; private set; }
-        public Transform GeneratedLevelContainer { get; private set; }
-
-        public Grid LevelGrid { get; private set; }
-        private Tilemap globalObstaclesTilemap;
-        private Tilemap globalFloorTilemap;
+        private readonly LevelScene level;
 
         private List<Room> dirtyRooms;
         private Room[] spawnedRooms;
         private BasicRoomTypes[] map;
         private TileBase backgroundTile;
 
-        public BasicGenerator(BasicLevelConfig config)
+        public BasicGenerator(BasicLevelConfig config, LevelScene level)
         {
             this.config = config;
-
-            SetupGeneratedLeveBase();
+            this.level = level;
         }
 
         public override Room[] Generate()
@@ -63,20 +56,13 @@ namespace banging_code.level.random_gen
 
         public override void Clear()
         {
-            if (GeneratedLevelContainer == null)
-            {
-                Debug.LogWarning("[BASIC GENERATOR CLEAR] LEVEL IS NOT SET UP");
-                return;
-            }
-            
             Debug.Log($"[BASIC LEVEL GENERATOR] {spawnedRooms?.Length} ROOMS WILL BE DELETED");
             
             spawnedRooms = null;
             dirtyRooms.Clear();
             map = null;
-
-            GameObject.DestroyImmediate(GeneratedLevelContainer.gameObject);
-            SetupGeneratedLeveBase();
+            
+            level.Modules.Get<LevelHierarchyModule>().ClearGeneratedLevel();
         }
 
         public override Room[] Regenerate()
@@ -87,7 +73,7 @@ namespace banging_code.level.random_gen
 
         private int GenerateDirtyRooms()
         {
-            if (RoomsContainer.childCount > 0)
+            if (level.Hierarchy.RoomsContainer.childCount > 0)
             {
                 Debug.Log("[BASIC GENERATOR: GENERATE DIRTY ROOMS] TRYING TO GENERATE NEW LEVEL IN UNCLEARED SCENE");
                 Clear();
@@ -176,14 +162,17 @@ namespace banging_code.level.random_gen
                     }
                 }
                 
-                roomFloorTilemap.CopyTilesTo(globalFloorTilemap);
-                roomObstaclesTilemap.CopyTilesTo(globalObstaclesTilemap);
+                roomFloorTilemap.CopyTilesTo(level.Hierarchy.FloorTilemap);
+                roomObstaclesTilemap.CopyTilesTo(level.Hierarchy.ObstaclesTilemap);
                
                 GameObject.Destroy(roomFloorTilemap.gameObject);
                 GameObject.Destroy(roomObstaclesTilemap.gameObject);
                 GameObject.Destroy(roomGrid);
             }
             
+            var globalFloorTilemap = level.Hierarchy.FloorTilemap;
+            var globalObstaclesTilemap = level.Hierarchy.ObstaclesTilemap;
+                
             globalFloorTilemap.ForEachCell((position, tile) =>
             {
                 if(tile == null) globalFloorTilemap.SetTile(position, backgroundTile);
@@ -288,38 +277,6 @@ namespace banging_code.level.random_gen
             }
         }
         
-        private void SetupGeneratedLeveBase()
-        {
-            //CREATING CONTAINERS
-            GeneratedLevelContainer = new GameObject(G_O_NAMES.LEVEL_CONTAINER).transform;
-            RoomsContainer = new GameObject(G_O_NAMES.ROOMS_CONTAINER).transform;
-            RoomsContainer.parent = GeneratedLevelContainer;
-
-            //CREATING GLOBAL MAPS
-            LevelGrid = new GameObject(G_O_NAMES.GLOBAL_GRID).AddComponent<Grid>();
-            LevelGrid.transform.parent = GeneratedLevelContainer;
-
-            //floor global map 
-            globalFloorTilemap = new GameObject(G_O_NAMES.GLOBAL_FLOOR_TM, GlobalConfig.GlobalFloorTilemapComponents)
-                .GetComponent<Tilemap>();
-            globalFloorTilemap.transform.parent = LevelGrid.transform;
-
-            var globalFloorTilemapRenderer = globalFloorTilemap.GetComponent<TilemapRenderer>();
-            globalFloorTilemapRenderer.sortingLayerName = "Default";
-            globalFloorTilemapRenderer.sortOrder = TilemapRenderer.SortOrder.TopLeft;
-            
-            //obstacles global map
-            globalObstaclesTilemap = new GameObject(G_O_NAMES.GLOBAL_OBSTACLES_TM, GlobalConfig.GlobalObstaclesTilemapComponents)
-                .GetComponent<Tilemap>();
-            globalObstaclesTilemap.transform.parent = LevelGrid.transform;
-           
-            var globalObstaclesTilemapRenderer = globalObstaclesTilemap.GetComponent<TilemapRenderer>();
-            globalObstaclesTilemapRenderer.sortingLayerName = "Default";
-            globalObstaclesTilemapRenderer.sortingOrder = 3;
-            globalObstaclesTilemapRenderer.sortOrder = TilemapRenderer.SortOrder.TopLeft;
-            globalObstaclesTilemapRenderer.mode = TilemapRenderer.Mode.Chunk;
-        }
-        
         //utility
         private bool CanSpawnRoomInPosition(Room.ConnectSocket from, Room room, Vector3 position, GameDirection direction)
         {
@@ -362,6 +319,6 @@ namespace banging_code.level.random_gen
         }
         
         private Room InstantiateRoomPrefab(Room prefab, Vector2 position) 
-            => Game.CurrentScene.Fabric.Instantiate(prefab, position, RoomsContainer);    
+            => Game.CurrentScene.Fabric.Instantiate(prefab, position, level.Hierarchy.RoomsContainer);    
     }
 }

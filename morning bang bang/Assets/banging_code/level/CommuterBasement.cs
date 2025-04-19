@@ -1,3 +1,4 @@
+using banging_code.ai.pathfinding;
 using banging_code.camera_logic;
 using banging_code.common;
 using banging_code.items;
@@ -23,7 +24,10 @@ namespace banging_code.level
             Modules.AddModule(new FabricAutoInjectModule());
             Modules.AddModule(new SceneAutoInjectModule());
             
+            Hierarchy = Modules.AddModule(new LevelHierarchyModule());
             Modules.AddModule(new CCamera());
+            Map = new TilemapBasedLevelMap(Modules.Get<LevelHierarchyModule>());
+            Modules.AddModule(Map);
         }
 
         protected override void OnSceneLoaded()
@@ -34,10 +38,11 @@ namespace banging_code.level
             BasicLevelConfig config = GetConfig(); 
 
             //3. generate level
-            Generator generator = new BasicGenerator(config);
+            Modules.Get<LevelHierarchyModule>().SetupGeneratedLevelBase();
+            Generator = new BasicGenerator(config, this);
 
-            generator.Generate();
-            Map = new TilemapBasedLevelMap((generator as BasicGenerator).LevelGrid);
+            Generator.Generate();
+            Map.Refresh();
 
             //4. spawn all enemies, npcs etc
             //5. spawn player

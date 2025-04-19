@@ -4,10 +4,20 @@ using UnityEngine;
 namespace banging_code
 {
     [RequireComponent(typeof(Collider2D))]
-    public class Trigger : MonoBehaviour
+    public class Trigger<TComponent> : MonoBehaviour
+        where TComponent : Component
     {
-        public event Action<Collider2D> OnEnter;
-        public event Action<Collider2D> OnExit;
+        public Collider2D TriggerCollider()
+        {
+            if (triggerCollider == null) triggerCollider = GetComponent<Collider2D>();
+            return triggerCollider;
+        }
+        protected Collider2D triggerCollider;
+        
+        public event Action<TComponent> OnEnter;
+        protected void OnEnterInvocation(TComponent other) => OnEnter?.Invoke(other);
+        public event Action<TComponent> OnExit;
+        protected void OnExitInvocation(TComponent other) => OnExit?.Invoke(other);
 
 #if UNITY_EDITOR
         private void Reset()
@@ -16,14 +26,20 @@ namespace banging_code
         }
 #endif
 
-        protected void OnTriggerEnter2D(Collider2D other)
+        protected virtual void OnTriggerEnter2D(Collider2D other)
         {
-            OnEnter?.Invoke(other); 
+            if (other.TryGetComponent(out TComponent target))
+            {
+                OnEnterInvocation(target);
+            }
         }
 
-        protected void OnTriggerExit2D(Collider2D other)
+        protected virtual void OnTriggerExit2D(Collider2D other)
         {
-            OnExit?.Invoke(other);
+            if (other.TryGetComponent(out TComponent target))
+            {
+                OnExitInvocation(target);
+            }
         }
     }
 }

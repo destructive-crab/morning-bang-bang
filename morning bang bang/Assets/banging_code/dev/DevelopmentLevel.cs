@@ -34,7 +34,7 @@ namespace banging_code.dev
             BasicLevelConfig config = Resources.Load<BasicLevelConfigSO>("Dev/Test Level Config").Data;
 
             //3. generate level
-            Generator generator = new BasicGenerator(config);
+            Generator generator = new BasicGenerator(config, this);
 
             generator.Generate();
 
