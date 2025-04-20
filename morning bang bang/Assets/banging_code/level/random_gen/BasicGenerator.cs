@@ -319,6 +319,6 @@ namespace banging_code.level.random_gen
         }
         
         private Room InstantiateRoomPrefab(Room prefab, Vector2 position) 
-            => Game.CurrentScene.Fabric.Instantiate(prefab, position, level.Hierarchy.RoomsContainer);    
+            => GameObject.Instantiate(prefab, position, Quaternion.identity, level.Hierarchy.RoomsContainer);    
     }
 }

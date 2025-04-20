@@ -59,10 +59,18 @@ namespace MothDIed.Scenes
                 if (instance is GameObject gameObject)
                 {
                     OnGameObjectInstantiated?.Invoke(gameObject);
+                    foreach (var module in modules)
+                    {
+                        module.OnGameObjectInstantiated(gameObject);
+                    }
                 }
                 else if (instance is Component component)
                 {
                     OnGameObjectInstantiated?.Invoke(component.gameObject);
+                    foreach (var module in modules)
+                    {
+                        module.OnGameObjectInstantiated(component.gameObject);
+                    }
                 }
             }
         }
@@ -74,6 +82,11 @@ namespace MothDIed.Scenes
             if(toDestroy is GameObject gameObject)
             {
                 OnGameObjectDestroyed?.Invoke(gameObject);
+                
+                foreach (var module in modules)
+                {
+                    module.BeforeGameObjectDestroyed(gameObject);
+                }
             }
             
             Object.Destroy(toDestroy);

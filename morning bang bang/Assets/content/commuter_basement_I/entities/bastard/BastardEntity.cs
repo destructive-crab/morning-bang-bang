@@ -27,15 +27,18 @@ namespace content.commuter_basement_I.entities.bastard
                             fov.SetRadius(5);
                         }
                     }
-                }))
-                .Final((colliderObject) =>
-                {
-                    Debug.Log("lol kek aboba");
-                });
+                }));
             
             structure.Add(collider);
 
             return structure;
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            Extensions.AddExtension(new BasicEntityToTargetMovement());
         }
 
         public override void GoSleep()
@@ -44,12 +47,12 @@ namespace content.commuter_basement_I.entities.bastard
 
         public override void WakeUp()
         {
-            
+            Debug.Log("AAA");
+            Extensions.Get<BasicEntityToTargetMovement>().StartMoving();
         }
 
         public override void Tick()
         {
-            
         }
     }
 }

@@ -5,7 +5,7 @@ namespace banging_code
 {
     [RequireComponent(typeof(Collider2D))]
     public class Trigger<TComponent> : MonoBehaviour
-        where TComponent : Component
+        where TComponent : class
     {
         public Collider2D TriggerCollider()
         {
@@ -25,6 +25,10 @@ namespace banging_code
             GetComponent<Collider2D>().isTrigger = true;
         }
 #endif
+        private void Awake()
+        {
+            TriggerCollider().isTrigger = true;
+        }
 
         protected virtual void OnTriggerEnter2D(Collider2D other)
         {

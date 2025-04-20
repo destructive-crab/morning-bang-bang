@@ -1,5 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
-using MothDIed.Scenes;
+﻿using MothDIed.Scenes;
 using MothDIed.Scenes.SceneModules;
 using UnityEngine;
 
@@ -11,6 +10,10 @@ namespace MothDIed.Core.GameObjects
             => scene.Fabric.RefreshModules();
 
         public virtual void OnInstantiated<TObject>(TObject instance) where TObject : Object { }
-        public virtual void OnWillBeDestroyed(Object toDestroy) { }
+
+        public virtual void OnGameObjectInstantiated(GameObject instance) { }
+
+        public virtual void OnDestroyed(Object toDestroy) { }
+        public virtual void BeforeGameObjectDestroyed(GameObject instance) { }
     }
 }

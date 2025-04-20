@@ -10,7 +10,7 @@ namespace banging_code.ai.targeting
         private readonly List<TargetToEntities> currentTargets = new();
         public bool Contains(TargetToEntities target) => currentTargets.Contains(target);
         
-        public void SetRadius(float radius) => (triggerCollider as CircleCollider2D).radius = radius;
+        public void SetRadius(float radius) => ((CircleCollider2D)TriggerCollider()).radius = radius;
 
         private void Start()
         {

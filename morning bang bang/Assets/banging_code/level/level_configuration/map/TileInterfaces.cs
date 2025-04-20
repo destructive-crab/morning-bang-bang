@@ -1,6 +1,6 @@
 using UnityEngine.Tilemaps;
 
-namespace banging_code.level.level_configuration.map
+namespace banging_code.level.structure.map
 {
     public interface IObstacleTile 
     {

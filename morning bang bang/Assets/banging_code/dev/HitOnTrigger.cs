@@ -5,14 +5,12 @@ using UnityEngine;
 namespace banging_code.dev
 {
     [RequireComponent(typeof(CircleCollider2D))]
-    public class HitOnTrigger : Trigger
+    public class HitOnTrigger : Trigger<HitableBody>
     {
         [Inject] private HitsHandler hitsHandler;
         private void Start() => OnEnter += Hit;
-        private void Hit(Collider2D entered)
+        private void Hit(HitableBody body)
         {
-            HitableBody body = entered.GetComponent<HitableBody>();
-            //Проверка на null уже реализована в Hit()
             hitsHandler.Hit(new StabHitData(1), body);
         }
     }

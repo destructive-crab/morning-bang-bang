@@ -17,6 +17,7 @@ namespace MothDIed.ExtensionSystem
         {
             if(owner == null) return;
 
+            Debug.Log(owner);
             this.owner = owner;
         }
         
@@ -26,6 +27,7 @@ namespace MothDIed.ExtensionSystem
             {
                 extensionPair.Value.ForEach((extension) =>
                 {
+                    Debug.Log(owner);
                     Game.DIKernel.InjectWithBaseAnd(extension, owner.CachedComponents, this);
                     extension.StartExtension();
                     extension.Enable();

@@ -1,11 +1,12 @@
 using banging_code.ai.pathfinding;
-using banging_code.camera_logic;
 using banging_code.common;
+using banging_code.camera_logic;
 using banging_code.items;
 using banging_code.level.random_gen;
 using banging_code.common.rooms;
-using banging_code.level.level_configuration.map;
+using banging_code.level.structure.map;
 using banging_code.player_logic.rat;
+
 using MothDIed.DI;
 using MothDIed.InputsHandling;
 using UnityEngine;
@@ -20,13 +21,15 @@ namespace banging_code.level
         protected override void SetupModules()
         { 
             Modules.AddModule(new SceneDependenciesModule(GetProviders()));
-            
+
             Modules.AddModule(new FabricAutoInjectModule());
             Modules.AddModule(new SceneAutoInjectModule());
-            
+
             Hierarchy = Modules.AddModule(new LevelHierarchyModule());
             Modules.AddModule(new CCamera());
             Map = new TilemapBasedLevelMap(Modules.Get<LevelHierarchyModule>());
+            EntitiesController = Modules.AddModule(new SceneEntitiesModule());
+            Modules.AddModule(new SceneEntitiesModule.EntityFabricModule(EntitiesController));
             Modules.AddModule(Map);
         }
 
@@ -54,6 +57,10 @@ namespace banging_code.level
             
             //6. spawn all ui
             //7. activate enemies
+            EntitiesController.InitializeAll();
+//            EntitiesController.GoSleepAll();
+            EntitiesController.WakeUpAll();
+            
             //8. activate player
             PlayerInstance.Activate();
             

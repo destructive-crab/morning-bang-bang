@@ -2,7 +2,7 @@ using banging_code.ai.pathfinding;
 using MothDIed.Core.GameObjects;
 using UnityEngine;
 
-namespace banging_code.level.level_configuration.map
+namespace banging_code.level.structure.map
 {
     public class LevelMapCallbacksGameFabricModule : GameFabricSceneModule
     {
@@ -26,7 +26,7 @@ namespace banging_code.level.level_configuration.map
             }
         }
 
-        public override void OnWillBeDestroyed(Object toDestroy)
+        public override void OnDestroyed(Object toDestroy)
         {
             if (toDestroy is GameObject gameObject)
             {

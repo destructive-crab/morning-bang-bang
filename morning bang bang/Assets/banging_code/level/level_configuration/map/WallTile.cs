@@ -1,4 +1,4 @@
-using banging_code.level.level_configuration.map;
+using banging_code.level.structure.map;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 

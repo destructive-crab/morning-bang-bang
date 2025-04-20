@@ -2,7 +2,7 @@ using banging_code.ai.pathfinding;
 using MothDIed.Scenes;
 using UnityEngine;
 
-namespace banging_code.level.level_configuration.map
+namespace banging_code.level.structure.map
 {
     public sealed class TilemapBasedLevelMap : LevelMap
     {

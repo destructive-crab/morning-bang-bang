@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using MothDIed.DI;
 using MothDIed.ExtensionSystem;
@@ -7,9 +6,9 @@ namespace banging_code.ai.targeting
 {
     public class TargetSelector : Extension
     {
-        public TargetToEntities BestTarget => sortedTargets[0];
-        
         [Inject] private EntityFieldOfView fov;
+        
+        public TargetToEntities BestTarget => sortedTargets[0];
         private List<TargetToEntities> sortedTargets = new();
 
         public override void StartExtension()

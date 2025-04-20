@@ -45,20 +45,14 @@ namespace banging_code.interactions
 
         }
 
-        private void OnEnterInFoV(Collider2D other)
-        {
-            if (other.TryGetComponent(out IInteraction interaction))
-            {
-                current.Add(interaction);
-            }
+        private void OnEnterInFoV(IInteraction interaction)
+        { 
+            current.Add(interaction);
         }
 
-        private void OnExitFromFoV(Collider2D other)
+        private void OnExitFromFoV(IInteraction interaction)
         {
-            if (other.TryGetComponent(out IInteraction interaction))
-            {
-                current.Remove(interaction);
-            }
+            current.Remove(interaction);
         }
     }
 }

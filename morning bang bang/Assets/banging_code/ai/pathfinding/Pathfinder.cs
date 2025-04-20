@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MothDIed;
 using UnityEngine;
 
@@ -45,7 +46,7 @@ namespace banging_code.ai.pathfinding
             return neighbourPoints;
         }
 
-        public List<Vector2> FindPath(Vector2 start, Vector2 end)
+        public Path FindPath(Vector2 start, Vector2 end)
         {
             currentTarget = new Vector2Int((int)end.x, (int)end.y);
             List<PathNode> nextPoints = new List<PathNode>();
@@ -80,20 +81,20 @@ namespace banging_code.ai.pathfinding
             }
         }
 
-        private List<Vector2> RestorePath(PathNode endPathNode)
+        private Path RestorePath(PathNode endPathNode)
         {
             PathNode current = endPathNode;
-            List<Vector2> path = new List<Vector2>();
+            List<Vector3> path = new List<Vector3>();
 
             do
             {
-                path.Add(new Vector2(current.Cell.Center.x, current.Cell.Center.y));
+                path.Add(new Vector3(current.Cell.Center.x, current.Cell.Center.y, 0));
                 current = current.PreviousPathNode;
             } while ((current.PreviousPathNode != null));
 
             path.Reverse();
 
-            return path;
+            return new Path(path.ToArray());
         } 
         
         private class PathNode : IEquatable<PathNode>
@@ -150,6 +151,35 @@ namespace banging_code.ai.pathfinding
         public struct PathfinderArgs
         {
             
+        }
+
+        public class Path 
+        {
+            public readonly Vector3[] Points;
+
+            public Vector3 CurrentPoint => Points[CurrentIndex];
+            public int CurrentIndex { get; private set; }
+
+            public int Size => Points.Length;
+
+            public bool Completed { get; private set; } = false;
+
+            public Path(Vector3[] points)
+            {
+                Points = points;
+            }
+
+            public Vector3 Next()
+            {
+                if (CurrentIndex >= Size)
+                {
+                    Completed = true;
+                    return Points.Last();
+                }
+                
+                CurrentIndex++;
+                return Points[CurrentIndex];
+            }
         }
     }
 }
