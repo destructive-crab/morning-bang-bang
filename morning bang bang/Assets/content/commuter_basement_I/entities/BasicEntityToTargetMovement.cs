@@ -11,10 +11,11 @@ namespace content.commuter_basement_I.entities.bastard
     {
         [Inject] private TargetSelector targetSelector;
         [Inject] private Rigidbody2D rigidbody;
+
+        public float Speed = 10;
         
-        private Pathfinder pathfinder;
+        private readonly Pathfinder pathfinder = new();
         private Pathfinder.Path currentPath;
-        private float speed;
 
         private const float PATH_UPDATE_RATE = 0.01f;
         private Coroutine pathUpdateCoroutine;
@@ -47,7 +48,7 @@ namespace content.commuter_basement_I.entities.bastard
         {
             if (currentPath != null && !currentPath.Completed)
             {
-                rigidbody.MovePosition(Vector3.MoveTowards(rigidbody.position, currentPath.CurrentPoint, Time.deltaTime *  speed));
+                rigidbody.MovePosition(Vector3.MoveTowards(rigidbody.position, currentPath.CurrentPoint, Time.deltaTime *  Speed));
 
                 if (Vector3.Distance(rigidbody.position, currentPath.CurrentPoint) < 0.01f)
                 {
@@ -58,7 +59,7 @@ namespace content.commuter_basement_I.entities.bastard
 
         private IEnumerator UpdatePath()
         {
-            while (Owner !=null && Owner.enabled)
+            while (Owner != null && Owner.enabled)
             {
                 yield return new WaitForSeconds(PATH_UPDATE_RATE);
                 currentPath = pathfinder.FindPath(Owner.transform.position, targetSelector.BestTarget.Position);

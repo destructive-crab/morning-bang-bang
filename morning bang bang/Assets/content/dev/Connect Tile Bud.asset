@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Connect Tile Bud
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300000, guid: 1d88f04d4f0485348b18c8391360db5a, type: 3}
-  m_Color: {r: 1, g: 0.76596725, b: 0, a: 0.59607846}
+  m_Color: {r: 1, g: 0.76596725, b: 0, a: 0.2784314}
   m_Transform:
     e00: 1
     e01: 0

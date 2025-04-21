@@ -13,5 +13,22 @@ namespace banging_code.level
         public SceneEntitiesModule EntitiesController { get; protected set; }
         
         protected Generator Generator;
+
+        protected override void OnSceneLoaded()
+        {
+            PrepareLevel();
+            GenerateLevelBase();
+            ProcessGeneratedLevelSpawnContent();
+            SpawnPlayer();
+            SpawnUI();
+            FinishLevelSetup();
+        }
+
+        protected abstract void PrepareLevel();
+        protected abstract void GenerateLevelBase();
+        protected abstract void ProcessGeneratedLevelSpawnContent();
+        protected abstract void SpawnPlayer();
+        protected abstract void SpawnUI();
+        protected abstract void FinishLevelSetup();
     }
 }

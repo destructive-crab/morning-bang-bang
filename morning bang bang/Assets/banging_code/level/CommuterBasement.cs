@@ -1,3 +1,4 @@
+using banging_code.ai;
 using banging_code.ai.pathfinding;
 using banging_code.common;
 using banging_code.camera_logic;
@@ -33,10 +34,13 @@ namespace banging_code.level
             Modules.AddModule(Map);
         }
 
-        protected override void OnSceneLoaded()
+        protected override void PrepareLevel()
         {
-            //01. DO NOT START GAME INTERACTIONS AND GAME LOGIC
             
+        }
+
+        protected override void GenerateLevelBase()
+        {
             //2. collect level data(rooms, enemies etc)
             BasicLevelConfig config = GetConfig(); 
 
@@ -46,16 +50,32 @@ namespace banging_code.level
 
             Generator.Generate();
             Map.Refresh();
+        }
 
-            //4. spawn all enemies, npcs etc
-            //5. spawn player
-            PlayerInstance = SpawnPlayer();
+        protected override void ProcessGeneratedLevelSpawnContent()
+        {
+            var spawners = Hierarchy.RoomsContainer.GetComponentsInChildren<EntitySpawner>();
+            foreach (var entitySpawner in spawners)
+            {
+                entitySpawner.Spawn();
+            }
+        }
+
+        protected override void SpawnPlayer()
+        {
+            PlayerInstance = SpawnPlayerInstance();
             Modules.Get<CCamera>().SetTarget(PlayerInstance.transform);
 
             ItemPickUp testItem = new GameObject().AddComponent<ItemPickUp>();
             testItem.FromNew("Gun");
-            
-            //6. spawn all ui
+        }
+
+        protected override void SpawnUI()
+        {
+        }
+
+        protected override void FinishLevelSetup()
+        {
             //7. activate enemies
             EntitiesController.InitializeAll();
 //            EntitiesController.GoSleepAll();
@@ -73,7 +93,7 @@ namespace banging_code.level
             Modules.UpdateModules();
         }
 
-        private RatPlayer SpawnPlayer()
+        private RatPlayer SpawnPlayerInstance()
         {
             Transform playerStuffContainer = new GameObject(G_O_NAMES.PLYR_STUFF).transform;
 

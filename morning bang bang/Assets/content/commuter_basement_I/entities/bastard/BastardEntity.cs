@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using banging_code.ai;
 using banging_code.ai.pathfinding;
 using banging_code.ai.targeting;
@@ -10,45 +9,33 @@ namespace content.commuter_basement_I.entities.bastard
     {
         private Pathfinder pathfinder;
         public TargetToEntities currentTarget { get; private set; }
-        
-        protected override IEnumerable<RequireIn> Require()
-        {
-            List<RequireIn> structure = new List<RequireIn>();
-
-            RequireIn collider = new();
-            collider
-                .PathToObject("Triggers/FieldOfView")
-                .WithComponents(true, typeof(EntityFieldOfView))
-                .ForEachComponent((components => {
-                    foreach (var component in components)
-                    {
-                        if (component is EntityFieldOfView fov)
-                        {
-                            fov.SetRadius(5);
-                        }
-                    }
-                }));
-            
-            structure.Add(collider);
-
-            return structure;
-        }
-
-        protected override void Awake()
-        {
-            base.Awake();
-            
-            Extensions.AddExtension(new BasicEntityToTargetMovement());
-        }
 
         public override void GoSleep()
         {
         }
 
+        public override void Initialize()
+        {
+            Extensions.SetOwner(this);
+            
+            CachedComponents.Register(GetComponentInChildren<EntityFieldOfView>());
+            CachedComponents.Register(GetComponentInChildren<EntityAttackRange>());
+            CachedComponents.Register(GetComponent<Rigidbody2D>());
+            
+            Extensions.AddExtension(new TargetSelector());
+            Extensions.AddExtension(new BasicEntityToTargetMovement());
+            
+            Extensions.StartContainer();
+        }
+
         public override void WakeUp()
         {
-            Debug.Log("AAA");
-            Extensions.Get<BasicEntityToTargetMovement>().StartMoving();
+            Debug.Log("WAKE UP");
+            Extensions.Get<TargetSelector>().OnBestTargetChanged += (_) =>
+            {
+                Debug.Log("BEST TARGET CHANGED");
+                Extensions.Get<BasicEntityToTargetMovement>().StartMoving();
+            };
         }
 
         public override void Tick()

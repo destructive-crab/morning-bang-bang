@@ -17,7 +17,6 @@ namespace MothDIed.ExtensionSystem
         {
             if(owner == null) return;
 
-            Debug.Log(owner);
             this.owner = owner;
         }
         

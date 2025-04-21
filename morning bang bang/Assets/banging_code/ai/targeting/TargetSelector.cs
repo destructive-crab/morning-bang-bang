@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using MothDIed.DI;
 using MothDIed.ExtensionSystem;
+using UnityEngine;
 
 namespace banging_code.ai.targeting
 {
@@ -8,11 +10,21 @@ namespace banging_code.ai.targeting
     {
         [Inject] private EntityFieldOfView fov;
         
-        public TargetToEntities BestTarget => sortedTargets[0];
-        private List<TargetToEntities> sortedTargets = new();
+        public TargetToEntities BestTarget
+        {
+            get
+            {
+                if (sortedTargets.Count == 0) return null;
+                return sortedTargets[0];
+            }
+        }
 
+        public event Action<TargetToEntities> OnBestTargetChanged;
+        private readonly List<TargetToEntities> sortedTargets = new();
+        
         public override void StartExtension()
         {
+            Debug.Log("FOV START");
             fov.OnEnter += OnNewTargetAppear;
             fov.OnExit += OnTargetDisappear;
         }
@@ -23,16 +35,22 @@ namespace banging_code.ai.targeting
             fov.OnExit -= OnTargetDisappear;
         }
 
-        private void OnTargetDisappear(TargetToEntities other)
-        {
-            sortedTargets.Add(other);
-            sortedTargets.Sort();
-        }
-
         private void OnNewTargetAppear(TargetToEntities other)
         {
-             sortedTargets.Remove(other);
-             sortedTargets.Sort();           
+            Debug.Log($"NEW TARGET {other.name}");
+            var previousBest = BestTarget;
+            sortedTargets.Add(other);
+            sortedTargets.Sort();           
+            if(previousBest != BestTarget) OnBestTargetChanged?.Invoke(previousBest);
+        }
+
+        private void OnTargetDisappear(TargetToEntities other)
+        {
+            sortedTargets.Remove(other);
+            var previousBest = BestTarget;
+            sortedTargets.Sort();
+            
+            if(previousBest != BestTarget) OnBestTargetChanged?.Invoke(previousBest);
         }
     }
 }

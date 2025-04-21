@@ -86,6 +86,8 @@ namespace banging_code.ai.pathfinding
             PathNode current = endPathNode;
             List<Vector3> path = new List<Vector3>();
 
+            if (endPathNode.PreviousPathNode == null) return null;
+            
             do
             {
                 path.Add(new Vector3(current.Cell.Center.x, current.Cell.Center.y, 0));
@@ -171,13 +173,13 @@ namespace banging_code.ai.pathfinding
 
             public Vector3 Next()
             {
+                CurrentIndex++;
                 if (CurrentIndex >= Size)
                 {
                     Completed = true;
                     return Points.Last();
                 }
                 
-                CurrentIndex++;
                 return Points[CurrentIndex];
             }
         }

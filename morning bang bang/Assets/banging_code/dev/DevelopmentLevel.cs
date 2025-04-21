@@ -40,7 +40,7 @@ namespace banging_code.dev
 
             //4. spawn all enemies, npcs etc
             //5. spawn player
-            PlayerInstance = SpawnPlayer();
+            PlayerInstance = SpawnPlayerInstance();
             Modules.Get<CCamera>().SetTarget(PlayerInstance.transform);
 
             ItemPickUp testItem = new GameObject().AddComponent<ItemPickUp>();
@@ -55,12 +55,32 @@ namespace banging_code.dev
             InputService.EnterPlayerMode();
         }
 
+        protected override void PrepareLevel()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void GenerateLevelBase()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void ProcessGeneratedLevelSpawnContent()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void SpawnPlayer()
+        {
+            
+        }
+
         public override void UpdateScene()
         {
             Modules.UpdateModules();
         }
 
-        private RatPlayer SpawnPlayer()
+        private RatPlayer SpawnPlayerInstance()
         {
             Transform playerStuffContainer = new GameObject(G_O_NAMES.PLYR_STUFF).transform;
 
@@ -69,6 +89,16 @@ namespace banging_code.dev
 #endif
             
             return this.Fabric.Instantiate(GetPlayerPrefab(), GameObject.Find("[PLAYER START POINT]").transform.position, playerStuffContainer); 
+        }
+
+        protected override void SpawnUI()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override void FinishLevelSetup()
+        {
+            throw new System.NotImplementedException();
         }
 
         private RatPlayer GetPlayerPrefab() => Resources.Load<RatPlayer>("Dev/Dev Rat Prefab");

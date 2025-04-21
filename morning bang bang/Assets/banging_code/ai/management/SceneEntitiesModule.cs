@@ -55,7 +55,6 @@ namespace banging_code.ai.pathfinding
         {
             foreach (var entity in entities)
             {
-                Debug.Log(entity.IsSleeping);
                 entity.WakeUp();
             }
         }
@@ -76,7 +75,6 @@ namespace banging_code.ai.pathfinding
                 if (entities.Length > 0)
                 {
                     module.AddEntities(entities);
-                    Debug.Log(entities.Length);
                 }
             }
             public override void BeforeGameObjectDestroyed(GameObject instance)
