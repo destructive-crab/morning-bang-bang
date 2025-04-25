@@ -4,9 +4,13 @@ namespace MothDIed.Scenes.SceneModules
 {
     public sealed class SceneModulesManager
     {
+        //TODO: ADD INJECTIONS
+        
         private readonly Scene scene;
         private readonly ServiceLocator<SceneModule> modules = new();
 
+        public IServiceLocator IServiceLocator() => modules as IServiceLocator;
+        
         public SceneModulesManager(Scene scene)
         {
             this.scene = scene;

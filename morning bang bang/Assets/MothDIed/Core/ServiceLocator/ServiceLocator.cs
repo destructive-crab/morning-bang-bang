@@ -63,6 +63,12 @@ namespace MothDIed.ServiceLocators
         public ServiceLocator<TServiceBase> Register<TService>(TService service)
             where TService : TServiceBase
         {
+            if (services == null)
+            {
+                Debug.Log($"[SERVICE LOCATOR : REGISTER] TRYING TO REGISTER SERVICE {typeof(TService)} BUT INSTANCE IS NULL");
+                return this;
+            }
+
             if(services.TryAdd(typeof(TService), service))
             {
                 servicesList.Add(service);

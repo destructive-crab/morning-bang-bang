@@ -17,7 +17,7 @@ namespace banging_code.level.structure.map
         {
             if (instance is GameObject gameObject)
             {
-                var dyOb = gameObject.GetComponentInChildren<LevelMap.DynamicObstacle>();
+                var dyOb = gameObject.GetComponentInChildren<DynamicObstacle>();
 
                 if (dyOb != null)
                 {
@@ -30,7 +30,7 @@ namespace banging_code.level.structure.map
         {
             if (toDestroy is GameObject gameObject)
             {
-                 var dyOb = gameObject.GetComponentInChildren<LevelMap.DynamicObstacle>();
+                 var dyOb = gameObject.GetComponentInChildren<DynamicObstacle>();
  
                  if (dyOb != null)
                  {

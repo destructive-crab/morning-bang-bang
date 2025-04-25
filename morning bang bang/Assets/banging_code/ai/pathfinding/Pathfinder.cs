@@ -52,16 +52,18 @@ namespace banging_code.ai.pathfinding
             List<PathNode> nextPoints = new List<PathNode>();
 
             List<PathNode> visitedPoints = new List<PathNode>();
-            
-            PathNode startPathNode = new PathNode((int)start.x, (int)start.y, LevelMap.Get((int)start.x, (int)start.y));
-            PathNode endPathNode = new PathNode((int)end.x, (int)end.y,  LevelMap.Get((int)end.x, (int)end.y));
+
+            var startCell = LevelMap.Get(Mathf.RoundToInt(start.x), Mathf.RoundToInt(start.y));
+            PathNode startPathNode = new PathNode(startCell.Position.x, startCell.Position.y, startCell);
+            var endCell = LevelMap.Get(Mathf.RoundToInt(end.x), Mathf.RoundToInt(end.y));
+            PathNode endPathNode = new PathNode(endCell.Position.x, endCell.Position.y, endCell);
 
             PathNode currentPathNode = startPathNode;
 
             while (true)
             {
                 if (currentPathNode.X == endPathNode.X && currentPathNode.Y == endPathNode.Y)
-                    return RestorePath(currentPathNode);
+                    return RestorePath(currentPathNode, end);
 
                 List<PathNode> neighbourPoints = GetNeighbourPoints(currentPathNode, visitedPoints);
 
@@ -81,7 +83,7 @@ namespace banging_code.ai.pathfinding
             }
         }
 
-        private Path RestorePath(PathNode endPathNode)
+        private Path RestorePath(PathNode endPathNode, Vector2 endPosition)
         {
             PathNode current = endPathNode;
             List<Vector3> path = new List<Vector3>();
@@ -95,7 +97,16 @@ namespace banging_code.ai.pathfinding
             } while ((current.PreviousPathNode != null));
 
             path.Reverse();
+            path.Add(endPosition);
 
+            string pathDebug = "PATH: ";
+            
+            foreach (var point in path)
+            {
+                pathDebug += " | ";
+                pathDebug += point.ToString();
+            }
+            
             return new Path(path.ToArray());
         } 
         

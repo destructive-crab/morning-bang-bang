@@ -5,6 +5,7 @@ using banging_code.camera_logic;
 using banging_code.items;
 using banging_code.level.random_gen;
 using banging_code.common.rooms;
+using banging_code.level.light;
 using banging_code.level.structure.map;
 using banging_code.player_logic.rat;
 
@@ -29,9 +30,11 @@ namespace banging_code.level
             Hierarchy = Modules.AddModule(new LevelHierarchyModule());
             Modules.AddModule(new CCamera());
             Map = new TilemapBasedLevelMap(Modules.Get<LevelHierarchyModule>());
+            Modules.AddModule(new LevelMapCallbacksGameFabricModule(this));
             EntitiesController = Modules.AddModule(new SceneEntitiesModule());
             Modules.AddModule(new SceneEntitiesModule.EntityFabricModule(EntitiesController));
             Modules.AddModule(Map);
+            Modules.AddModule(new LightManager());
         }
 
         protected override void PrepareLevel()
@@ -48,7 +51,7 @@ namespace banging_code.level
             Modules.Get<LevelHierarchyModule>().SetupGeneratedLevelBase();
             Generator = new BasicGenerator(config, this);
 
-            Generator.Generate();
+            Hierarchy.Rooms = Generator.Generate();
             Map.Refresh();
         }
 
@@ -78,8 +81,7 @@ namespace banging_code.level
         {
             //7. activate enemies
             EntitiesController.InitializeAll();
-//            EntitiesController.GoSleepAll();
-            EntitiesController.WakeUpAll();
+            EntitiesController.GoSleepAll();
             
             //8. activate player
             PlayerInstance.Activate();

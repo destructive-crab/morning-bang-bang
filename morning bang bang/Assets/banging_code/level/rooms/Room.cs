@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using banging_code.common;
 using banging_code.editor.room_builder_tool;
 using banging_code.level.random_gen;
 using destructive_code.Tilemaps;
@@ -16,6 +15,27 @@ namespace banging_code.common.rooms
         [field: SerializeField] public PolygonCollider2D RoomShapeCollider { get; set; }
         [field: SerializeField] public bool IsBud { get; set; }
 
+        public string ID { get; private set; } = "";
+
+        public void GenerateID()
+        {
+            if(ID != "")
+            {
+                Debug.LogWarning("[ROOM : GENERATE ID] TRYING TO GENERATE ID OF A ROOM WHERE ID ALREADY GENERATED");
+                return;
+            }
+
+            ID += UnityEngine.Random.Range(0, 10);
+            ID += UnityEngine.Random.Range(0, 10);
+            ID += UnityEngine.Random.Range(0, 10);
+            ID += UnityEngine.Random.Range(0, 10);
+            
+            ID += UnityEngine.Random.Range(0, 10);
+            ID += UnityEngine.Random.Range(0, 10);
+            ID += UnityEngine.Random.Range(0, 10);
+            ID += UnityEngine.Random.Range(0, 10);
+        }
+        
         public Room[] Connections => connections.ToArray();
         private List<Room> connections = new();
 

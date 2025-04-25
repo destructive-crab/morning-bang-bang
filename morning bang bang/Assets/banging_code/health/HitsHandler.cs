@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 namespace banging_code.health
 {
@@ -19,10 +18,12 @@ namespace banging_code.health
                     break;
                 case StabHitData stabHitData:
                     who.TakeStabHit(stabHitData);
+                    break;                
+                case DumbHitData dumbHit:
+                    who.TakeDumbHit(dumbHit);
                     break;
             }
             
-            Debug.Log(who.gameObject.name + " was hit by " + from.GetType().ToString() + " on damage points " + from.DamageAmount);
             OnHit?.Invoke(who, from);
         } 
     }

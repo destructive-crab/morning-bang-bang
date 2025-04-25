@@ -24,7 +24,6 @@ namespace banging_code.ai.targeting
         
         public override void StartExtension()
         {
-            Debug.Log("FOV START");
             fov.OnEnter += OnNewTargetAppear;
             fov.OnExit += OnTargetDisappear;
         }
@@ -37,7 +36,6 @@ namespace banging_code.ai.targeting
 
         private void OnNewTargetAppear(TargetToEntities other)
         {
-            Debug.Log($"NEW TARGET {other.name}");
             var previousBest = BestTarget;
             sortedTargets.Add(other);
             sortedTargets.Sort();           

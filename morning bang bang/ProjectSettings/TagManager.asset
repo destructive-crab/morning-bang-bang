@@ -12,9 +12,9 @@ TagManager:
   - Water
   - UI
   - RoomBounds
-  - 
-  - 
-  - 
+  - Hitbox
+  - Entity
+  - Player
   - 
   - 
   - 

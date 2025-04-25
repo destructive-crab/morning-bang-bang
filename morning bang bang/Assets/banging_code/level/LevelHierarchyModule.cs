@@ -14,6 +14,8 @@ namespace banging_code.level
         public Tilemap FloorTilemap { get; private set; }
         public Tilemap ObstaclesTilemap { get; private set; }
 
+        public Room[] Rooms { get; set; }
+
         public void ClearGeneratedLevel()
         {
             GameObject.DestroyImmediate(LevelContainer.gameObject);
@@ -48,7 +50,7 @@ namespace banging_code.level
             globalObstaclesTilemapRenderer.sortingLayerName = "Default";
             globalObstaclesTilemapRenderer.sortingOrder = 3;
             globalObstaclesTilemapRenderer.sortOrder = TilemapRenderer.SortOrder.TopLeft;
-            globalObstaclesTilemapRenderer.mode = TilemapRenderer.Mode.Chunk;
+            globalObstaclesTilemapRenderer.mode = TilemapRenderer.Mode.Individual;
         }
     }
 }

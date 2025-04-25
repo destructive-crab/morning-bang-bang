@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c603c47bc0ce6a645be4efd7f9ab999f
+guid: 2b1a3ef3054ad534fb5ac74dc6371bdc
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -67,7 +67,7 @@ TextureImporter:
   swizzle: 50462976
   cookieLightType: 0
   platformSettings:
-  - serializedVersion: 4
+  - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -80,7 +80,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
+  - serializedVersion: 3
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -97,95 +97,48 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: dev_wall_down_0
+      name: bastard_hands_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 409
-        width: 512
-        height: 32
+        x: 24
+        y: 182
+        width: 197
+        height: 193
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 59f316441974b8e20800000000000000
-      internalID: 3353853036750520213
+      spriteID: 214ed42e89cd57c4e89db29dddb8b7fb
+      internalID: 1429873833
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: dev_wall_down_1
+      name: bastard_hands_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 512
-        height: 268
+        x: 654
+        y: 246
+        width: 172
+        height: 142
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b4c81d5f1ce29c630800000000000000
-      internalID: 3947737958954667083
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: dev_wall_down_2
-      rect:
-        serializedVersion: 2
-        x: 42
-        y: 262
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 03a4af962fda8dba0800000000000000
-      internalID: -6063905641582671312
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: dev_wall_down_3
-      rect:
-        serializedVersion: 2
-        x: 342
-        y: 261
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 86b26868d1dae16b0800000000000000
-      internalID: -5323627367182750872
+      spriteID: af6be6477268f934fb998cf27fda856a
+      internalID: -1757232863
       vertices: []
       indices: 
       edges: []
       weights: []
     outline: []
-    customData: 
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
@@ -195,13 +148,9 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    spriteCustomMetadata:
-      entries: []
     nameFileIdTable:
-      dev_wall_down_0: 3353853036750520213
-      dev_wall_down_1: 3947737958954667083
-      dev_wall_down_2: -6063905641582671312
-      dev_wall_down_3: -5323627367182750872
+      bastard_hands_0: 1429873833
+      bastard_hands_1: -1757232863
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

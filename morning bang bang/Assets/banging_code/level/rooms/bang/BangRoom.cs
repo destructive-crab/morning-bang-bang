@@ -1,10 +1,15 @@
 using System.Collections.Generic;
+using banging_code.ai;
+using banging_code.level.light;
+using MothDIed.DI;
 
 namespace banging_code.common.rooms
 {
     public class BangRoom : Room
     {
         public List<Moody> Moodys;
+
+        [Inject] private LightManager lightManager;
 
         //callbacks
         private IOnBreakIntoRoom[] onBreakIntoRoomSubs;
@@ -15,6 +20,16 @@ namespace banging_code.common.rooms
             {
                 onBreakIntoRoomSubs[i].OnBreak();
             }
+            
+            //???
+            var entities = GetComponentsInChildren<Entity>();
+
+            foreach (var entity in entities)
+            {
+                entity.WakeUp();
+            }
+            
+            lightManager.TurnOn(ID);
         }
 
         public override void ProcessContentInRoom()

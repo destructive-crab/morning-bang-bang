@@ -32,6 +32,10 @@ MonoBehaviour:
     - {fileID: 7694474421035019386, guid: f6b10ca243cc9d3439dd6e1ef92922d5, type: 3}
     - {fileID: 2781057996715794328, guid: 4a2a764736695b9429f5a5fb8e8c49b7, type: 3}
     - {fileID: 2507154442784806195, guid: 639452c99eb87434da2b48ef0fef1c6e, type: 3}
+    - {fileID: 291244895828584605, guid: 4a82ef513d401e44da9e7bf2e3c680b3, type: 3}
+    - {fileID: 291244895828584605, guid: cbe6bd07db7b22346bbbb08dea7ff97c, type: 3}
+    - {fileID: 291244895828584605, guid: 841508c3508214244a3f8d1663f150b4, type: 3}
+    - {fileID: 291244895828584605, guid: 4b015a7f695b08341aa08f29156a2089, type: 3}
     TreasureRooms:
     - {fileID: 4477063926345711946, guid: 6fa402f1e2992c74e8d2f77376a1c14b, type: 3}
     - {fileID: 4477063926345711946, guid: 1ceb4fbdb06f92f4b933f8775e38b647, type: 3}

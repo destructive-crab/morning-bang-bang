@@ -46,6 +46,7 @@ namespace banging_code.level.random_gen
             //callbacks
             for (var i = 0; i < spawnedRooms.Length; i++)
             {
+                spawnedRooms[i].GenerateID();
                 spawnedRooms[i].OnGenerationFinished();
             }
             

@@ -86,7 +86,5 @@ namespace banging_code.ai.pathfinding
                 Position = position;
             }
         }
-
-        public abstract class DynamicObstacle : MonoBehaviour { }
     }
 }

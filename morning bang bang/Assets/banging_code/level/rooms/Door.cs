@@ -9,13 +9,14 @@ namespace banging_code.common.rooms
 
         public void OnBreak()
         {
-            GetComponent<SpriteRenderer>().color = Color.magenta;
             Destroy(GetComponent<Collider2D>());
         }
 
         public void Interact()
         {
             InRoom.BreakIntoRoom(new BreakArg());
+            transform.Find("Closed").gameObject.SetActive(false);
+            transform.Find("Opened").gameObject.SetActive(true);
         }
 
         public void OnInteractorNear() { }

@@ -27,5 +27,10 @@ namespace banging_code.player_logic.rat
         {
             TakeHit(data);
         }
+
+        public override void TakeDumbHit(DumbHitData data)
+        {
+            TakeHit(data);
+        }
     }
 }
