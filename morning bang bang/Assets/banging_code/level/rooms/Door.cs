@@ -15,8 +15,18 @@ namespace banging_code.common.rooms
         public void Interact()
         {
             InRoom.BreakIntoRoom(new BreakArg());
-            transform.Find("Closed").gameObject.SetActive(false);
-            transform.Find("Opened").gameObject.SetActive(true);
+
+            PlayOpenAnimation();
+        }
+
+        private void PlayOpenAnimation()
+        {
+            var doors = GetComponentsInChildren<Animator>(true);
+
+            foreach (var door in doors)
+            {
+                door.enabled = true;
+            }
         }
 
         public void OnInteractorNear() { }
