@@ -77,5 +77,14 @@ namespace banging_code.common
             firstSocket.ConnectedWith = secondSocket;
             secondSocket.ConnectedWith = firstSocket;
         }
+        public static Vector3[] ConvertV2ToV3(Vector2[] input)
+        {
+            Vector3[] output = new Vector3[input.Length];
+            for(int i = 0; i < input.Length; i++)
+            {
+                output[i] = input[i];
+            }
+            return output;
+        }
     }
 }

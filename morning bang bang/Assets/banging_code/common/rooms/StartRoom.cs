@@ -11,10 +11,5 @@ namespace banging_code.common.rooms
             PlayerSpawnPoint = new GameObject("[PLAYER START POINT]").transform;
             PlayerSpawnPoint.transform.parent = transform;
         }
-
-        public override void ProcessContentInRoom()
-        {
-            base.ProcessContentInRoom();
-        }
     }
 }

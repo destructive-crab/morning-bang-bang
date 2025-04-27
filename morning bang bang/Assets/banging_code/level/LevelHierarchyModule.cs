@@ -38,7 +38,7 @@ namespace banging_code.level
             FloorTilemap.transform.parent = LevelGrid.transform;
 
             var globalFloorTilemapRenderer = FloorTilemap.GetComponent<TilemapRenderer>();
-            globalFloorTilemapRenderer.sortingLayerName = "Default";
+            globalFloorTilemapRenderer.sortingLayerName = "Floor";
             globalFloorTilemapRenderer.sortOrder = TilemapRenderer.SortOrder.TopLeft;
             
             //obstacles global map

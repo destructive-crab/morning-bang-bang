@@ -21,8 +21,8 @@ namespace banging_code.items
                 
                 switch (item)
                 {
-                    case MainItem:    passives.Add(item.ID); break;
-                    case PassiveItem: mains   .Add(item.ID); break;
+                    case MainItem:     passives.Add(item.ID); break;
+                    case PassiveItem:  mains   .Add(item.ID); break;
                 }
             }
             Name = name;

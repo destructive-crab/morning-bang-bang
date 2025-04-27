@@ -5,12 +5,101 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4849ab8a-b017-404e-910e-1744aa022006" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/EntityHealth.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/EntityHealth.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/common/rooms/FinalRoom.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/common/rooms/FinalRoom.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/level/rooms/DoorTrigger.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/level/rooms/DoorTrigger.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/rat/.Rat.png-autosave.kra" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/rat/.RatRun.png-autosave.kra" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/rat/.rat_hand_down_right.png-autosave.kra" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/CommuterBasementI.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/CommuterBasementI.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Editor/LevelBuildingTools/RoomBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Editor/LevelBuildingTools/RoomBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Editor/LevelBuildingTools/RoomBuilderFRESH.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Editor/LevelBuildingTools/RoomBuilderFRESH.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/DIKernel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/DIKernel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/Scenes/SceneModules/SceneModulesManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/Scenes/SceneModules/SceneModulesManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/ServiceLocator/ServiceLocator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/ServiceLocator/ServiceLocator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Project Configuration/Settings/UniversalRP.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Project Configuration/Settings/UniversalRP.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Dev/Bullet.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Dev/Bullet.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Dev/Dev Rat Prefab.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Dev/Dev Rat Prefab.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Levels/CommuterBasementIConfig.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Levels/CommuterBasementIConfig.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CCamera.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Prefabs/CCamera.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/.door_opening.kra-autosave.kra" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/development/.door.png-autosave.kra" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/ai/Entity.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/ai/Entity.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/bullets/Bullet.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/bullets/Bullet.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/camera logic/CCamera.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/camera logic/CCamera.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/camera logic/CCameraInstance.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/camera logic/CCameraInstance.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/common/UTLS.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/common/UTLS.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/common/consts/G_O_NAMES.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/common/consts/G_O_NAMES.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/common/rooms/StartRoom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/common/rooms/StartRoom.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/dev/LinesDrawer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/dev/LinesDrawer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/items/ItemsPool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/items/ItemsPool.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/CommuterBasement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/CommuterBasement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/LevelHierarchyModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/LevelHierarchyModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/light/LightManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/light/LightManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/random_gen/BasicGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/random_gen/BasicGenerator.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/rooms/Door.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/rooms/Door.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/rooms/bang/BangRoom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/rooms/bang/BangRoom.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/CommuterI FINAL ROOM BOTTOM.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/CommuterI FINAL ROOM BOTTOM.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/CommuterI FINAL ROOM LEFT.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/CommuterI FINAL ROOM LEFT.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/CommuterI FINAL ROOM RIGHT.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/CommuterI FINAL ROOM RIGHT.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/CommuterI FINAL ROOM TOP.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/CommuterI FINAL ROOM TOP.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_1.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_1.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_2.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_2.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_3.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_3.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_4.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_4.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_1.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_1.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_2.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_2.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_3.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_3.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_4.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_4.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_5.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_5.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_6.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_6.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_7.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_7.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_8.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/crdr/cm_b_crdr_8.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/BasicMovementSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/BasicMovementSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/BastardEntity.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/BastardEntity.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/content/dev/Door.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/Door.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/bastard/bastard.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/bastard/bastard.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Bottom Buisness.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Bottom Buisness.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Bottom Final.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Bottom Final.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Bottom Treasure.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Bottom Treasure.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Bottom.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Bottom.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Left Buisness.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Left Buisness.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Left Final.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Left Final.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Left Treasure.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Left Treasure.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Left.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Left.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room RIght Buisness.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room RIght Buisness.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room RIght Final.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room RIght Final.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room RIght Treasure.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room RIght Treasure.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room RIght.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room RIght.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Top Buisness.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Top Buisness.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Top Final.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Top Final.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Top Treasure.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Top Treasure.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Top.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/buds/BUD Room Top.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/crdr/Coridor Hor.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/crdr/Coridor Hor.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/crdr/Coridor HorBIG.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/crdr/Coridor HorBIG.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/crdr/Coridor HorVINT.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/crdr/Coridor HorVINT.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Hor Bot FLIP.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Hor Bot FLIP.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Hor Bot.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Hor Bot.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Hor Top FLIP.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Hor Top FLIP.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Hor Top.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Hor Top.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Left 3.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Left 3.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/crdr/Room TOPDOWN BIG VINT.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/crdr/Room TOPDOWN BIG VINT.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/crdr/Room TOPDOWN BIG.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/crdr/Room TOPDOWN BIG.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Z.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/crdr/Room Z.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/player animations/RatIdleDown.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/player animations/RatIdleDown.anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/player animations/RatIdleUp.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/player animations/RatIdleUp.anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/player animations/RatRunDown.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/player animations/RatRunDown.anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/dev/player animations/RatRunUp.anim" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/dev/player animations/RatRunUp.anim" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/items/Gun.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/items/Gun.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/items/GunInstance.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/items/GunInstance.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/rat/RatPlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/rat/RatPlayer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/Physics2DSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/Physics2DSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -61,6 +150,14 @@
   }
 }</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
+    <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
+      <option name="EXE_PATH" value="D:/builds/bang_bang_04/bangbang.exe" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="D:\builds\bang_bang_04" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <method v="2" />
+    </configuration>
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2022.3.61f1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath &quot;C:\Users\destructive_crab\dev\band-bang\morning bang bang&quot; -debugCodeOptimization" />

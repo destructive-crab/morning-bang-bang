@@ -1,6 +1,7 @@
 using banging_code.common.extensions;
 using banging_code.common;
 using banging_code.interactions;
+using banging_code.items;
 using banging_code.player_logic.standard;
 using banging_code.player_logic.states;
 using MothDIed;
@@ -48,7 +49,7 @@ namespace banging_code.player_logic.rat
         protected override void FinishInitialization()
         {
             Extensions.StartContainer();
-            Game.RunSystem.Data.Inventory.SetMainItem(null);
+            Game.RunSystem.Data.Inventory.SetMainItem(Game.RunSystem.Data.ItemsPool.GetNew("gun") as MainItem);
             
             EnterState(GetFactory<PlayerIdle>().GetState());
         }

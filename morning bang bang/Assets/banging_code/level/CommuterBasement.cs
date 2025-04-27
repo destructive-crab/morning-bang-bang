@@ -68,9 +68,6 @@ namespace banging_code.level
         {
             PlayerInstance = SpawnPlayerInstance();
             Modules.Get<CCamera>().SetTarget(PlayerInstance.transform);
-
-            ItemPickUp testItem = new GameObject().AddComponent<ItemPickUp>();
-            testItem.FromNew("Gun");
         }
 
         protected override void SpawnUI()
@@ -88,6 +85,8 @@ namespace banging_code.level
             
             //9. activate controls for player
             InputService.EnterPlayerMode();
+            
+            Modules.Get<CCamera>().EnterChillCamera();
         }
 
         public override void UpdateScene()

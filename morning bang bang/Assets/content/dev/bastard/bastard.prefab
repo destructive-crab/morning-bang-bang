@@ -430,8 +430,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5303087759706757380}
   - component: {fileID: 6215062266891808150}
-  - component: {fileID: 8574369901102511605}
+  - component: {fileID: 3781169631197915283}
   - component: {fileID: 6658834726276392773}
+  - component: {fileID: 8574369901102511605}
+  - component: {fileID: 267822086700062554}
   m_Layer: 0
   m_Name: bastard
   m_TagString: Untagged
@@ -469,7 +471,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 572c7f50b6544ff98a56eeb59b1faaf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deadBody: {fileID: 5576579033571887678, guid: a719089853b7d134a82f6e71debe998b, type: 3}
   CanMove: 1
+--- !u!114 &3781169631197915283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1762888135619496976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d180cfddb8f94fa2841ce595e0c4e099, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6658834726276392773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1762888135619496976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30bb3aa1fb504c99a9460967f255475a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!50 &8574369901102511605
 Rigidbody2D:
   serializedVersion: 4
@@ -496,19 +523,42 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
---- !u!114 &6658834726276392773
-MonoBehaviour:
+  m_Constraints: 4
+--- !u!58 &267822086700062554
+CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1762888135619496976}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30bb3aa1fb504c99a9460967f255475a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.11685908, y: 0.37924117}
+  serializedVersion: 2
+  m_Radius: 0.34345293
 --- !u!1 &3531639385973557278
 GameObject:
   m_ObjectHideFlags: 0

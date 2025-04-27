@@ -10,7 +10,8 @@ namespace banging_code.camera_logic
         /////////
 
         public Camera Camera;
-        public CinemachineCamera PlayerCamera;
+        public CinemachineCamera ChillCamera;
+        public CinemachineCamera BangCamera;
         
 
         private void Awake()
@@ -19,7 +20,6 @@ namespace banging_code.camera_logic
             else                         { Destroy(gameObject);    }
             
             Camera = GetComponentInChildren<Camera>();
-            PlayerCamera = GetComponentInChildren<CinemachineCamera>();
         }
     }
 }

@@ -9,6 +9,7 @@ namespace MothDIed.ServiceLocators
     {
         private readonly Dictionary<Type, TServiceBase> services = new ();
         private readonly List<TServiceBase> servicesList = new ();
+        public int Count => servicesList.Count;
 
         public TServiceBase[] GetAll() => servicesList.ToArray();
         

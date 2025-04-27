@@ -8,6 +8,7 @@ namespace MothDIed.Scenes.SceneModules
         
         private readonly Scene scene;
         private readonly ServiceLocator<SceneModule> modules = new();
+        public int Count => modules.Count;
 
         public IServiceLocator IServiceLocator() => modules as IServiceLocator;
         

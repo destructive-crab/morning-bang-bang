@@ -1,5 +1,5 @@
 using System;
-using banging_code.common;
+using banging_code.camera_logic;
 using banging_code.health;
 using MothDIed;
 using MothDIed.DI;
@@ -16,7 +16,8 @@ namespace banging_code.bullets
         public int damageAmount;
         
         [Inject] private HitsHandler hitsHandler;
-
+        [Inject] private CCamera camera;
+        
         public virtual BulletHitData GetHitData() => new BulletHitData(damageAmount);
 
         private void OnCollisionEnter2D(Collision2D other)
@@ -32,6 +33,7 @@ namespace banging_code.bullets
         {
             transform.Rotate(0, 0, MathF.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f);
             GetComponent<Rigidbody2D>().AddForce(direction * (multiplier * 10), ForceMode2D.Impulse);
+            camera.Shake(1, 0.1f);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace content.commuter_basement_I.entities.bastard
         [Inject] private Rigidbody2D rigidbody;
         [Inject] private Flipper flipper;
 
-        public float Speed = 10;
+        public float Speed = 7;
         
         private readonly Pathfinder pathfinder = new();
         private Pathfinder.Path currentPath;

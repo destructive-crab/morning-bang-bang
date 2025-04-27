@@ -32,7 +32,6 @@ namespace banging_code.dev
             lines.Last().endColor = color;
             lines.Last().startWidth = thikness;
             lines.Last().endWidth = thikness;
-            lines.Last().material = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
         }
 
         public void Clear()

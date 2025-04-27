@@ -30,6 +30,8 @@ namespace content.commuter_basement_I.entities.bastard
             CachedComponents.Register(GetComponentInChildren<EntityFieldOfView>());
             CachedComponents.Register(GetComponentInChildren<EntityAttackRange>());
             CachedComponents.Register(GetComponentInChildren<BastardBat>());
+            CachedComponents.Register(GetComponent<EntityHealth>());
+            Health = CachedComponents.Get<EntityHealth>();
 
             Extensions.AddExtension(new Flipper(true));
             Extensions.AddExtension(new BastardAnimator());
@@ -38,6 +40,7 @@ namespace content.commuter_basement_I.entities.bastard
             Extensions.AddExtension(new BastardAttackSystem());
             
             Extensions.StartContainer();
+            Health.OnDie += Die;
         }
 
         public override void WakeUp()

@@ -83,7 +83,7 @@ namespace MothDIed
                     }
                 }   
 
-                await UniTask.WaitForEndOfFrame();
+                await UniTask.Delay(50);
 
                 while (!Application.isPlaying)
                 {

@@ -2,6 +2,7 @@ namespace banging_code.common
 {
     public struct G_O_NAMES
     {
+        public const string COMMON_LAMP = "[COMMON LAMP]";
         public const string PLYR_STUFF = "[PLAYER STUFF]";
         public const string LEVEL_CONTAINER = "[GENERATED LEVEL]";
         public const string ROOM_CONTENT_ROOT = "[ROOM CONTENT ROOT]";

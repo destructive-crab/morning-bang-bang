@@ -18,6 +18,7 @@ namespace Editor.LevelBuildingTools
         }
 
         public List<Room> toEdit = new();
+        public bool clearAllLights = true;
         
          [Button]
          public void UpdateSockets()
@@ -40,6 +41,17 @@ namespace Editor.LevelBuildingTools
                   builder.EndEditing();
               }           
         }
+        [Button]
+        public void UpdateLamp()
+        {
+              foreach (var room in toEdit)
+              {
+                  builder.StartEditing(room);
+                  builder.CreateLamp(clearAllLights);
+                  builder.EndEditing();
+              }           
+        }
+        
         
         [Button]
         public void UpdateAll()

@@ -15,7 +15,7 @@ TagManager:
   - Hitbox
   - Entity
   - Player
-  - 
+  - PlayerProjectile
   - 
   - 
   - 
@@ -38,6 +38,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Floor
+    uniqueID: 2988020043
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using banging_code.common;
 using banging_code.level.random_gen;
 using banging_code.common.rooms;
+using banging_code.level.light;
 using destructive_code.Tilemaps;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Tilemaps;
 using Object = System.Object;
 
@@ -212,6 +214,10 @@ namespace banging_code.editor.room_builder_tool
                     if (obstaclesTilemap.HasTile(position))
                     {
                         _tempTilemap.SetTile(position, collisionTile);
+                    }                        
+                    else if (obstaclesTilemap.HasTile(position + Vector3Int.down) && !obstaclesTilemap.HasTile(position + Vector3Int.down + Vector3Int.down))
+                    {
+                        _tempTilemap.SetTile(position, collisionTile);
                     }
                 }
             }
@@ -268,7 +274,6 @@ namespace banging_code.editor.room_builder_tool
 
             while (true)
             {
-
                 // Add vertex to collider path
                 colliderPath.Add(vertices[nextVert]);
 
@@ -311,6 +316,32 @@ namespace banging_code.editor.room_builder_tool
             return polyCollider_roomBoundsCollider;
         }
 
+        public void CreateLamp(bool clearAllLights)
+        {
+            if(clearAllLights)
+            {
+                var lights = editingRoom.GetComponentsInChildren<BasementLamp>();
+
+                foreach (var controllableLight in lights)
+                {
+                    GameObject.DestroyImmediate(controllableLight.gameObject);
+                }
+            }
+            
+            var checkExistingLamp = editingRoom.transform.Find(G_O_NAMES.ROOM_CONTENT_ROOT).Find(G_O_NAMES.COMMON_LAMP);
+            if(checkExistingLamp != null) GameObject.DestroyImmediate(checkExistingLamp);
+            
+            var lamp = AssetDatabase.LoadAssetAtPath<Light2D>("Assets/Editor/LevelBuildingTools/Lamp.prefab");
+            var lampInstance = (PrefabUtility.InstantiatePrefab(lamp.gameObject) as GameObject).GetComponent<Light2D>();
+            
+            lampInstance.GameObject().transform.parent = editingRoom.transform.Find(G_O_NAMES.ROOM_CONTENT_ROOT);
+            lampInstance.gameObject.name = G_O_NAMES.COMMON_LAMP;
+
+            lampInstance.SetShapePath(UTLS.ConvertV2ToV3(editingRoom.RoomShapeCollider.points));
+        }
+        
+        
+      
         public void ReloadTilemaps()
         {
             if(editingRoom == null) return;

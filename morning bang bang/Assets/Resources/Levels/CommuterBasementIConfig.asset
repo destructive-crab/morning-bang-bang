@@ -26,15 +26,12 @@ MonoBehaviour:
     - {fileID: 5585692304253590829, guid: dc2d1405444bca94a98fc7a088badb3c, type: 3}
     - {fileID: 5585692304253590829, guid: a9b0cde57a735dc4d98f22958a677c73, type: 3}
     - {fileID: 5585692304253590829, guid: 9da7bf3c01ffd6048b6e9b98d5f8eeb3, type: 3}
-    - {fileID: 5585692304253590829, guid: 925850e98f580d74da1d5870b1620722, type: 3}
     GangRooms:
     - {fileID: 2992025817987453271, guid: c15bfac22bbce1043855fb6bbcd8edc0, type: 3}
     - {fileID: 7694474421035019386, guid: f6b10ca243cc9d3439dd6e1ef92922d5, type: 3}
     - {fileID: 2781057996715794328, guid: 4a2a764736695b9429f5a5fb8e8c49b7, type: 3}
     - {fileID: 2507154442784806195, guid: 639452c99eb87434da2b48ef0fef1c6e, type: 3}
     - {fileID: 291244895828584605, guid: 4a82ef513d401e44da9e7bf2e3c680b3, type: 3}
-    - {fileID: 291244895828584605, guid: cbe6bd07db7b22346bbbb08dea7ff97c, type: 3}
-    - {fileID: 291244895828584605, guid: 841508c3508214244a3f8d1663f150b4, type: 3}
     - {fileID: 291244895828584605, guid: 4b015a7f695b08341aa08f29156a2089, type: 3}
     TreasureRooms:
     - {fileID: 4477063926345711946, guid: 6fa402f1e2992c74e8d2f77376a1c14b, type: 3}

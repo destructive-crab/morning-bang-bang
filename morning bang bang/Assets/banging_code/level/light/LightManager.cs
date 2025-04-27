@@ -37,7 +37,7 @@ namespace banging_code.level.light
             {
                 var lights = room.GetComponentsInChildren<IControllableLight>();
 
-                if (room is Corridor)
+                if (room is Corridor || room is StartRoom || room is FinalRoom)
                 {
                     RegisterLightsAs("corridor", lights);
                 }

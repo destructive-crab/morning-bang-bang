@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using banging_code.common;
 using banging_code.common.rooms;
 using destructive_code.Tilemaps;
-using MothDIed;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -305,8 +304,8 @@ namespace banging_code.level.random_gen
             var resCount = collider.OverlapCollider(contactFilter, results);
             
             GameObject.Destroy(collider.gameObject);
-
-            return (resCount == 0) || (resCount == 1 && results.Contains(from.Owner.RoomShapeCollider));
+// || (resCount == 1 && results.Contains(from.Owner.RoomShapeCollider))
+            return (resCount == 0);
         }
 
         private Vector3 GetSpawnPositionFor(Room.ConnectSocket firstSocket, Room.ConnectSocket secondSocket, Vector3 centerPosition)

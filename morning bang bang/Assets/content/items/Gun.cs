@@ -9,7 +9,7 @@ namespace banging_code.items
     public class Gun : MainItem
     {
         [field: SerializeField] public Bullet BulletPrefab { get; private set; }
-        public override string ID { get; } = "Gun";
+        public override string ID => "gun";
 
 
         public override void PutOnPlayerInstance(PlayerRoot playerRoot)
