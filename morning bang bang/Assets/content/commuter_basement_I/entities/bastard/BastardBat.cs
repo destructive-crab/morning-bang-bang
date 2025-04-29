@@ -18,7 +18,6 @@ namespace content.commuter_basement_I.entities.bastard
             TriggerCollider().enabled = false;
         }
         
-        
         private void Start() => OnEnter += Hit;
 
         private void Hit(HitableBody hitableBody)

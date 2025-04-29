@@ -98,14 +98,6 @@ namespace banging_code.ai.pathfinding
 
             path.Reverse();
             path.Add(endPosition);
-
-            string pathDebug = "PATH: ";
-            
-            foreach (var point in path)
-            {
-                pathDebug += " | ";
-                pathDebug += point.ToString();
-            }
             
             return new Path(path.ToArray());
         } 

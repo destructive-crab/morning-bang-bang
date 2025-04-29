@@ -1,3 +1,4 @@
+using System;
 using banging_code.bullets;
 using banging_code.common;
 using MothDIed;
@@ -9,12 +10,18 @@ namespace banging_code.items
     {
         public Bullet bulletPrefab;
         public Transform firePoint;
-        
+        private Animator gunAnimator;
+
+        private void Awake()
+        {
+            gunAnimator = GetComponent<Animator>();
+        }
+
         private void Update()
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log("BANG BANG");
+//                gunAnimator.Play("GunAnimation");
                 SpawnBullet();
             }
         }

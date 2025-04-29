@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5710337443484176552}
   - component: {fileID: 5759779490768089282}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Light 2D
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 2643514419544472930}
   - component: {fileID: 1914605533561984609}
   - component: {fileID: 7109997327179317614}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,6 +194,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageAmount: 2
+  hitEffect: {fileID: 4927245060047738088, guid: ddbe14219f5c43b488061bc1478de42b, type: 3}
 --- !u!212 &1914605533561984609
 SpriteRenderer:
   m_ObjectHideFlags: 0

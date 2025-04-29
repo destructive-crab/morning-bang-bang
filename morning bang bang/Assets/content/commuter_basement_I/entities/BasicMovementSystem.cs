@@ -2,7 +2,6 @@ using System.Collections;
 using banging_code.ai.pathfinding;
 using banging_code.ai.targeting;
 using banging_code.common;
-using banging_code.dev;
 using MothDIed.DI;
 using MothDIed.ExtensionSystem;
 using UnityEngine;
@@ -23,20 +22,15 @@ namespace content.commuter_basement_I.entities.bastard
         private const float PATH_UPDATE_RATE = 0.01f;
         private Coroutine pathUpdateCoroutine;
 
-        private LinesDrawer linesDrawer;
-
-        public override void StartExtension()
-        {
-            linesDrawer = new LinesDrawer(Owner.transform);
-        }
-
         public void StartMoving()
         {
-            if(targetSelector.BestTarget == null)
-            {
-                Debug.LogWarning("[BASIC ENTITY TO TARGET MOVEMENT : START MOVING] CAN NOT START MOVING WHEN THERE IS NO TARGET");
-                return;
-            }
+#if UNITY_EDITOR
+             if(targetSelector.BestTarget == null)
+             {
+                 Debug.LogWarning("[BASIC ENTITY TO TARGET MOVEMENT : START MOVING] CAN NOT START MOVING WHEN THERE IS NO TARGET");
+                 return;
+             }           
+#endif
 
             currentPath = pathfinder.FindPath(Owner.transform.position, targetSelector.BestTarget.Position);
             pathUpdateCoroutine = Owner.StartCoroutine(UpdatePath());
@@ -44,12 +38,13 @@ namespace content.commuter_basement_I.entities.bastard
 
         public void StopMoving()
         {
+#if UNITY_EDITOR
             if (currentPath == null)
             {                
                 Debug.LogWarning("[BASIC ENTITY TO TARGET MOVEMENT : STOP MOVING] ENTITY IS NOT MOVING");
                 return;
             }
-            
+#endif
             Owner.StopCoroutine(pathUpdateCoroutine);
             currentPath = null;
         }
@@ -83,10 +78,6 @@ namespace content.commuter_basement_I.entities.bastard
                 currentPath = pathfinder.FindPath(Owner.transform.position, targetSelector.BestTarget.Position);
 
                 if (currentPath == null) continue;
-                
-                linesDrawer.Clear();
-                linesDrawer.Draw(Color.green, 0.1f, new []{Owner.transform.position, currentPath.Points[0]});
-                linesDrawer.Draw(Color.green, 0.1f, currentPath.Points);
             }
         }
         
