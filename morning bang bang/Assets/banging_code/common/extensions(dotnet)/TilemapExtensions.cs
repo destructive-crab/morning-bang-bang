@@ -56,6 +56,30 @@ namespace destructive_code.Tilemaps
 
             return result;
         }
+
+        public static bool HasTileAround(this Tilemap tilemap, Vector3Int position)
+        {
+            // Define the 8 possible neighbor offsets
+            Vector3Int[] neighborOffsets = new Vector3Int[]
+            {
+                new Vector3Int(-1,  0, 0), // Left
+                new Vector3Int( 1,  0, 0), // Right
+                new Vector3Int( 0,  1, 0), // Up
+                new Vector3Int( 0, -1, 0), // Down
+                new Vector3Int(-1,  1, 0), // Up-Left
+                new Vector3Int( 1,  1, 0), // Up-Right
+                new Vector3Int(-1, -1, 0), // Down-Left
+                new Vector3Int( 1, -1, 0)  // Down-Right
+            };
+
+            foreach (var offset in neighborOffsets)
+            {
+                Vector3Int neighborPos = position + offset;
+                if (tilemap.GetTile(neighborPos) != null)
+                    return true;
+            }
+            return false;
+        }
         
         //will expand each side on n cells
         public static void Expand(this Tilemap tilemap, int n)

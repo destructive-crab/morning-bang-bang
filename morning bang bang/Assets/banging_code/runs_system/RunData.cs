@@ -1,3 +1,4 @@
+using System;
 using banging_code.inventory;
 using banging_code.items;
 using banging_code.level;
@@ -13,6 +14,7 @@ namespace banging_code.runs_system
         public PlayerHealth PlayerHealth { get; private set; } = new();
         public float Speed { get; set; } = 4;
         public float DamageMultiplier { get; set; } = 1;
+        public int Money { get; set; } = 3;
 
         public RunData(GameItem[] items)
         {
@@ -22,14 +24,10 @@ namespace banging_code.runs_system
 
     public class PlayerHealth
     {
-        public int CurrentHealth { get; private set; }
-        public int MaximumHealth { get; private set; }
+        public int CurrentHealth { get; private set; } = 10;
+        public int MaximumHealth { get; private set; } = 10;
 
-        public PlayerHealth()
-        {
-            CurrentHealth = 10;
-            MaximumHealth = 10;
-        }
+        public event Action<int, int> OnChanged;
 
         public void Add(int current, int maximum)
         {
@@ -37,6 +35,8 @@ namespace banging_code.runs_system
             MaximumHealth += maximum;
 
             if (CurrentHealth > maximum) CurrentHealth = maximum;
+            
+            OnChanged?.Invoke(CurrentHealth, MaximumHealth);
         }
 
         public bool Remove(int current, int maximum)
@@ -47,6 +47,7 @@ namespace banging_code.runs_system
             if (CurrentHealth > MaximumHealth) CurrentHealth = maximum;
             if (CurrentHealth <= 0) return true;
 
+            OnChanged?.Invoke(CurrentHealth, MaximumHealth);
             return false;
         }
     }

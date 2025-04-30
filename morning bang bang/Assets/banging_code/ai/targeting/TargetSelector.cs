@@ -38,17 +38,18 @@ namespace banging_code.ai.targeting
         {
             var previousBest = BestTarget;
             sortedTargets.Add(other);
-            sortedTargets.Sort();           
-            if(previousBest != BestTarget) OnBestTargetChanged?.Invoke(previousBest);
+            if(sortedTargets.Count > 1) sortedTargets.Sort();           
+            if(previousBest != BestTarget) OnBestTargetChanged?.Invoke(BestTarget);
         }
 
         private void OnTargetDisappear(TargetToEntities other)
         {
-            sortedTargets.Remove(other);
             var previousBest = BestTarget;
+            
+            sortedTargets.Remove(other);
             sortedTargets.Sort();
             
-            if(previousBest != BestTarget) OnBestTargetChanged?.Invoke(previousBest);
+            if(previousBest != BestTarget) OnBestTargetChanged?.Invoke(BestTarget);
         }
     }
 }

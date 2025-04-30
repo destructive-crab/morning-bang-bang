@@ -62,6 +62,7 @@ namespace Editor.LevelBuildingTools
                   
                   builder.CreateRoomSockets();
                   builder.CreateRoomShapeCollider();
+                  builder.CreateLamp(clearAllLights);
                   
                   builder.EndEditing();
               }           

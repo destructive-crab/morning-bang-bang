@@ -1,6 +1,7 @@
 using System;
 using banging_code.common;
 using banging_code.player_logic.states;
+using MothDIed;
 using MothDIed.DI;
 using MothDIed.InputsHandling;
 using UnityEngine;
@@ -19,14 +20,14 @@ namespace banging_code.player_logic.standard
         public override void FixedUpdate(PlayerRoot playerRoot)
         {
             animator.PlayRun(1);
-            rigidbody2D.velocity = InputService.Movement * 4;
+            rigidbody2D.velocity = InputService.Movement * Game.RunSystem.Data.Speed;
             Movement = InputService.Movement;
 
-            if (Movement.x > 0) playerRoot.Direction = GameDirection.Right;
-            else if (Movement.x < 0) playerRoot.Direction = GameDirection.Left;
+            if (Movement.x > 0) playerRoot.SetDirection(GameDirection.Right);
+            else if (Movement.x < 0) playerRoot.SetDirection(GameDirection.Left);
             
-            if (Movement.y > 0) playerRoot.Direction = GameDirection.Top;
-            else if (Movement.y < 0) playerRoot.Direction = GameDirection.Bottom;
+            if (Movement.y > 0) playerRoot.SetDirection(GameDirection.Top);
+            else if (Movement.y < 0) playerRoot.SetDirection(GameDirection.Bottom);
         }
     }
 }

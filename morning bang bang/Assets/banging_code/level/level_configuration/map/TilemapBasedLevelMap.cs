@@ -43,16 +43,5 @@ namespace banging_code.level.structure.map
                 this.UpdateCell(new Vector2Int((int)pos.x, (int)pos.y));
             }
         }
-
-        public override void UpdateModule(Scene scene)
-        {
-            foreach (var dynamicObstacle in dynamicObstacles)
-            {
-                Vector2Int cellPos = new Vector2Int((int)dynamicObstacle.transform.position.x,
-                    (int)dynamicObstacle.transform.position.y);
-
-                if (map.ContainsKey(cellPos)) map[cellPos].Other = dynamicObstacle;
-            }
-        }
     }
 }

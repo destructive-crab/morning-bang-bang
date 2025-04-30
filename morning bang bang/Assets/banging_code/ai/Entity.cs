@@ -1,4 +1,5 @@
 using banging_code.common.rooms;
+using MothDIed;
 using UnityEngine;
 
 namespace banging_code.ai
@@ -36,7 +37,7 @@ namespace banging_code.ai
 
         protected void Die(Entity entity)
         {
-            GameObject.Instantiate(deadBody);
+            Game.CurrentScene.Fabric.Instantiate(deadBody, transform.position);
             Destroy(gameObject);
         }
 

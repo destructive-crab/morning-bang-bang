@@ -14,7 +14,7 @@ namespace banging_code.items
 
         public override void PutOnPlayerInstance(PlayerRoot playerRoot)
         {
-            Game.RunSystem.Data.Level.PlayerInstance.Extensions.Get<PlayerHands>().EnableItem<GunInstance>().bulletPrefab = BulletPrefab;
+            Game.RunSystem.Data.Level.PlayerInstance.Extensions.Get<PlayerHands>().EnableItem<GunInstance>();
         }
 
         public override void OnDropped(ItemPickUp itemPickUp)

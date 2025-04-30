@@ -12,7 +12,8 @@ namespace banging_code.camera_logic
         public Camera Camera;
         public CinemachineCamera ChillCamera;
         public CinemachineCamera BangCamera;
-        
+        public CinemachineCamera BuisnessCamera;
+
 
         private void Awake()
         {

@@ -60,7 +60,7 @@ namespace banging_code.ai.pathfinding
 
             PathNode currentPathNode = startPathNode;
 
-            while (true)
+            do
             {
                 if (currentPathNode.X == endPathNode.X && currentPathNode.Y == endPathNode.Y)
                     return RestorePath(currentPathNode, end);
@@ -69,18 +69,21 @@ namespace banging_code.ai.pathfinding
 
                 foreach (PathNode point in neighbourPoints)
                 {
-                    point.SetCosts(currentPathNode.G + DefineGCost(currentPathNode, point), Heuristic(point, endPathNode));
+                    point.SetCosts(currentPathNode.G + DefineGCost(currentPathNode, point),
+                        Heuristic(point, endPathNode));
                     point.SetPreviousPoint(currentPathNode);
                     nextPoints.Add(point);
 
                     visitedPoints.Add(point);
                 }
-                
+
                 nextPoints.Sort(new PointComparer());
 
                 currentPathNode = nextPoints[0];
                 nextPoints.Remove(currentPathNode);
-            }
+            } while (nextPoints.Count > 0);
+
+            return null;
         }
 
         private Path RestorePath(PathNode endPathNode, Vector2 endPosition)

@@ -17,6 +17,16 @@ namespace banging_code.items
             gunAnimator = GetComponent<Animator>();
         }
 
+        private void OnEnable()
+        {
+            var gun = (Game.RunSystem.Data.Inventory.Main as Gun);
+
+            if (gun != null)
+            {
+                bulletPrefab = gun.BulletPrefab;
+            }
+        }
+
         private void Update()
         {
             if (Input.GetMouseButtonDown(0))

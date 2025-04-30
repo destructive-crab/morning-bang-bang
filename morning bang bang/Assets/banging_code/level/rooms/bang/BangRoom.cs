@@ -11,9 +11,16 @@ namespace banging_code.common.rooms
         public List<Moody> Moodys;
         private List<Entity> entities = new();
 
-        [Inject] private LightManager lightManager;
+        private LightManager lightManager;
         [Inject] private CCamera camera;
 
+        [Inject]
+        private void InjectLightManager(LightManager lightManager)
+        {
+            this.lightManager = lightManager;
+            lightManager.TurnOn(ID);
+        }
+        
         //callbacks
         private IOnBreakIntoRoom[] onBreakIntoRoomSubs;
         

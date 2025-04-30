@@ -18,7 +18,7 @@ namespace banging_code.ai.pathfinding
         {
             foreach (var entity in entities)
             {
-                if (entity.IsSleeping) entity.Tick();
+                if (!entity.IsSleeping) entity.Tick();
             }
         }
 

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b3ab150bca47daa7b614af1be2f638, type: 3}
   m_Name: Gun
   m_EditorClassIdentifier: 
+  Cost: 12
   ItemIcon: {fileID: 21300000, guid: 57b2439a0bbc1a94bb91c34e196d6997, type: 3}
   InstanceSprite: {fileID: 21300000, guid: 57b2439a0bbc1a94bb91c34e196d6997, type: 3}
   <BulletPrefab>k__BackingField: {fileID: 2643514419544472930, guid: 57773a759452a9b47ad57694dd9e077c, type: 3}

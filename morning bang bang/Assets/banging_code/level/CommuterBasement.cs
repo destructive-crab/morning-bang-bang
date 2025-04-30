@@ -36,12 +36,7 @@ namespace banging_code.level
             Modules.AddModule(Map);
             Modules.AddModule(new LightManager());
         }
-
-        protected override void PrepareLevel()
-        {
-            
-        }
-
+        protected override void PrepareLevel() { }
         protected override void GenerateLevelBase()
         {
             //2. collect level data(rooms, enemies etc)

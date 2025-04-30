@@ -12,6 +12,11 @@ namespace banging_code.player_logic
         public PlayerState CurrentState { get; private set; }
         public GameDirection Direction;
 
+        public virtual void SetDirection(GameDirection direction)
+        {
+            Direction = direction;
+        }
+
         public PlayerIdle Idle => CurrentState as PlayerIdle;
         public PlayerMove Moving => CurrentState as PlayerMove;
         public PlayerRoll Rolling => CurrentState as PlayerRoll;

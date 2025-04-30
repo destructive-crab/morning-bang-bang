@@ -110,7 +110,7 @@ namespace MothDIed.DI
             
             if(coreContainer.Count > 0) locators.Add(coreContainer);
             if(sceneContainer != null)  locators.Add(sceneContainer);
-            if(Game.CurrentScene.Modules.Count > 0)  locators.Add(Game.CurrentScene.Modules.IServiceLocator());
+            if(Game.IsSceneLoaded && Game.CurrentScene.Modules.Count > 0)  locators.Add(Game.CurrentScene.Modules.IServiceLocator());
 
             InjectWith(toInject, locators.ToArray());
         }

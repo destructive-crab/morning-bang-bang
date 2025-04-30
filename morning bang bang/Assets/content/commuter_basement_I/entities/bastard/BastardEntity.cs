@@ -17,7 +17,7 @@ namespace content.commuter_basement_I.entities.bastard
 
         public override void GoSleep()
         {
-            
+            base.GoSleep();
         }
 
         public override void Initialize()
@@ -45,10 +45,12 @@ namespace content.commuter_basement_I.entities.bastard
 
         public override void WakeUp()
         {
-            Extensions.Get<TargetSelector>().OnBestTargetChanged += (_) =>
-            {
-                StartMoving();
-            };
+            base.WakeUp();
+//            Extensions.Get<TargetSelector>().OnBestTargetChanged += (_) =>
+//            {
+//                StartMoving();
+//            };
+            CanMove = true;
             CachedComponents.Get<EntityAttackRange>().OnEnter += (other) =>
             {
                 if (other == Extensions.Get<TargetSelector>().BestTarget)
@@ -72,12 +74,14 @@ namespace content.commuter_basement_I.entities.bastard
             Extensions.Get<BasicMovementSystem>().StopMoving();
             yield return StartCoroutine(Extensions.Get<BastardAttackSystem>().TryAttack());
             CanMove = true;
-            StartMoving();
         }
 
         public override void Tick()
         {
-            
+            if (Extensions.Get<TargetSelector>().BestTarget != null && CanMove && !Extensions.Get<BasicMovementSystem>().IsMoving)
+            {
+                StartMoving();
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using banging_code.common;
+using banging_code.player_logic;
 using Cysharp.Threading.Tasks;
 using MothDIed;
 using MothDIed.Scenes;
@@ -28,21 +29,15 @@ namespace banging_code.camera_logic
 
         public void EnterBangCamera(PolygonCollider2D roomCollider)
         {
-            if(current != null) current.gameObject.SetActive(false);
-            
-            current = instance.BangCamera;
+            SwitchCamera(instance.BangCamera);
             current.Follow = currentTarget;
             current.GetComponent<CinemachineConfiner2D>().BoundingShape2D = roomCollider;
-            current.gameObject.SetActive(true);
         }
         
         public void EnterChillCamera()
         {
-            if(current != null) current.gameObject.SetActive(false);
-            
-            current = instance.ChillCamera;
+            SwitchCamera(instance.ChillCamera);
             current.Follow = currentTarget;
-            current.gameObject.SetActive(true);
         }
         public async void Shake(float intensity, float time)
         {
@@ -63,6 +58,30 @@ namespace banging_code.camera_logic
             
             CCameraInstance prefab = Resources.Load<CCameraInstance>(PTH.CCameraInstance);
             instance = Game.CurrentScene.Fabric.Instantiate(prefab, Vector2.zero, null);
+        }
+
+        public void EnterBuisnessCamera(params Transform[] targets)
+        {
+            SwitchCamera(instance.BuisnessCamera);
+            CinemachineTargetGroup targetGroup = current.GetComponent<CinemachineTargetGroup>();
+            targetGroup.Targets.Clear();
+
+            foreach (var target in targets)
+            {
+                var newTarget = new CinemachineTargetGroup.Target();
+                newTarget.Object = target;
+
+                if (target.GetComponent<PlayerRoot>()) newTarget.Weight = 0.2f;
+                
+                targetGroup.Targets.Add(newTarget);
+            }
+        }
+
+        public void SwitchCamera(CinemachineVirtualCameraBase to)
+        {
+            if(current != null) current.gameObject.SetActive(false);
+            current = to;
+            current.gameObject.SetActive(true);
         }
     }
 }

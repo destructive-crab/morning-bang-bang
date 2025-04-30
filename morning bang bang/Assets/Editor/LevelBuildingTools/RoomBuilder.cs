@@ -169,6 +169,7 @@ namespace banging_code.editor.room_builder_tool
 
         public PolygonCollider2D CreateRoomShapeCollider()
         {
+            const string TEMP_COLLIDER_TILEMAP = "TEMP TM COLLIDER";
             TilemapCollider2D _tilemapCollider;
             Mesh _roomMesh;
             PolygonCollider2D polyCollider_roomBoundsCollider =
@@ -195,7 +196,7 @@ namespace banging_code.editor.room_builder_tool
                         "Assets/Editor/LevelBuildingTools/CollisionTile.asset");
                 var grid = editingRoom.transform.Find(G_O_NAMES.ROOM_CONTENT_ROOT).GetComponentInChildren<Grid>();
 
-                var _tempTilemap = new GameObject("TEMP TM COLLIDER").AddComponent<Tilemap>();
+                var _tempTilemap = new GameObject(TEMP_COLLIDER_TILEMAP).AddComponent<Tilemap>();
                 _tilemapCollider = _tempTilemap.gameObject.AddComponent<TilemapCollider2D>();
                 _tempTilemap.gameObject.AddComponent<TilemapRenderer>();
                 _tempTilemap.transform.SetParent(grid.transform);
@@ -208,17 +209,13 @@ namespace banging_code.editor.room_builder_tool
                         _tempTilemap.SetTile(position, collisionTile);
                     }
                 }
-
+                obstaclesTilemap.Expand(1);
                 foreach (var position in obstaclesTilemap.cellBounds.allPositionsWithin)
                 {
-                    if (obstaclesTilemap.HasTile(position))
+                    if (obstaclesTilemap.HasTileAround(position))
                     {
                         _tempTilemap.SetTile(position, collisionTile);
                     }                        
-                    else if (obstaclesTilemap.HasTile(position + Vector3Int.down) && !obstaclesTilemap.HasTile(position + Vector3Int.down + Vector3Int.down))
-                    {
-                        _tempTilemap.SetTile(position, collisionTile);
-                    }
                 }
             }
 
@@ -227,7 +224,10 @@ namespace banging_code.editor.room_builder_tool
                 _tilemapCollider.useDelaunayMesh = true;
                 _roomMesh = _tilemapCollider.CreateMesh(true, true);
 
-                UnityEditor.Editor.DestroyImmediate(_tilemapCollider.gameObject);
+                while (editingRoom.transform.Find(G_O_NAMES.ROOM_CONTENT_ROOT).Find(TEMP_COLLIDER_TILEMAP) != null)
+                {
+                    GameObject.DestroyImmediate(editingRoom.transform.Find(G_O_NAMES.ROOM_CONTENT_ROOT).Find(TEMP_COLLIDER_TILEMAP).gameObject); 
+                }
             }
 
             //some polygon generation code from WWW (idont understand it): 
@@ -320,7 +320,7 @@ namespace banging_code.editor.room_builder_tool
         {
             if(clearAllLights)
             {
-                var lights = editingRoom.GetComponentsInChildren<BasementLamp>();
+                var lights = editingRoom.GetComponentsInChildren<Light2D>();
 
                 foreach (var controllableLight in lights)
                 {
@@ -329,7 +329,7 @@ namespace banging_code.editor.room_builder_tool
             }
             
             var checkExistingLamp = editingRoom.transform.Find(G_O_NAMES.ROOM_CONTENT_ROOT).Find(G_O_NAMES.COMMON_LAMP);
-            if(checkExistingLamp != null) GameObject.DestroyImmediate(checkExistingLamp);
+            if(checkExistingLamp != null) GameObject.DestroyImmediate(checkExistingLamp.gameObject);
             
             var lamp = AssetDatabase.LoadAssetAtPath<Light2D>("Assets/Editor/LevelBuildingTools/Lamp.prefab");
             var lampInstance = (PrefabUtility.InstantiatePrefab(lamp.gameObject) as GameObject).GetComponent<Light2D>();

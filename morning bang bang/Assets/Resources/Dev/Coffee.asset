@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86f5c33fd4b749d68462f0535033bb99, type: 3}
   m_Name: Coffee
   m_EditorClassIdentifier: 
+  Cost: 3
   ItemIcon: {fileID: 21300000, guid: 93d71123b71d81142919beeb1943c6e9, type: 3}
   InstanceSprite: {fileID: 21300000, guid: 93d71123b71d81142919beeb1943c6e9, type: 3}

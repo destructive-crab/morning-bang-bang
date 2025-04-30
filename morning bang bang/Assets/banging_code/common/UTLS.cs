@@ -29,7 +29,6 @@ namespace banging_code.common
 
             var result = array[Random.Range(from, to)];
             
-            
             for(int i = 0; reroll.Invoke(result); i++)
             {
                 if (i > array.Length * 2)

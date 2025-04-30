@@ -6,6 +6,7 @@ namespace banging_code.items
 {
     public sealed class ItemsPool
     {
+        public string[] AllIDs => all.Keys.ToArray();
         public GameItem[] All => all.Values.ToArray();
         private Dictionary<string, GameItem> all = new();
 

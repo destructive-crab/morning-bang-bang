@@ -15,11 +15,6 @@ namespace banging_code.level.light
         {
             base.StartModule(scene);
             CollectAllLightsFromLevel();
-
-            foreach (var key in lights.Keys)
-            {
-                TurnOff(key);
-            }
             
             TurnOn("corridor");
         }

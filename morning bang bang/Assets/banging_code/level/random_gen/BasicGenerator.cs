@@ -97,7 +97,7 @@ namespace banging_code.level.random_gen
                     switch (socket.Purpose)
                     {
                         case Room.ConnectSocket.SocketPurpose.Corridor: pool = config.Coridors; break;
-                        case Room.ConnectSocket.SocketPurpose.Bud:      pool = config.GetPool(map[recordedCount]); break;
+                        case Room.ConnectSocket.SocketPurpose.Bud:       pool = config.GetPool(map[recordedCount]); break;
                         default: throw new ArgumentOutOfRangeException();
                     }
 
@@ -282,10 +282,10 @@ namespace banging_code.level.random_gen
         {
             switch (direction)
             {
-                case GameDirection.Left:   position += new Vector3(-2, 0, 0); break;
-                case GameDirection.Right:  position += new Vector3(2, 0, 0);  break;
-                case GameDirection.Top:    position += new Vector3(0, 2, 0);  break;
-                case GameDirection.Bottom: position += new Vector3(0, -2, 0); break;
+                case GameDirection.Left:   position += new Vector3(-3, 0, 0); break;
+                case GameDirection.Right:  position += new Vector3(3, 0, 0);  break;
+                case GameDirection.Top:    position += new Vector3(0, 3, 0);  break;
+                case GameDirection.Bottom: position += new Vector3(0, -3, 0); break;
             }
             
             Collider2D collider = GameObject

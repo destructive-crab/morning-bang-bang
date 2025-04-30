@@ -14,6 +14,10 @@ namespace banging_code.player_logic.rat
     [RequireComponent(typeof(Collider2D))]
     public class RatPlayer : PlayerRoot
     {
+        public Transform sideRoot;
+        public Transform upRoot;
+        public Transform downRoot;
+        
         protected override void InitializeComponents()
         {
             //physics
@@ -37,7 +41,13 @@ namespace banging_code.player_logic.rat
             
             //addons
             Extensions.AddExtension(new Interactor());
-            Extensions.AddExtension(new PlayerHands(transform));
+            var hands = new PlayerHands();
+
+            hands.SetSideRoot(sideRoot);
+            hands.SetUpRoot(upRoot);
+            hands.SetDownRoot(downRoot);
+            
+            Extensions.AddExtension(hands);
         }
 
         protected override void InitializeStates()
@@ -64,6 +74,13 @@ namespace banging_code.player_logic.rat
             {
                 EnterState(GetFactory<PlayerIdle>().GetState());
             }
+        }
+
+        public override void SetDirection(GameDirection direction)
+        {
+            base.SetDirection(direction);
+
+            Extensions.Get<PlayerHands>().RotateTo(direction);
         }
     }
 }

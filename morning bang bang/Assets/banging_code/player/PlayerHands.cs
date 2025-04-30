@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using banging_code.common;
 using banging_code.items;
 using MothDIed.ExtensionSystem;
 using UnityEngine;
@@ -8,39 +9,97 @@ namespace banging_code.player_logic
 {
     public class PlayerHands : Extension
     {
-        private Transform root;
-        private Dictionary<Type, InHandsItemInstance> collectedFromRoot = new();
+        private Transform currentRoot;
+        
+        private Transform sideRoot;
+        private Transform upRoot;
+        private Transform downRoot;
+        
+        private Dictionary<Type, List<InHandsItemInstance>> collectedFromRoot = new();
         private Type current;
 
-        public PlayerHands(Transform root)
+        public override void StartExtension()
         {
-            this.root = root;
-
-            InHandsItemInstance[] foundItems = this.root.GetComponentsInChildren<InHandsItemInstance>(true);
+            base.StartExtension();
+            
+            InHandsItemInstance[] foundItems = Owner.transform.GetComponentsInChildren<InHandsItemInstance>(true);
 
             foreach (InHandsItemInstance itemInstance in foundItems)
             {
-                collectedFromRoot.Add(itemInstance.GetType(), itemInstance); 
+                collectedFromRoot.TryAdd(itemInstance.GetType(), new List<InHandsItemInstance>());
+                collectedFromRoot[itemInstance.GetType()].Add(itemInstance);
             }
         }
 
-        public T EnableItem<T>() where T : InHandsItemInstance
+        public void SetSideRoot(Transform root)
+        {
+            sideRoot = root;
+        }
+        public void SetDownRoot(Transform root)
+        {
+            downRoot = root;
+        }
+        
+        public void SetUpRoot(Transform root)
+        {
+            upRoot = root;
+        }
+
+        public void RotateTo(GameDirection direction)
+        {
+            switch (direction)
+            {
+                case GameDirection.Left:
+                    SwitchRoot(sideRoot);
+                    break;
+                case GameDirection.Right:
+                    SwitchRoot(sideRoot);
+                    break;
+                case GameDirection.Top:
+                    SwitchRoot(upRoot);
+                    break;
+                case GameDirection.Bottom:
+                    SwitchRoot(downRoot);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+            }
+        }
+        
+        public void EnableItem<T>() where T : InHandsItemInstance
         {
             if(current != null) DisableItem(current);
             
-            collectedFromRoot[typeof(T)].gameObject.SetActive(true);
+            SetActiveTo(typeof(T), true);
             current = typeof(T);
-            
-            return (T)collectedFromRoot[typeof(T)];
         }
         public void DisableItem<T>() where T : InHandsItemInstance
         {
-            collectedFromRoot[typeof(T)].gameObject.SetActive(false);
+            DisableItem(typeof(T));
         }
         
         public void DisableItem(Type type) 
         {
-            collectedFromRoot[type].gameObject.SetActive(false);
+            SetActiveTo(type, false);
         }
+
+        private void SetActiveTo(Type type, bool active)
+        {
+            var items = collectedFromRoot[type];
+
+            foreach (var item in items)
+            {
+                if(item != null) item.gameObject.SetActive(active);
+            }
+        }
+        
+        private void SwitchRoot(Transform to)
+        {
+            if(currentRoot!=null) currentRoot.gameObject.SetActive(false);
+            
+            currentRoot = to;
+            to.gameObject.SetActive(true);
+        }
+        
     }
 }

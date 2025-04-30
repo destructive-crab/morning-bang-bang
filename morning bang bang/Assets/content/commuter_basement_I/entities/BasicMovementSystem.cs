@@ -14,13 +14,20 @@ namespace content.commuter_basement_I.entities.bastard
         [Inject] private Rigidbody2D rigidbody;
         [Inject] private Flipper flipper;
 
+        public bool IsMoving => pathUpdateCoroutine != null;
+        
         public float Speed = 7;
         
         private readonly Pathfinder pathfinder = new();
         private Pathfinder.Path currentPath;
 
         private const float PATH_UPDATE_RATE = 0.01f;
-        private Coroutine pathUpdateCoroutine;
+        private Coroutine pathUpdateCoroutine = null;
+
+        public BasicMovementSystem()
+        {
+            Speed = UnityEngine.Random.Range(450, 650)/100f;
+        }
 
         public void StartMoving()
         {
@@ -42,10 +49,10 @@ namespace content.commuter_basement_I.entities.bastard
             if (currentPath == null)
             {                
                 Debug.LogWarning("[BASIC ENTITY TO TARGET MOVEMENT : STOP MOVING] ENTITY IS NOT MOVING");
-                return;
             }
 #endif
             Owner.StopCoroutine(pathUpdateCoroutine);
+            pathUpdateCoroutine = null;
             currentPath = null;
         }
 
@@ -53,7 +60,7 @@ namespace content.commuter_basement_I.entities.bastard
         {
             if (currentPath != null && !currentPath.Completed)
             {
-                if(flipper!=null) flipper.FaceToPoint(currentPath.CurrentPoint);
+                flipper?.FaceToPoint(currentPath.CurrentPoint);
                 rigidbody.MovePosition(Vector3.MoveTowards(rigidbody.position, currentPath.CurrentPoint, Time.deltaTime *  Speed));
 
                 if (Vector3.Distance(rigidbody.position, currentPath.CurrentPoint) < 0.01f)
@@ -76,8 +83,6 @@ namespace content.commuter_basement_I.entities.bastard
                 }
 
                 currentPath = pathfinder.FindPath(Owner.transform.position, targetSelector.BestTarget.Position);
-
-                if (currentPath == null) continue;
             }
         }
         
