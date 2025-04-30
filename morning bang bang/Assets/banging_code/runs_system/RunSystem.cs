@@ -40,14 +40,12 @@ namespace banging_code.runs_system
         {
             Game.RunSystem.Data.Level.PlayerInstance.gameObject.SetActive(false);
             //Spawn deadbody
+            GameObject.FindObjectOfType<DeathMenu>(true).gameObject.SetActive(true);
+        }
 
-            if (Input.anyKey)
-            {
-                Data = null;
-                //delete save???
-                
-                Game.SwitchTo(new CommonScene("Menu"));
-            }
+        public void ClearData()
+        {
+            Data = null;
         }
     }
 

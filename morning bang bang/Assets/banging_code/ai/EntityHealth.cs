@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using banging_code.health;
 using UnityEngine;
 
@@ -7,6 +8,10 @@ namespace banging_code.ai
     [RequireComponent(typeof(Entity))]
     public class EntityHealth : HitableBody
     {
+        [SerializeField] private Color hitColor;
+        [SerializeField] private SpriteRenderer spriteRenderer;
+        [SerializeField] private Coroutine colorBlinkCoroutine;
+        
         [field: SerializeField] public int Health { get; private set; }
         public event Action<Entity> OnDie;
 
@@ -15,6 +20,19 @@ namespace banging_code.ai
             Health -= data.DamageAmount;
             
             if(Health <= 0) OnDie?.Invoke(GetComponent<Entity>());
+            else
+            {
+                if(colorBlinkCoroutine != null) StopCoroutine(colorBlinkCoroutine);
+                colorBlinkCoroutine = StartCoroutine(HitColor());
+            }
+        }
+
+        private IEnumerator HitColor()
+        {
+            spriteRenderer.color = hitColor;
+            yield return new WaitForSeconds(0.5f);
+            spriteRenderer.color = Color.white;
+            colorBlinkCoroutine = null;
         }
         
         public override void TakeBulletHit(BulletHitData data)

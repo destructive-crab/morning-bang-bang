@@ -485,6 +485,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d180cfddb8f94fa2841ce595e0c4e099, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitColor: {r: 1, g: 0.4862745, b: 0.6509804, a: 1}
+  spriteRenderer: {fileID: 5284733884567209330}
   <Health>k__BackingField: 8
 --- !u!114 &6658834726276392773
 MonoBehaviour:
