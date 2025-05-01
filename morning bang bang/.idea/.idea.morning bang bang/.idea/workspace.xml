@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="4849ab8a-b017-404e-910e-1744aa022006" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/CCamera.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Prefabs/CCamera.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/ai/EntityHealth.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/ai/EntityHealth.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/runs_system/RunSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/runs_system/RunSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Menu.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Menu.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Dev/Dev Rat Prefab.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Dev/Dev Rat Prefab.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_2.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_2.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/art/.bastard_walk.png-autosave.kra" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
