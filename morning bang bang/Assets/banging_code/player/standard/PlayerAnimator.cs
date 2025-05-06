@@ -1,13 +1,13 @@
 using banging_code.common;
 using banging_code.player_logic.states;
 using MothDIed.DI;
-using MothDIed.ExtensionSystem;
+using MothDIed.MonoSystems;
 using UnityEngine;
 
 namespace banging_code.player_logic
 {
-    [DisallowMultipleExtensions]
-    public class PlayerAnimator : Extension
+    [DisallowMultipleSystems]
+    public class PlayerAnimator : MonoSystem
     {
         //dependencies
         [Inject] private Animator animator;
@@ -24,7 +24,12 @@ namespace banging_code.player_logic
 
         private PlayerAnimatorBundle playerAnimatorBundle;
 
-        public override void StartExtension()
+        public override bool EnableOnStart()
+        {
+            return true;
+        }
+
+        public override void ContainerStarted()
         {
             playerAnimatorBundle = Resources.Load<PlayerAnimatorBundle>(PTH.PlayerAnimatorBundle);
         }

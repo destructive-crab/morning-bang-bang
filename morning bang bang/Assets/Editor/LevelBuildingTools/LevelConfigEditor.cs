@@ -1,4 +1,4 @@
-namespace AbyssMoth.External.RimuruDevUtils.Editor.SceneSwitcher
+namespace RimuruDevUtils.SceneSwitcher
 {
     public class LevelConfigEditor 
     {

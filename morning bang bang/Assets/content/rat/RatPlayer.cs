@@ -35,19 +35,19 @@ namespace banging_code.player_logic.rat
         protected override void InitializeExtensions()
         {
             //visuals
-            Extensions.AddExtension(new PlayerAnimator());
-            Extensions.AddExtension(new Flipper(true));
-            Extensions.AddExtension(new VelocityFlipper());
+            Systems.AddSystem(new PlayerAnimator());
+            Systems.AddSystem(new Flipper(true));
+            Systems.AddSystem(new VelocityFlipper());
             
             //addons
-            Extensions.AddExtension(new Interactor());
+            Systems.AddSystem(new Interactor());
             var hands = new PlayerHands();
 
             hands.SetSideRoot(sideRoot);
             hands.SetUpRoot(upRoot);
             hands.SetDownRoot(downRoot);
             
-            Extensions.AddExtension(hands);
+            Systems.AddSystem(hands);
         }
 
         protected override void InitializeStates()
@@ -58,7 +58,7 @@ namespace banging_code.player_logic.rat
 
         protected override void FinishInitialization()
         {
-            Extensions.StartContainer();
+            Systems.StartContainer();
             Game.RunSystem.Data.Inventory.SetMainItem(Game.RunSystem.Data.ItemsPool.GetNew("gun") as MainItem);
             
             EnterState(GetFactory<PlayerIdle>().GetState());
@@ -80,7 +80,7 @@ namespace banging_code.player_logic.rat
         {
             base.SetDirection(direction);
 
-            Extensions.Get<PlayerHands>().RotateTo(direction);
+            Systems.Get<PlayerHands>().RotateTo(direction);
         }
     }
 }

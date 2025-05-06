@@ -1,10 +1,10 @@
 using MothDIed.DI;
-using MothDIed.ExtensionSystem;
+using MothDIed.MonoSystems;
 using UnityEngine;
 
 namespace content.commuter_basement_I.entities.bastard
 {
-    public class BastardAnimator : Extension
+    public class BastardAnimator : MonoSystem
     {
         [Inject] private Animator animator;
 
@@ -21,6 +21,11 @@ namespace content.commuter_basement_I.entities.bastard
         public void PlayAttack()
         {
             animator.Play("Attack");
+        }
+
+        public override bool EnableOnStart()
+        {
+            return true;
         }
     }
 }

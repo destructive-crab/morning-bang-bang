@@ -25,7 +25,7 @@ namespace banging_code
             GetComponent<Collider2D>().isTrigger = true;
         }
 #endif
-        private void Awake()
+        protected virtual void Awake()
         {
             TriggerCollider().isTrigger = true;
         }

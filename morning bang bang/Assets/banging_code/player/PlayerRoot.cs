@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace banging_code.player_logic
 {
-    public abstract class PlayerRoot : DepressedBehaviour
+    public abstract class PlayerRoot : MonoEntity
     {
         public PlayerState CurrentState { get; private set; }
         public GameDirection Direction;
@@ -40,7 +40,7 @@ namespace banging_code.player_logic
         private void OnEnable()
         {
             CurrentState?.Enter(this);
-            Extensions.EnableAll();
+            Systems.EnableAll();
             
             OnEnableInheritor();
         }
@@ -48,14 +48,14 @@ namespace banging_code.player_logic
         private void OnDisable()
         {
             CurrentState?.Exit(this);
-            Extensions.DisableAll();
+            Systems.DisableAll();
             
             OnDisableInheritor();
         }
 
         private void Start()
         {
-            Extensions.SetOwner(this);
+            Systems.SetOwner(this);
 
             CachedComponents.Register<PlayerRoot>(this);
             
@@ -71,7 +71,7 @@ namespace banging_code.player_logic
         private void Update()
         {
             CurrentState?.Update(this);
-            Extensions.UpdateContainer();
+            Systems.UpdateContainer();
             
             UpdateInheritor();
         }
@@ -79,7 +79,7 @@ namespace banging_code.player_logic
         private void FixedUpdate()
         {
             CurrentState?.FixedUpdate(this);
-            Extensions.FixedUpdateContainer();
+            Systems.FixedUpdateContainer();
             
             FixedUpdateInheritor();
         }
@@ -123,7 +123,7 @@ namespace banging_code.player_logic
                 CurrentState?.Exit(this);
                 CurrentState = state;
                 
-                Game.DIKernel.InjectWithBaseAnd(state, CachedComponents, Extensions);
+                Game.DIKernel.InjectWithBaseAnd(state, CachedComponents, Systems);
                 
                 CurrentState.Enter(this);
             }

@@ -14,12 +14,12 @@ namespace banging_code.items
 
         public override void PutOnPlayerInstance(PlayerRoot playerRoot)
         {
-            Game.RunSystem.Data.Level.PlayerInstance.Extensions.Get<PlayerHands>().EnableItem<GunInstance>();
+            Game.RunSystem.Data.Level.PlayerInstance.Systems.Get<PlayerHands>().EnableItem<GunInstance>();
         }
 
         public override void OnDropped(ItemPickUp itemPickUp)
         {
-            Game.RunSystem.Data.Level.PlayerInstance.Extensions.Get<PlayerHands>().DisableItem<GunInstance>();
+            Game.RunSystem.Data.Level.PlayerInstance.Systems.Get<PlayerHands>().DisableItem<GunInstance>();
         }
     }
 }

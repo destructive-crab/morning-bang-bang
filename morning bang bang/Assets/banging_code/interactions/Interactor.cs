@@ -1,17 +1,22 @@
 using System.Collections.Generic;
 using MothDIed.DI;
-using MothDIed.ExtensionSystem;
+using MothDIed.MonoSystems;
 using MothDIed.InputsHandling;
 using UnityEngine;
 
 namespace banging_code.interactions
 {
-    public sealed class Interactor : Extension
+    public sealed class Interactor : MonoSystem
     {
         [Inject] private InteractorFoV fov;
 
         private readonly List<IInteraction> current = new();
-        
+
+        public override bool EnableOnStart()
+        {
+            return true;
+        }
+
         public override void Enable()
         {
             base.Enable();

@@ -38,7 +38,7 @@ namespace banging_code.inventory
         {
             if (newItem == null)
             {
-                Game.RunSystem.Data.Level.PlayerInstance.Extensions.Get<PlayerHands>().EnableItem<EmptyHands>();
+                Game.RunSystem.Data.Level.PlayerInstance.Systems.Get<PlayerHands>().EnableItem<EmptyHands>();
                 currentMainItem = null;
                 
                 return;

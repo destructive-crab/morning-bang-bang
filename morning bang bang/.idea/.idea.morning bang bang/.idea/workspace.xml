@@ -5,11 +5,68 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4849ab8a-b017-404e-910e-1744aa022006" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Editor/SceneSwitcher/SceneSwitcherSettingsInspector.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Editor/SceneSwitcher/SceneSwitcherSettingsInspector.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ECS/Data.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ECS/Data.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/CoinPrefabProvider.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/CoinPrefabProvider.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/DevBoot.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/DevBoot.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/data.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/data/AttackTarget.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/data/AttackTarget.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/data/EntityPath.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/data/EntityPath.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/data/PathfinderTarget.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/data/PathfinderTarget.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/systems.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/systems/PathUpdater.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/ai/systems/PathUpdater.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/common/TriggerCollector.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/common/TriggerCollector.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Menu.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Menu.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Dev/Dev Rat Prefab.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Dev/Dev Rat Prefab.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_2.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/bang_rooms/cm_b_br_2.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/art/.bastard_walk.png-autosave.kra" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Boot.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Boot.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Editor/LevelBuildingTools/LevelConfigEditor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Editor/LevelBuildingTools/LevelConfigEditor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Editor/SceneSwitcher.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Editor/SceneSwitcher.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/DepressedBehaviour.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/MonoEntity.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/DepressedBehaviour.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/MonoEntity.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ExtensionSystem/DisallowMultipleExtensionsAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ECS/DisallowMultipleSystemsAttribute.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ExtensionSystem/DisallowMultipleExtensionsAttribute.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ECS/DisallowMultipleSystemsAttribute.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ExtensionSystem/Extension.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ECS/MonoSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ExtensionSystem/Extension.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ECS/MonoSystem.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ExtensionSystem/ExtensionContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ECS/SystemsContainer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ExtensionSystem/ExtensionContainer.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/ECS/SystemsContainer.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Sirenix/Odin Inspector/Config/Editor/InspectorConfig.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Sirenix/Odin Inspector/Config/Editor/InspectorConfig.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/Sirenix/Odin Inspector/Config/Editor/InspectorConfig.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/Sirenix/Odin Inspector/Config/Editor/InspectorConfig.asset.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Dev/Test Level Config.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Dev/Test Level Config.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/BangBoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/BangBoot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/ai/Entity.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/ai/Entity.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/ai/targeting/TargetSelector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/ai/targeting/TargetSelector.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/ai/triggers/EntityAttackRange.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/ai/triggers/EntityAttackRange.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/common/Trigger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/common/Trigger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/common/extensions_(for gameobjects)/Flipper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/common/extensions_(for gameobjects)/Flipper.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/common/extensions_(for gameobjects)/VelocityFlipper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/common/extensions_(for gameobjects)/VelocityFlipper.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/dev/DevelopmentLevel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/dev/DevelopmentLevel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/interactions/Interactor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/interactions/Interactor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/inventory/Inventory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/inventory/Inventory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/rooms/Moody.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/rooms/Moody.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/player/PlayerHands.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/player/PlayerHands.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/player/PlayerRoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/player/PlayerRoot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/player/standard/PlayerAnimator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/player/standard/PlayerAnimator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/runs_system/RunSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/runs_system/RunSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/ui/MinimapTexture.renderTexture" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/ui/MinimapTexture.renderTexture" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/BasicMovementSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/BasicMovementSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/BastardAnimator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/BastardAnimator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/BastardAttackSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/BastardAttackSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/BastardEntity.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/BastardEntity.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_tiles/Wall Tile.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/commuter_basement_tiles/Wall Tile.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/items/Gun.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/items/Gun.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/rat/RatPlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/rat/RatPlayer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -21,11 +78,11 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5eddeaad60a14d8ab4eb3a7453824232177200/39/a12fc1aa/MonoBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5eddeaad60a14d8ab4eb3a7453824232177200/5e/a8407ca4/Component.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5eddeaad60a14d8ab4eb3a7453824232177200/99/efd0ca63/Behaviour.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/1378b88fef4c46d398a0261fcd723ab7960c00/52/256cc998/EditorWindow.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/1378b88fef4c46d398a0261fcd723ab7960c00/f6/ea568192/AssetPostprocessor.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7d303c2bf72cd4cec95665b89c457d265d2b8ef3ed6da17cd4f85587c2f9de7/System.Linq.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d44b17e136d09081da1e8fd0e8c83fde60e11818b9f2442d7ed8cb733fae895e/System.Collections.Generic.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Editor/AssetChangeListener.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/ai/management/EntitySpawnPoint.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/ai/management/EntitySpawner.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/ai/management/SceneEntitiesModule.cs" root0="FORCE_HIGHLIGHTING" />
@@ -57,19 +114,23 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
     &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\destructive_crab\\AppData\\Local\\Symbols\\src&quot;
+      &quot;C:\\Users\\User\\AppData\\Roaming\\JetBrains\\Rider2023.1\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\User\\AppData\\Roaming\\JetBrains\\Rider2023.1\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\User\\AppData\\Local\\Symbols\\src&quot;
     ]
   }
 }</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="D:/builds/bang_bang_04/bangbang.exe" />
+      <option name="EXE_PATH" value="$PROJECT_DIR$/../../../../builds/bang_bang_04/bangbang.exe" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="D:\builds\bang_bang_04" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -77,7 +138,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2022.3.61f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="C:\Unity Editor\2022.3.61f1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath &quot;C:\Users\destructive_crab\dev\band-bang\morning bang bang&quot; -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="C:\Users\destructive_crab\dev\band-bang\morning bang bang" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -85,7 +146,7 @@
       <method v="2" />
     </configuration>
     <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2022.3.61f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="C:\Unity Editor\2022.3.61f1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath &quot;C:\Users\destructive_crab\dev\band-bang\morning bang bang&quot; -testResults Logs/results.xml -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="C:\Users\destructive_crab\dev\band-bang\morning bang bang" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -114,6 +175,23 @@
     </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4849ab8a-b017-404e-910e-1744aa022006" name="Changes" comment="" />
+      <created>1746384223820</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1746384223820</updated>
+      <workItem from="1746384239856" duration="140000" />
+      <workItem from="1746384404737" duration="6000" />
+      <workItem from="1746384479258" duration="11000" />
+      <workItem from="1746387665231" duration="155000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
   <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="Both" />
   <component name="VcsManagerConfiguration">

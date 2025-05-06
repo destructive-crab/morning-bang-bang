@@ -1,11 +1,11 @@
 using MothDIed.DI;
-using MothDIed.ExtensionSystem;
+using MothDIed.MonoSystems;
 using UnityEngine;
 
 namespace banging_code.common
 {
-    [DisallowMultipleExtensions]
-    public sealed class Flipper : Extension 
+    [DisallowMultipleSystems]
+    public sealed class Flipper : MonoSystem 
     {
         public bool FacingRight { get; private set; }
         [Inject] private SpriteRenderer spriteRenderer;
@@ -50,6 +50,11 @@ namespace banging_code.common
                 Owner.transform.localScale = new Vector3(-1, 1, 1);
                 FacingRight = false;
             }
+        }
+
+        public override bool EnableOnStart()
+        {
+            return true;
         }
     }
 }

@@ -11,13 +11,13 @@ namespace banging_code.ai
 
         [SerializeField] private GameObject deadBody;
 
-        private void Update() => Extensions.UpdateContainer();
-        private void FixedUpdate() => Extensions.FixedUpdateContainer();
+        private void Update() => Systems.UpdateContainer();
+        private void FixedUpdate() => Systems.FixedUpdateContainer();
 
         public virtual void Initialize()
         {
-            Extensions.SetOwner(this);
-            Extensions.StartContainer();
+            Systems.SetOwner(this);
+            Systems.StartContainer();
 
             Health = GetComponent<EntityHealth>();
             Health.OnDie += Die;

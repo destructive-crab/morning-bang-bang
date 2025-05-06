@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using MothDIed.DI;
-using MothDIed.ExtensionSystem;
-using UnityEngine;
+using MothDIed.MonoSystems;
 
 namespace banging_code.ai.targeting
 {
-    public class TargetSelector : Extension
+    public class TargetSelector : MonoSystem
     {
         [Inject] private EntityFieldOfView fov;
         
@@ -21,8 +20,10 @@ namespace banging_code.ai.targeting
 
         public event Action<TargetToEntities> OnBestTargetChanged;
         private readonly List<TargetToEntities> sortedTargets = new();
-        
-        public override void StartExtension()
+
+        public override bool EnableOnStart() => true;
+
+        public override void ContainerStarted()
         {
             fov.OnEnter += OnNewTargetAppear;
             fov.OnExit += OnTargetDisappear;

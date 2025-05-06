@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using banging_code.common;
 using banging_code.items;
-using MothDIed.ExtensionSystem;
+using MothDIed.MonoSystems;
 using UnityEngine;
 
 namespace banging_code.player_logic
 {
-    public class PlayerHands : Extension
+    public class PlayerHands : MonoSystem
     {
         private Transform currentRoot;
         
@@ -18,9 +18,14 @@ namespace banging_code.player_logic
         private Dictionary<Type, List<InHandsItemInstance>> collectedFromRoot = new();
         private Type current;
 
-        public override void StartExtension()
+        public override bool EnableOnStart()
         {
-            base.StartExtension();
+            return true;
+        }
+
+        public override void ContainerStarted()
+        {
+            base.ContainerStarted();
             
             InHandsItemInstance[] foundItems = Owner.transform.GetComponentsInChildren<InHandsItemInstance>(true);
 
