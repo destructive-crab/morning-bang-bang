@@ -1,4 +1,4 @@
-namespace RimuruDevUtils.SceneSwitcher
+namespace destructive_code.SceneSwitcher
 {
     public class LevelConfigEditor 
     {

@@ -11,18 +11,15 @@ namespace RimuruDevUtils.SceneSwitcher
 
         private SerializedProperty whichScenesCollectProp;
         private SerializedProperty showReturnButtonProp;
-        private SerializedProperty enableCustomPlayModeStartSceneButtonProp;
         private SerializedProperty customPlayModeStartSceneBuildIndexProp;
         private SerializedProperty saveSceneSwitchProp;
         private SerializedProperty customSceneListProp;
     
         private SerializedProperty returnButtonHeightProp;
         private SerializedProperty sceneButtonHeightProp;
-        private SerializedProperty settingButtonHeightProp;
     
         private SerializedProperty spaceAfterReturnButtonProp;
         private SerializedProperty spaceBetweenSceneButtonsProp;
-        private SerializedProperty spaceAfterSceneButtonsProp;
     
         private SerializedProperty currentSceneButtonFormattingProp;
         private SerializedProperty customPlayModeStartSceneLabelFormattingProp;
@@ -38,18 +35,15 @@ namespace RimuruDevUtils.SceneSwitcher
             // Find all serialized fields inside Settings
             whichScenesCollectProp = settingsProp.FindPropertyRelative("WhichScenesCollect");
             showReturnButtonProp = settingsProp.FindPropertyRelative("ShowReturnToPreviousButton");
-            enableCustomPlayModeStartSceneButtonProp = settingsProp.FindPropertyRelative("EnableCustomPlayModeStartSceneButton");
             customPlayModeStartSceneBuildIndexProp = settingsProp.FindPropertyRelative("CustomPlayModeStartSceneBuildIndex");
             saveSceneSwitchProp = settingsProp.FindPropertyRelative("SaveSceneSwitch");
             customSceneListProp = settingsProp.FindPropertyRelative("CustomSceneList");
     
             returnButtonHeightProp = settingsProp.FindPropertyRelative("ReturnButtonHeight");
             sceneButtonHeightProp = settingsProp.FindPropertyRelative("SceneButtonHeight");
-            settingButtonHeightProp = settingsProp.FindPropertyRelative("SettingButtonHeight");
     
             spaceAfterReturnButtonProp = settingsProp.FindPropertyRelative("SpaceAfterReturnButton");
             spaceBetweenSceneButtonsProp = settingsProp.FindPropertyRelative("SpaceBetweenSceneButtons");
-            spaceAfterSceneButtonsProp = settingsProp.FindPropertyRelative("SpaceAfterSceneButtons");
     
             currentSceneButtonFormattingProp = settingsProp.FindPropertyRelative("CurrentSceneButtonFormatting");
             customPlayModeStartSceneLabelFormattingProp = settingsProp.FindPropertyRelative("CustomStartSceneLabelFormatting");
@@ -114,12 +108,8 @@ namespace RimuruDevUtils.SceneSwitcher
                     }
                 }
                 EditorGUILayout.PropertyField(showReturnButtonProp);
-                EditorGUILayout.PropertyField(enableCustomPlayModeStartSceneButtonProp);
-                
-                if(settingsObject.Settings.EnableCustomPlayModeStartSceneButton)
-                {
-                    EditorGUILayout.PropertyField(customPlayModeStartSceneBuildIndexProp);
-                }
+
+                EditorGUILayout.PropertyField(customPlayModeStartSceneBuildIndexProp);
 
                 EditorGUILayout.PropertyField(saveSceneSwitchProp);
 
@@ -135,11 +125,6 @@ namespace RimuruDevUtils.SceneSwitcher
                 
                 EditorGUILayout.IntSlider(sceneButtonHeightProp, 15, 50, new GUIContent("Scene Button Height"));
                 EditorGUILayout.IntSlider(spaceBetweenSceneButtonsProp, 0, 20, new GUIContent("Space Between Scene Buttons"));
-                EditorGUILayout.IntSlider(spaceAfterSceneButtonsProp, 0, 20, new GUIContent("Space After Scene Buttons"));
-
-                EditorGUILayout.Separator();
-
-                EditorGUILayout.IntSlider(settingButtonHeightProp, 15, 50, new GUIContent("Setting Button Height"));
 
                 EditorGUILayout.Separator();
 

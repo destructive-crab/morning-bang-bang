@@ -14,18 +14,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Sirenix.Utilities;
-using Unity.Collections;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Rendering.VirtualTexturing;
-using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 namespace RimuruDevUtils.SceneSwitcher
 {
-    public sealed class SceneSwitcher : EditorWindow
+    public sealed class SceneSwitcher : EditorWindow, IHasCustomMenu
     {
         private const string SETTINGS_STORAGE_PATH = "Assets/Editor/SceneSwitcher/SceneSwitcherSettings.asset";
         private const string SCENE_NAME_PLACE = "SCENE_NAME";
@@ -33,8 +28,7 @@ namespace RimuruDevUtils.SceneSwitcher
         private const string EXIT_PLAY_MODE = "Exit Play Mode";
         private const string RETURN_TO_PREVIOUS_BUTTON = " <- |Return| <- ";
         private const string SETTINGS_BUTTON = "Open Settings";
-        private const string ENABLE_CUSTOM_PLAY_MODE_START_SCENE = " Enable Custom Play Mode Start Scene";
-        private const string DISABLE_CUSTOM_PLAY_MODE_START_SCENE = "Disable Custom Play Mode Start Scene";
+        private const string ENABLE_CUSTOM_START_SCENE = "Enable Custom Start Scene";
 
         private string[] scenes;
         private string CurrentScene => EditorSceneManager.GetActiveScene().path;
@@ -94,14 +88,6 @@ namespace RimuruDevUtils.SceneSwitcher
             }
             
             DrawSceneButtons();
-            GUILayout.Space(CurrentSettings.SpaceAfterSceneButtons);
-            
-            if(CurrentSettings.EnableCustomPlayModeStartSceneButton)
-            {
-                DrawCustomPlayModeStartSceneButtons();
-            }
-
-            DrawSettingsButton();
         }
 
         private void DrawReturnToPrevious()
@@ -159,24 +145,23 @@ namespace RimuruDevUtils.SceneSwitcher
             }
         }
 
-        private void DrawCustomPlayModeStartSceneButtons()
+        private void SwitchCustomStartSceneEnabled()
         {
-            if (EditorSceneManager.playModeStartScene == null && GUILayout.Button(ENABLE_CUSTOM_PLAY_MODE_START_SCENE))
+            if (!CustomStartSceneEnabled)
             {
                 EditorSceneManager.playModeStartScene = customPlayModeStartScene;
             }
-            else if (EditorSceneManager.playModeStartScene != null && GUILayout.Button(DISABLE_CUSTOM_PLAY_MODE_START_SCENE))
+            else 
             {
                 EditorSceneManager.playModeStartScene = null;
             }
         }
 
-        private void DrawSettingsButton()
+        private static bool CustomStartSceneEnabled => EditorSceneManager.playModeStartScene != null;
+
+        private void OpenSettings()
         {
-            if (GUILayout.Button(SETTINGS_BUTTON, GUILayout.Height(CurrentSettings.SettingButtonHeight)))
-            {
-                Selection.activeObject = settingsAsset;
-            }
+            Selection.activeObject = settingsAsset;
         }
 
         private void CollectScenes()
@@ -275,7 +260,6 @@ namespace RimuruDevUtils.SceneSwitcher
         {
             public Collect WhichScenesCollect = Collect.OnlyFromBuild; 
             public bool ShowReturnToPreviousButton = false; 
-            public bool EnableCustomPlayModeStartSceneButton = false;
 
             public int CustomPlayModeStartSceneBuildIndex = 0;
             public bool SaveSceneSwitch = true;
@@ -284,11 +268,9 @@ namespace RimuruDevUtils.SceneSwitcher
 
             [Range(15, 50)] public int ReturnButtonHeight = 20;
             [Range(15, 50)] public int SceneButtonHeight = 20;
-            [Range(15, 50)] public int SettingButtonHeight = 15;
 
             [Range(0, 20)] public int SpaceAfterReturnButton = 10;
             [Range(0, 20)] public int SpaceBetweenSceneButtons = 0;
-            [Range(0, 20)] public int SpaceAfterSceneButtons = 20;
             
             public string CurrentSceneButtonFormatting = "> SCENE_NAME <"; 
             public string CustomStartSceneLabelFormatting = "(PM) SCENE_NAME"; 
@@ -299,6 +281,15 @@ namespace RimuruDevUtils.SceneSwitcher
                 CustomList,
                 All
             }
+        }
+
+        public void AddItemsToMenu(GenericMenu menu)
+        {
+            GUIContent openSettings = new GUIContent(SETTINGS_BUTTON);
+            menu.AddItem(openSettings, false, OpenSettings);
+
+            GUIContent switchStartSceneEnabled = new GUIContent(ENABLE_CUSTOM_START_SCENE);
+            menu.AddItem(switchStartSceneEnabled, CustomStartSceneEnabled, SwitchCustomStartSceneEnabled);
         }
     }
 }
