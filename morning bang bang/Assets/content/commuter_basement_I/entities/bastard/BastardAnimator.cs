@@ -1,31 +1,23 @@
+using banging_code.ai.pathfinding;
+using banging_code.ai.systems;
 using MothDIed.DI;
-using MothDIed.MonoSystems;
 using UnityEngine;
 
 namespace content.commuter_basement_I.entities.bastard
 {
-    public class BastardAnimator : MonoSystem
+    public class BastardAnimator : BasicEntityAnimator
     {
-        [Inject] private Animator animator;
-
-        public void PlayIdle()
+        [Inject] private PathfinderTarget pathfinderTarget;
+       
+        [Inject]
+        private void GetAnimator(Animator animator)
         {
-            animator.Play("Idle");
+            this.animator = animator;
         }
-
-        public void PlayRun()
+        public override void Update()
         {
-            animator.Play("Run");
+            if(pathfinderTarget.Target != null) PlayRun();
         }
-
-        public void PlayAttack()
-        {
-            animator.Play("Attack");
-        }
-
-        public override bool EnableOnStart()
-        {
-            return true;
-        }
+        
     }
 }

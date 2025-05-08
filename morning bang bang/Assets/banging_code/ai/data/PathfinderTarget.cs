@@ -3,7 +3,7 @@ using MothDIed.MonoSystems;
 
 namespace banging_code.ai.pathfinding
 {
-    public class PathfinderTarget : Data 
+    public class PathfinderTarget : MonoData 
     {
         public TargetToEntities Target;
     }

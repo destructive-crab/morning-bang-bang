@@ -1,4 +1,3 @@
-using System.Collections;
 using banging_code.ai;
 using banging_code.ai.pathfinding;
 using banging_code.ai.systems;
@@ -38,7 +37,7 @@ namespace content.commuter_basement_I.entities.bastard
             Systems.AddSystem(new BasicMovementSystem());
             Systems.AddSystem(new BastardAttackSystem());
             Systems.AddSystem(new PathUpdater());
-            
+
             Systems.StartContainer();
             Health.OnDie += Die;
         }
@@ -68,17 +67,6 @@ namespace content.commuter_basement_I.entities.bastard
 
         private void Do()
         {
-            if (Data.Get<AttackTarget>().Target != null && !Systems.Get<BastardAttackSystem>().Enabled)
-            {
-                Data.Get<EntityPath>().Path = null;
-                Systems.Get<BastardAttackSystem>().Enable();
-                Systems.Get<PathUpdater>().Disable();
-            }
-            else if (Data.Get<PathfinderTarget>().Target != null && !Systems.Get<PathUpdater>().Enabled)
-            {
-                Systems.Get<PathUpdater>().Enable();
-                Systems.Get<BastardAttackSystem>().Disable();
-            }
         }
     }
 }

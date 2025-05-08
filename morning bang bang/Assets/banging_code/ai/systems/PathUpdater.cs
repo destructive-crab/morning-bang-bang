@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace banging_code.ai.systems
 {
-    public class PathUpdater : MonoSystem
+    public class PathUpdater : MonoSystem, IEntityAISystem
     {
         [Inject] private EntityPath path;
         [Inject] private PathfinderTarget target;
@@ -16,7 +16,7 @@ namespace banging_code.ai.systems
 
         public override bool EnableOnStart()
         {
-            return false;
+            return true;
         }
 
         public override void Enable()
@@ -29,7 +29,13 @@ namespace banging_code.ai.systems
         {
             while (Enabled)
             {
+                while (target.Target == null)
+                {
+                    yield return new WaitForEndOfFrame();
+                }
+                
                 path.Path = pathfinder.FindPath(Owner.transform.position, target.Target.Position);
+                
                 yield return new WaitForSeconds(PathUpdateRate);
             }
         }

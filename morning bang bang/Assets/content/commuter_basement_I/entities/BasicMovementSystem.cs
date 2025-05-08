@@ -1,4 +1,5 @@
 using banging_code.ai.pathfinding;
+using banging_code.ai.systems;
 using banging_code.common;
 using MothDIed.DI;
 using MothDIed.MonoSystems;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace content.commuter_basement_I.entities.bastard
 {
-    public class BasicMovementSystem : MonoSystem
+    public class BasicMovementSystem : MonoSystem, IEntityAISystem
     {
         [Inject] private Rigidbody2D rigidbody;
         [Inject] private Flipper flipper;

@@ -13,21 +13,20 @@ MonoBehaviour:
   m_Name: SceneSwitcherSettings
   m_EditorClassIdentifier: 
   Settings:
-    WhichScenesCollect: 1
+    WhichScenesCollect: 0
     ShowReturnToPreviousButton: 1
     EnableCustomPlayModeStartSceneButton: 1
     CustomPlayModeStartSceneBuildIndex: 0
     SaveSceneSwitch: 1
     CustomSceneList:
-    - {fileID: 102900000, guid: 8c9cfa26abfee488c85f1582747f6a02, type: 3}
+    - {fileID: 102900000, guid: 110ca840396cbe149b34c5c43226eb0a, type: 3}
     - {fileID: 102900000, guid: 7f2e2d3800abc2d428899a8e46a9c3c5, type: 3}
-    - {fileID: 0}
-    - {fileID: 0}
-    ReturnButtonHeight: 20
-    SceneButtonHeight: 20
-    SettingButtonHeight: 15
+    - {fileID: 102900000, guid: 8c9cfa26abfee488c85f1582747f6a02, type: 3}
+    ReturnButtonHeight: 25
+    SceneButtonHeight: 25
+    SettingButtonHeight: 22
     SpaceAfterReturnButton: 10
     SpaceBetweenSceneButtons: 0
     SpaceAfterSceneButtons: 20
-    CurrentSceneButtonFormatting: 'CURRENT: SCENE_NAME'
-    CustomStartSceneLabelFormatting: (PM) SCENE_NAME
+    CurrentSceneButtonFormatting: 'CURRENT: SCENE_NAME '
+    CustomStartSceneLabelFormatting: 'BOOT: SCENE_NAME'

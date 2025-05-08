@@ -1,6 +1,6 @@
 namespace MothDIed.MonoSystems
 {
-    public abstract class Data
+    public abstract class MonoData
     {
         
     }

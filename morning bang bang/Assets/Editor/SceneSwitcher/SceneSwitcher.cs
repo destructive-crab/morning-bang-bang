@@ -11,12 +11,15 @@
 // **************************************************************** //
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Sirenix.Utilities;
 using Unity.Collections;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
@@ -115,9 +118,15 @@ namespace RimuruDevUtils.SceneSwitcher
 
         private void DrawSceneButtons()
         {
+            if (scenes.Length == 0)
+            {
+                EditorGUILayout.HelpBox("   ZERO SCENES FOUND/SELECTED", MessageType.Info); 
+            }
+            
             for (int i = 0; i < scenes.Length; i++)
             {
                 string scenePath = scenes[i];
+                
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
 
@@ -186,10 +195,17 @@ namespace RimuruDevUtils.SceneSwitcher
                     break;
 
                 case Settings.Collect.CustomList:
-                    scenes = new string[CurrentSettings.CustomSceneList.Length];
-                    for (int i = 0; i < CurrentSettings.CustomSceneList.Length; i++)
+                    //clear from nulls
+                    CurrentSettings.CustomSceneList.RemoveAll((asset) => asset == null);
+                    //clear from duplicates
+                    CurrentSettings.CustomSceneList = CurrentSettings.CustomSceneList.Distinct().ToList();
+
+                    scenes = new string[CurrentSettings.CustomSceneList.Count];
+                    for (int i = 0; i < CurrentSettings.CustomSceneList.Count; i++)
                     {
                         var sceneAsset = CurrentSettings.CustomSceneList[i];
+                        if(sceneAsset == null) continue;
+
                         scenes[i] = AssetDatabase.GetAssetPath(sceneAsset);
                     }
                     break;
@@ -264,7 +280,7 @@ namespace RimuruDevUtils.SceneSwitcher
             public int CustomPlayModeStartSceneBuildIndex = 0;
             public bool SaveSceneSwitch = true;
 
-            public SceneAsset[] CustomSceneList;
+            public List<SceneAsset> CustomSceneList;
 
             [Range(15, 50)] public int ReturnButtonHeight = 20;
             [Range(15, 50)] public int SceneButtonHeight = 20;

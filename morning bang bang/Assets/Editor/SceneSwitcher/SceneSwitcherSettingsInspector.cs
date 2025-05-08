@@ -27,8 +27,8 @@ namespace RimuruDevUtils.SceneSwitcher
         private SerializedProperty currentSceneButtonFormattingProp;
         private SerializedProperty customPlayModeStartSceneLabelFormattingProp;
 
-        private bool behaviourFoldout;
-        private bool styleFoldout;
+        private bool behaviourFoldout = true;
+        private bool styleFoldout = true;
     
         private void OnEnable()
         {
@@ -67,14 +67,50 @@ namespace RimuruDevUtils.SceneSwitcher
             if(behaviourFoldout)
             {
                 EditorGUILayout.PropertyField(whichScenesCollectProp);
-                
+
                 if (settingsObject.Settings.WhichScenesCollect == SceneSwitcher.Settings.Collect.CustomList)
                 {
+                    //draw list
                     EditorGUILayout.PropertyField(customSceneListProp, true);
-                    
-                    if (settingsObject.Settings.CustomSceneList.Contains(null))
+
+                    //draw some handy buttons
+                    if (GUILayout.Button("Add All Scenes From Project"))
                     {
-                        EditorGUILayout.LabelField("LIST CONTAINS NULL ELEMENTS. LIST WILL BE CLEARED OF THEM ON SAVE");
+                        string[] guids = AssetDatabase.FindAssets("t:Scene");
+                        foreach (string guid in guids)
+                        {
+                            settingsObject.Settings.CustomSceneList.Add(AssetDatabase.LoadAssetAtPath<SceneAsset>(AssetDatabase.GUIDToAssetPath(guid)));
+                        }
+                        EditorUtility.SetDirty(settingsObject);
+                    }
+                    if (GUILayout.Button("Add Scenes From Build"))
+                    {
+                        foreach (EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
+                        {
+                            settingsObject.Settings.CustomSceneList.Add(AssetDatabase.LoadAssetAtPath<SceneAsset>(scene.path));
+                        }
+                        EditorUtility.SetDirty(settingsObject);
+                    }
+                    if (GUILayout.Button("Clear List"))
+                    {
+                        settingsObject.Settings.CustomSceneList.Clear();
+                        EditorUtility.SetDirty(settingsObject);
+                    }
+
+                    //check if contains nulls
+                    if (settingsObject.Settings.CustomSceneList.Any((asset) => asset == null))
+                    {
+                        EditorGUILayout.HelpBox("LIST CONTAINS NULL ELEMENTS. THEY WILL BE REMOVED", MessageType.Warning);
+                        EditorGUILayout.Separator();
+                    }
+                    //check if contains duplicates
+                    bool hasDuplicates = settingsObject.Settings.CustomSceneList.GroupBy(x => x)
+                        .Any(g => g.Count() > 1);
+
+                    if (hasDuplicates)
+                    {
+                        EditorGUILayout.HelpBox("LIST CONTAINS DUPLICATES. THEY WILL BE REMOVED", MessageType.Warning);
+                        EditorGUILayout.Separator();
                     }
                 }
                 EditorGUILayout.PropertyField(showReturnButtonProp);

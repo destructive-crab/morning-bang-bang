@@ -7,7 +7,7 @@ namespace banging_code.common
         where TComponent : class
     {
         public TComponent[] Current => CurrentEntered.ToArray();
-        protected readonly List<TComponent> CurrentEntered = new();
+        protected List<TComponent> CurrentEntered = new();
 
         public TComponent LastEntered => CurrentEntered.Last();
         public TComponent LastExited { get; private set; }

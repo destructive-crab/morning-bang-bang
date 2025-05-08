@@ -58,12 +58,39 @@ namespace MothDIed.MonoSystems
             return GetBlind(typeof(TExtension)) as TExtension;
         }
 
-        public TExtension[] GetAllOf<TExtension>()
-            where TExtension : MonoSystem
+        public TSystem[] GetAllOf<TSystem>()
         {
-            return systems[typeof(TExtension)].ToArray() as TExtension[];
+            var result = new List<TSystem>();
+
+            foreach (var systemPair in systems)
+            {
+                foreach (var system in systemPair.Value)
+                {
+                    if(system is TSystem target)
+                        result.Add(target);
+                }
+            }
+
+
+            return result.ToArray();
         }
 
+        public MonoSystem[] GetAllSystemsOf<TSystem>()
+        {
+            var result = new List<MonoSystem>();
+
+            foreach (var systemPair in systems)
+            {
+                foreach (var system in systemPair.Value)
+                {
+                    if(system is TSystem)
+                        result.Add(system);
+                }
+            }
+
+            return result.ToArray();
+        }
+        
         public bool Contains<TExtension>() where TExtension : MonoSystem
         {
             return Contains(typeof(TExtension));
