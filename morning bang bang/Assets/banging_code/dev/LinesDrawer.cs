@@ -6,24 +6,19 @@ namespace banging_code.dev
 {
     public class LinesDrawer
     {
-        private List<LineRenderer> lines = new();
-
-        private Transform owner;
+        private readonly List<LineRenderer> lines = new();
+        private readonly Transform owner;
 
         public LinesDrawer(Transform owner)
         {
             this.owner = owner;
         }
 
-        public void Start()
-        {
-            
-        }
+        public int LinesCount => lines.Count;
 
-
-        public void Draw(Color color, float thikness, Vector3[] positions)
+        public void Draw(string name, Color color, float thikness, Vector3[] positions)
         {
-            lines.Add(new GameObject("NEW LINE", typeof(LineRenderer)).GetComponent<LineRenderer>());
+            lines.Add(new GameObject(name, typeof(LineRenderer)).GetComponent<LineRenderer>());
             lines.Last().transform.parent = owner;
             lines.Last().sortingOrder = 10;
             lines.Last().positionCount = positions.Length;

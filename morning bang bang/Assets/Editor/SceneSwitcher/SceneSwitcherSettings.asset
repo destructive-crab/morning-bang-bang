@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Settings:
     WhichScenesCollect: 0
-    ShowReturnToPreviousButton: 0
+    ShowReturnToPreviousButton: 1
     CustomPlayModeStartSceneBuildIndex: 0
     SaveSceneSwitch: 1
     CustomSceneList:

@@ -91,5 +91,10 @@ namespace MothDIed
                 }
             }
         }
+
+        public static class DebugFlags
+        {
+            public static bool ShowPaths = false;
+        }
     }
 }

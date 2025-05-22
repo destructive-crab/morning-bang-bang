@@ -2,6 +2,7 @@ using System;
 using banging_code.bullets;
 using banging_code.common;
 using MothDIed;
+using MothDIed.InputsHandling;
 using UnityEngine;
 
 namespace banging_code.items
@@ -25,6 +26,13 @@ namespace banging_code.items
             {
                 bulletPrefab = gun.BulletPrefab;
             }
+
+            InputService.OnUseMainItem += SpawnBullet;
+        }
+
+        private void OnDisable()
+        {
+            InputService.OnUseMainItem -= SpawnBullet;
         }
 
         private void Update()
@@ -32,7 +40,6 @@ namespace banging_code.items
             if (Input.GetMouseButtonDown(0))
             {
 //                gunAnimator.Play("GunAnimation");
-                SpawnBullet();
             }
         }
 
