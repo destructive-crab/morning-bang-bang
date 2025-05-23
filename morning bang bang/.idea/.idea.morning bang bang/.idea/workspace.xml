@@ -5,35 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4849ab8a-b017-404e-910e-1744aa022006" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/BangingConsole.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommand.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommand.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandDescriptionAttribute.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandDescriptionAttribute.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandKeyAttribute.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandKeyAttribute.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandsContainer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandsContainer.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleInput.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleInput.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleOutput.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleOutput.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/dev/ConsoleDevStartPoint.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/dev/ConsoleDevStartPoint.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/PauseMenu.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/PauseMenu.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/PauseSystem.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/PauseSystem.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/ScenePauseModule.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/ScenePauseModule.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Boot.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Boot.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Editor/SceneSwitcher/SceneSwitcherSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Editor/SceneSwitcher/SceneSwitcherSettings.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Optional/InputsHandling/InputService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Optional/InputsHandling/InputService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scene For Tests.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scene For Tests.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/ai/systems/PathUpdater.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/ai/systems/PathUpdater.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/BangingConsole.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/dev/LinesDrawer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/dev/LinesDrawer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/content/items/GunInstance.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/items/GunInstance.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Project Configuration/InputMap.inputactions" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Project Configuration/InputMap.inputactions" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/InputSystem_Actions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/InputSystem_Actions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/common/consts/PTH.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/common/consts/PTH.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/CommuterBasement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/CommuterBasement.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -76,23 +61,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "settings.editor.selected.configurable": "configurable.group.editor",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.editor&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache",
-      "C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache",
-      "C:\\Users\\destructive_crab\\AppData\\Local\\Symbols\\src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\destructive_crab\\AppData\\Local\\Symbols\\src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="D:/builds/bang_bang_04/bangbang.exe" />

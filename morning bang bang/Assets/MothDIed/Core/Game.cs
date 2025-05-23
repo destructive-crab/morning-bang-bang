@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using MothDIed.DI;
 using UnityEngine;
 using System;
+using banging_code.pause;
 using banging_code.runs_system;
 using MothDIed.InputsHandling;
 using MothDIed.Scenes;
@@ -21,6 +22,7 @@ namespace MothDIed
 
         //other
         public static readonly RunSystem RunSystem = new();
+        public static readonly PauseSystem PauseSystem = new();
         
         //core
         public static readonly DIKernel DIKernel = new();
@@ -81,9 +83,9 @@ namespace MothDIed
                     {
                         RunSystem.WhileOnLevel(RunSystem.Data.Level);
                     }
-                }   
+                }
 
-                await UniTask.Delay(50);
+                await UniTask.WaitForFixedUpdate();
 
                 while (!Application.isPlaying)
                 {

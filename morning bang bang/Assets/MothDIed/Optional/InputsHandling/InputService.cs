@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using banging_code;
 using UnityEngine;
@@ -12,12 +13,30 @@ namespace MothDIed.InputsHandling
         //i will add stuff only when i need it
         //
 
-        public static Vector2 MousePosition => Game.CurrentScene.GetCamera().ScreenToWorldPoint(Input.mousePosition);
+        public static Vector3 MousePosition => Game.CurrentScene.GetCamera().ScreenToWorldPoint(Input.mousePosition);
         public static Vector2 Movement { get; private set; }
+        
+        //events
         public static event Action OnPlayerInteract;
         public static event Action OnUseMainItem;
+        public static event Action OnPauseButtonPressed;
         
+        //static
         private static InputActions actionsMap;
+        
+        //modes
+        private static readonly Dictionary<Mode, Action> ModeSwitchers;
+        private static Mode CurrentMode;
+        private static Mode PreviousMode;
+
+        static InputService()
+        {
+            ModeSwitchers = new Dictionary<Mode, Action>()
+            {
+                {Mode.Player, EnterPlayerMode},
+                {Mode.UI , EnterUIMode}
+            };
+        }
 
         public static void Initialize()
         {
@@ -27,38 +46,28 @@ namespace MothDIed.InputsHandling
             
             actionsMap.Player.Interact.performed += OnInteract;
             actionsMap.Player.UseItem.started += OnUseItem;
+            actionsMap.Global.Pause.performed += OnPause;
             
             actionsMap.Enable();
+            EnterUIMode();
         }
 
-        private static void OnUseItem(InputAction.CallbackContext obj)
+        public static void Tick()
         {
-            OnUseMainItem?.Invoke();
+            Movement = actionsMap.Player.Move.ReadValue<Vector2>();
         }
+        
+        //hooks from actions map
+        private static void OnPause(InputAction.CallbackContext obj) => OnPauseButtonPressed?.Invoke();
+        private static void OnUseItem(InputAction.CallbackContext obj) => OnUseMainItem?.Invoke();
+        private static void OnInteract(InputAction.CallbackContext obj) => OnPlayerInteract?.Invoke();
 
-        private static void OnInteract(InputAction.CallbackContext obj)
-        {
-            OnPlayerInteract?.Invoke();
-        }
-
+        //actions map controls
         public static void DisableAll()
         {
             actionsMap.Player.Disable();
             actionsMap.UI.Disable();
         }
-
-        public static void EnterPlayerMode()
-        {
-            DisableAll();
-            EnablePlayerInputs();
-        }
-
-        public static void EnterUIMode()
-        {
-            DisableAll();
-            EnableUIInputs();
-        }
-
         public static void EnableUIInputs()
         {
             actionsMap.UI.Enable();
@@ -69,12 +78,33 @@ namespace MothDIed.InputsHandling
             actionsMap.Player.Enable();
         }
 
-        public static void Tick()
+        //mode switchers
+        public static void EnterPlayerMode()
         {
-            if (actionsMap.Player.enabled)
-            {
-                Movement = actionsMap.Player.Move.ReadValue<Vector2>();
-            }
+            DisableAll();
+            EnablePlayerInputs();
+            PreviousMode = CurrentMode;
+            CurrentMode = Mode.Player;
+        }
+
+        public static void EnterUIMode()
+        {
+            DisableAll();
+            EnableUIInputs();
+            PreviousMode = CurrentMode;
+            CurrentMode = Mode.UI;
+        }
+
+
+        public enum Mode
+        {
+            Player,
+            UI
+        }
+
+        public static void BackToPreviousMode()
+        {
+            ModeSwitchers[PreviousMode].Invoke();
         }
     }
 }

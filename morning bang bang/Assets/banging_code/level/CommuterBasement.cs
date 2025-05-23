@@ -7,6 +7,7 @@ using banging_code.level.random_gen;
 using banging_code.common.rooms;
 using banging_code.level.light;
 using banging_code.level.structure.map;
+using banging_code.pause;
 using banging_code.player_logic.rat;
 
 using MothDIed.DI;
@@ -26,6 +27,7 @@ namespace banging_code.level
 
             Modules.AddModule(new FabricAutoInjectModule());
             Modules.AddModule(new SceneAutoInjectModule());
+            Modules.AddModule(new ScenePauseModule());
 
             Hierarchy = Modules.AddModule(new LevelHierarchyModule());
             Modules.AddModule(new CCamera());
