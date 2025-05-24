@@ -288,11 +288,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5896492388912102142, guid: 3f8e79074dcbd8945a348ca5634cf8f3, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5896492388912102142, guid: 3f8e79074dcbd8945a348ca5634cf8f3, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5896492388912102142, guid: 3f8e79074dcbd8945a348ca5634cf8f3, type: 3}
       propertyPath: m_AnchorMin.y
@@ -306,21 +306,29 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7883268653628666416, guid: 3f8e79074dcbd8945a348ca5634cf8f3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8014334781559755483, guid: 3f8e79074dcbd8945a348ca5634cf8f3, type: 3}
       propertyPath: m_Name
       value: Banging Console
       objectReference: {fileID: 0}
+    - target: {fileID: 8014334781559755483, guid: 3f8e79074dcbd8945a348ca5634cf8f3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8792956421657254891, guid: 3f8e79074dcbd8945a348ca5634cf8f3, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8792956421657254891, guid: 3f8e79074dcbd8945a348ca5634cf8f3, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8792956421657254891, guid: 3f8e79074dcbd8945a348ca5634cf8f3, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

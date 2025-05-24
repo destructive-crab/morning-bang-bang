@@ -5,20 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4849ab8a-b017-404e-910e-1744aa022006" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/PauseMenu.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/PauseMenu.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/PauseSystem.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/PauseSystem.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/ScenePauseModule.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/banging_code/pause/ScenePauseModule.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Optional/InputsHandling/InputService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Optional/InputsHandling/InputService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Project Configuration/InputMap.inputactions" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Project Configuration/InputMap.inputactions" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/InputSystem_Actions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/InputSystem_Actions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/common/consts/PTH.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/common/consts/PTH.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/CommuterBasement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/CommuterBasement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Prefabs/PauseMenu.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/Prefabs/PauseMenu.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/pause/PauseMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/pause/PauseMenu.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/pause/PauseSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/pause/PauseSystem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/pause/ScenePauseModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/pause/ScenePauseModule.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
