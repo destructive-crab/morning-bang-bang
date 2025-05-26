@@ -17,7 +17,9 @@ namespace banging_code.player_logic.rat
         public Transform sideRoot;
         public Transform upRoot;
         public Transform downRoot;
-        
+
+        public override string ID => "player";
+
         protected override void InitializeComponents()
         {
             //physics

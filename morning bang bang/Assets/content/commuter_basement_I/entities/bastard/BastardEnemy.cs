@@ -1,3 +1,4 @@
+using System;
 using banging_code.ai;
 using banging_code.ai.pathfinding;
 using banging_code.ai.systems;
@@ -7,10 +8,12 @@ using UnityEngine;
 
 namespace content.commuter_basement_I.entities.bastard
 {
-    public class BastardEntity : Entity
+    public class BastardEnemy : Enemy
     {
         private EntityAttackRange attackRange;
         private EntityFieldOfView fov;
+
+        protected override string GetEntityPrefix() => "bastard_";
 
         public override void Initialize()
         {
@@ -68,5 +71,6 @@ namespace content.commuter_basement_I.entities.bastard
         private void Do()
         {
         }
+
     }
 }

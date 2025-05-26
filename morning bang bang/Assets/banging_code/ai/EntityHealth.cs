@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace banging_code.ai
 {
-    [RequireComponent(typeof(Entity))]
+    [RequireComponent(typeof(Enemy))]
     public class EntityHealth : HitableBody
     {
         [SerializeField] private Color hitColor;
@@ -13,13 +13,13 @@ namespace banging_code.ai
         [SerializeField] private Coroutine colorBlinkCoroutine;
         
         [field: SerializeField] public int Health { get; private set; }
-        public event Action<Entity> OnDie;
+        public event Action<Enemy> OnDie;
 
         public void TakeHit(HitData data)
         {
             Health -= data.DamageAmount;
             
-            if(Health <= 0) OnDie?.Invoke(GetComponent<Entity>());
+            if(Health <= 0) OnDie?.Invoke(GetComponent<Enemy>());
             else
             {
                 if(colorBlinkCoroutine != null) StopCoroutine(colorBlinkCoroutine);

@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using banging_code.level.entity_locating;
+using MothDIed;
 using MothDIed.DI;
 using MothDIed.MonoSystems;
+using UnityEngine;
 
 namespace banging_code.ai.targeting
 {
     public class TargetSelector : MonoSystem
     {
-        [Inject] private EntityFieldOfView fov;
+        [Inject] private LocationManager locationManager;
         
         public TargetToEntities BestTarget
         {
@@ -23,33 +26,34 @@ namespace banging_code.ai.targeting
 
         public override bool EnableOnStart() => true;
 
-        public override void ContainerStarted()
+        public override void Enable()
         {
-            fov.OnEnter += OnNewTargetAppear;
-            fov.OnExit += OnTargetDisappear;
+            locationManager.OnLocationEntitesChanged += CheckLocation;
         }
 
         public override void Dispose()
         {
-            fov.OnEnter -= OnNewTargetAppear;
-            fov.OnExit -= OnTargetDisappear;
+            locationManager.OnLocationEntitesChanged -= CheckLocation;
         }
 
-        private void OnNewTargetAppear(TargetToEntities other)
+        private void CheckLocation(string locationID)
         {
+            Debug.Log(locationID + " " + locationManager.GetLocationOf(Owner));
+            if (locationID != locationManager.GetLocationOf(Owner)) return;
+            
+            var entities = locationManager.GetEntitesFrom(locationID);
             var previousBest = BestTarget;
-            sortedTargets.Add(other);
+            sortedTargets.Clear();
+            
+            foreach (MonoEntity entity in entities)
+            {
+                if (entity.TryGetComponent<TargetToEntities>(out TargetToEntities target))
+                {
+                    Debug.Log(target.name);
+                    sortedTargets.Add(target);
+                }
+            }
             if(sortedTargets.Count > 1) sortedTargets.Sort();           
-            if(previousBest != BestTarget) OnBestTargetChanged?.Invoke(BestTarget);
-        }
-
-        private void OnTargetDisappear(TargetToEntities other)
-        {
-            var previousBest = BestTarget;
-            
-            sortedTargets.Remove(other);
-            sortedTargets.Sort();
-            
             if(previousBest != BestTarget) OnBestTargetChanged?.Invoke(BestTarget);
         }
     }

@@ -14,7 +14,7 @@ namespace banging_code.common.rooms
         [field: SerializeField] public ConnectSocketsHandler SocketsHandler { get; private set; } = new();
         [field: SerializeField] public PolygonCollider2D RoomShapeCollider { get; set; }
         [field: SerializeField] public bool IsBud { get; set; }
-
+        
         public string ID { get; private set; } = "";
 
         public void GenerateID()
@@ -25,15 +25,7 @@ namespace banging_code.common.rooms
                 return;
             }
 
-            ID += UnityEngine.Random.Range(0, 10);
-            ID += UnityEngine.Random.Range(0, 10);
-            ID += UnityEngine.Random.Range(0, 10);
-            ID += UnityEngine.Random.Range(0, 10);
-            
-            ID += UnityEngine.Random.Range(0, 10);
-            ID += UnityEngine.Random.Range(0, 10);
-            ID += UnityEngine.Random.Range(0, 10);
-            ID += UnityEngine.Random.Range(0, 10);
+            ID = UTLS.GetRandomID("room_");
         }
         
         public Room[] Connections => connections.ToArray();

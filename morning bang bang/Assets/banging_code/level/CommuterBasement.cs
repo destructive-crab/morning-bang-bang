@@ -5,6 +5,7 @@ using banging_code.camera_logic;
 using banging_code.items;
 using banging_code.level.random_gen;
 using banging_code.common.rooms;
+using banging_code.level.entity_locating;
 using banging_code.level.light;
 using banging_code.level.structure.map;
 using banging_code.pause;
@@ -37,6 +38,7 @@ namespace banging_code.level
             Modules.AddModule(new SceneEntitiesModule.EntityFabricModule(EntitiesController));
             Modules.AddModule(Map);
             Modules.AddModule(new LightManager());
+            Modules.AddModule(new LocationManager(this));
         }
         protected override void PrepareLevel() { }
         protected override void GenerateLevelBase()
@@ -54,10 +56,21 @@ namespace banging_code.level
 
         protected override void ProcessGeneratedLevelSpawnContent()
         {
-            var spawners = Hierarchy.RoomsContainer.GetComponentsInChildren<EntitySpawner>();
-            foreach (var entitySpawner in spawners)
+            foreach (Room room in Hierarchy.Rooms)
             {
-                entitySpawner.Spawn();
+                Modules.Get<LocationManager>().RegisterLocation(room.ID);
+                
+                var spawners = room.GetComponentsInChildren<EntitySpawner>();
+                
+                foreach (var spawner in spawners)
+                {
+                    var enemies = spawner.Spawn();
+                    
+                    foreach (Enemy enemy in enemies)
+                    {
+                        Modules.Get<LocationManager>().AddEntity(enemy, room.ID);
+                    }
+                }
             }
         }
 

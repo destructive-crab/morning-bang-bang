@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using banging_code.common;
 using banging_code.common.rooms;
+using banging_code.level.entity_locating;
 using destructive_code.Tilemaps;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -168,6 +169,10 @@ namespace banging_code.level.random_gen
                 GameObject.Destroy(roomFloorTilemap.gameObject);
                 GameObject.Destroy(roomObstaclesTilemap.gameObject);
                 GameObject.Destroy(roomGrid);
+
+                room.RoomShapeCollider.gameObject.layer = LayerMask.NameToLayer("Default");
+                room.RoomShapeCollider.isTrigger = true;
+                room.RoomShapeCollider.gameObject.AddComponent<RoomLocationTrigger>();
             }
             
             var globalFloorTilemap = level.Hierarchy.FloorTilemap;

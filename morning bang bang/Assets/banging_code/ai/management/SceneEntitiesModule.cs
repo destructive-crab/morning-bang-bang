@@ -8,7 +8,7 @@ namespace banging_code.ai.pathfinding
 {
     public class SceneEntitiesModule : SceneModule
     {
-        private readonly List<Entity> entities = new();
+        private readonly List<Enemy> entities = new();
 
         public override void PrepareModule(Scene scene)
         {
@@ -22,11 +22,11 @@ namespace banging_code.ai.pathfinding
             }
         }
 
-        private void AddEntities(Entity[] entities)
+        private void AddEntities(Enemy[] entities)
         {
             this.entities.AddRange(entities);
         }
-        private void RemoveEntities(Entity[] entities)
+        private void RemoveEntities(Enemy[] entities)
         {
             foreach (var entity in entities)
             {
@@ -70,7 +70,7 @@ namespace banging_code.ai.pathfinding
 
             public override void OnGameObjectInstantiated(GameObject instance)
             {
-                var entities = instance.GetComponentsInChildren<Entity>();
+                var entities = instance.GetComponentsInChildren<Enemy>();
                 
                 if (entities.Length > 0)
                 {
@@ -79,7 +79,7 @@ namespace banging_code.ai.pathfinding
             }
             public override void BeforeGameObjectDestroyed(GameObject instance)
             {
-                var entities = instance.GetComponentsInChildren<Entity>();
+                var entities = instance.GetComponentsInChildren<Enemy>();
                 
                 if (entities.Length  > 0)
                 {

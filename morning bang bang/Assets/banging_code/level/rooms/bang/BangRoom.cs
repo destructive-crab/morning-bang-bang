@@ -9,7 +9,7 @@ namespace banging_code.common.rooms
     public class BangRoom : Room
     {
         public List<Moody> Moodys;
-        private List<Entity> entities = new();
+        private List<Enemy> entities = new();
 
         private LightManager lightManager;
         [Inject] private CCamera camera;
@@ -32,8 +32,8 @@ namespace banging_code.common.rooms
             }
             
             //???
-            var entities = GetComponentsInChildren<Entity>();
-            this.entities = new List<Entity>(entities);
+            var entities = GetComponentsInChildren<Enemy>();
+            this.entities = new List<Enemy>(entities);
 
             foreach (var entity in entities)
             {
@@ -45,11 +45,11 @@ namespace banging_code.common.rooms
             camera.EnterBangCamera(RoomShapeCollider);
         }
 
-        private void OnEntityDie(Entity entity)
+        private void OnEntityDie(Enemy enemy)
         {
-            if (entities.Contains(entity))
+            if (entities.Contains(enemy))
             {
-                entities.Remove(entity);
+                entities.Remove(enemy);
             }
 
             if (entities.Count == 0)

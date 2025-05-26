@@ -1,15 +1,29 @@
+using banging_code.common;
 using banging_code.common.rooms;
 using MothDIed;
 using UnityEngine;
 
 namespace banging_code.ai
 {
-    public abstract class Entity : Moody 
+    public abstract class Enemy : Moody 
     {
         public bool IsSleeping { get; private set; }
         public EntityHealth Health { get; protected set; }
 
         [SerializeField] private GameObject deadBody;
+
+        public override string ID
+        {
+            get
+            {
+                if (id == "") id = UTLS.GetRandomID(GetEntityPrefix());
+                return id;
+            }
+        }
+
+        protected virtual string GetEntityPrefix() => "enemy";
+
+        private string id;
 
         private void Update() => Systems.UpdateContainer();
         private void FixedUpdate() => Systems.FixedUpdateContainer();
@@ -35,7 +49,7 @@ namespace banging_code.ai
 
         public abstract void Tick();
 
-        protected void Die(Entity entity)
+        protected void Die(Enemy enemy)
         {
             Game.CurrentScene.Fabric.Instantiate(deadBody, transform.position);
             Destroy(gameObject);
