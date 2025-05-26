@@ -1,3 +1,4 @@
+using System;
 using banging_code.ai.pathfinding;
 using MothDIed.Scenes;
 using UnityEngine;
@@ -42,6 +43,18 @@ namespace banging_code.level.structure.map
                 var pos = hierarchy.ObstaclesTilemap.GetCellCenterWorld(new Vector3Int(position.x, position.y, 0));
                 this.UpdateCell(new Vector2Int((int)pos.x, (int)pos.y));
             }
+        }
+
+        public override bool HasAnyAround(Vector2Int position, Predicate<CellData> check)
+        {
+            var connections = GetConnectionsWithCorners(position.x, position.y);
+            
+            foreach (var connection in connections)
+            {
+                if (check.Invoke(connection)) return true;
+            }
+
+            return false;
         }
     }
 }

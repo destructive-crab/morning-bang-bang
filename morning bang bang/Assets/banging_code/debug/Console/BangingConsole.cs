@@ -88,7 +88,7 @@ public class BangingConsole : MonoBehaviour
     private void SetupInputAndOutput()
     {
         output = new ConsoleOutput(outputText);
-        input = new ConsoleInput(GetComponentInChildren<TMP_InputField>());
+        input = new ConsoleInput(GetComponentInChildren<TMP_InputField>(true));
     }
 
     private void SetupCommands()

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using banging_code.level.structure.map;
 using MothDIed.Scenes.SceneModules;
@@ -39,21 +40,11 @@ namespace banging_code.ai.pathfinding
         public abstract void UpdateCell(Vector2Int position);
         public abstract void Refresh(); //update all cells
 
-        public CellData[] GetConnections(int x, int y)
+        public abstract bool HasAnyAround(Vector2Int position, Predicate<CellData> check);
+
+        private CellData[] GetConnections(int x, int y, Vector2Int[] offsets)
         {
             Vector2Int position = new(x, y);
-            
-            Vector2Int[] offsets =
-            {
-                Vector2Int.down, 
-                Vector2Int.up, 
-                Vector2Int.right, 
-                Vector2Int.left, 
-                Vector2Int.down + Vector2Int.left,
-                Vector2Int.down + Vector2Int.right,                               
-                Vector2Int.up + Vector2Int.left, 
-                Vector2Int.up + Vector2Int.right,               
-            };
 
             List<CellData> res = new();
 
@@ -66,6 +57,35 @@ namespace banging_code.ai.pathfinding
             }
 
             return res.ToArray();
+        }
+        
+        public CellData[] GetConnectionsWithCorners(int x, int y)
+        {
+            Vector2Int[] offsets = new Vector2Int[]
+            {
+                new Vector2Int(-1,  0), // Left
+                new Vector2Int( 1,  0), // Right
+                new Vector2Int( 0,  1), // Up
+                new Vector2Int( 0, -1), // Down
+                new Vector2Int(-1,  1), // Up-Left
+                new Vector2Int( 1,  1), // Up-Right
+                new Vector2Int(-1, -1), // Down-Left
+                new Vector2Int( 1, -1)  // Down-Right
+            };
+            
+            return GetConnections(x, y, offsets);
+        }
+
+        public CellData[] GetConnections(int x, int y)
+        {
+            Vector2Int[] offsets = new Vector2Int[]
+            {
+                new Vector2Int(-1,  0), // Left
+                new Vector2Int( 1,  0), // Right
+                new Vector2Int( 0,  1), // Up
+                new Vector2Int( 0, -1), // Down
+            };
+            return GetConnections(x, y, offsets);
         }
 
         public class CellData

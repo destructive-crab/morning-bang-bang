@@ -30,8 +30,17 @@ namespace banging_code.ai.pathfinding
         private List<PathNode> GetNeighbourPoints(PathNode pathNode, List<PathNode> ignoredPoints)
         {
             List<PathNode> neighbourPoints = new List<PathNode>();
-
-            LevelMap.CellData[] pointsToCheck = LevelMap.GetConnections(pathNode.X, pathNode.Y);
+            
+            LevelMap.CellData[] pointsToCheck;
+            
+            if (LevelMap.HasAnyAround(pathNode.Cell.Position, (cell) => !cell.CMNIsWalkable))
+            {
+                pointsToCheck = LevelMap.GetConnections(pathNode.X, pathNode.Y);
+            }
+            else
+            {
+                pointsToCheck = LevelMap.GetConnections(pathNode.X, pathNode.Y);
+            }
             
             foreach (LevelMap.CellData nextPoint in pointsToCheck)
             {
