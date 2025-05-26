@@ -212,7 +212,7 @@ namespace banging_code.editor.room_builder_tool
                 obstaclesTilemap.Expand(1);
                 foreach (var position in obstaclesTilemap.cellBounds.allPositionsWithin)
                 {
-                    if (obstaclesTilemap.HasTileAround(position))
+                    if (obstaclesTilemap.HasTilesAroundPoint(position))
                     {
                         _tempTilemap.SetTile(position, collisionTile);
                     }                        
