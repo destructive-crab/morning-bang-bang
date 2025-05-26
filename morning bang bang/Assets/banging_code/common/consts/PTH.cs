@@ -7,5 +7,6 @@ namespace banging_code.common
         public const string CCameraInstance                     = "Prefabs/CCamera";
         public const string PlayerAnimatorBundle               = "Configs/PlayerAnimatorBundle";
         public const string PauseMenuPrefab                     = "Prefabs/PauseMenu";
+        public const string HUDPrefab                                         = "Prefabs/HUD";
     }
 }

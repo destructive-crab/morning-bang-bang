@@ -38,7 +38,6 @@ namespace banging_code.ai.targeting
 
         private void CheckLocation(string locationID)
         {
-            Debug.Log(locationID + " " + locationManager.GetLocationOf(Owner));
             if (locationID != locationManager.GetLocationOf(Owner)) return;
             
             var entities = locationManager.GetEntitesFrom(locationID);

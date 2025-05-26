@@ -10,7 +10,7 @@ using banging_code.level.light;
 using banging_code.level.structure.map;
 using banging_code.pause;
 using banging_code.player_logic.rat;
-
+using banging_code.ui;
 using MothDIed.DI;
 using MothDIed.InputsHandling;
 using UnityEngine;
@@ -82,6 +82,8 @@ namespace banging_code.level
 
         protected override void SpawnUI()
         {
+            var hudPrefab = Resources.Load<HUD>(PTH.HUDPrefab);
+            Fabric.Instantiate(hudPrefab, Vector2.zero);
         }
 
         protected override void FinishLevelSetup()

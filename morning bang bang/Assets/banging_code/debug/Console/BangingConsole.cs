@@ -13,9 +13,10 @@ public class BangingConsole : MonoBehaviour
     [SerializeField] private GameObject root;
 
     public static BangingConsole Instance { get; private set; }
+    
     private ConsoleOutput output;
     private ConsoleInput input;
-    private ConsoleState state;
+    private ConsoleState state = ConsoleState.Disabled;
 
     private readonly Dictionary<string, ConsoleCommand> commands = new();
 
@@ -36,20 +37,20 @@ public class BangingConsole : MonoBehaviour
             switch (state)
             {
                 case ConsoleState.Focused:
-                    state = ConsoleState.Unfocused;
+                    state = ConsoleState.Idle;
                     input.Disable();
                     break;
-                case ConsoleState.Unfocused:
+                
+                case ConsoleState.Idle:
                     state = ConsoleState.Disabled;
                     root.SetActive(false);
                     break;
+                
                 case ConsoleState.Disabled:
                     state = ConsoleState.Focused;
                     root.SetActive(true);
                     input.Enable();
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
         if (state == ConsoleState.Focused && Input.GetKeyDown(KeyCode.Return))
@@ -121,7 +122,7 @@ public class BangingConsole : MonoBehaviour
     enum ConsoleState
     {
         Focused,
-        Unfocused,
+        Idle,
         Disabled
     }
 }
