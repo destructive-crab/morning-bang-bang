@@ -5,7 +5,7 @@ using MothDIed.DI;
 using MothDIed.MonoSystems;
 using UnityEngine;
 
-namespace content.commuter_basement_I.entities.bastard
+namespace banging_code.ai.systems
 {
     public class BasicMovementSystem : MonoSystem, IEntityAISystem
     {
@@ -32,7 +32,7 @@ namespace content.commuter_basement_I.entities.bastard
                 flipper?.FaceToPoint(currentPath.Path.CurrentPoint);
                 rigidbody.MovePosition(Vector3.MoveTowards(rigidbody.position, currentPath.Path.CurrentPoint, Time.deltaTime *  Speed));
 
-                if (Vector3.Distance(rigidbody.position, currentPath.Path.CurrentPoint) < 0.01f)
+                if (Vector3.Distance(rigidbody.position, currentPath.Path.CurrentPoint) < 0.1f)
                 {
                     currentPath.Path.Next();
                 }
