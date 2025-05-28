@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using banging_code.common;
 using banging_code.level.entity_locating;
 using MothDIed;
 using MothDIed.DI;
@@ -36,7 +37,7 @@ namespace banging_code.ai.targeting
             locationManager.OnLocationEntitesChanged -= CheckLocation;
         }
 
-        private void CheckLocation(string locationID)
+        private void CheckLocation(ID locationID)
         {
             if (locationID != locationManager.GetLocationOf(Owner)) return;
             

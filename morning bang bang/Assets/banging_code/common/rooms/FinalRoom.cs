@@ -6,6 +6,6 @@ namespace banging_code.common.rooms
     public class FinalRoom : Room
     {
         [Inject]
-        private void EnableLight(LightManager lightManager) => lightManager.TurnOn(ID);
+        private void EnableLight(LightManager lightManager) => lightManager.TurnOn(RoomID);
     }
 }

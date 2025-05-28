@@ -12,18 +12,17 @@ namespace banging_code.ai
 
         [SerializeField] private GameObject deadBody;
 
-        public override string ID
+        private ID id;
+        public override ID EntityID
         {
             get
             {
-                if (id == "") id = UTLS.GetRandomID(GetEntityPrefix());
+                if (id == null) id = new ID(GetEntityPrefix(), true);
                 return id;
             }
         }
 
         protected virtual string GetEntityPrefix() => "enemy";
-
-        private string id;
 
         private void Update() => Systems.UpdateContainer();
         private void FixedUpdate() => Systems.FixedUpdateContainer();

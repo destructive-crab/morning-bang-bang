@@ -10,7 +10,7 @@ namespace banging_code.common.rooms
         [Inject] private CCamera cCamera;
 
         [Inject]
-        void InjectLightManager(LightManager lightManager) => lightManager.TurnOn(ID);
+        void InjectLightManager(LightManager lightManager) => lightManager.TurnOn(RoomID);
         
         private PlayerTrigger trigger;
         private BuisnessCameraTarget target;

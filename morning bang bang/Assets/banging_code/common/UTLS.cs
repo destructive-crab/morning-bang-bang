@@ -86,9 +86,9 @@ namespace banging_code.common
             return output;
         }
         
-        public static string GetRandomID(string prefix = "")
+        public static string GetRandomID()
         {
-            string ID = prefix;
+            string ID = "";
             
             ID += UnityEngine.Random.Range(0, 10);
             ID += UnityEngine.Random.Range(0, 10);

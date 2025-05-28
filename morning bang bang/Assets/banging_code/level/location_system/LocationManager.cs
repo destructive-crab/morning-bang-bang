@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using banging_code.common;
 using MothDIed;
 using MothDIed.Core.GameObjects;
 using MothDIed.Scenes.SceneModules;
@@ -9,23 +10,23 @@ namespace banging_code.level.entity_locating
 {
     public sealed class LocationManager : SceneModule
     {
-        private readonly Dictionary<string, List<MonoEntity>> locations = new();
-        private readonly Dictionary<MonoEntity, string> entityToLocation = new();
+        private readonly Dictionary<ID, List<MonoEntity>> locations = new();
+        private readonly Dictionary<MonoEntity, ID> entityToLocation = new();
         private readonly List<MonoEntity> allEntities = new();
-        private readonly List<string> allLocations = new();
+        private readonly List<ID> allLocations = new();
 
-        public event Action<MonoEntity, string> OnEntitySwitchLocation;
-        public event Action<string> OnLocationEntitesChanged;
+        public event Action<MonoEntity, ID> OnEntitySwitchLocation;
+        public event Action<ID> OnLocationEntitesChanged;
 
         public LocationManager(LevelScene scene)
         {
             scene.Modules.AddModule(new LocationManagerFabricHook(this));
         }
 
-        public MonoEntity[] GetEntitesFrom(string location) => locations[location].ToArray();
-        public string GetLocationOf(MonoEntity entity) => entityToLocation[entity];
+        public MonoEntity[] GetEntitesFrom(ID location) => locations[location].ToArray();
+        public ID GetLocationOf(MonoEntity entity) => entityToLocation[entity];
 
-        public void RegisterLocation(string location)
+        public void RegisterLocation(ID location)
         {
             if (locations.ContainsKey(location))
             {
@@ -36,7 +37,7 @@ namespace banging_code.level.entity_locating
             locations.Add(location, new List<MonoEntity>());
         }
 
-        public void AddEntity(MonoEntity entity, string location)
+        public void AddEntity(MonoEntity entity, ID location)
         {
             if(!ProcessEntity(entity) || !ProcessLocation(location)) return;
             
@@ -74,7 +75,7 @@ namespace banging_code.level.entity_locating
             return true;
         }
 
-        public void ChangeLocationOf(MonoEntity entity, string newLocation)
+        public void ChangeLocationOf(MonoEntity entity, ID newLocation)
         {
             if(entity!=null && !ProcessLocation(newLocation)) return;
             
@@ -97,7 +98,7 @@ namespace banging_code.level.entity_locating
             OnLocationEntitesChanged?.Invoke(newLocation);
         }
 
-        public void RemoveLocation(string location)
+        public void RemoveLocation(ID location)
         {
             if (!ProcessLocation(location)) return;
 
@@ -127,7 +128,7 @@ namespace banging_code.level.entity_locating
             return true;
         }
 
-        private bool ProcessLocation(string location)
+        private bool ProcessLocation(ID location)
         {
             if (!allLocations.Contains(location))
             {

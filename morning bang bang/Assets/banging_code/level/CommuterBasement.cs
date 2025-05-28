@@ -58,7 +58,7 @@ namespace banging_code.level
         {
             foreach (Room room in Hierarchy.Rooms)
             {
-                Modules.Get<LocationManager>().RegisterLocation(room.ID);
+                Modules.Get<LocationManager>().RegisterLocation(room.RoomID);
                 
                 var spawners = room.GetComponentsInChildren<EntitySpawner>();
                 
@@ -68,7 +68,7 @@ namespace banging_code.level
                     
                     foreach (Enemy enemy in enemies)
                     {
-                        Modules.Get<LocationManager>().AddEntity(enemy, room.ID);
+                        Modules.Get<LocationManager>().AddEntity(enemy, room.RoomID);
                     }
                 }
             }

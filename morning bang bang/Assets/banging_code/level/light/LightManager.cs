@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using banging_code.common;
 using banging_code.common.rooms;
 using MothDIed;
-using MothDIed.DI;
 using MothDIed.Scenes;
 using MothDIed.Scenes.SceneModules;
 
@@ -9,17 +9,18 @@ namespace banging_code.level.light
 {
     public class LightManager : SceneModule
     {
-        private Dictionary<string, List<IControllableLight>> lights = new();
+        private Dictionary<ID, List<IControllableLight>> lights = new();
+        private ID corridorID = new("corridor");
 
         public override void StartModule(Scene scene)
         {
             base.StartModule(scene);
             CollectAllLightsFromLevel();
             
-            TurnOn("corridor");
+            TurnOn(corridorID);
         }
 
-        public void RegisterLightsAs(string key, IControllableLight[] lights)
+        public void RegisterLightsAs(ID key, IControllableLight[] lights)
         {
             this.lights.TryAdd(key, new List<IControllableLight>());
             
@@ -34,13 +35,13 @@ namespace banging_code.level.light
 
                 if (room is Corridor || room is StartRoom || room is FinalRoom)
                 {
-                    RegisterLightsAs("corridor", lights);
+                    RegisterLightsAs(corridorID, lights);
                 }
-                RegisterLightsAs(room.ID, lights);
+                RegisterLightsAs(room.RoomID, lights);
             }
         }
 
-        public void TurnOn(string key)
+        public void TurnOn(ID key)
         {
             if (lights.ContainsKey(key))
             {
@@ -51,7 +52,7 @@ namespace banging_code.level.light
             }
         }
 
-        public void TurnOff(string key)
+        public void TurnOff(ID key)
         {
             if (lights.ContainsKey(key))
             {

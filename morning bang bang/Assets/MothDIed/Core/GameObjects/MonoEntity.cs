@@ -1,3 +1,4 @@
+using banging_code.common;
 using MothDIed.MonoSystems;
 using MothDIed.ServiceLocators;
 using UnityEngine;
@@ -6,7 +7,7 @@ namespace MothDIed
 {
     public abstract class MonoEntity : MonoBehaviour
     {
-        public abstract string ID { get; }
+        public abstract ID EntityID { get; }
         
         public readonly ServiceLocator<Component> CachedComponents = new();
         public readonly ServiceLocator<MonoData> Data = new();
@@ -14,7 +15,7 @@ namespace MothDIed
 
         public override string ToString()
         {
-            return $"(name) {gameObject.name}; (id) {ID}";
+            return $"(name) {gameObject.name}; (id) {EntityID}";
         }
     }
 }

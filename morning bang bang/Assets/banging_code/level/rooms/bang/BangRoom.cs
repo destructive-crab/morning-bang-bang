@@ -18,7 +18,7 @@ namespace banging_code.common.rooms
         private void InjectLightManager(LightManager lightManager)
         {
             this.lightManager = lightManager;
-            lightManager.TurnOn(ID);
+            lightManager.TurnOn(RoomID);
         }
         
         //callbacks
@@ -41,7 +41,7 @@ namespace banging_code.common.rooms
                 entity.Health.OnDie += OnEntityDie;
             }
             
-            lightManager.TurnOn(ID);
+            lightManager.TurnOn(RoomID);
             camera.EnterBangCamera(RoomShapeCollider);
         }
 

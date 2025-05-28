@@ -18,7 +18,7 @@ namespace banging_code.player_logic.rat
         public Transform upRoot;
         public Transform downRoot;
 
-        public override string ID => "player";
+        public override ID EntityID { get; } = new("player", true);
 
         protected override void InitializeComponents()
         {

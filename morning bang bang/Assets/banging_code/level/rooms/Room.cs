@@ -14,20 +14,9 @@ namespace banging_code.common.rooms
         [field: SerializeField] public ConnectSocketsHandler SocketsHandler { get; private set; } = new();
         [field: SerializeField] public PolygonCollider2D RoomShapeCollider { get; set; }
         [field: SerializeField] public bool IsBud { get; set; }
-        
-        public string ID { get; private set; } = "";
 
-        public void GenerateID()
-        {
-            if(ID != "")
-            {
-                Debug.LogWarning("[ROOM : GENERATE ID] TRYING TO GENERATE ID OF A ROOM WHERE ID ALREADY GENERATED");
-                return;
-            }
+        public ID RoomID { get; private set; } = new("room", true);
 
-            ID = UTLS.GetRandomID("room_");
-        }
-        
         public Room[] Connections => connections.ToArray();
         private List<Room> connections = new();
 
