@@ -1,5 +1,5 @@
-using System;
 using banging_code.ai;
+using banging_code.ai.common;
 using banging_code.ai.pathfinding;
 using banging_code.ai.systems;
 using banging_code.ai.targeting;
@@ -26,20 +26,20 @@ namespace content.commuter_basement_I.entities.bastard
             CachedComponents.Register(GetComponent<Rigidbody2D>());
             CachedComponents.Register(GetComponentInChildren<Animator>());
             CachedComponents.Register(GetComponentInChildren<SpriteRenderer>());
-            CachedComponents.Register(GetComponentInChildren<EntityFieldOfView>());
             attackRange = GetComponentInChildren<EntityAttackRange>();
             CachedComponents.Register(attackRange);
             CachedComponents.Register(GetComponentInChildren<BastardBat>());
             CachedComponents.Register(GetComponent<EntityHealth>());
+            CachedComponents.Register(GetComponentInChildren<SlayEffect>());
             
             Health = CachedComponents.Get<EntityHealth>();
 
             Systems.AddSystem(new Flipper(true));
             Systems.AddSystem(new BastardAnimator());
             Systems.AddSystem(new TargetSelector());
+            Systems.AddSystem(new PathUpdater());
             Systems.AddSystem(new BasicMovementSystem());
             Systems.AddSystem(new BastardAttackSystem());
-            Systems.AddSystem(new PathUpdater());
 
             Systems.StartContainer();
             Health.OnDie += Die;
@@ -66,11 +66,7 @@ namespace content.commuter_basement_I.entities.bastard
             Data.Get<PathfinderTarget>().Target = Systems.Get<TargetSelector>().BestTarget;
             Data.Get<AttackTarget>().Target = attackRange.Best;
         }
-
-
-        private void Do()
-        {
-        }
-
+        
+        private void Do() { }
     }
 }
