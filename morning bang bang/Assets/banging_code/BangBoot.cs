@@ -7,6 +7,7 @@ namespace banging_code
     public class BangBoot : GameStartPoint
     {
         public Coin coinPrefab;
+        public GameStartArgs Args;
         
         public override IDependenciesProvider[] GetProviders()
         {
@@ -15,8 +16,12 @@ namespace banging_code
 
         protected override void StartGame()
         {
-            
-            Game.InnerLoop();
+            TODO();
+        }
+
+        private async void TODO()
+        {
+            await Game.StartGame(Args);
             Game.SceneSwitcher.SwitchTo(new CommonScene("Menu"));
         }
     }

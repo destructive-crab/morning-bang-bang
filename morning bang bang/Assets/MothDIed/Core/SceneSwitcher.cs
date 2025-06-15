@@ -32,10 +32,10 @@ namespace MothDIed
             }
         }
 
-        public async UniTaskVoid LoadPersistentScene()
+        public async UniTask CreatePersistentScene()
         {
-            persistentScene = SceneManager.CreateScene("PERSISTENT SCENE");
-            SceneManager.LoadScene(persistentScene.name);
+            await SceneManager.LoadSceneAsync("PERSISTENT SCENE", LoadSceneMode.Additive);
+            IsPersistentSceneLoaded = true;
         }
 
         public async UniTaskVoid SwitchTo<TScene>(TScene scene, Action onSwitched = null)
@@ -69,8 +69,9 @@ namespace MothDIed
             }
             
             //starting loading new scene
+            Scene prevScene = CurrentScene;
             CurrentScene = scene;
-
+            
             scene.InitModules();
             scene.PrepareScene();
 
@@ -80,10 +81,9 @@ namespace MothDIed
             
             return;
 
-            void Complete() 
+            void Complete()
             {
-                Scene prevScene = CurrentScene;
-    
+                SceneManager.SetActiveScene(SceneManager.GetSceneByName(scene.GetSceneName()));
                 scene.LoadScene();
     
                 IsSceneLoaded = true;
@@ -109,5 +109,17 @@ namespace MothDIed
 
         
         private static string GetCurrentSceneName() => SceneManager.GetActiveScene().name;
+
+        public bool MoveToPersistentScene(GameObject gameObject)
+        {
+            if (IsPersistentSceneLoaded)
+            {
+//                SceneManager.MoveGameObjectToScene(gameObject, persistentScene);
+                Debug.Log(gameObject.name);
+                return true;
+            }
+
+            return false;
+        }
     }
 }

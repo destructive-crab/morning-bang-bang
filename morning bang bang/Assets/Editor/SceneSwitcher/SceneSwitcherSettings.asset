@@ -15,6 +15,7 @@ MonoBehaviour:
   Settings:
     WhichScenesCollect: 0
     ShowReturnToPreviousButton: 1
+    AutoEnableCustomPlayModeStartScene: 1
     CustomPlayModeStartSceneBuildIndex: 0
     SaveSceneSwitch: 1
     CustomSceneList:

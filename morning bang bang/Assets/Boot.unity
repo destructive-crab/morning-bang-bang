@@ -163,12 +163,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1720075627}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41d72fea92d646b3af5f9d9d7e766bee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   coinPrefab: {fileID: 2594510312404701097, guid: da7057de31c48b24f9349d164bdc47cc, type: 3}
+  Args:
+    AllowDebug: 1
+    DebuggerConfig: {fileID: 11400000, guid: 91c1c652ef9883d48815d3ae1e94c682, type: 2}
 --- !u!114 &1720075630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,7 +179,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1720075627}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fca98ed315b24bdc8066b3516372b4ad, type: 3}
   m_Name: 

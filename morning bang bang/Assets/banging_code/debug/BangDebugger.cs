@@ -12,6 +12,12 @@ namespace banging_code.debug
         public DebugMapDrawer Map;
 
         private Transform container;
+
+        public BangDebugger(DebuggerConfig config)
+        {
+            debuggerConfig = config;
+        }
+
         public Transform GetDebugGOContainer()
         {
             if (container == null)
@@ -22,9 +28,10 @@ namespace banging_code.debug
             return container;
         }
 
-        public BangDebugger(DebuggerConfig config)
+        public void SetupDebugger()
         {
-            debuggerConfig = config;
+            Lines = new DebugLinesDrawer(debuggerConfig, this);
+            Lines.Setup();
         }
     }
 }

@@ -18,7 +18,6 @@ namespace banging_code
         {
             InputService.Initialize();
             
-            Game.InnerLoop();
             Game.RunSystem.StartDevRun();
         }
     }

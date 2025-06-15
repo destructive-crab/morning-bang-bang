@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Menu.unity
     guid: 110ca840396cbe149b34c5c43226eb0a
+  - enabled: 1
+    path: Assets/PERSISTENT SCENE.unity
+    guid: 98ff09b2026edd04399a369a3ac9d091
   m_configObjects: {}

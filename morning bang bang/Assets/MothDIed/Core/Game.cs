@@ -1,3 +1,4 @@
+using System;
 using banging_code.debug;
 using Cysharp.Threading.Tasks;
 using MothDIed.DI;
@@ -12,6 +13,7 @@ namespace MothDIed
     {
         //STATE
         public static bool Awake { get; private set; } = false;
+        public static bool IsBootstrap { get; private set; } = true;
         
         //SERVICES 
         //core
@@ -42,17 +44,25 @@ namespace MothDIed
         public static readonly RunSystem RunSystem = new();
         public static readonly PauseSystem PauseSystem = new();
 
-        public static void StartGame(GameStartArgs args)
+        public static async UniTask StartGame(GameStartArgs args)
         {
             InputService.Initialize();
+            await SceneSwitcher.CreatePersistentScene();
 
             if (args.AllowDebug)
             {
-                debugger = new BangDebugger();
+                debugger = new BangDebugger(args.DebuggerConfig);
+                debugger.SetupDebugger();
             }
-            
+
+            IsBootstrap = false;
             Awake = true;
             InnerLoop();
+        }
+
+        public static void MakeGameObjectPersistent(GameObject gameObject)
+        {
+            SceneSwitcher.MoveToPersistentScene(gameObject);
         }
         
         private static async void InnerLoop()
@@ -87,13 +97,10 @@ namespace MothDIed
         }
     }
 
+    [Serializable]
     public class GameStartArgs
     {
-        public readonly bool AllowDebug;
-
-        public GameStartArgs(bool allowDebug)
-        {
-            AllowDebug = allowDebug;
-        }
+        public bool AllowDebug;
+        public DebuggerConfig DebuggerConfig;
     }
 }

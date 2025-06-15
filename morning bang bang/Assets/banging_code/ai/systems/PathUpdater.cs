@@ -20,7 +20,6 @@ namespace banging_code.ai.systems
         public override bool EnableOnStart() => true;
         public override void ContainerStarted()
         {
-            debugLinesDrawer = new DebugLinesDrawer(Owner.transform);
         }
 
         public override void Enable()
@@ -39,16 +38,8 @@ namespace banging_code.ai.systems
                 }
                 
                 path.Path = pathfinder.FindPath(Owner.transform.position, target.Target.Position);
-
-                if (Game.DebugFlags.ShowPaths && path.Path != null)
-                {
-                    debugLinesDrawer.Clear();
-                    debugLinesDrawer.Draw("[PATH DEBUG]", Color.green, 0.2f, path.Path.Points);
-                }
-                else if(debugLinesDrawer.LinesCount > 0)
-                {
-                    debugLinesDrawer.Clear();
-                }
+                
+                //TODO DEBUG LINES
                 
                 yield return new WaitForSeconds(PathUpdateRate);
             }
