@@ -10,7 +10,7 @@ namespace MothDIed.CallbackSystem.Signals
 
         static SignalManager()
         {
-            Game.OnSwitchingFromCurrent += ClearSubscriptions;
+            Game.SceneSwitcher.OnSwitchingFromCurrent += ClearSubscriptions;
         }
 
         private static void ClearSubscriptions(Scene arg1)

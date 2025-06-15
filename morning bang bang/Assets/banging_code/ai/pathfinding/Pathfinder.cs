@@ -9,6 +9,8 @@ namespace banging_code.ai.pathfinding
     public sealed class Pathfinder
     {
         private Vector2Int currentTarget;
+        private static readonly PathCacher PathCacher = new PathCacher(1000);
+        
         private static LevelMap LevelMap => Game.RunSystem.Data.Level.Map;
 
         private float DefineGCost(PathNode startPathNode, PathNode endPathNode) 
@@ -57,7 +59,6 @@ namespace banging_code.ai.pathfinding
 
         public Path FindPath(Vector2 start, Vector2 end)
         {
-            currentTarget = new Vector2Int((int)end.x, (int)end.y);
             List<PathNode> nextPoints = new List<PathNode>();
 
             List<PathNode> visitedPoints = new List<PathNode>();
@@ -67,12 +68,24 @@ namespace banging_code.ai.pathfinding
             var endCell = LevelMap.Get(Mathf.RoundToInt(end.x), Mathf.RoundToInt(end.y));
             PathNode endPathNode = new PathNode(endCell.Position.x, endCell.Position.y, endCell);
 
-            PathNode currentPathNode = startPathNode;
+            var cached = PathCacher.Get(startCell.Position, endCell.Position);
+            if (cached != null)
+            {
+                Debug.Log("GOT FROM CACHE");
+                return new Path(cached);
+            }
 
+            PathNode currentPathNode = startPathNode;
+            
             do
             {
                 if (currentPathNode.X == endPathNode.X && currentPathNode.Y == endPathNode.Y)
-                    return RestorePath(currentPathNode, end);
+                {
+                    var resPath = RestorePath(currentPathNode, end);
+                    PathCacher.Add(startCell.Position, endCell.Position, resPath.Points);
+                    
+                    return resPath;
+                }
 
                 List<PathNode> neighbourPoints = GetNeighbourPoints(currentPathNode, visitedPoints);
 

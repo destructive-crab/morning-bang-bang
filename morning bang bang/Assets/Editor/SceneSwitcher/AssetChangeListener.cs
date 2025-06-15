@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace RimuruDevUtils.SceneSwitcher
 {
-    public class AssetChangeListener : AssetPostprocessor
+    internal class AssetChangeListener : AssetPostprocessor
     {
         public static event Action AssetsWereChanged;
 

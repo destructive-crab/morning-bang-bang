@@ -12,7 +12,7 @@ namespace MothDIed.DI
 
             foreach (var monoBehaviour in all)
             {
-                Game.DIKernel.InjectWithBaseAnd(monoBehaviour, Game.CurrentScene.Modules.IServiceLocator());
+                Game.DIKernel.InjectWithBaseAnd(monoBehaviour, Game.SceneSwitcher.CurrentScene.Modules.IServiceLocator());
             }
         }
     }

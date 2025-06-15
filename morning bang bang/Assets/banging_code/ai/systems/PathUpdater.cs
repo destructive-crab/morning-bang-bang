@@ -1,6 +1,6 @@
 using System.Collections;
 using banging_code.ai.pathfinding;
-using banging_code.dev;
+using banging_code.debug;
 using MothDIed;
 using MothDIed.DI;
 using MothDIed.MonoSystems;
@@ -15,12 +15,12 @@ namespace banging_code.ai.systems
 
         public float PathUpdateRate = 0.1f;
         private Pathfinder pathfinder = new();
-        private LinesDrawer linesDrawer;
+        private DebugLinesDrawer debugLinesDrawer;
 
         public override bool EnableOnStart() => true;
         public override void ContainerStarted()
         {
-            linesDrawer = new LinesDrawer(Owner.transform);
+            debugLinesDrawer = new DebugLinesDrawer(Owner.transform);
         }
 
         public override void Enable()
@@ -42,12 +42,12 @@ namespace banging_code.ai.systems
 
                 if (Game.DebugFlags.ShowPaths && path.Path != null)
                 {
-                    linesDrawer.Clear();
-                    linesDrawer.Draw("[PATH DEBUG]", Color.green, 0.2f, path.Path.Points);
+                    debugLinesDrawer.Clear();
+                    debugLinesDrawer.Draw("[PATH DEBUG]", Color.green, 0.2f, path.Path.Points);
                 }
-                else if(linesDrawer.LinesCount > 0)
+                else if(debugLinesDrawer.LinesCount > 0)
                 {
-                    linesDrawer.Clear();
+                    debugLinesDrawer.Clear();
                 }
                 
                 yield return new WaitForSeconds(PathUpdateRate);

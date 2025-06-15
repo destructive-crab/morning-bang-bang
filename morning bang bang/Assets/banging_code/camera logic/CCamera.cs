@@ -57,7 +57,7 @@ namespace banging_code.camera_logic
             if (instance != null) return;
             
             CCameraInstance prefab = Resources.Load<CCameraInstance>(PTH.CCameraInstance);
-            instance = Game.CurrentScene.Fabric.Instantiate(prefab, Vector2.zero, null);
+            instance = Game.SceneSwitcher.CurrentScene.Fabric.Instantiate(prefab, Vector2.zero, null);
         }
 
         public void EnterBuisnessCamera(params Transform[] targets)

@@ -5,7 +5,7 @@ using Object = UnityEngine.Object;
 
 namespace MothDIed.Scenes
 {
-    public class GameFabric
+    public class GameFabric : IFabric
     {
         public event Action<Object> OnInstantiated;
         public event Action<Object> OnDestroyed;
@@ -17,9 +17,14 @@ namespace MothDIed.Scenes
 
         public void RefreshModules()
         {
-            modules = Game.CurrentScene.Modules.GetAllOfType<GameFabricSceneModule>();
+            modules = Game.SceneSwitcher.CurrentScene.Modules.GetAllOfType<GameFabricSceneModule>();
         }
-        
+
+        public TObject Instantiate<TObject>(TObject original) where TObject : Object
+        {
+            return Instantiate(original, Vector3.zero, Quaternion.identity, null);
+        }
+
         public virtual TObject Instantiate<TObject>(TObject original, Vector3 position)
             where TObject : Object
         {
@@ -33,7 +38,7 @@ namespace MothDIed.Scenes
         }
 
         public virtual TObject Instantiate<TObject>(TObject original, Vector3 position, Quaternion rotation)
-            where TObject : MonoBehaviour
+            where TObject : Object 
         {
             return Instantiate(original, position, rotation, null);
         }

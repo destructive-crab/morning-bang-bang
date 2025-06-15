@@ -30,7 +30,7 @@ namespace banging_code.bullets
             }
 
             GameObject.Instantiate(hitEffect, transform.position, quaternion.identity);
-            Game.CurrentScene.Fabric.Destroy(gameObject);
+            Game.SceneSwitcher.CurrentScene.Fabric.Destroy(gameObject);
         }
 
         public void AddForce(Vector2 direction, int multiplier)

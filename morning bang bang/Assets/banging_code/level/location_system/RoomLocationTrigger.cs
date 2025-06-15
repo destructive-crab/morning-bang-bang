@@ -19,7 +19,6 @@ namespace banging_code.level.entity_locating
 
         private void OnEntityEnter(MonoEntity entity)
         {
-            Debug.Log(entity.name);
             location.ChangeLocationOf(entity, room.RoomID);
         }
     }

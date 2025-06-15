@@ -21,7 +21,7 @@ namespace banging_code.runs_system
         {
             if(Data == null) return;
             
-            Game.SwitchTo(level);
+            Game.SceneSwitcher.SwitchTo(level);
         }
 
         public void SaveRun()

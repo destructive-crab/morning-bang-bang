@@ -13,7 +13,7 @@ namespace content.trader
         {
             for (int i = 0; i < count; i++)
             {
-                var instantiate = Game.CurrentScene.Fabric.Instantiate(coinPrefab, transform.position, null);
+                var instantiate = Game.SceneSwitcher.CurrentScene.Fabric.Instantiate(coinPrefab, transform.position, null);
                 instantiate.GetComponent<Rigidbody2D>().AddForce(Random.insideUnitCircle * 100, ForceMode2D.Force);
             }
         }

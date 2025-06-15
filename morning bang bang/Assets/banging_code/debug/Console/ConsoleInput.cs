@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using MothDIed.InputsHandling;
 using TMPro;
+using UnityEngine;
 
 namespace banging_code.debug.Console
 {
@@ -59,12 +60,15 @@ namespace banging_code.debug.Console
         {
             inputFieldInstance.ActivateInputField();
             InputService.EnterUIMode();
+            
+            Debug.Log("Console enabled");
         }
 
         public void Disable()
         {
             inputFieldInstance.DeactivateInputField();
             InputService.EnterPlayerMode();
+            Debug.Log("Console disabled");
         }
 
         public void Clear()

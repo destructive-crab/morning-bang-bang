@@ -1,85 +1,72 @@
+using banging_code.debug;
 using Cysharp.Threading.Tasks;
 using MothDIed.DI;
 using UnityEngine;
-using System;
 using banging_code.pause;
 using banging_code.runs_system;
 using MothDIed.InputsHandling;
-using MothDIed.Scenes;
 
 namespace MothDIed
 {
     public static class Game
     {
-        //scene management
-        public static bool IsSceneLoaded { get; private set; }
-        public static Scene CurrentScene { get; private set; }
+        //STATE
+        public static bool Awake { get; private set; } = false;
+        
+        //SERVICES 
+        //core
+        public static readonly SceneSwitcher SceneSwitcher = new();
+        public static readonly DIKernel DIKernel = new();
+        
+        //debug
+        public static BangDebugger GetDebugger()
+        {
+            if (Awake && AllowDebug)
+            {
+                return debugger;
+            }
 
-        //callbacks
-        public static event Action<Scene> OnSwitchingFromCurrent; //prev
-        public static event Action<Scene, Scene> OnSwitched; //prev/new
-        public static event Action<Scene> OnLoaded; //new
+            return null;
+        }
 
+        public static bool TryGetDebugger(out BangDebugger debugger)
+        {
+            debugger = Game.debugger;
+            return Awake && AllowDebug;
+        }
+
+        public static bool AllowDebug { get; private set; }
+        private static BangDebugger debugger;
+        
         //other
         public static readonly RunSystem RunSystem = new();
         public static readonly PauseSystem PauseSystem = new();
-        
-        //core
-        public static readonly DIKernel DIKernel = new();
-        private static readonly AsyncSceneLoader Loader = new();
 
-        public static void SwitchTo<TScene>(TScene scene, Action onSwitched = null)
-            where TScene : Scene
+        public static void StartGame(GameStartArgs args)
         {
-            OnSwitchingFromCurrent?.Invoke(CurrentScene);
-            
-            IsSceneLoaded = false;
-            
-            //clearing previous scene if exists
-            if (CurrentScene != null)
+            InputService.Initialize();
+
+            if (args.AllowDebug)
             {
-                CurrentScene?.DisposeScene();
-                DIKernel.ClearSceneDependenciesContainer();
+                debugger = new BangDebugger();
             }
             
-            //starting loading new scene
-            CurrentScene = scene;
-
-            scene.InitModules();
-            scene.PrepareScene();
-            
-            DIKernel.RegisterSceneDependencies(scene);
-            
-            Loader.LoadScene(scene.GetSceneName(), Complete);
-            
-            return;
-
-            void Complete() 
-            {
-                Scene prevScene = CurrentScene;
-    
-                scene.LoadScene();
-    
-                IsSceneLoaded = true;
-                
-                onSwitched?.Invoke();
-                OnSwitched?.Invoke(prevScene, scene);
-                OnLoaded?.Invoke(scene);
-            }
+            Awake = true;
+            InnerLoop();
         }
-
-        public static async void InnerLoop()
+        
+        private static async void InnerLoop()
         {
-            while (true)
+            while (Awake)
             {
-                if (CurrentScene != null && IsSceneLoaded)
+                if (SceneSwitcher.CurrentScene != null && SceneSwitcher.IsSceneLoaded)
                 {
-                    CurrentScene?.UpdateScene();
+                    SceneSwitcher.CurrentScene?.UpdateScene();
 
                     InputService.Tick();
                     EventManager.Tick();
 
-                    if (RunSystem.IsInRun && RunSystem.Data.Level != null && IsSceneLoaded)
+                    if (RunSystem.IsInRun && RunSystem.Data.Level != null && SceneSwitcher.IsSceneLoaded)
                     {
                         RunSystem.WhileOnLevel(RunSystem.Data.Level);
                     }
@@ -97,6 +84,16 @@ namespace MothDIed
         public static class DebugFlags
         {
             public static bool ShowPaths = false;
+        }
+    }
+
+    public class GameStartArgs
+    {
+        public readonly bool AllowDebug;
+
+        public GameStartArgs(bool allowDebug)
+        {
+            AllowDebug = allowDebug;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace banging_code.ai
             
             foreach (var point in spawnPoints)
             {
-                enemies.Add(Game.CurrentScene.Fabric.Instantiate(bastardPrefab, point.transform.position, transform));
+                enemies.Add(Game.SceneSwitcher.CurrentScene.Fabric.Instantiate(bastardPrefab, point.transform.position, transform));
             }
 
             return enemies.ToArray();

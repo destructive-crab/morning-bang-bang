@@ -5,28 +5,29 @@ using UnityEngine;
 namespace RimuruDevUtils.SceneSwitcher
 {
     [CustomEditor(typeof(SceneSwitcherSettingsScriptableObject))]
-    public class SceneSwitcherSettingsInspector : UnityEditor.Editor
+    internal class SceneSwitcherSettingsInspector : UnityEditor.Editor
     {
-    private SerializedProperty settingsProp;
+        private SerializedProperty settingsProp;
 
         private SerializedProperty whichScenesCollectProp;
         private SerializedProperty showReturnButtonProp;
+        private SerializedProperty customPlayModeStartSceneBuildIndexAutoEnableProp;
         private SerializedProperty customPlayModeStartSceneBuildIndexProp;
         private SerializedProperty saveSceneSwitchProp;
         private SerializedProperty customSceneListProp;
-    
+
         private SerializedProperty returnButtonHeightProp;
         private SerializedProperty sceneButtonHeightProp;
-    
+
         private SerializedProperty spaceAfterReturnButtonProp;
         private SerializedProperty spaceBetweenSceneButtonsProp;
-    
+
         private SerializedProperty currentSceneButtonFormattingProp;
         private SerializedProperty customPlayModeStartSceneLabelFormattingProp;
 
         private bool behaviourFoldout = true;
         private bool styleFoldout = true;
-    
+
         private void OnEnable()
         {
             // Get the Settings property
@@ -35,6 +36,7 @@ namespace RimuruDevUtils.SceneSwitcher
             // Find all serialized fields inside Settings
             whichScenesCollectProp = settingsProp.FindPropertyRelative("WhichScenesCollect");
             showReturnButtonProp = settingsProp.FindPropertyRelative("ShowReturnToPreviousButton");
+            customPlayModeStartSceneBuildIndexAutoEnableProp = settingsProp.FindPropertyRelative("AutoEnableCustomPlayModeStartScene");
             customPlayModeStartSceneBuildIndexProp = settingsProp.FindPropertyRelative("CustomPlayModeStartSceneBuildIndex");
             saveSceneSwitchProp = settingsProp.FindPropertyRelative("SaveSceneSwitch");
             customSceneListProp = settingsProp.FindPropertyRelative("CustomSceneList");
@@ -110,6 +112,7 @@ namespace RimuruDevUtils.SceneSwitcher
                 EditorGUILayout.PropertyField(showReturnButtonProp);
 
                 EditorGUILayout.PropertyField(customPlayModeStartSceneBuildIndexProp);
+                EditorGUILayout.PropertyField(customPlayModeStartSceneBuildIndexAutoEnableProp);
 
                 EditorGUILayout.PropertyField(saveSceneSwitchProp);
 

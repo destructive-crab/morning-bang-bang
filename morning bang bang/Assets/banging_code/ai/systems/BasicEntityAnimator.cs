@@ -6,18 +6,17 @@ namespace banging_code.ai.systems
     {
         public override bool EnableOnStart() => true;
 
-        
-        public void PlayIdle()
+        public virtual void PlayIdle()
         {
             Play("Idle");
         }
 
-        public void PlayRun()
+        public virtual void PlayRun()
         {
             Play("Run");
         }
 
-        public void PlayAttack()
+        public virtual void PlayAttack()
         {
             Play("Attack");
         }

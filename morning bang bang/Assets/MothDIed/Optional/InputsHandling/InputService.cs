@@ -13,7 +13,7 @@ namespace MothDIed.InputsHandling
         //i will add stuff only when i need it
         //
 
-        public static Vector3 MousePosition => Game.CurrentScene.GetCamera().ScreenToWorldPoint(Input.mousePosition);
+        public static Vector3 MousePosition => Game.SceneSwitcher.CurrentScene.GetCamera().ScreenToWorldPoint(Input.mousePosition);
         public static Vector2 Movement { get; private set; }
         
         //events

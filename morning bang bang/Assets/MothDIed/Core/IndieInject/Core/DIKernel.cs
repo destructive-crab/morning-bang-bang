@@ -97,7 +97,7 @@ namespace MothDIed.DI
             
             if(coreContainer.Count > 0) locators.Add(coreContainer);
             if(sceneContainer != null)  locators.Add(sceneContainer);
-            if(Game.CurrentScene.Modules.Count > 0)  locators.Add(Game.CurrentScene.Modules.IServiceLocator());
+            if(Game.SceneSwitcher.CurrentScene.Modules.Count > 0)  locators.Add(Game.SceneSwitcher.CurrentScene.Modules.IServiceLocator());
 
             locators.AddRange(serviceLocators);
  
@@ -110,7 +110,7 @@ namespace MothDIed.DI
             
             if(coreContainer.Count > 0) locators.Add(coreContainer);
             if(sceneContainer != null)  locators.Add(sceneContainer);
-            if(Game.IsSceneLoaded && Game.CurrentScene.Modules.Count > 0)  locators.Add(Game.CurrentScene.Modules.IServiceLocator());
+            if(Game.SceneSwitcher.IsSceneLoaded && Game.SceneSwitcher.CurrentScene.Modules.Count > 0)  locators.Add(Game.SceneSwitcher.CurrentScene.Modules.IServiceLocator());
 
             InjectWith(toInject, locators.ToArray());
         }

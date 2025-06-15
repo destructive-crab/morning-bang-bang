@@ -15,10 +15,9 @@ namespace banging_code
 
         protected override void StartGame()
         {
-            InputService.Initialize();
             
             Game.InnerLoop();
-            Game.SwitchTo(new CommonScene("Menu"));
+            Game.SceneSwitcher.SwitchTo(new CommonScene("Menu"));
         }
     }
 }

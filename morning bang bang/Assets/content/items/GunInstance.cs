@@ -45,7 +45,7 @@ namespace banging_code.items
 
         private void SpawnBullet()
         {
-            var bullet = Game.CurrentScene.Fabric.Instantiate(bulletPrefab, firePoint.position);
+            var bullet = Game.SceneSwitcher.CurrentScene.Fabric.Instantiate(bulletPrefab, firePoint.position);
             bullet.AddForce(UTLS.DirectionToVector(Game.RunSystem.Data.Level.PlayerInstance.Direction), 2);
         }
     }

@@ -6,7 +6,7 @@ namespace banging_code.dev
     {
         protected override void StartGame()
         {
-            Game.SwitchTo(new CommonScene("ConsoleScene"));
+            Game.SceneSwitcher.SwitchTo(new CommonScene("ConsoleScene"));
         }
     }
 }

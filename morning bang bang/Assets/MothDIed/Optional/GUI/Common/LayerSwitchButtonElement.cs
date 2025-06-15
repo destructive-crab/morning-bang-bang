@@ -19,7 +19,7 @@ namespace MothDIed.GUI
 
         private void InitSceneGUI()
         {
-            sceneGUIModule = Game.CurrentScene.Modules.Get<SceneGUIModule>();
+            sceneGUIModule = Game.SceneSwitcher.CurrentScene.Modules.Get<SceneGUIModule>();
 
             if (sceneGUIModule == null)
             {

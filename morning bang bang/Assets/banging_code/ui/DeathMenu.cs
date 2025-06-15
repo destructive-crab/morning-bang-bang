@@ -7,7 +7,7 @@ public class DeathMenu : MonoBehaviour
     public void RestartButton()
     {
         Game.RunSystem.ClearData();
-        Game.SwitchTo(new CommonScene("Menu"));
+        Game.SceneSwitcher.SwitchTo(new CommonScene("Menu"));
     }
 
     public void QuitButton()
