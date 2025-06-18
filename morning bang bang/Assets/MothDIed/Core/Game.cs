@@ -13,7 +13,7 @@ namespace MothDIed
     {
         //STATE
         public static bool Awake { get; private set; } = false;
-        public static bool IsBootstrap { get; private set; } = true;
+        public static bool IsBootstrapping { get; private set; } = true;
         
         //SERVICES 
         //core
@@ -55,7 +55,7 @@ namespace MothDIed
                 debugger.SetupDebugger();
             }
 
-            IsBootstrap = false;
+            IsBootstrapping = false;
             Awake = true;
             InnerLoop();
         }
@@ -91,10 +91,6 @@ namespace MothDIed
             }
         }
 
-        public static class DebugFlags
-        {
-            public static bool ShowPaths = false;
-        }
     }
 
     [Serializable]

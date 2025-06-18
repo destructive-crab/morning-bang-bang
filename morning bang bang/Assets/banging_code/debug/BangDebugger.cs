@@ -4,6 +4,11 @@ namespace banging_code.debug
 {
     public sealed class BangDebugger
     {
+        public static class Flags
+        {
+            public static bool ShowPaths = false;
+        }
+        
         private readonly DebuggerConfig debuggerConfig;
         
         public BangingConsole Console;
@@ -32,6 +37,8 @@ namespace banging_code.debug
         {
             Lines = new DebugLinesDrawer(debuggerConfig, this);
             Lines.Setup();
+            
+            Console = 
         }
     }
 }

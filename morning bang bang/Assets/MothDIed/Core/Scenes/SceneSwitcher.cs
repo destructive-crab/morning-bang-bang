@@ -35,6 +35,7 @@ namespace MothDIed
         public async UniTask CreatePersistentScene()
         {
             await SceneManager.LoadSceneAsync("PERSISTENT SCENE", LoadSceneMode.Additive);
+            persistentScene = SceneManager.GetSceneByName("PERSISTENT SCENE");
             IsPersistentSceneLoaded = true;
         }
 
@@ -114,7 +115,7 @@ namespace MothDIed
         {
             if (IsPersistentSceneLoaded)
             {
-//                SceneManager.MoveGameObjectToScene(gameObject, persistentScene);
+                SceneManager.MoveGameObjectToScene(gameObject, persistentScene);
                 Debug.Log(gameObject.name);
                 return true;
             }

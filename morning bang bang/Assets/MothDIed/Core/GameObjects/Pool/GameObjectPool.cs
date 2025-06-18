@@ -15,7 +15,7 @@ namespace MothDIed.Core.GameObjects.Pool
 
         public PoolInstanceRoot Root { get; private set; }
 
-        public bool IsPoolReady { get; private set; }
+        public bool IsPoolReady { get; private set; } = false;
         public int TotalCount => Available.Count + CurrentlyInUse.Count;
         public ushort CurrentSize { get; private set; }
 
@@ -34,11 +34,17 @@ namespace MothDIed.Core.GameObjects.Pool
 
         public GameObjectPool<TObject> Warm()
         {
-            //if (!IsConfigurationValid() || TryPopulateUntilPoolWillBeFull()) return this;
-
+            if (IsPoolReady) return this;
+            
             Root = new GameObject().AddComponent<PoolInstanceRoot>();
-            Game.MakeGameObjectPersistent(Root.gameObject);
-            Debug.Log("AAA");
+            Root.Setup(PoolConfiguration.Name);
+            
+            if(PoolConfiguration.Persistent)
+            {
+                Game.MakeGameObjectPersistent(Root.gameObject);
+            }
+
+            TryPopulateUntilPoolWillBeFull();
             
             IsPoolReady = true;
             return this;
@@ -83,7 +89,7 @@ namespace MothDIed.Core.GameObjects.Pool
 
             while (TotalCount < CurrentSize)
             {
-                TObject newInstance = PoolConfiguration.Fabric.Instantiate(PoolConfiguration.Prefab);
+                TObject newInstance = PoolConfiguration.Fabric.Instantiate(PoolConfiguration.Prefab, Vector3.zero,  Root.transform);
                 
                 newInstance.gameObject.SetActive(false);
                 Available.Add(newInstance);
