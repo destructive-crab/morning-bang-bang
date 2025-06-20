@@ -48,7 +48,7 @@ namespace MothDIed
             //clearing previous scene if exists
             if (CurrentScene != null)
             {
-                CurrentScene?.DisposeScene();
+                CurrentScene.DisposeScene();
                 Game.DIKernel.ClearSceneDependenciesContainer();
 
                 await SceneManager.UnloadSceneAsync(CurrentScene.GetSceneName());
@@ -116,7 +116,6 @@ namespace MothDIed
             if (IsPersistentSceneLoaded)
             {
                 SceneManager.MoveGameObjectToScene(gameObject, persistentScene);
-                Debug.Log(gameObject.name);
                 return true;
             }
 

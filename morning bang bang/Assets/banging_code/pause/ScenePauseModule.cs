@@ -38,7 +38,7 @@ namespace banging_code.pause
             switch (isPaused)
             {
                 case true:
-                    InputService.EnterUIMode();
+                    InputService.SwitchTo(InputService.Mode.UI);
                     break;
                 case false:
                     InputService.BackToPreviousMode();

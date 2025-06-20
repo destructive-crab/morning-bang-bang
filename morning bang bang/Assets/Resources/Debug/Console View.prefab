@@ -354,7 +354,7 @@ GameObject:
   - component: {fileID: 6610021975823016372}
   - component: {fileID: 2356698252324170536}
   m_Layer: 5
-  m_Name: Text
+  m_Name: Input Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -960,7 +960,7 @@ GameObject:
   - component: {fileID: 9114474787229088682}
   - component: {fileID: 6988330204998166799}
   m_Layer: 5
-  m_Name: Log
+  m_Name: Output Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1167,9 +1167,9 @@ GameObject:
   - component: {fileID: 251537913484494168}
   - component: {fileID: 1502213138847164179}
   - component: {fileID: 7771011032020764410}
-  - component: {fileID: 4521942193532011203}
+  - component: {fileID: 2551989737140723155}
   m_Layer: 5
-  m_Name: Banging Console
+  m_Name: Console View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1258,7 +1258,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 2047
---- !u!114 &4521942193532011203
+--- !u!114 &2551989737140723155
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1267,11 +1267,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 8014334781559755483}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c92883a7e42cdd4f9cf7fd832b28d4f, type: 3}
+  m_Script: {fileID: 11500000, guid: 02124147cead41a8a5e1b61ec54065f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiRoot: {fileID: 7733367113152165808}
   outputText: {fileID: 6988330204998166799}
-  root: {fileID: 7883268653628666416}
+  inputField: {fileID: 8579227214555605192}
 --- !u!1 &8913586246045883637
 GameObject:
   m_ObjectHideFlags: 0

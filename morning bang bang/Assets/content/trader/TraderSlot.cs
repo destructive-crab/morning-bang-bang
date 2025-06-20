@@ -18,8 +18,10 @@ namespace content.trader
         private SpriteRenderer itemSprite;
         public bool Selected = false;
         
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             text = GetComponentInChildren<TMP_Text>();
             itemSprite = GetComponentInChildren<SpriteRenderer>();
 

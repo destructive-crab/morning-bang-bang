@@ -1,3 +1,4 @@
+using MothDIed.InputsHandling;
 using UnityEngine;
 
 namespace banging_code.debug
@@ -11,10 +12,9 @@ namespace banging_code.debug
         
         private readonly DebuggerConfig debuggerConfig;
         
-        public BangingConsole Console;
-        
-        public DebugLinesDrawer Lines;
-        public DebugMapDrawer Map;
+        public BangingConsole Console { get; private set; }
+        public DebugLinesDrawer Lines { get; private set; }
+        public DebugMapDrawer Map { get; private set; }
 
         private Transform container;
 
@@ -37,8 +37,13 @@ namespace banging_code.debug
         {
             Lines = new DebugLinesDrawer(debuggerConfig, this);
             Lines.Setup();
+
+            Console = new BangingConsole();
+            Console.Setup();
+
+            Console.CreatePersistentConsoleView();
             
-            Console = 
+            InputService.EnableDebugInputs();
         }
     }
 }

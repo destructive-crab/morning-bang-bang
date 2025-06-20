@@ -18,7 +18,7 @@ namespace banging_code.bullets
         public GameObject hitEffect;
         
         [Inject] private HitsHandler hitsHandler;
-        [Inject] private CCamera camera;
+        [Inject] private CCamera cCamera;
         
         public virtual BulletHitData GetHitData() => new BulletHitData(damageAmount);
 
@@ -37,7 +37,7 @@ namespace banging_code.bullets
         {
             transform.Rotate(0, 0, MathF.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f);
             GetComponent<Rigidbody2D>().AddForce(direction * (multiplier * 10), ForceMode2D.Impulse);
-            camera.Shake(1, 0.1f);
+            cCamera.Shake(1, 0.1f);
         }
     }
 }

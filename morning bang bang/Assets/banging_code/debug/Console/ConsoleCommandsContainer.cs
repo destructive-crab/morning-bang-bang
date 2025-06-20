@@ -1,4 +1,5 @@
 using MothDIed;
+using UnityEngine;
 
 namespace banging_code.debug.Console
 {
@@ -6,34 +7,39 @@ namespace banging_code.debug.Console
     {
         [ConsoleCommandKey("all")]
         [ConsoleCommandDescription("Prints all commands in console")]
-        public void All()
+        public string All()
         {
-            foreach (var command in BangingConsole.Instance.CommandList)
+            string output = "";
+
+            foreach (ConsoleCommand consoleCommand in Game.GetDebugger().Console.CommandList)
             {
-                BangingConsole.Instance.InvokeCommand(command.Key, "help");
+                output += "\n";
+                output += consoleCommand.GetCommandPattern() + ". " + consoleCommand.Description;
             }
+
+            return output;
         }
                 
         [ConsoleCommandKey("clear")] 
         [ConsoleCommandDescription("Clears console output")]
-        public void Clear()
+        public string Clear()
         {
-            BangingConsole.Instance.ClearOutput();
+            return "";
         } 
         
         [ConsoleCommandKey("echo")] 
         [ConsoleCommandDescription("Prints given text in console")]
-        public void Echo(string text)
+        public string Echo(string text)
         {
-            BangingConsole.Instance.PushMessage(text);
+            return text;
         }      
         
         [ConsoleCommandKey("show_paths")] 
         [ConsoleCommandDescription("Is debug path's visualisation enabled")]
-        public void ShowPaths(bool enabled)
+        public string ShowPaths(bool enabled)
         {
-            Game.DebugFlags.ShowPaths = enabled;
-            BangingConsole.Instance.PushMessage($"Show Debug Paths: {enabled}");
+            BangDebugger.Flags.ShowPaths = enabled;
+            return "DebugPaths enabled";
         }      
     }
 }

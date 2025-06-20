@@ -1,97 +1,38 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using banging_code.debug.Console;
-using TMPro;
+using MothDIed;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class BangingConsole : MonoBehaviour
+public class BangingConsole 
 {
-    [SerializeField] private TMP_Text outputText;
-    [SerializeField] private GameObject root;
-
-    public static BangingConsole Instance { get; private set; }
-    
-    private ConsoleOutput output;
-    private ConsoleInput input;
-    private ConsoleState state = ConsoleState.Disabled;
-
     private readonly Dictionary<string, ConsoleCommand> commands = new();
-
-    public ConsoleCommandsContainer Container { get; private set; }
     public ConsoleCommand[] CommandList => commands.Values.ToArray();
 
-    private void Awake()
+    public readonly ConsoleCommandsContainer Container = new();
+    
+    public ConsoleView View { get; private set; }
+
+    public void Setup()
     {
-        MonoSingletonLogic();
-        SetupCommands();
-        SetupInputAndOutput();
+        CollectCommandFromContainer();
     }
 
-    private void Update()
+    public void CreatePersistentConsoleView()
     {
-        if (Input.GetKeyDown(KeyCode.Backslash))
-        {
-            switch (state)
-            {
-                case ConsoleState.Focused:
-                    state = ConsoleState.Idle;
-                    input.Disable();
-                    break;
-                
-                case ConsoleState.Idle:
-                    state = ConsoleState.Disabled;
-                    root.SetActive(false);
-                    break;
-                
-                case ConsoleState.Disabled:
-                    state = ConsoleState.Focused;
-                    root.SetActive(true);
-                    input.Enable();
-                    break;
-            }
-        }
-        if (state == ConsoleState.Focused && Input.GetKeyDown(KeyCode.Return))
-        {
-            var command = input.GetParsed();
+        ConsoleView viewPrefab = Resources.Load<ConsoleView>("Debug/Console View");
 
-            if (command[0] is not string) return;
-
-            if (commands.ContainsKey(command[0] as string))
-            {
-                commands[command[0] as string].TryInvoke(command.Skip(1).ToArray());
-            }
-        }
+        ConsoleView viewInstance = GameObject.Instantiate(viewPrefab);
+        
+        Game.MakeGameObjectPersistent(viewInstance.gameObject);
+        View = viewInstance;
+        View.Disable();
     }
-
-    public void InvokeCommand(string key, params object[] args)
-    {
-        commands[key].TryInvoke(args);
-    }
-
-    public void ClearOutput()
-    {
-        output.Clear();
-    }
-
-    public void PushMessage(string message)
-    {
-        output.PushFromNewLine("[" + System.DateTime.Now.ToLongTimeString() + "] " + message);
-    }
-
-    public void PushError(string message)
-    {
-        output.PushFromNewLine("! [" + System.DateTime.Now.ToLongTimeString() + "] " + message + " !");
-    }
-
-    private void SetupInputAndOutput()
-    {
-        output = new ConsoleOutput(outputText);
-        input = new ConsoleInput(GetComponentInChildren<TMP_InputField>(true));
-    }
-
-    private void SetupCommands()
+    
+    private void CollectCommandFromContainer()
     {
         var allCommands = typeof(ConsoleCommandsContainer).GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
@@ -104,24 +45,36 @@ public class BangingConsole : MonoBehaviour
         }
     }
 
-    private void MonoSingletonLogic()
+    public bool HasCommand(string key)
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            Container = new ConsoleCommandsContainer();
-            DontDestroyOnLoad(gameObject);
-            
-            return;
-        }
-
-        Destroy(gameObject);
+        return commands.ContainsKey(key);
     }
 
-    enum ConsoleState
+    public Type[] GetArgumentsForCommand(string key)
     {
-        Focused,
-        Idle,
-        Disabled
+        if (!HasCommand(key)) return null;
+        return commands[key].ArgsAsType;
+    }
+
+    public string InvokeCommand(bool printOutputToConsole, string key, params object[] args)
+    {
+        string output = InvokeCommandInternal(key, args);
+
+        if (printOutputToConsole && View != null)
+        {
+            View.PushNewMessage(output);
+        }
+
+        return output;
+    }
+    
+    private string InvokeCommandInternal(string key, object[] args)
+    {
+        if (!commands.ContainsKey(key))
+        {
+            return $"[!] Command with key {key} not found";
+        }
+        
+        return commands[key].TryInvoke(args);
     }
 }

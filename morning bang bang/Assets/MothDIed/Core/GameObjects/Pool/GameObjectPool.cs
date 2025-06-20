@@ -132,10 +132,10 @@ namespace MothDIed.Core.GameObjects.Pool
 
 
         [Serializable]
-        public sealed class Config<TObject>
-            where TObject : Component
+        public sealed class Config<ConfigTObject>
+            where ConfigTObject : Component
         {
-            public Config(TObject prefab, string name = "", ushort size = 32, bool expandable = true, bool persistent = false, IFabric fabric = null)
+            public Config(ConfigTObject prefab, string name = "", ushort size = 32, bool expandable = true, bool persistent = false, IFabric fabric = null)
             {
                 if (prefab == null)
                 {
@@ -165,7 +165,7 @@ namespace MothDIed.Core.GameObjects.Pool
 
             public string Name; //will be applied to root instance
             
-            public TObject Prefab; //object of pool
+            public ConfigTObject Prefab; //object of pool
 
             [field: SerializeField] public ushort Size { get; private set; } //size of pool
             

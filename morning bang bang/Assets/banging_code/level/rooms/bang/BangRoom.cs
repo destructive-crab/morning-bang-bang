@@ -12,7 +12,7 @@ namespace banging_code.common.rooms
         private List<Enemy> entities = new();
 
         private LightManager lightManager;
-        [Inject] private CCamera camera;
+        [Inject] private CCamera cCamera;
 
         [Inject]
         private void InjectLightManager(LightManager lightManager)
@@ -42,7 +42,7 @@ namespace banging_code.common.rooms
             }
             
             lightManager.TurnOn(RoomID);
-            camera.EnterBangCamera(RoomShapeCollider);
+            cCamera.EnterBangCamera(RoomShapeCollider);
         }
 
         private void OnEntityDie(Enemy enemy)
@@ -54,7 +54,7 @@ namespace banging_code.common.rooms
 
             if (entities.Count == 0)
             {
-                camera.EnterChillCamera();
+                cCamera.EnterChillCamera();
             }
         }
 

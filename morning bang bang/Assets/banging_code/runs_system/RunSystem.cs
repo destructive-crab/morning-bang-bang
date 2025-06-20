@@ -2,6 +2,7 @@ using banging_code.dev;
 using banging_code.level;
 using content.commuter_basement_I;
 using MothDIed;
+using MothDIed.InputsHandling;
 using UnityEngine;
 
 namespace banging_code.runs_system
@@ -15,6 +16,7 @@ namespace banging_code.runs_system
         {
             Data = new RunData(Resources.Load<ItemsPoolConfig>("Dev/DevItemsPool").items);
             EnterNewLevel(new DevelopmentLevel());
+            InputService.EnableInRunInputs();
         }
 
         public void EnterNewLevel(LevelScene level)

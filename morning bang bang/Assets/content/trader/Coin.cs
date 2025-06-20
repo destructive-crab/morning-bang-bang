@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    private Rigidbody2D rigidbody;
+    private Rigidbody2D coinRigidbody;
 
     private void Awake()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        
+        coinRigidbody = GetComponent<Rigidbody2D>();
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -23,9 +24,9 @@ public class Coin : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rigidbody.velocity != Vector2.zero)
+        if (coinRigidbody.velocity != Vector2.zero)
         {
-            rigidbody.velocity = Vector2.MoveTowards(rigidbody.velocity, Vector2.zero, 0.1f);
+            coinRigidbody.velocity = Vector2.MoveTowards(coinRigidbody.velocity, Vector2.zero, 0.1f);
         }
     }
 }

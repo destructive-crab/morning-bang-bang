@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using banging_code.health;
 using MothDIed.DI;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class ShotgunInstance : MonoBehaviour
 {
-    [SerializeField] private ParticleSystem particleSystem;
+    [SerializeField] private ParticleSystem shootParticle;
     [SerializeField] private Collider2D shotgunTrigger;
     [SerializeField] private Transform firepoint;
 
@@ -22,7 +23,7 @@ public class ShotgunInstance : MonoBehaviour
 
     private void Shoot()
     {
-        particleSystem.Play();
+        shootParticle.Play();
         ContactFilter2D filter2D = new();
         List<Collider2D> results = new();
 

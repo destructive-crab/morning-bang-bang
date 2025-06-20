@@ -238,7 +238,7 @@ namespace banging_code
                     ""name"": ""Submit"",
                     ""type"": ""Button"",
                     ""id"": ""7607c7b6-cd76-4816-beef-bd0341cfe950"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -738,13 +738,22 @@ namespace banging_code
             ]
         },
         {
-            ""name"": ""Global"",
+            ""name"": ""InRun"",
             ""id"": ""48d499cf-fe18-4bdd-a118-251a59add90e"",
             ""actions"": [
                 {
                     ""name"": ""Pause"",
                     ""type"": ""Button"",
                     ""id"": ""cb63e083-e8cc-49ed-b774-437819fdda89"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Restart"",
+                    ""type"": ""Button"",
+                    ""id"": ""77d43040-8343-49f2-b570-c079b77a7614"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -760,6 +769,45 @@ namespace banging_code
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8f8a86a1-56c2-47a9-83a9-f70ce3915f65"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Restart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Debug"",
+            ""id"": ""e030fd4b-ffb2-40eb-81b5-9139a24a3778"",
+            ""actions"": [
+                {
+                    ""name"": ""ConsoleSwitch"",
+                    ""type"": ""Button"",
+                    ""id"": ""c11b3cc2-4270-4cf5-9efd-ed9037690e08"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""694eca84-bf49-4823-9635-d6ff3adae6bb"",
+                    ""path"": ""<Keyboard>/backslash"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ConsoleSwitch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -847,16 +895,21 @@ namespace banging_code
             m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
             m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
             m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
-            // Global
-            m_Global = asset.FindActionMap("Global", throwIfNotFound: true);
-            m_Global_Pause = m_Global.FindAction("Pause", throwIfNotFound: true);
+            // InRun
+            m_InRun = asset.FindActionMap("InRun", throwIfNotFound: true);
+            m_InRun_Pause = m_InRun.FindAction("Pause", throwIfNotFound: true);
+            m_InRun_Restart = m_InRun.FindAction("Restart", throwIfNotFound: true);
+            // Debug
+            m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
+            m_Debug_ConsoleSwitch = m_Debug.FindAction("ConsoleSwitch", throwIfNotFound: true);
         }
 
         ~@InputActions()
         {
             UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, InputActions.Player.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputActions.UI.Disable() has not been called.");
-            UnityEngine.Debug.Assert(!m_Global.enabled, "This will cause a leak and performance issues, InputActions.Global.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_InRun.enabled, "This will cause a leak and performance issues, InputActions.InRun.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Debug.enabled, "This will cause a leak and performance issues, InputActions.Debug.Disable() has not been called.");
         }
 
         /// <summary>
@@ -1253,29 +1306,34 @@ namespace banging_code
         /// </summary>
         public UIActions @UI => new UIActions(this);
 
-        // Global
-        private readonly InputActionMap m_Global;
-        private List<IGlobalActions> m_GlobalActionsCallbackInterfaces = new List<IGlobalActions>();
-        private readonly InputAction m_Global_Pause;
+        // InRun
+        private readonly InputActionMap m_InRun;
+        private List<IInRunActions> m_InRunActionsCallbackInterfaces = new List<IInRunActions>();
+        private readonly InputAction m_InRun_Pause;
+        private readonly InputAction m_InRun_Restart;
         /// <summary>
-        /// Provides access to input actions defined in input action map "Global".
+        /// Provides access to input actions defined in input action map "InRun".
         /// </summary>
-        public struct GlobalActions
+        public struct InRunActions
         {
             private @InputActions m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public GlobalActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+            public InRunActions(@InputActions wrapper) { m_Wrapper = wrapper; }
             /// <summary>
-            /// Provides access to the underlying input action "Global/Pause".
+            /// Provides access to the underlying input action "InRun/Pause".
             /// </summary>
-            public InputAction @Pause => m_Wrapper.m_Global_Pause;
+            public InputAction @Pause => m_Wrapper.m_InRun_Pause;
+            /// <summary>
+            /// Provides access to the underlying input action "InRun/Restart".
+            /// </summary>
+            public InputAction @Restart => m_Wrapper.m_InRun_Restart;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
-            public InputActionMap Get() { return m_Wrapper.m_Global; }
+            public InputActionMap Get() { return m_Wrapper.m_InRun; }
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
             public void Enable() { Get().Enable(); }
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
@@ -1283,9 +1341,9 @@ namespace banging_code
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
             public bool enabled => Get().enabled;
             /// <summary>
-            /// Implicitly converts an <see ref="GlobalActions" /> to an <see ref="InputActionMap" /> instance.
+            /// Implicitly converts an <see ref="InRunActions" /> to an <see ref="InputActionMap" /> instance.
             /// </summary>
-            public static implicit operator InputActionMap(GlobalActions set) { return set.Get(); }
+            public static implicit operator InputActionMap(InRunActions set) { return set.Get(); }
             /// <summary>
             /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
             /// </summary>
@@ -1293,14 +1351,17 @@ namespace banging_code
             /// <remarks>
             /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
             /// </remarks>
-            /// <seealso cref="GlobalActions" />
-            public void AddCallbacks(IGlobalActions instance)
+            /// <seealso cref="InRunActions" />
+            public void AddCallbacks(IInRunActions instance)
             {
-                if (instance == null || m_Wrapper.m_GlobalActionsCallbackInterfaces.Contains(instance)) return;
-                m_Wrapper.m_GlobalActionsCallbackInterfaces.Add(instance);
+                if (instance == null || m_Wrapper.m_InRunActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_InRunActionsCallbackInterfaces.Add(instance);
                 @Pause.started += instance.OnPause;
                 @Pause.performed += instance.OnPause;
                 @Pause.canceled += instance.OnPause;
+                @Restart.started += instance.OnRestart;
+                @Restart.performed += instance.OnRestart;
+                @Restart.canceled += instance.OnRestart;
             }
 
             /// <summary>
@@ -1309,21 +1370,24 @@ namespace banging_code
             /// <remarks>
             /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
             /// </remarks>
-            /// <seealso cref="GlobalActions" />
-            private void UnregisterCallbacks(IGlobalActions instance)
+            /// <seealso cref="InRunActions" />
+            private void UnregisterCallbacks(IInRunActions instance)
             {
                 @Pause.started -= instance.OnPause;
                 @Pause.performed -= instance.OnPause;
                 @Pause.canceled -= instance.OnPause;
+                @Restart.started -= instance.OnRestart;
+                @Restart.performed -= instance.OnRestart;
+                @Restart.canceled -= instance.OnRestart;
             }
 
             /// <summary>
-            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="GlobalActions.UnregisterCallbacks(IGlobalActions)" />.
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="InRunActions.UnregisterCallbacks(IInRunActions)" />.
             /// </summary>
-            /// <seealso cref="GlobalActions.UnregisterCallbacks(IGlobalActions)" />
-            public void RemoveCallbacks(IGlobalActions instance)
+            /// <seealso cref="InRunActions.UnregisterCallbacks(IInRunActions)" />
+            public void RemoveCallbacks(IInRunActions instance)
             {
-                if (m_Wrapper.m_GlobalActionsCallbackInterfaces.Remove(instance))
+                if (m_Wrapper.m_InRunActionsCallbackInterfaces.Remove(instance))
                     UnregisterCallbacks(instance);
             }
 
@@ -1333,21 +1397,117 @@ namespace banging_code
             /// <remarks>
             /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
             /// </remarks>
-            /// <seealso cref="GlobalActions.AddCallbacks(IGlobalActions)" />
-            /// <seealso cref="GlobalActions.RemoveCallbacks(IGlobalActions)" />
-            /// <seealso cref="GlobalActions.UnregisterCallbacks(IGlobalActions)" />
-            public void SetCallbacks(IGlobalActions instance)
+            /// <seealso cref="InRunActions.AddCallbacks(IInRunActions)" />
+            /// <seealso cref="InRunActions.RemoveCallbacks(IInRunActions)" />
+            /// <seealso cref="InRunActions.UnregisterCallbacks(IInRunActions)" />
+            public void SetCallbacks(IInRunActions instance)
             {
-                foreach (var item in m_Wrapper.m_GlobalActionsCallbackInterfaces)
+                foreach (var item in m_Wrapper.m_InRunActionsCallbackInterfaces)
                     UnregisterCallbacks(item);
-                m_Wrapper.m_GlobalActionsCallbackInterfaces.Clear();
+                m_Wrapper.m_InRunActionsCallbackInterfaces.Clear();
                 AddCallbacks(instance);
             }
         }
         /// <summary>
-        /// Provides a new <see cref="GlobalActions" /> instance referencing this action map.
+        /// Provides a new <see cref="InRunActions" /> instance referencing this action map.
         /// </summary>
-        public GlobalActions @Global => new GlobalActions(this);
+        public InRunActions @InRun => new InRunActions(this);
+
+        // Debug
+        private readonly InputActionMap m_Debug;
+        private List<IDebugActions> m_DebugActionsCallbackInterfaces = new List<IDebugActions>();
+        private readonly InputAction m_Debug_ConsoleSwitch;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "Debug".
+        /// </summary>
+        public struct DebugActions
+        {
+            private @InputActions m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public DebugActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "Debug/ConsoleSwitch".
+            /// </summary>
+            public InputAction @ConsoleSwitch => m_Wrapper.m_Debug_ConsoleSwitch;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_Debug; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="DebugActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(DebugActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="DebugActions" />
+            public void AddCallbacks(IDebugActions instance)
+            {
+                if (instance == null || m_Wrapper.m_DebugActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_DebugActionsCallbackInterfaces.Add(instance);
+                @ConsoleSwitch.started += instance.OnConsoleSwitch;
+                @ConsoleSwitch.performed += instance.OnConsoleSwitch;
+                @ConsoleSwitch.canceled += instance.OnConsoleSwitch;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="DebugActions" />
+            private void UnregisterCallbacks(IDebugActions instance)
+            {
+                @ConsoleSwitch.started -= instance.OnConsoleSwitch;
+                @ConsoleSwitch.performed -= instance.OnConsoleSwitch;
+                @ConsoleSwitch.canceled -= instance.OnConsoleSwitch;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="DebugActions.UnregisterCallbacks(IDebugActions)" />.
+            /// </summary>
+            /// <seealso cref="DebugActions.UnregisterCallbacks(IDebugActions)" />
+            public void RemoveCallbacks(IDebugActions instance)
+            {
+                if (m_Wrapper.m_DebugActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="DebugActions.AddCallbacks(IDebugActions)" />
+            /// <seealso cref="DebugActions.RemoveCallbacks(IDebugActions)" />
+            /// <seealso cref="DebugActions.UnregisterCallbacks(IDebugActions)" />
+            public void SetCallbacks(IDebugActions instance)
+            {
+                foreach (var item in m_Wrapper.m_DebugActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_DebugActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="DebugActions" /> instance referencing this action map.
+        /// </summary>
+        public DebugActions @Debug => new DebugActions(this);
         private int m_KeyboardMouseSchemeIndex = -1;
         /// <summary>
         /// Provides access to the input control scheme.
@@ -1528,11 +1688,11 @@ namespace banging_code
             void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
         }
         /// <summary>
-        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Global" which allows adding and removing callbacks.
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "InRun" which allows adding and removing callbacks.
         /// </summary>
-        /// <seealso cref="GlobalActions.AddCallbacks(IGlobalActions)" />
-        /// <seealso cref="GlobalActions.RemoveCallbacks(IGlobalActions)" />
-        public interface IGlobalActions
+        /// <seealso cref="InRunActions.AddCallbacks(IInRunActions)" />
+        /// <seealso cref="InRunActions.RemoveCallbacks(IInRunActions)" />
+        public interface IInRunActions
         {
             /// <summary>
             /// Method invoked when associated input action "Pause" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
@@ -1541,6 +1701,28 @@ namespace banging_code
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnPause(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Restart" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnRestart(InputAction.CallbackContext context);
+        }
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Debug" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="DebugActions.AddCallbacks(IDebugActions)" />
+        /// <seealso cref="DebugActions.RemoveCallbacks(IDebugActions)" />
+        public interface IDebugActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "ConsoleSwitch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnConsoleSwitch(InputAction.CallbackContext context);
         }
     }
 }

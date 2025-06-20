@@ -150,7 +150,7 @@
                     "name": "Submit",
                     "type": "Button",
                     "id": "7607c7b6-cd76-4816-beef-bd0341cfe950",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -650,13 +650,22 @@
             ]
         },
         {
-            "name": "Global",
+            "name": "InRun",
             "id": "48d499cf-fe18-4bdd-a118-251a59add90e",
             "actions": [
                 {
                     "name": "Pause",
                     "type": "Button",
                     "id": "cb63e083-e8cc-49ed-b774-437819fdda89",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Restart",
+                    "type": "Button",
+                    "id": "77d43040-8343-49f2-b570-c079b77a7614",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -672,6 +681,45 @@
                     "processors": "",
                     "groups": "",
                     "action": "Pause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8f8a86a1-56c2-47a9-83a9-f70ce3915f65",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Restart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Debug",
+            "id": "e030fd4b-ffb2-40eb-81b5-9139a24a3778",
+            "actions": [
+                {
+                    "name": "ConsoleSwitch",
+                    "type": "Button",
+                    "id": "c11b3cc2-4270-4cf5-9efd-ed9037690e08",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "694eca84-bf49-4823-9635-d6ff3adae6bb",
+                    "path": "<Keyboard>/backslash",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ConsoleSwitch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

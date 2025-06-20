@@ -16,7 +16,7 @@ namespace banging_code
 
         protected override void StartGame()
         {
-            InputService.Initialize();
+            InputService.Setup();
             
             Game.RunSystem.StartDevRun();
         }

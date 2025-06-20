@@ -33,6 +33,7 @@ namespace MothDIed
 
         public static bool TryGetDebugger(out BangDebugger debugger)
         {
+            Debug.Log($"Awake {Awake}; AllowDebug {AllowDebug}");
             debugger = Game.debugger;
             return Awake && AllowDebug;
         }
@@ -46,9 +47,10 @@ namespace MothDIed
 
         public static async UniTask StartGame(GameStartArgs args)
         {
-            InputService.Initialize();
+            InputService.Setup();
             await SceneSwitcher.CreatePersistentScene();
 
+            AllowDebug = args.AllowDebug;
             if (args.AllowDebug)
             {
                 debugger = new BangDebugger(args.DebuggerConfig);

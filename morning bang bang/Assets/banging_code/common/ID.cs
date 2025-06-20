@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace banging_code.common
@@ -5,13 +6,15 @@ namespace banging_code.common
     public class ID
     {
         public readonly string Prefix;
+
         public readonly bool IsLazy;
-        
+
         public bool IsGenerated { get; private set; }
 
         private string id;
-        private static readonly HashSet<string> currentIDs = new(); 
-        
+
+        private static readonly HashSet<string> currentIDs = new();
+
         public ID(string prefix = "", bool isLazy = false)
         {
             Prefix = prefix;
@@ -24,6 +27,11 @@ namespace banging_code.common
         }
 
         ~ID() => currentIDs.Remove(id);
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Prefix, IsLazy, id, IsGenerated);
+        }
 
         public override bool Equals(object obj)
         {

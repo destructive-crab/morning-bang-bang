@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Reflection;
+using MothDIed;
+using UnityEngine;
 
 namespace banging_code.debug.Console
 {
@@ -8,13 +12,19 @@ namespace banging_code.debug.Console
         public readonly string Description;
         public readonly MethodBase Callback;
         public readonly ParameterInfo[] Args;
+        public readonly Type[] ArgsAsType;
 
         public bool Valid { get; private set; } = false;
         
         public ConsoleCommand(MethodInfo commandBase)
         {
             if(commandBase.DeclaringType != typeof(ConsoleCommandsContainer)) return;
-            
+            if(commandBase.ReturnType != typeof(string))
+            {
+                Debug.Log($"TRYING TO ADD COMMAND WITHOUT STRING OUTPUT; COMMAND NAME{commandBase.Name}");
+                return;
+            }
+
             var keyAttribute = commandBase.GetCustomAttribute<ConsoleCommandKeyAttribute>();
             
             if (keyAttribute == null)
@@ -35,23 +45,31 @@ namespace banging_code.debug.Console
             Callback = commandBase;
 
             Args = commandBase.GetParameters();
+            
+            List<Type> argTypes = new();
+            
+            foreach (ParameterInfo parameterInfo in Args)
+            {
+                argTypes.Add(parameterInfo.ParameterType);
+            }
+
+            ArgsAsType = argTypes.ToArray();
+            
             Valid = true;
         }
         
-        public void TryInvoke(object[] args)
+        public string TryInvoke(object[] args)
         {
-            if(!Valid) return;
+            if(!Valid) return "[!] Command invocation failed; Invalid command";
             
             if (args.Length != 0 && args[0] as string == "help")
             {
-                BangingConsole.Instance.PushMessage(GetCommandPattern() + ". " + Description);
-                return;
+                return GetCommandPattern() + ". " + Description;
             }
 
             if (args.Length != Args.Length)
             {
-                BangingConsole.Instance.PushError($"Invalid arguments count");
-                return;
+                return "[!] Command invocation failed; Invalid arguments";
             }
 
             for (var i = 0; i < args.Length; i++)
@@ -60,15 +78,14 @@ namespace banging_code.debug.Console
                 
                 if (arg.GetType() != Args[i].ParameterType)
                 {
-                    BangingConsole.Instance.PushError($"Invalid argument: {arg.GetType()}. {Args[i].ParameterType} was expected");
-                    return;
+                    return $"Invalid argument: {arg.GetType()}. {Args[i].ParameterType} was expected";
                 }
             }
             
-            Callback.Invoke(BangingConsole.Instance.Container, args);
+            return Callback.Invoke(Game.GetDebugger().Console.Container, args) as string;
         }
 
-        private string GetCommandPattern()
+        public string GetCommandPattern()
         {
             string args = "";
 

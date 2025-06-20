@@ -96,7 +96,7 @@ namespace banging_code.level
             PlayerInstance.Activate();
             
             //9. activate controls for player
-            InputService.EnterPlayerMode();
+            InputService.SwitchTo(InputService.Mode.Player);
             
             Modules.Get<CCamera>().EnterChillCamera();
         }

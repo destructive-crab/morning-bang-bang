@@ -11,9 +11,20 @@ namespace banging_code.debug.Console
         public string CurrentInput => inputFieldInstance.text;
         private readonly TMP_InputField inputFieldInstance;
 
+        public event Action<string> OnSubmit;
+        public event Action<object[]> OnSubmitParsed;
+        
         public ConsoleInput(TMP_InputField inputField)
         {
             inputFieldInstance = inputField;
+            
+            inputFieldInstance.onSubmit.AddListener((command) =>
+            {
+                if(command == "") return;
+                
+                OnSubmit?.Invoke(command);
+                OnSubmitParsed?.Invoke(GetParsed());
+            });
         }
 
         public object[] GetParsed()
@@ -59,16 +70,13 @@ namespace banging_code.debug.Console
         public void Enable()
         {
             inputFieldInstance.ActivateInputField();
-            InputService.EnterUIMode();
-            
-            Debug.Log("Console enabled");
+            InputService.SwitchTo(InputService.Mode.UI);
         }
 
         public void Disable()
         {
             inputFieldInstance.DeactivateInputField();
-            InputService.EnterPlayerMode();
-            Debug.Log("Console disabled");
+            InputService.BackToPreviousMode();
         }
 
         public void Clear()

@@ -30,7 +30,7 @@ namespace banging_code.level.entity_locating
         {
             if (locations.ContainsKey(location))
             {
-                BangingConsole.Instance.PushError($"[LOCATION MANAGER : ADD] {location} LOCATION ALREADY IN LIST");
+//TODO:                BangingConsole.Instance.PushError($"[LOCATION MANAGER : ADD] {location} LOCATION ALREADY IN LIST");
                 return;
             }
             allLocations.Add(location);
@@ -104,7 +104,7 @@ namespace banging_code.level.entity_locating
 
             if(GetEntitesFrom(location).Length > 0)
             {
-                BangingConsole.Instance.PushError($"[LOCATION MANAGER : REMOVE] {location} STILL CONTAINS ENTITIES");
+                //TODO:                BangingConsole.Instance.PushError($"[LOCATION MANAGER : REMOVE] {location} STILL CONTAINS ENTITIES");
                 return;
             }
 
@@ -121,7 +121,7 @@ namespace banging_code.level.entity_locating
         {
             if (entity == null)
             {
-                BangingConsole.Instance.PushError("[LOCATION MANAGER] GIVEN ENTITY IS NULL");
+//TODO:                BangingConsole.Instance.PushError("[LOCATION MANAGER] GIVEN ENTITY IS NULL");
                 return false;
             }
 
@@ -132,7 +132,7 @@ namespace banging_code.level.entity_locating
         {
             if (!allLocations.Contains(location))
             {
-                BangingConsole.Instance.PushError($"[LOCATION MANAGER] NO LOCATION FOUND: {location}");
+                //TODO:                BangingConsole.Instance.PushError($"[LOCATION MANAGER] NO LOCATION FOUND: {location}");
                 return false;
             }
 
