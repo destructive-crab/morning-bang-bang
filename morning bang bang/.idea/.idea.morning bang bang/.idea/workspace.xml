@@ -5,42 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4849ab8a-b017-404e-910e-1744aa022006" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/projectSettingsUpdater.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/projectSettingsUpdater.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Boot.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Boot.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/Pool/GameObjectPool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/Pool/GameObjectPool.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/SceneSwitcher.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/Scenes/SceneSwitcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/Scenes/SceneSwitcher.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Optional/InputsHandling/InputService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Optional/InputsHandling/InputService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Project Configuration/InputMap.inputactions" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Project Configuration/InputMap.inputactions" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/BangBoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/BangBoot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/DevBoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/DevBoot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/InputSystem_Actions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/InputSystem_Actions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/bullets/Bullet.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/bullets/Bullet.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/common/ID.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/common/ID.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/BangDebugger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/BangDebugger.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/Banging Console.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/Banging Console.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/BangingConsole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/BangingConsole.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandsContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandsContainer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleInput.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_bottom_wall.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_bottom_wall.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_bottom_wall.png~" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_bottom_wall.png~" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_corner_walls.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_corner_walls.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_corner_walls.png~" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_corner_walls.png~" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_side_walls.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_side_walls.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_side_walls.png~" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_side_walls.png~" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/g_wall_left.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/g_wall_left.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/g_wall_right.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/g_wall_right.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/development/dev_wall_left.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/development/dev_wall_left.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/development/dev_wall_left.png~" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/development/dev_wall_left.png~" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/development/dev_wall_up.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/development/dev_wall_up.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/art/development/dev_wall_up.png~" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/development/dev_wall_up.png~" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleOutput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleOutput.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/dev/ConsoleDocument.uxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/dev/ConsoleDocument.uxml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/CommuterBasement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/CommuterBasement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/location_system/LocationManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/location_system/LocationManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/level/rooms/bang/BangRoom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/level/rooms/bang/BangRoom.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/pause/ScenePauseModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/pause/ScenePauseModule.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/runs_system/RunSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/runs_system/RunSystem.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/banging_code/ui/DeathMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/ui/DeathMenu.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/art/sources/bastard_imp.kra.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/content/items/guns/ShotgunInstance.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/items/guns/ShotgunInstance.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/content/trader/Coin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/trader/Coin.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/content/trader/TraderSlot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/trader/TraderSlot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

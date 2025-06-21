@@ -1,5 +1,4 @@
 using TMPro;
-using UnityEngine;
 
 namespace banging_code.debug.Console
 {
