@@ -226,5 +226,13 @@ namespace MothDIed.MonoSystems
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            foreach (var extension in systems)
+            {
+                extension.Value.ForEach(system => system.Dispose());
+            }
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace banging_code.debug
             linesPool = new GameObjectPool<LineRenderer>(poolConfig);
         }
 
-        public void Draw(string name, Color color, float thickness, Vector3[] positions)
+        public LineRenderer Draw(string name, Color color, float thickness, Vector3[] positions)
         {
             var newLine = linesPool.Get();
 
@@ -37,6 +37,14 @@ namespace banging_code.debug
             newLine.endColor = color;
             newLine.startWidth = thickness;
             newLine.endWidth = thickness;
+            
+            return newLine;
+        }
+
+        public void Clear(LineRenderer line)
+        {
+            if(line == null) return;
+            linesPool.Release(line);
         }
 
         public void Clear()

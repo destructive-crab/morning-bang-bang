@@ -13,9 +13,9 @@ namespace banging_code.ai.systems
         [Inject] private EntityPath path;
         [Inject] private PathfinderTarget target;
 
-        public float PathUpdateRate = 0.1f;
-        private Pathfinder pathfinder = new();
+        private Pathfinder pathfinder;
         private DebugLinesDrawer debugLinesDrawer;
+        private LineRenderer currentDebugLine;
 
         public override bool EnableOnStart() => true;
         public override void ContainerStarted()
@@ -25,23 +25,26 @@ namespace banging_code.ai.systems
         public override void Enable()
         {
             base.Enable();
-            Owner.StartCoroutine(UpdatePath());
+            pathfinder = new Pathfinder(Owner.GetComponent<DynamicObstacle>().ID);
         }
 
-        private IEnumerator UpdatePath()
+        public override void Dispose()
         {
-            while (Enabled)
+            base.Dispose();
+            if (Game.TryGetDebugger(out BangDebugger debugger))
             {
-                while (target.Target == null)
-                {
-                    yield return new WaitForEndOfFrame();
-                }
-                
-                path.Path = pathfinder.FindPath(Owner.transform.position, target.Target.Position);
-                
-                //TODO DEBUG LINES
-                
-                yield return new WaitForSeconds(PathUpdateRate);
+                debugger.Lines.Clear(currentDebugLine);
+            }
+        }
+
+        public void UpdatePath()
+        {
+            path.Path = pathfinder.FindPath(Owner.transform.position, target.Target.Position);
+            
+            if (Game.TryGetDebugger(out BangDebugger debugger) && path != null && path.Path != null)
+            {
+                debugger.Lines.Clear(currentDebugLine);
+                currentDebugLine = debugger.Lines.Draw("PATH", Color.magenta, 0.1f, path.Path.Points);
             }
         }
     }

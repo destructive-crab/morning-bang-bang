@@ -33,7 +33,6 @@ namespace MothDIed
 
         public static bool TryGetDebugger(out BangDebugger debugger)
         {
-            Debug.Log($"Awake {Awake}; AllowDebug {AllowDebug}");
             debugger = Game.debugger;
             return Awake && AllowDebug;
         }

@@ -4,6 +4,7 @@ using banging_code.ai.pathfinding;
 using banging_code.ai.systems;
 using banging_code.ai.targeting;
 using banging_code.common;
+using MothDIed;
 using UnityEngine;
 
 namespace content.commuter_basement_I.entities.bastard
@@ -18,6 +19,8 @@ namespace content.commuter_basement_I.entities.bastard
         public override void Initialize()
         {
             Systems.SetOwner(this);
+            
+            Game.RunSystem.Data.Level.Map.NewDynamicObstacle(gameObject.AddComponent<DynamicObstacle>());
 
             Data.Register(new EntityPath());
             Data.Register(new PathfinderTarget());

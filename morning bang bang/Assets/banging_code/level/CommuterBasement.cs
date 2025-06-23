@@ -39,6 +39,7 @@ namespace banging_code.level
             Modules.AddModule(Map);
             Modules.AddModule(new LightManager());
             Modules.AddModule(new LocationManager(this));
+            Modules.AddModule(new EntityPathfindingSystem(Map));
         }
         protected override void PrepareLevel() { }
         protected override void GenerateLevelBase()

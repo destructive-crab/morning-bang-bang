@@ -1,3 +1,4 @@
+using System;
 using banging_code.common;
 using MothDIed.MonoSystems;
 using MothDIed.ServiceLocators;
@@ -16,6 +17,11 @@ namespace MothDIed
         public override string ToString()
         {
             return $"(name) {gameObject.name}; (id) {EntityID}";
+        }
+
+        protected void OnDestroy()
+        {
+            Systems.Dispose();
         }
     }
 }

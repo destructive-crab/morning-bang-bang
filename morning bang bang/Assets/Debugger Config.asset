@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Debugger Config
   m_EditorClassIdentifier: 
   LinePrefab: {fileID: 5774139254493832562, guid: db4ef3cc07cd5ec4d9c6ea4dd45c5273, type: 3}
-  MapCell: {fileID: 0}
+  DebugMapDrawerTiles:
+    walkableTile: {fileID: 11400000, guid: 88bfcd2023280f443837b63fdef5b037, type: 2}
+    obstacleTile: {fileID: 11400000, guid: 8911b5fede9310343bea7ce842f96a70, type: 2}

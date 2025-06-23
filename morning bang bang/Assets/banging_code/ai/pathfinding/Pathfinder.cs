@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using banging_code.common;
 using MothDIed;
 using UnityEngine;
 
@@ -8,9 +9,13 @@ namespace banging_code.ai.pathfinding
 {
     public sealed class Pathfinder
     {
-        private Vector2Int currentTarget;
-        private static readonly PathCacher PathCacher = new PathCacher(1000);
-        
+        private readonly ID obstacleIDsToIgnore;
+
+        public Pathfinder(ID obstacleIDsToIgnore)
+        {
+            this.obstacleIDsToIgnore = obstacleIDsToIgnore;
+        }
+
         private static LevelMap LevelMap => Game.RunSystem.Data.Level.Map;
 
         private float DefineGCost(PathNode startPathNode, PathNode endPathNode) 
@@ -23,10 +28,7 @@ namespace banging_code.ai.pathfinding
         {
             var tile = LevelMap.Get(position.x, position.y);
             
-            if(tile.CMNIsWalkable)
-                return true;
-
-            return false;
+            return tile.IsWalkableExcludeDynamicObstacle && (tile.Other == null || tile.Other.ID == obstacleIDsToIgnore);
         }
 
         private List<PathNode> GetNeighbourPoints(PathNode pathNode, List<PathNode> ignoredPoints)
@@ -35,13 +37,13 @@ namespace banging_code.ai.pathfinding
             
             LevelMap.CellData[] pointsToCheck;
             
-            if (LevelMap.HasAnyAround(pathNode.Cell.Position, (cell) => !cell.CMNIsWalkable))
+            if (LevelMap.HasAnyAround(pathNode.Cell.Position, (cell) => !cell.IsWalkableExcludeDynamicObstacle))
             {
                 pointsToCheck = LevelMap.GetConnections(pathNode.X, pathNode.Y);
             }
             else
             {
-                pointsToCheck = LevelMap.GetConnections(pathNode.X, pathNode.Y);
+                pointsToCheck = LevelMap.GetConnectionsWithCorners(pathNode.X, pathNode.Y);
             }
             
             foreach (LevelMap.CellData nextPoint in pointsToCheck)
@@ -68,13 +70,6 @@ namespace banging_code.ai.pathfinding
             var endCell = LevelMap.Get(Mathf.RoundToInt(end.x), Mathf.RoundToInt(end.y));
             PathNode endPathNode = new PathNode(endCell.Position.x, endCell.Position.y, endCell);
 
-            var cached = PathCacher.Get(startCell.Position, endCell.Position);
-            if (cached != null)
-            {
-                Debug.Log("GOT FROM CACHE");
-                return new Path(cached);
-            }
-
             PathNode currentPathNode = startPathNode;
             
             do
@@ -82,7 +77,6 @@ namespace banging_code.ai.pathfinding
                 if (currentPathNode.X == endPathNode.X && currentPathNode.Y == endPathNode.Y)
                 {
                     var resPath = RestorePath(currentPathNode, end);
-                    PathCacher.Add(startCell.Position, endCell.Position, resPath.Points);
                     
                     return resPath;
                 }
@@ -91,14 +85,20 @@ namespace banging_code.ai.pathfinding
 
                 foreach (PathNode point in neighbourPoints)
                 {
-                    point.SetCosts(currentPathNode.G + DefineGCost(currentPathNode, point),
-                        Heuristic(point, endPathNode));
+                    point.SetCosts(currentPathNode.G + DefineGCost(currentPathNode, point), Heuristic(point, endPathNode));
                     point.SetPreviousPoint(currentPathNode);
                     nextPoints.Add(point);
 
                     visitedPoints.Add(point);
                 }
 
+                if (nextPoints.Count == 0)
+                {
+#if UNITY_EDITOR
+                    Debug.LogWarning($"ENTITY IS STUCK");
+#endif
+                    return null;
+                }
                 nextPoints.Sort(new PointComparer());
 
                 currentPathNode = nextPoints[0];

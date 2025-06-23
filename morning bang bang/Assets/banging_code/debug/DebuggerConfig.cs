@@ -6,6 +6,6 @@ namespace banging_code.debug
     public class DebuggerConfig : ScriptableObject
     {
         public LineRenderer LinePrefab;
-        public SpriteRenderer MapCell;
+        public DebugMapDrawer.DebugMapDrawerTiles DebugMapDrawerTiles;
     }
 }

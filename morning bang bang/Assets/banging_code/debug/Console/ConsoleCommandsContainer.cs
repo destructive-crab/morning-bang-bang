@@ -40,6 +40,22 @@ namespace banging_code.debug.Console
         {
             BangDebugger.Flags.ShowPaths = enabled;
             return "DebugPaths enabled";
-        }      
+        }
+
+        [ConsoleCommandKey("draw_map")]
+        [ConsoleCommandDescription("Draws map cells indicators")]
+        public string DrawMap()
+        {
+            Game.GetDebugger().Map.DrawMap();
+            return "Map drawn";
+        }
+        
+        [ConsoleCommandKey("hide_map")]
+        [ConsoleCommandDescription("Draws map cells indicators")]
+        public string HideMap()
+        {
+            Game.GetDebugger().Map.HideMap();
+            return "Map hidden";
+        }
     }
 }

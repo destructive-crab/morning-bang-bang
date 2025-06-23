@@ -38,6 +38,9 @@ namespace banging_code.debug
             Lines = new DebugLinesDrawer(debuggerConfig, this);
             Lines.Setup();
 
+            Map = new DebugMapDrawer();
+            Map.Setup(debuggerConfig);
+
             Console = new BangingConsole();
             Console.Setup();
 

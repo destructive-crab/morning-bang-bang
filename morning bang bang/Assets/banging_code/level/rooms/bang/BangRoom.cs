@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using banging_code.ai;
 using banging_code.camera_logic;
 using banging_code.level.light;
@@ -13,6 +14,7 @@ namespace banging_code.common.rooms
 
         private LightManager lightManager;
         [Inject] private CCamera cCamera;
+        [Inject] private EntityPathfindingSystem entityPathfinding;
 
         [Inject]
         private void InjectLightManager(LightManager lightManager)
@@ -35,6 +37,8 @@ namespace banging_code.common.rooms
             var entities = GetComponentsInChildren<Enemy>();
             this.entities = new List<Enemy>(entities);
 
+            entityPathfinding.AddActiveEntities(entities);
+
             foreach (var entity in entities)
             {
                 entity.WakeUp();
@@ -43,6 +47,7 @@ namespace banging_code.common.rooms
             
             lightManager.TurnOn(RoomID);
             cCamera.EnterBangCamera(RoomShapeCollider);
+            
         }
 
         private void OnEntityDie(Enemy enemy)

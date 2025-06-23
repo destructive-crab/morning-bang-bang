@@ -89,4 +89,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3120d2a412464153888e778647b560e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bastardPrefab: {fileID: 6215062266891808150, guid: fbd69d4d2150c0841909302ca80ca2f0, type: 3}
+  bastardPrefab: {fileID: 6215062266891808150, guid: 3e3c0bc4e854dbb4db2ab44e3b4cd6d1, type: 3}

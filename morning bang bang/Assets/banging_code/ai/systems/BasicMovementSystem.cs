@@ -15,7 +15,7 @@ namespace banging_code.ai.systems
 
         private Pathfinder.Path processingPath;
         
-        public float Speed = 4;
+        public float Speed = 8;
 
         public BasicMovementSystem()
         {

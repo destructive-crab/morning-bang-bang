@@ -1,20 +1,74 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using banging_code.common;
 using banging_code.level.structure.map;
+using MothDIed.Scenes;
 using MothDIed.Scenes.SceneModules;
 using UnityEngine;
 
 namespace banging_code.ai.pathfinding
 {
-    public  abstract class LevelMap : SceneModule
+    public abstract class LevelMap : SceneModule
     {
         protected readonly Dictionary<Vector2Int, CellData> map = new();
         protected readonly List<DynamicObstacle> dynamicObstacles = new();
+        protected readonly Dictionary<ID, List<CellData>> obstacleToCells = new();
 
         public void NewDynamicObstacle(DynamicObstacle dynamicObstacle)
         {
             dynamicObstacles.Add(dynamicObstacle);
-        }        
+        }
+
+        public override void UpdateModule(Scene scene)
+        {
+            base.UpdateModule(scene);
+            ProcessDynamicObstacles();
+        }
+
+        public void ProcessDynamicObstacles()
+        {
+            foreach (var obstacleToCell in obstacleToCells)
+            {
+                foreach (var cell in obstacleToCell.Value)
+                {
+                    cell.Other = null;
+                }
+            }
+            obstacleToCells.Clear();
+            
+            ClearDyObListFromNulls();
+
+            foreach (var obstacle in dynamicObstacles)
+            {
+                obstacleToCells.TryAdd(obstacle.ID, new());
+                var originalPosition = obstacle.transform.position;
+
+                var cells = new HashSet<Vector2Int>();
+                
+                cells.Add(new Vector2Int(Mathf.RoundToInt(originalPosition.x), Mathf.RoundToInt(originalPosition.y)));
+//                cells.Add(new Vector2Int(Mathf.FloorToInt(originalPosition.x), Mathf.RoundToInt(originalPosition.y)));
+//                cells.Add(new Vector2Int(Mathf.RoundToInt(originalPosition.x), Mathf.FloorToInt(originalPosition.y)));
+//                cells.Add(new Vector2Int(Mathf.FloorToInt(originalPosition.x), Mathf.FloorToInt(originalPosition.y)));
+
+                foreach (var vector2Int in cells)
+                {
+                    var cell = Get(vector2Int);
+                    
+                    if (cell != null)
+                    {
+                        obstacleToCells[obstacle.ID].Add(cell);
+                        cell.Other = obstacle;
+                    }
+                }
+            }
+        }
+
+        public CellData[] All()
+        {
+            return map.Values.ToArray();
+        }
+
         public void ClearDyObListFromNulls()
         {
             for(int i = 0; i < dynamicObstacles.Count; i++)
@@ -26,7 +80,7 @@ namespace banging_code.ai.pathfinding
                 }
             }
         }
-        
+
         public CellData Get(Vector2Int position)
         {
             return map[position];
@@ -38,7 +92,10 @@ namespace banging_code.ai.pathfinding
         }
 
         public abstract void UpdateCell(Vector2Int position);
-        public abstract void Refresh(); //update all cells
+
+        public abstract void Refresh();
+
+        //update all cells
 
         public abstract bool HasAnyAround(Vector2Int position, Predicate<CellData> check);
 
@@ -58,7 +115,7 @@ namespace banging_code.ai.pathfinding
 
             return res.ToArray();
         }
-        
+
         public CellData[] GetConnectionsWithCorners(int x, int y)
         {
             Vector2Int[] offsets = new Vector2Int[]
@@ -91,6 +148,7 @@ namespace banging_code.ai.pathfinding
         public class CellData
         {
             public bool CMNIsWalkable => Obstacle == null && Floor != null && Floor.IsWalkable() && Other == null;
+            public bool IsWalkableExcludeDynamicObstacle => Obstacle == null && Floor != null && Floor.IsWalkable();
 
             public readonly Vector2Int Position;
             public Vector3 Center;
