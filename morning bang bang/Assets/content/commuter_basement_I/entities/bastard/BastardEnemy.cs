@@ -67,7 +67,7 @@ namespace content.commuter_basement_I.entities.bastard
         private void UpdateData()
         {
             Data.Get<PathfinderTarget>().Target = Systems.Get<TargetSelector>().BestTarget;
-            Data.Get<AttackTarget>().Target = attackRange.Best;
+//           Data.Get<AttackTarget>().Target = attackRange.Best;
         }
         
         private void Do() { }

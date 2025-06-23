@@ -47,7 +47,7 @@ namespace banging_code.ai.targeting
             
             foreach (MonoEntity entity in entities)
             {
-                if (entity.TryGetComponent<TargetToEntities>(out TargetToEntities target))
+                if (entity.TryGetComponent(out TargetToEntities target))
                 {
                     Debug.Log(target.name);
                     sortedTargets.Add(target);

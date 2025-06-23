@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using banging_code.common;
 using banging_code.level.structure.map;
+using MothDIed;
 using MothDIed.Scenes;
 using MothDIed.Scenes.SceneModules;
 using UnityEngine;
@@ -45,11 +46,16 @@ namespace banging_code.ai.pathfinding
                 var originalPosition = obstacle.transform.position;
 
                 var cells = new HashSet<Vector2Int>();
-                
-                cells.Add(new Vector2Int(Mathf.RoundToInt(originalPosition.x), Mathf.RoundToInt(originalPosition.y)));
-//                cells.Add(new Vector2Int(Mathf.FloorToInt(originalPosition.x), Mathf.RoundToInt(originalPosition.y)));
-//                cells.Add(new Vector2Int(Mathf.RoundToInt(originalPosition.x), Mathf.FloorToInt(originalPosition.y)));
-//                cells.Add(new Vector2Int(Mathf.FloorToInt(originalPosition.x), Mathf.FloorToInt(originalPosition.y)));
+
+                if (obstacle.TryGetComponent<MonoEntity>(out var entity) && entity.Data.TryGet(out EntityPath path) && path.Path != null)
+                {
+                    cells.Add(Get((int)path.Path.CurrentPoint.x, (int)path.Path.CurrentPoint.y).Position);
+                    cells.Add(Get((int)path.Path.Points[path.Path.CurrentIndex+1].x, (int)path.Path.Points[path.Path.CurrentIndex+1].y).Position);
+                }
+                else
+                {
+                    cells.Add(new Vector2Int(Mathf.RoundToInt(originalPosition.x), Mathf.RoundToInt(originalPosition.y)));
+                }
 
                 foreach (var vector2Int in cells)
                 {
