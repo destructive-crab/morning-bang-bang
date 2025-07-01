@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using banging_code.debug;
 using MothDIed.Core.GameObjects;
 using MothDIed.Scenes;
 using MothDIed.Scenes.SceneModules;
@@ -46,7 +47,11 @@ namespace banging_code.ai.pathfinding
         {
             foreach (var entity in entities)
             {
-                if(entity == null)  {Debug.Log("AAAAA"); continue;}
+                if (entity == null)
+                {
+                    LGR.PW("[SCENE ENTITIES MODULE : INITIALIZE ALL] NULL ENTITY FOUND");
+                    continue;
+                }
                 entity.Initialize();
             }
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using banging_code.debug;
 using MothDIed.ServiceLocators;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -78,7 +79,7 @@ namespace MothDIed.DI
 #if UNITY_EDITOR
                 if (method.ReturnType.IsSubclassOf(typeof(Component)) || method.ReturnType == typeof(GameObject))
                 {
-                    Debug.LogWarning($"It's not recommended to store instances of GameObject or MonoBehaviour with DI({method.ReturnType} in {provider})." +
+                    Debug.LogWarning($"It's not recommended to store GameObject instances with DI({method.ReturnType} in {provider})." +
                                      $" If you want to store prefabs, use special containers");
                 }
 #endif
@@ -213,7 +214,7 @@ namespace MothDIed.DI
             {
                 var locator = locators[i];
                 
-                if (locator == null) { Debug.LogError($"[DI KERNEL : FIND IN] NULL LOCATOR FOUND. INDEX {i}"); }
+                if (locator == null) { LGR.PERR($"[DI KERNEL : FIND IN] NULL LOCATOR FOUND. INDEX {i}"); }
 
                 var possibleDependency = locator.GetBlind(type);
 

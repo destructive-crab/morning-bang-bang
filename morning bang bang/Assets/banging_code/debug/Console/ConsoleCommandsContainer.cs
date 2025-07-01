@@ -34,6 +34,20 @@ namespace banging_code.debug.Console
             return text;
         }      
         
+        [ConsoleCommandKey("echo_error")] 
+        [ConsoleCommandDescription("Prints given text in console")]
+        public string EchoError(string text)
+        {
+            return "[! ERROR OCCURED] " + text + " [! ERROR OCCURED]";
+        }      
+        
+        [ConsoleCommandKey("echo_warning")] 
+        [ConsoleCommandDescription("Prints given text in console")]
+        public string EchoWarning(string text)
+        {
+            return "[!] " + text + " [!]";
+        }  
+        
         [ConsoleCommandKey("show_paths")] 
         [ConsoleCommandDescription("Is debug path's visualisation enabled")]
         public string ShowPaths(bool enabled)

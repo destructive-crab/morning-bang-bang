@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using banging_code;
+using banging_code.debug;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,10 +16,8 @@ namespace MothDIed.InputsHandling
         {
             if (actionsMap != null)
             {
-#if UNITY_EDITOR
-                Debug.LogError("[INPUT SERVICE : INITIALIZE] Actions map already initialized.");
+                LGR.PERR("[INPUT SERVICE : INITIALIZE] Actions map already initialized.");
                 return;
-#endif
             }
 
             actionsMap = new InputActions();
@@ -113,7 +112,8 @@ namespace MothDIed.InputsHandling
         
         private static Mode CurrentMode;
         private static Mode PreviousMode;
-        
+        private static Vector2 currentVelocity;
+
         // interface
         public static bool BackToPreviousMode()
         {

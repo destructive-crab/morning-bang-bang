@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using banging_code.debug;
 using MothDIed.ServiceLocators;
 using UnityEngine;
 
@@ -124,7 +125,7 @@ namespace MothDIed.MonoSystems
                 if (systems.ContainsKey(extensionType))
                 {
 #if UNITY_EDITOR
-                    Debug.Log("YOU TRIED TO ADD MULTIPLE EXTENSIONS OF TYPE " + extensionType);
+                    LGR.PW("YOU TRIED TO ADD MULTIPLE EXTENSIONS OF TYPE " + extensionType);
 #endif
                     return system;
                 }

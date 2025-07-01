@@ -33,8 +33,6 @@ public class ShotgunInstance : MonoBehaviour
         {
             if (result.gameObject.TryGetComponent(out HitableBody hitableBody))
             {
-                Debug.Log((int)(10f * (1 / Vector3.Distance(firepoint.position, result.transform.position))));
-                
                 hitsHandler.Hit(
                     new BulletHitData(
                         (int)(10f * (1 / Vector3.Distance(firepoint.position, result.transform.position)))),

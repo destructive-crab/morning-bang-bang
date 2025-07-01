@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using banging_code.common;
 using banging_code.common.rooms;
+using banging_code.debug;
 using banging_code.level.entity_locating;
 using destructive_code.Tilemaps;
 using UnityEngine;
@@ -50,14 +51,14 @@ namespace banging_code.level.random_gen
                 spawnedRooms[i].OnGenerationFinished();
             }
             
-            Debug.Log($"[BASIC GENERATOR] {spawnedRooms.Length} ROOMS WERE GENERATED; LEVEL SIZE: {config.LevelSize}");
+            LGR.PM($"[BASIC GENERATOR] {spawnedRooms.Length} ROOMS WERE GENERATED; LEVEL SIZE: {config.LevelSize}");
             
             return spawnedRooms;
         }
 
         public override void Clear()
         {
-            Debug.Log($"[BASIC LEVEL GENERATOR] {spawnedRooms?.Length} ROOMS WILL BE DELETED");
+            LGR.PM($"[BASIC LEVEL GENERATOR] {spawnedRooms?.Length} ROOMS WILL BE DELETED");
             
             spawnedRooms = null;
             dirtyRooms.Clear();
@@ -76,7 +77,7 @@ namespace banging_code.level.random_gen
         {
             if (level.Hierarchy.RoomsContainer.childCount > 0)
             {
-                Debug.Log("[BASIC GENERATOR: GENERATE DIRTY ROOMS] TRYING TO GENERATE NEW LEVEL IN UNCLEARED SCENE");
+                LGR.PW("[BASIC GENERATOR: GENERATE DIRTY ROOMS] TRYING TO GENERATE NEW LEVEL IN UNCLEARED SCENE");
                 Clear();
             }
             
@@ -140,7 +141,10 @@ namespace banging_code.level.random_gen
             //we declare them here because we want to use them in local functions
             foreach (Room room in dirtyRooms)
             {
-                if (room == null) Debug.LogError("!! NULL ROOM IN DIRTY ROOMS POOL !!");
+                if (room == null)
+                {
+                    LGR.PW("[BASIC GENERATOR : CONVERT DIRTY ROOMS TO LEVEL] !! NULL ROOM IN DIRTY ROOMS POOL !! YOU MAY DESTROY IT SOMEWHERE");
+                }
 
                 Grid roomGrid = room.transform.Find(G_O_NAMES.ROOM_CONTENT_ROOT).GetComponent<Grid>();
                 Tilemap roomFloorTilemap = roomGrid.transform.Find(G_O_NAMES.FLOOR_TM).GetComponent<Tilemap>();
@@ -262,13 +266,13 @@ namespace banging_code.level.random_gen
             {
                 if (candidate == null)
                 {
-                    Debug.LogError("NULL ROOM DETECTED IN POOL WHEN REROLLING");
+                    LGR.PERR("[BASIC GENERATOR REROLL PREDICATE] NULL ROOM DETECTED IN POOL"); 
                     return false;
                 }
 
                 if (candidate.SocketsHandler == null)
                 {
-                    Debug.LogError($"NULL SOCKET HANDLER IN {candidate.gameObject.name}");
+                    LGR.PERR($"[BASIC GENERATOR REROLL PREDICATE] NULL SOCKET HANDLER IN {candidate.gameObject.name}");
                     return false;
                 }
                 

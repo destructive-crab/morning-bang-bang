@@ -31,7 +31,6 @@ namespace banging_code.common.rooms
                 }
             }
             
-            Debug.LogWarning("There is no corridor with direction" + direction);
             return null;
         }
         

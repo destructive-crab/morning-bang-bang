@@ -29,12 +29,12 @@ namespace banging_code.ai.targeting
 
         public override void Enable()
         {
-            locationManager.OnLocationEntitesChanged += CheckLocation;
+            locationManager.OnLocationEntitiesChanged += CheckLocation;
         }
 
         public override void Dispose()
         {
-            locationManager.OnLocationEntitesChanged -= CheckLocation;
+            locationManager.OnLocationEntitiesChanged -= CheckLocation;
         }
 
         private void CheckLocation(ID locationID)
@@ -49,7 +49,6 @@ namespace banging_code.ai.targeting
             {
                 if (entity.TryGetComponent(out TargetToEntities target))
                 {
-                    Debug.Log(target.name);
                     sortedTargets.Add(target);
                 }
             }

@@ -1,4 +1,4 @@
-using UnityEngine;
+using banging_code.debug;
 
 namespace MothDIed.GUI
 {
@@ -6,9 +6,7 @@ namespace MothDIed.GUI
     {
         public override void MoveUnder(GUIElement guiElement)
         {
-#if UNITY_EDITOR
-            Debug.LogError($"You tried to set parent to GUILayer. Parent -> {guiElement.name}; Layer -> {this.name}");
-#endif
+            LGR.PW($"You tried to set parent to GUILayer. Parent -> {guiElement.name}; Layer -> {this.name}");
         }
     }
 }

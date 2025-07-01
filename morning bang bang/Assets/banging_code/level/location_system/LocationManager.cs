@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using banging_code.common;
+using banging_code.debug;
 using MothDIed;
 using MothDIed.Core.GameObjects;
 using MothDIed.Scenes.SceneModules;
@@ -16,7 +17,7 @@ namespace banging_code.level.entity_locating
         private readonly List<ID> allLocations = new();
 
         public event Action<MonoEntity, ID> OnEntitySwitchLocation;
-        public event Action<ID> OnLocationEntitesChanged;
+        public event Action<ID> OnLocationEntitiesChanged;
 
         public LocationManager(LevelScene scene)
         {
@@ -30,7 +31,7 @@ namespace banging_code.level.entity_locating
         {
             if (locations.ContainsKey(location))
             {
-//TODO:                BangingConsole.Instance.PushError($"[LOCATION MANAGER : ADD] {location} LOCATION ALREADY IN LIST");
+                LGR.PERR($"[LOCATION MANAGER: REGISTER] LOCATION ALREADY IN LIST {location.Get()}");
                 return;
             }
             allLocations.Add(location);
@@ -91,11 +92,11 @@ namespace banging_code.level.entity_locating
                 locations[GetLocationOf(entity)].Remove(entity);
                 locations[newLocation].Add(entity);               
                 entityToLocation[entity] = newLocation;
-                OnLocationEntitesChanged?.Invoke(oldLocation);
+                OnLocationEntitiesChanged?.Invoke(oldLocation);
             }
             
             OnEntitySwitchLocation?.Invoke(entity, newLocation);
-            OnLocationEntitesChanged?.Invoke(newLocation);
+            OnLocationEntitiesChanged?.Invoke(newLocation);
         }
 
         public void RemoveLocation(ID location)
@@ -104,7 +105,9 @@ namespace banging_code.level.entity_locating
 
             if(GetEntitesFrom(location).Length > 0)
             {
-                //TODO:                BangingConsole.Instance.PushError($"[LOCATION MANAGER : REMOVE] {location} STILL CONTAINS ENTITIES");
+#if UNITY_EDITOR
+                LGR.PERR($"[LOCATION MANAGER : REMOVE] {location} STILL CONTAINS ENTITIES");
+#endif
                 return;
             }
 
@@ -121,7 +124,7 @@ namespace banging_code.level.entity_locating
         {
             if (entity == null)
             {
-//TODO:                BangingConsole.Instance.PushError("[LOCATION MANAGER] GIVEN ENTITY IS NULL");
+                LGR.PERR("[LOCATION MANAGER] GIVEN ENTITY IS NULL");
                 return false;
             }
 
@@ -130,13 +133,7 @@ namespace banging_code.level.entity_locating
 
         private bool ProcessLocation(ID location)
         {
-            if (!allLocations.Contains(location))
-            {
-                //TODO:                BangingConsole.Instance.PushError($"[LOCATION MANAGER] NO LOCATION FOUND: {location}");
-                return false;
-            }
-
-            return true;
+            return allLocations.Contains(location);
         }
     }
 

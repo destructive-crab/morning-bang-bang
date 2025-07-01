@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using banging_code.debug;
 using MothDIed.ServiceLocators;
 using UnityEngine;
 
@@ -50,9 +51,7 @@ namespace MothDIed.DI
         {
             if (!dependencies.TryAdd(dependencyType, dependency))
             {
-#if UNITY_EDITOR
-                Debug.LogWarning($"{dependencyType} DEPENDENCY ALREADY REGISTERED");
-#endif
+                LGR.PERR($"{dependencyType} DEPENDENCY ALREADY REGISTERED");
             }
         }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using banging_code.common;
+using banging_code.debug;
 using MothDIed;
 using UnityEngine;
 
@@ -94,9 +95,7 @@ namespace banging_code.ai.pathfinding
 
                 if (nextPoints.Count == 0)
                 {
-#if UNITY_EDITOR
-                    Debug.LogWarning($"ENTITY IS STUCK");
-#endif
+                    LGR.PW($"[PATHFINDER : FIND PATH] ENTITY IS STUCK");
                     return null;
                 }
                 nextPoints.Sort(new PointComparer());

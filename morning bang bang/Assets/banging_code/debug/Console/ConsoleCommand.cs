@@ -21,7 +21,10 @@ namespace banging_code.debug.Console
             if(commandBase.DeclaringType != typeof(ConsoleCommandsContainer)) return;
             if(commandBase.ReturnType != typeof(string))
             {
-                Debug.Log($"TRYING TO ADD COMMAND WITHOUT STRING OUTPUT; COMMAND NAME{commandBase.Name}");
+#if UNITY_EDITOR
+                Debug.LogError($"[CONSOLE COMMAND] TRYING TO CREATE COMMAND WITHOUT STRING OUTPUT; COMMAND NAME{commandBase.Name}");
+#endif
+                
                 return;
             }
 
