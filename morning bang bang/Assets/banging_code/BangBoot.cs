@@ -1,3 +1,4 @@
+using banging_code.ui.main_menu;
 using MothDIed;
 using MothDIed.DI;
 
@@ -21,7 +22,7 @@ namespace banging_code
         private async void TODO()
         {
             await Game.StartGame(Args);
-            Game.SceneSwitcher.SwitchTo(new CommonScene("Menu"));
+            Game.SceneSwitcher.SwitchTo(new MainMenuScene());
         }
     }
 }

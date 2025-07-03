@@ -29,7 +29,6 @@ namespace banging_code.debug
             var newLine = linesPool.Get();
 
             newLine.name = name;
-            newLine.transform.parent = debugger.GetDebugGOContainer();
             newLine.sortingOrder = 10;
             newLine.positionCount = positions.Length;
             newLine.SetPositions(positions);

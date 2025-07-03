@@ -1,3 +1,4 @@
+using MothDIed;
 using MothDIed.InputsHandling;
 using UnityEngine;
 
@@ -28,6 +29,7 @@ namespace banging_code.debug
             if (container == null)
             {
                 container = new GameObject("[DEBUG GAME OBJECT CONTAINER]").transform;
+                Game.SceneSwitcher.MoveToPersistentScene(container.gameObject);
             }
 
             return container;
