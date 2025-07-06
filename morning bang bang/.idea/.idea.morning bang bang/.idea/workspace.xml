@@ -36,6 +36,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Editor/SceneSwitcher/SceneSwitcherSettingsInspector.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/MothDIed/Core/GameObjects/Pool/PoolInstanceRoot.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/MothDIed/Core/Scenes/SceneSwitcher.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/MothDIed/Optional/GUI/Common/CommonLayer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/DevBoot.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/ai/management/EntitySpawnPoint.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/ai/management/EntitySpawner.cs" root0="FORCE_HIGHLIGHTING" />
@@ -50,6 +51,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/ui/HealthBar.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/ui/MinimapLogic.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/ui/MoneyDisplay.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/banging_code/ui/main_menu/Settings/Sliders/SoundsVolumeSlider.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/BastardAttackSystem.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/content/items/guns/ShotgunInstance.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/content/trader/Coin.cs" root0="FORCE_HIGHLIGHTING" />
@@ -86,7 +88,7 @@
 }</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="$PROJECT_DIR$/../../../builds/ther/bangbang.exe" />
+      <option name="EXE_PATH" value="$PROJECT_DIR$/../../../builds/ther/Morning Thriller.exe" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="D:\builds\bang_bang_04" />
       <option name="PASS_PARENT_ENVS" value="1" />

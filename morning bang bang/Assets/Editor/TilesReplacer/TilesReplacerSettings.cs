@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace destructive_code.Tilemaps
+namespace MohDIed.Tilemaps
 {
     public sealed class TilesReplacerSettings : ScriptableObject
     {

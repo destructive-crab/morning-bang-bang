@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace destructive_code.Tilemaps
+namespace MohDIed.Tilemaps
 {
     public static class TilemapExtensions 
     {

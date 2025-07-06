@@ -26,9 +26,10 @@ namespace banging_code.runs_system
             Game.SceneSwitcher.SwitchTo(level);
         }
 
-        public void SaveRun()
+        public bool SaveRun()
         {
             //saving??
+            return true;
         }
 
         public void WhileOnLevel(LevelScene levelScene)

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace destructive_code.Tilemaps
+namespace MohDIed.Tilemaps
 {
     [Serializable]
     public sealed class TilePT<TileT>

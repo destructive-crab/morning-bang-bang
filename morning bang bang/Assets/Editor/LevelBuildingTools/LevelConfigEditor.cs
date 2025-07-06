@@ -1,4 +1,4 @@
-namespace destructive_code.SceneSwitcher
+namespace MohDIed.SceneSwitcher
 {
     public class LevelConfigEditor 
     {

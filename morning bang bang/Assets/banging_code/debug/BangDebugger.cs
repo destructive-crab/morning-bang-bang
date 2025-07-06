@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using MothDIed;
 using MothDIed.InputsHandling;
 using UnityEngine;
@@ -35,7 +36,7 @@ namespace banging_code.debug
             return container;
         }
 
-        public void SetupDebugger()
+        public async UniTask SetupDebugger()
         {
             Lines = new DebugLinesDrawer(debuggerConfig, this);
             Lines.Setup();
@@ -46,7 +47,7 @@ namespace banging_code.debug
             Console = new BangingConsole();
             Console.Setup();
 
-            Console.CreatePersistentConsoleView();
+            await Console.CreatePersistentConsoleView();
             
             InputService.EnableDebugInputs();
         }

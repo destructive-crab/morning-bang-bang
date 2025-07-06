@@ -1,11 +1,16 @@
 using System;
 using banging_code.debug;
+using banging_code.json;
 using Cysharp.Threading.Tasks;
 using MothDIed.DI;
 using UnityEngine;
 using banging_code.pause;
 using banging_code.runs_system;
+using banging_code.settings;
+using MohDIed.Audio;
+using MothDIed.Audio;
 using MothDIed.InputsHandling;
+using Newtonsoft.Json;
 
 namespace MothDIed
 {
@@ -19,6 +24,8 @@ namespace MothDIed
         //core
         public static readonly SceneSwitcher SceneSwitcher = new();
         public static readonly DIKernel DIKernel = new();
+        public static readonly GameSettings Settings = new();
+        public static readonly AudioSystem AudioSystem = new();
         
         //debug
         public static BangDebugger GetDebugger()
@@ -45,22 +52,41 @@ namespace MothDIed
         public static readonly PauseSystem PauseSystem = new();
 
         public static async UniTask StartGame(GameStartArgs args)
-        {
+        { 
+            await Settings.LoadFromFile();
+            
             InputService.Setup();
+            
             await SceneSwitcher.CreatePersistentScene();
 
-            AllowDebug = args.AllowDebug;
-            if (args.AllowDebug)
+            AllowDebug = Settings.Data.EnableDebugFeatures;
+            
+            if (AllowDebug)
             {
-                debugger = new BangDebugger(args.DebuggerConfig);
-                debugger.SetupDebugger();
+                debugger = new BangDebugger(args.DebuggerConfig); 
+                await debugger.SetupDebugger();
             }
 
+            AudioSystem.Setup(args.AudioSystemConfig);
             IsBootstrapping = false;
             Awake = true;
+            
             InnerLoop();
         }
 
+        public async static void QuitGame()
+        { 
+            await Settings.SaveSettings();
+            await SaveManager.StartWritingFilesFromQueue();
+            
+            Application.Quit();
+        }
+
+        public static bool LoadSaves()
+        {
+            return RunSystem.SaveRun();
+        }
+        
         public static void MakeGameObjectPersistent(GameObject gameObject)
         {
             SceneSwitcher.MoveToPersistentScene(gameObject);
@@ -97,7 +123,7 @@ namespace MothDIed
     [Serializable]
     public class GameStartArgs
     {
-        public bool AllowDebug;
         public DebuggerConfig DebuggerConfig;
+        public AudioSystemConfig AudioSystemConfig;
     }
 }

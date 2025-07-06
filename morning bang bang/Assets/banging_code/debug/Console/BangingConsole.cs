@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using banging_code.debug.Console;
+using Cysharp.Threading.Tasks;
 using MothDIed;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -21,11 +22,15 @@ public class BangingConsole
         CollectCommandFromContainer();
     }
 
-    public void CreatePersistentConsoleView()
-    {
-        ConsoleView viewPrefab = Resources.Load<ConsoleView>("Debug/Console View");
-
-        ConsoleView viewInstance = GameObject.Instantiate(viewPrefab);
+    public async UniTask CreatePersistentConsoleView()
+    { 
+        ResourceRequest loadOperation = Resources.LoadAsync<ConsoleView>("Debug/Console View");
+        await loadOperation;
+        ConsoleView viewPrefab = loadOperation.asset as ConsoleView;
+        
+        AsyncInstantiateOperation<ConsoleView> instantiateOperation = GameObject.InstantiateAsync(viewPrefab);
+        await instantiateOperation;
+        ConsoleView viewInstance = instantiateOperation.Result[0];
         
         Game.MakeGameObjectPersistent(viewInstance.gameObject);
         View = viewInstance;

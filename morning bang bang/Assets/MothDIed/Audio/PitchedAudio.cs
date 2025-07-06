@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AutumnForest
+namespace MothDIed.Audio
 {
     [System.Serializable]
     public sealed class PitchedAudio
