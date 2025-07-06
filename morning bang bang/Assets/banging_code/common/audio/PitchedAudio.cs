@@ -24,7 +24,6 @@ namespace AutumnForest
             AudioSource.Play();
         }
         public void Stop() => AudioSource.Stop();
-
         public void Pause() => AudioSource.Pause();
     }
 }
