@@ -1,3 +1,4 @@
+using MothDIed;
 using MothDIed.Audio;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -15,7 +16,7 @@ namespace banging_code.ui.main_menu
         public bool IsChecked { get; private set; }
         private Image buttonImage;
 
-        private void Start()
+        private void Awake()
         {
             buttonImage = GetComponent<Image>();
         }
@@ -25,6 +26,11 @@ namespace banging_code.ui.main_menu
             clickSound.Play();
             IsChecked = !IsChecked;
 
+            UpdateImage();
+        }
+
+        private void UpdateImage()
+        {
             if (IsChecked)
             {
                 buttonImage.sprite = checkboxChecked;
@@ -33,6 +39,12 @@ namespace banging_code.ui.main_menu
             {
                 buttonImage.sprite = checkboxUnchecked;
             }
+        }
+
+        public void ResetToSettings()
+        {
+            IsChecked = Game.Settings.Data.EnableDebugFeatures;
+            UpdateImage();
         }
     }
 }

@@ -1,3 +1,4 @@
+using banging_code.debug;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -20,16 +21,19 @@ namespace banging_code.common
         public static float ToDecibel(int volume)
         {
             if (volume <= 0) return -80f;
-            return 20 * Mathf.Log10(volume / (float)100);
+            float normalizedLinear = (float)volume / 100;
+            return 20 * Mathf.Log10(normalizedLinear);
         }
 
-        public float GetMasterVolume() => GetVolume(MASTER_V_KEY);
+        public static int FromDecibel(float db)
+        {
+            return (int)(Mathf.Pow(10, db / 20) * 100);
+        }
 
-        public float GetMusicVolume() => GetVolume(MUSIC_V_KEY);
-
-        public float GetSoundsVolume() => GetVolume(SOUNDS_V_KEY);
-
-        public float GetUIVolume() => GetVolume(UI_V_KEY);
+        public int GetMasterVolume() => GetVolume(MASTER_V_KEY);
+        public int GetMusicVolume() => GetVolume(MUSIC_V_KEY);
+        public int GetSoundsVolume() => GetVolume(SOUNDS_V_KEY);
+        public int GetUIVolume() => GetVolume(UI_V_KEY);
 
         public void SetVolumeForMaster(int volume) => mixer.SetFloat(MASTER_V_KEY, ToDecibel(volume));
 
@@ -39,11 +43,11 @@ namespace banging_code.common
 
         public void SetVolumeForUI(int volume) => mixer.SetFloat(UI_V_KEY, ToDecibel(volume));
 
-        private float GetVolume(string parameter)
+        private int GetVolume(string parameter)
         {
             if (mixer.GetFloat(parameter, out float value))
             {
-                return (value+80)/(float)100;
+                return FromDecibel(value);
             }
             return 0;
         }

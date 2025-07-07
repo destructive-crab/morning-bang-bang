@@ -22,6 +22,15 @@ namespace banging_code.settings
             instance = this;
         }
 
+        public void ApplyVolumes(int master = 0, int music = 0, int sounds = 0, int ui = 0)
+        {
+            Data.MasterVolume = (ushort)master;
+            Data.MusicVolume = (ushort)music;
+            Data.SoundsVolume = (ushort)sounds;
+            Data.UIVolume = (ushort)ui;
+        }
+
+        //IO
         public async UniTask LoadFromFile()
         {
             Data = await SaveManager.Load<GeneralSettingsData>(GeneralSettingsData.SaveName, "");
@@ -38,12 +47,8 @@ namespace banging_code.settings
         {
             return SaveManager.SaveImmediatly(new SaveManager.QueueRegistry(Data, typeof(GeneralSettingsData), Data.GetSaveName(), Data.GetDirectory()));
         }
+        public void ResetToDefault() => Data.ResetToDefaults();
 
-        public void ResetToDefault()
-        {
-            Data.ResetToDefaults();
-        }
-        
         [Serializable]
         public sealed class GeneralSettingsData : SavableData
         { 

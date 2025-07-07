@@ -4,8 +4,8 @@ using UnityEngine.Tilemaps;
 
 namespace banging_code.level.structure
 {
-    [CreateAssetMenu(menuName = "Tiles/Floor", fileName = "Floor Tile")]
-    public class FloorTile : RuleTile, IFloorTile
+    [CreateAssetMenu(menuName = "Tiles/Rule Floor", fileName = "Floor Tile")]
+    public class RuleFloorTile : RuleTile, IFloorTile
     {
         public bool IsWalkable()
         {
