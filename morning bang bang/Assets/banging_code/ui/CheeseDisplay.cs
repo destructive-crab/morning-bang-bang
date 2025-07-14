@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(TMP_Text))]
-public class MoneyDisplay : MonoBehaviour
+public class CheeseDisplay : MonoBehaviour
 {
     private TMP_Text text;
 
@@ -15,6 +15,6 @@ public class MoneyDisplay : MonoBehaviour
 
     private void Update()
     {
-        text.text = Game.RunSystem.Data.Money + "$";
+        text.text = Game.RunSystem.Data.Cheese + "$";
     }
 }

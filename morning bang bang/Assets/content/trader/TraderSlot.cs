@@ -58,9 +58,9 @@ namespace content.trader
             if(!Selected) return;
             if (solding == null) return;
 
-            if (Game.RunSystem.Data.Money >= solding.Cost)
+            if (Game.RunSystem.Data.Cheese >= solding.Cost)
             {
-                Game.RunSystem.Data.Money -= solding.Cost;
+                Game.RunSystem.Data.Cheese -= solding.Cost;
                 text.text = "SOLD";
                 itemSprite.enabled = false;
                 Game.RunSystem.Data.Inventory.Add(solding);

@@ -17,7 +17,7 @@ public class Coin : MonoBehaviour
     {
         if (other.gameObject.TryGetComponent(out PlayerRoot playerRoot))
         {
-            Game.RunSystem.Data.Money++;
+            Game.RunSystem.Data.Cheese++;
             Destroy(gameObject);
         }
     }

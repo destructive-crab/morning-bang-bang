@@ -14,7 +14,7 @@ namespace banging_code.runs_system
         public PlayerHealth PlayerHealth { get; private set; } = new();
         public float Speed { get; set; } = 4;
         public float DamageMultiplier { get; set; } = 1;
-        public int Money { get; set; } = 3;
+        public int Cheese { get; set; } = 3;
 
         public RunData(GameItem[] items)
         {
