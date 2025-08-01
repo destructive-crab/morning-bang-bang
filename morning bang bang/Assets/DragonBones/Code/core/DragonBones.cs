@@ -61,12 +61,6 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 5.0</version>
     /// <language>en_US</language>
-
-    /// <summary>
-    /// - 边界框类型。
-    /// </summary>
-    /// <version>DragonBones 5.0</version>
-    /// <language>zh_CN</language>
     public enum BoundingBoxType
     {
         None = -1,
@@ -140,12 +134,6 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 5.5</version>
     /// <language>en_US</language>
-
-    /// <summary>
-    /// - 偏移模式。
-    /// </summary>
-    /// <version>DragonBones 5.5</version>
-    /// <language>zh_CN</language>
     public enum OffsetMode
     {
         None,
@@ -157,73 +145,37 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 4.5</version>
     /// <language>en_US</language>
-
-    /// <summary>
-    /// - 动画淡出模式。
-    /// </summary>
-    /// <version>DragonBones 4.5</version>
-    /// <language>zh_CN</language>
     public enum AnimationFadeOutMode
     {
         /// <summary>
         /// - Do not fade out of any animation states.
         /// </summary>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 不淡出任何的动画状态。
-        /// </summary>
-        /// <language>zh_CN</language>
         None = 0,
         /// <summary>
         /// - Fade out the animation states of the same layer.
         /// </summary>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 淡出同层的动画状态。
-        /// </summary>
-        /// <language>zh_CN</language>
         SameLayer = 1,
         /// <summary>
         /// - Fade out the animation states of the same group.
         /// </summary>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 淡出同组的动画状态。
-        /// </summary>
-        /// <language>zh_CN</language>
         SameGroup = 2,
         /// <summary>
         /// - Fade out the animation states of the same layer and group.
         /// </summary>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 淡出同层并且同组的动画状态。
-        /// </summary>
-        /// <language>zh_CN</language>
         SameLayerAndGroup = 3,
         /// <summary>
         /// - Fade out of all animation states.
         /// </summary>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 淡出所有的动画状态。
-        /// </summary>
-        /// <language>zh_CN</language>
         All = 4,
         /// <summary>
         /// - Does not replace the animation state with the same name.
         /// </summary>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 不替换同名的动画状态。
-        /// </summary>
-        /// <language>zh_CN</language>
         Single = 5
     }
 

@@ -1,25 +1,3 @@
-/**
- * The MIT License (MIT)
- *
- * Copyright (c) 2012-2017 DragonBones team and other contributors
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 using System;
 using System.Collections.Generic;
 
@@ -38,18 +16,6 @@ namespace DragonBones
     /// <see cref="DragonBones.SlotData"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-
-    /// <summary>
-    /// - 插槽附着在骨骼上，控制显示对象的显示状态和属性。
-    /// 一个骨骼上可以包含多个插槽。
-    /// 一个插槽中可以包含多个显示对象，同一时间只能显示其中的一个显示对象，但可以在动画播放的过程中切换显示对象实现帧动画。
-    /// 显示对象可以是普通的图片纹理，也可以是子骨架的显示容器，网格显示对象，还可以是自定义的其他显示对象。
-    /// </summary>
-    /// <see cref="DragonBones.Armature"/>
-    /// <see cref="DragonBones.Bone"/>
-    /// <see cref="DragonBones.SlotData"/>
-    /// <version>DragonBones 3.0</version>
-    /// <language>zh_CN</language>
     public abstract class Slot : TransformObject
     {
         /// <summary>
@@ -61,16 +27,6 @@ namespace DragonBones
         /// <see cref="DragonBones.AnimationState.group"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 显示对象受到控制的动画状态或混合组名称，设置为 null 则表示受所有的动画状态控制。
-        /// </summary>
-        /// <default>null</default>
-        /// <see cref="DragonBones.AnimationState.displayControl"/>
-        /// <see cref="DragonBones.AnimationState.name"/>
-        /// <see cref="DragonBones.AnimationState.group"/>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public string displayController;
         /// <private/>
         protected bool _displayDirty;
@@ -896,16 +852,6 @@ namespace DragonBones
         /// <param name="y">- The vertical coordinate of the point.</param>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 检查特定点是否在插槽的自定义边界框内。
-        /// 点的坐标系为骨架内坐标系。
-        /// 自定义边界框需要在 DragonBones Pro 中自定义。
-        /// </summary>
-        /// <param name="x">- 点的水平坐标。</param>
-        /// <param name="y">- 点的垂直坐标。</param>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public bool ContainsPoint(float x, float y)
         {
             if (this._boundingBoxData == null)
@@ -937,22 +883,6 @@ namespace DragonBones
         /// <returns>Intersection situation. [1: Disjoint and segments within the bounding box, 0: Disjoint, 1: Intersecting and having a nodal point and ending in the bounding box, 2: Intersecting and having a nodal point and starting at the bounding box, 3: Intersecting and having two intersections, N: Intersecting and having N intersections]</returns>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 检查特定线段是否与插槽的自定义边界框相交。
-        /// 线段和交点的坐标系均为骨架内坐标系。
-        /// 自定义边界框需要在 DragonBones Pro 中自定义。
-        /// </summary>
-        /// <param name="xA">- 线段起点的水平坐标。</param>
-        /// <param name="yA">- 线段起点的垂直坐标。</param>
-        /// <param name="xB">- 线段终点的水平坐标。</param>
-        /// <param name="yB">- 线段终点的垂直坐标。</param>
-        /// <param name="intersectionPointA">- 线段从起点到终点与边界框相交的第一个交点。 （如果未设置，则不计算交点）</param>
-        /// <param name="intersectionPointB">- 线段从终点到起点与边界框相交的第一个交点。 （如果未设置，则不计算交点）</param>
-        /// <param name="normalRadians">- 交点边界框切线的法线弧度。 [x: 第一个交点切线的法线弧度, y: 第二个交点切线的法线弧度] （如果未设置，则不计算法线）</param>
-        /// <returns>相交的情况。 [-1: 不相交且线段在包围盒内, 0: 不相交, 1: 相交且有一个交点且终点在包围盒内, 2: 相交且有一个交点且起点在包围盒内, 3: 相交且有两个交点, N: 相交且有 N 个交点]</returns>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public int IntersectsSegment(float xA, float yA, float xB, float yB,
                                     Point intersectionPointA = null,
                                     Point intersectionPointB = null,
@@ -1024,12 +954,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 强制插槽在下一帧更新显示对象的状态。
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public void InvalidUpdate()
         {
             this._displayDirty = true;
@@ -1041,13 +965,6 @@ namespace DragonBones
         /// <default>true</default>
         /// <version>DragonBones 5.6</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 插槽的显示对象的可见。
-        /// </summary>
-        /// <default>true</default>
-        /// <version>DragonBones 5.6</version>
-        /// <language>zh_CN</language>
         public bool visible
         {
             get { return this._visible; }
@@ -1075,20 +992,6 @@ namespace DragonBones
         /// </example>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 此时显示的显示对象在显示列表中的索引。
-        /// </summary>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     let slot = armature.getSlot("weapon");
-        ///     slot.displayIndex = 3;
-        ///     slot.displayController = "none";
-        /// </pre>
-        /// </example>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public int displayIndex
         {
             get { return this._displayIndex; }
@@ -1107,13 +1010,6 @@ namespace DragonBones
         /// <see cref="DragonBones.SlotData.name"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 插槽名称。
-        /// </summary>
-        /// <see cref="DragonBones.SlotData.name"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public string name
         {
             get { return this._slotData.name; }
@@ -1124,12 +1020,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 包含显示对象或子骨架的显示列表。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public List<object> displayList
         {
             get { return new List<object>(_displayList.ToArray()); }
@@ -1175,13 +1065,6 @@ namespace DragonBones
         /// <see cref="DragonBones.SlotData"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 插槽数据。
-        /// </summary>
-        /// <see cref="DragonBones.SlotData"/>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public SlotData slotData
         {
             get { return this._slotData; }
@@ -1227,12 +1110,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 插槽此时的自定义包围盒数据。
-        /// </summary>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public BoundingBoxData boundingBoxData
         {
             get { return this._boundingBoxData; }
@@ -1260,19 +1137,6 @@ namespace DragonBones
         /// </example>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 插槽此时显示的显示对象。
-        /// </summary>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     let slot = armature.getSlot("text");
-        ///     slot.display = new yourEngine.TextField();
-        /// </pre>
-        /// </example>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public object display
         {
             get { return this._display; }
@@ -1323,24 +1187,6 @@ namespace DragonBones
         /// </example>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 插槽此时显示的子骨架。
-        /// 注意，被替换的对象并不会被回收，根据语言和引擎的不同，需要额外处理。
-        /// </summary>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     let slot = armature.getSlot("weapon");
-        /// let prevChildArmature = slot.childArmature;
-        /// if (prevChildArmature) {
-        /// prevChildArmature.dispose();
-        ///     }
-        ///     slot.childArmature = factory.buildArmature("weapon_blabla", "weapon_blabla_project");
-        /// </pre>
-        /// </example>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public Armature childArmature
         {
             get { return this._childArmature; }
@@ -1360,12 +1206,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 所属的父骨骼。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public Bone parent
         {
             get { return this._parent; }

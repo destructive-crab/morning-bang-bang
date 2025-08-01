@@ -102,7 +102,7 @@ namespace MothDIed
 
                     InputService.Tick();
                     EventManager.Tick();
-                    DBUnityFactory.factory._dragonBones.AdvanceTime(Time.deltaTime);
+                    DBUnityFactory.Instance._dragonBones.AdvanceTime(Time.deltaTime);
 
                     if (RunSystem.IsInRun && RunSystem.Data.Level != null && SceneSwitcher.IsSceneLoaded)
                     {

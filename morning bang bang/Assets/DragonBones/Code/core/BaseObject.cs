@@ -8,13 +8,6 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 4.5</version>
     /// <language>en_US</language>
-
-    /// <summary>
-    /// - 基础对象，通常 DragonBones 的对象都继承自该类。
-    /// 所有基础对象的实例都会缓存到对象池，以减少频繁申请内存或内存回收的性能消耗。
-    /// </summary>
-    /// <version>DragonBones 4.5</version>
-    /// <language>zh_CN</language>
     public abstract class BaseObject
     {
         private static uint _hashCode = 0;
@@ -52,14 +45,6 @@ namespace DragonBones
         /// <param name="maxCount">- Max count.</param>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 设置特定对象池的最大缓存数量。
-        /// </summary>
-        /// <param name="objectConstructor">- 特定的类。 (不设置则设置所有对象池的最大缓存数量)</param>
-        /// <param name="maxCount">- 最大缓存数量。</param>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public static void SetMaxCount(System.Type classType, uint maxCount)
         {
             if (classType != null)
@@ -101,13 +86,6 @@ namespace DragonBones
         /// <param name="objectConstructor">- Specify class. (Clear all cached instances if not set)</param>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 清除特定对象池的缓存实例。
-        /// </summary>
-        /// <param name="objectConstructor">- 特定的类。 (不设置则清除所有缓存的实例)</param>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public static void ClearPool(System.Type classType)
         {
             if (classType != null)
@@ -139,13 +117,6 @@ namespace DragonBones
         /// <param name="objectConstructor">- The specify class.</param>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 从对象池中获取特定类的实例。
-        /// </summary>
-        /// <param name="objectConstructor">- 特定的类。</param>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public static T BorrowObject<T>() where T : BaseObject, new()
         {
             var type = typeof(T);
@@ -169,12 +140,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 分配给此实例的唯一标识号。
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public readonly uint hashCode = _hashCode++;
 
         protected BaseObject()
@@ -189,11 +154,6 @@ namespace DragonBones
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
 
-        /// <summary>
-        /// - 清除该实例的所有数据并将其返还对象池。
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public void ReturnToPool()
         {
             _OnClear();

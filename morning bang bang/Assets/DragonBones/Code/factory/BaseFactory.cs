@@ -889,26 +889,6 @@ namespace DragonBones
         /// </example>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 用特定的显示对象数据替换特定插槽当前的显示对象数据。
-        /// 用 "dragonBonesName/armatureName/slotName/displayName" 指定显示对象数据。
-        /// </summary>
-        /// <param name="dragonBonesName">- DragonBonesData 实例的缓存名称。</param>
-        /// <param name="armatureName">- 骨架数据名称。</param>
-        /// <param name="slotName">- 插槽数据名称。</param>
-        /// <param name="displayName">- 显示对象数据名称。</param>
-        /// <param name="slot">- 插槽。</param>
-        /// <param name="displayIndex">- 被替换的显示对象数据的索引。 （如果未设置，则替换当前的显示对象数据）</param>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     let slot = armature.getSlot("weapon");
-        ///     factory.replaceSlotDisplay("dragonBonesName", "armatureName", "slotName", "displayName", slot);
-        /// </pre>
-        /// </example>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public bool ReplaceSlotDisplay(string dragonBonesName,
                                         string armatureName,
                                         string slotName,
@@ -977,28 +957,6 @@ namespace DragonBones
         /// <see cref="DragonBones.SkinData"/>
         /// <version>DragonBones 5.6</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 将特定的皮肤数据共享给特定的骨架使用。
-        /// </summary>
-        /// <param name="armature">- 骨架。</param>
-        /// <param name="skin">- 皮肤数据。</param>
-        /// <param name="isOverride">- 是否完全覆盖原来的皮肤。 （默认: false）</param>
-        /// <param name="exclude">- 不需要被替换的插槽名称列表。</param>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     let armatureA = factory.buildArmature("armatureA", "dragonBonesA");
-        ///     let armatureDataB = factory.getArmatureData("armatureB", "dragonBonesB");
-        ///     if (armatureDataB && armatureDataB.defaultSkin) {
-        ///     factory.replaceSkin(armatureA, armatureDataB.defaultSkin, false, ["arm_l", "weapon_l"]);
-        ///     }
-        /// </pre>
-        /// </example>
-        /// <see cref="DragonBones.Armature"/>
-        /// <see cref="DragonBones.SkinData"/>
-        /// <version>DragonBones 5.6</version>
-        /// <language>zh_CN</language>
         public bool ReplaceSkin(Armature armature, SkinData skin, bool isOverride = false, List<string> exclude = null)
         {
             var success = false;
@@ -1074,28 +1032,6 @@ namespace DragonBones
         /// <see cref="DragonBones.ArmatureData"/>
         /// <version>DragonBones 5.6</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 用特定骨架数据的动画数据替换特定骨架现有的动画数据。
-        /// 这样就能实现制作一个骨架动画模板，让其他没有制作动画的骨架共享该动画。
-        /// </summary>
-        /// <param name="armature">- 骨架。</param>
-        /// <param name="armatureData">- 骨架数据。</param>
-        /// <param name="isOverride">- 是否完全覆盖原来的动画。（默认: false）</param>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     let armatureA = factory.buildArmature("armatureA", "dragonBonesA");
-        ///     let armatureDataB = factory.getArmatureData("armatureB", "dragonBonesB");
-        ///     if (armatureDataB) {
-        ///     factory.replaceAnimation(armatureA, armatureDataB);
-        ///     }
-        /// </pre>
-        /// </example>
-        /// <see cref="DragonBones.Armature"/>
-        /// <see cref="DragonBones.ArmatureData"/>
-        /// <version>DragonBones 5.6</version>
-        /// <language>zh_CN</language>
         public bool ReplaceAnimation(Armature armature,
                                     ArmatureData armatureData,
                                     bool isOverride = true)
@@ -1173,12 +1109,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 5.7</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 由引擎驱动的 WorldClock 实例。
-        /// </summary>
-        /// <version>DragonBones 5.7</version>
-        /// <language>zh_CN</language>
         public WorldClock clock
         {
             get { return this._dragonBones.Clock; }
@@ -1188,10 +1118,6 @@ namespace DragonBones
         /// </summary>
         /// <language>en_US</language>
 
-        /// <summary>
-        /// - 已废弃，请参考 {@link #replaceSkin}。
-        /// </summary>
-        /// <language>zh_CN</language>
         [System.Obsolete("")]
         public bool ChangeSkin(Armature armature, SkinData skin, List<string> exclude = null)
         {

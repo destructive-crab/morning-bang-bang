@@ -11,25 +11,9 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    /// 
-    /// <summary>
-    /// Egret 工厂。
-    /// </summary>
-    /// <version>DragonBones 3.0</version>
-    /// <language>zh_CN</language>
     public class DBUnityFactory : BaseFactory
     {
-        /// <summary>
-        /// 创建材质时默认使用的 shader。
-        /// </summary>
-        /// <version>DragonBones 4.7</version>
-        /// <language>zh_CN</language>
         internal const string defaultShaderName = "Sprites/Default";
-        /// <summary>
-        /// 创建UI材质时默认使用的 shader。
-        /// </summary>
-        /// <version>DragonBones 4.7</version>
-        /// <language>zh_CN</language>
         internal const string defaultUIShaderName = "UI/Default";
 
         internal static DragonBones _dragonBonesInstance = null;
@@ -48,13 +32,7 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.7</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// 一个可以直接使用的全局工厂实例。
-        /// </summary>
-        /// <version>DragonBones 4.7</version>
-        /// <language>zh_CN</language>
-        public static DBUnityFactory factory
+        public static DBUnityFactory Instance
         {
             get
             {
@@ -75,7 +53,7 @@ namespace DragonBones
 
         private void Init()
         {
-            Debug.Log("DragonBones Factory Initialized"+ Application.isPlaying);
+            Debug.Log("DragonBones Factory Initialized");
             if (Application.isPlaying)
             {
                 if (_gameObject == null)
@@ -294,19 +272,6 @@ namespace DragonBones
         /// <version> DragonBones 4.5</version>
         /// <language>en_US</language>
 
-        /// <summary>
-        /// 通过缓存的 DragonBonesData 实例和 TextureAtlasData 实例创建一个骨架，并用 {@link #clock} 更新该骨架。
-        /// 区别在于由 {@link #buildArmature} 创建的骨架没有 WorldClock 实例驱动。
-        /// </summary>
-        /// <param name="armatureName">骨架数据名称。</param>
-        /// <param name="dragonBonesName">实例的缓存名称 （如果未设置，将检索所有的 DragonBonesData 实例，当多个 DragonBonesData 实例中包含同名的骨架数据时，可能无法准确的创建出特定的骨架）</param>
-        /// <param name="skinName">皮肤名称，可以设置一个其他骨架数据名称来共享其皮肤数据（如果未设置，则使用默认的皮肤数据）</param>
-        /// <param name="textureAtlasName">贴图集名称</param>
-        /// <param name="gameObject">骨甲容器，如果未设置，则自动创建</param>
-        /// <param name="isUGUI">isUGUI 是否是UGUI，默认为false</param>
-        /// <returns>骨架的显示容器。</returns>
-        /// <version> DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public UnityArmatureInstance BuildArmatureComponent(string armatureName, string dragonBonesName = "", string skinName = "", string textureAtlasName = "", GameObject gameObject = null, bool isUGUI = false)
         {
             _armatureGameObject = gameObject;
@@ -325,13 +290,6 @@ namespace DragonBones
 
             return null;
         }
-        /**
-         * @language zh_CN
-         * 获取带有指定贴图的显示对象。
-         * @param textureName 指定的贴图名称。
-         * @param textureAtlasName 指定的龙骨数据名称，如果未设置，将检索所有的龙骨数据。
-         * @version DragonBones 3.0
-         */
         public GameObject GetTextureDisplay(string textureName, string textureAtlasName = null)
         {
             /*var textureData = _getTextureData(textureAtlasName, textureName) as UnityTextureData;
@@ -499,13 +457,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>zh_CN</language>
-
-        /// <summary>
-        /// 全局声音事件管理器。
-        /// 声音事件可以从该管理器统一侦听。
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public IEventDispatcher<EventObject> soundEventManager
         {
             get
@@ -523,17 +474,6 @@ namespace DragonBones
         /// <returns></returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// 将UnityDragonBonesData数据解析为 DragonBonesData 实例，并缓存到工厂中。
-        /// </summary>
-        /// <param name="data">龙骨数据</param>
-        /// <param name="isUGUI">是否是UGUI</param>
-        /// <param name="armatureScale">骨架缩放值</param>
-        /// <param name="texScale">贴图缩放值</param>
-        /// <returns></returns>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public DragonBonesData LoadData(UnityDragonBonesData data, bool isUGUI = false, float armatureScale = 0.01f, float texScale = 1.0f)
         {
             DragonBonesData dragonBonesData = null;
@@ -632,16 +572,6 @@ namespace DragonBones
         /// <returns>DragonBonesData instance</returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// 将原始数据解析为 DragonBonesData 实例，并缓存到工厂中。
-        /// </summary>
-        /// <param name="dragonBonesJSONPath">龙骨数据在 Resources 中的路径。（其他形式的加载可自行扩展）</param>
-        /// <param name="name">为该实例指定一个缓存名称，以便可以通过此名称获取该实例。 （如果未设置，则使用该实例中的名称）</param>
-        /// <param name="scale">为所有的骨架指定一个缩放值。 （默认不缩放）</param>
-        /// <returns>龙骨数据</returns>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public DragonBonesData LoadDragonBonesData(string dragonBonesJSONPath, string name = "", float scale = 0.01f)
         {
             dragonBonesJSONPath = UnityFactoryHelper.CheckResourecdPath(dragonBonesJSONPath);
@@ -662,16 +592,6 @@ namespace DragonBones
         /// <returns>DragonBonesData instance</returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// 将json数据解析为 DragonBonesData 实例，并缓存到工厂中。
-        /// </summary>
-        /// <param name="dragonBonesJSON">龙骨的json数据。</param>
-        /// <param name="name">为该实例指定一个缓存名称，以便可以通过此名称获取该实例。 （如果未设置，则使用该实例中的名称）</param>
-        /// <param name="scale">为所有的骨架指定一个缩放值。 （默认不缩放）</param>
-        /// <returns>龙骨数据</returns>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public DragonBonesData LoadDragonBonesData(TextAsset dragonBonesJSON, string name = "", float scale = 0.01f)
         {
             if (dragonBonesJSON == null)
@@ -714,17 +634,6 @@ namespace DragonBones
         /// <returns></returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>  
-
-        /// <summary>
-        /// 将贴图集json数据解析为UnityTextureAtlasData，并缓存到工厂中。
-        /// </summary>
-        /// <param name="textureAtlasJSONPath">贴图集数据在 Resources 中的路径。（其他形式的加载可自行扩展，使用 factory.ParseTextureAtlasData(JSONObject, Material)）</param>
-        /// <param name="name">为数据指定一个名称，以便可以通过这个名称获取数据，如果未设置，则使用数据中的名称。</param>
-        /// <param name="scale">为贴图集设置一个缩放值。</param>
-        /// <param name="isUGUI"></param>
-        /// <returns>贴图集数据</returns>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public UnityTextureAtlasData LoadTextureAtlasData(string textureAtlasJSONPath, string name = "", float scale = 1.0f, bool isUGUI = false)
         {
             textureAtlasJSONPath = UnityFactoryHelper.CheckResourecdPath(textureAtlasJSONPath);
@@ -759,17 +668,6 @@ namespace DragonBones
         /// <returns></returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>  
-
-        /// <summary>
-        /// 将TextureAtlas解析为UnityTextureAtlasData，并缓存到工厂中。
-        /// </summary>
-        /// <param name="textureAtlas"></param>
-        /// <param name="name">为数据指定一个名称，以便可以通过这个名称获取数据，如果未设置，则使用数据中的名称。</param>
-        /// <param name="scale">为贴图集设置一个缩放值。</param>
-        /// <param name="isUGUI"></param>
-        /// <returns></returns>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public UnityTextureAtlasData LoadTextureAtlasData(UnityDragonBonesData.TextureAtlas textureAtlas, string name, float scale = 1.0f, bool isUGUI = false)
         {
             Dictionary<string, object> textureJSONData = (Dictionary<string, object>)MiniJSON.Json.Deserialize(textureAtlas.textureAtlasJSON.text);
@@ -815,13 +713,6 @@ namespace DragonBones
         /// <param name="unityArmature">UnityArmatureComponent</param>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// 刷新骨架的贴图集数据。
-        /// </summary>
-        /// <param name="unityArmature">骨架</param>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public void RefreshAllTextureAtlas(UnityArmatureInstance unityArmature)
         {
             foreach (var textureAtlasDatas in _textureAtlasDataMap.Values)
@@ -868,21 +759,6 @@ namespace DragonBones
         /// <param name="material">The new material</param>
         /// <param name="isUGUI">is ugui。</param>
         /// <param name="displayIndex">The index of the display data that is replaced. (If it is not set, replaces the current display data)</param>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
-
-        /// <summary>
-        /// 用特定的显示对象数据替换特定插槽当前的显示对象数据。
-        /// </summary>
-        /// <param name="dragonBonesName">指定的龙骨数据名称。</param>
-        /// <param name="armatureName">指定的骨架名称。</param>
-        /// <param name="slotName">指定的插槽名称。</param>
-        /// <param name="displayName">指定的显示对象名称。</param>
-        /// <param name="slot">指定的插槽实例。</param>
-        /// <param name="texture">新的贴图。</param>
-        /// <param name="material">新的材质。</param>
-        /// <param name="isUGUI">是否为ugui。</param>
-        /// <param name="displayIndex">被替换的显示对象数据的索引。 （如果未设置，则替换当前的显示对象数据）。</param>
         /// <version>DragonBones 4.5</version>
         /// <language>zh_CN</language>
         public void ReplaceSlotDisplay(
@@ -1035,13 +911,6 @@ namespace DragonBones
     /// </summary>
     internal static class UnityFactoryHelper
     {
-        /// <summary>
-        /// 生成一个材质球
-        /// </summary>
-        /// <param name="shaderName"></param>
-        /// <param name="materialName"></param>
-        /// <param name="texture"></param>
-        /// <returns></returns>
         internal static Material GenerateMaterial(string shaderName, string materialName, Texture texture)
         {
             //创建材质球
@@ -1053,11 +922,6 @@ namespace DragonBones
             return material;
         }
 
-        /// <summary>
-        /// 检查路径合法性
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
         internal static string CheckResourecdPath(string path)
         {
             var index = path.LastIndexOf("Resources");
@@ -1075,12 +939,6 @@ namespace DragonBones
             return path;
         }
 
-        /// <summary>
-        /// 根据贴图JSON文件的路径和JSON文件中贴图名称获得贴图路径
-        /// </summary>
-        /// <param name="textureAtlasJSONPath">贴图JSON文件路径:NewDragon/NewDragon_tex</param>
-        /// <param name="textureAtlasImageName">贴图名称:NewDragon.png</param>
-        /// <returns></returns>
         internal static string GetTextureAtlasImagePath(string textureAtlasJSONPath, string textureAtlasImageName)
         {
             var index = textureAtlasJSONPath.LastIndexOf("Resources");
@@ -1105,12 +963,6 @@ namespace DragonBones
 
             return textureAtlasImagePath;
         }
-
-        /// <summary>
-        /// 根据贴图路径获得贴图名称
-        /// </summary>
-        /// <param name="textureAtlasJSONPath"></param>
-        /// <returns></returns>
         internal static string GetTextureAtlasNameByPath(string textureAtlasJSONPath)
         {
             string name = string.Empty;

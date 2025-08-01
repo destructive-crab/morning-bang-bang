@@ -5,8 +5,6 @@ namespace DragonBones
     [System.Serializable]
     public class UnityDragonBonesData : ScriptableObject
     {
-        public int PixelsPerUnit = 100;
-        
         [System.Serializable]
         public class TextureAtlas
         {
@@ -16,20 +14,22 @@ namespace DragonBones
             public Material uiMaterial;
         }
 
+        public int PixelsPerUnit = 100;
+
         public string dataName;
         public TextAsset dragonBonesJSON;
         public TextureAtlas[] textureAtlas;
 
         public void RemoveFromFactory(bool disposeData =true)
         {
-            DBUnityFactory.factory.RemoveDragonBonesData(dataName, disposeData);
+            DBUnityFactory.Instance.RemoveDragonBonesData(dataName, disposeData);
             if(textureAtlas != null)
             {
                 foreach(TextureAtlas ta in textureAtlas)
                 {
                     if(ta != null && ta.texture != null)
                     {
-                        DBUnityFactory.factory.RemoveTextureAtlasData(ta.texture.name,disposeData);
+                        DBUnityFactory.Instance.RemoveTextureAtlasData(ta.texture.name,disposeData);
                     }
                 }
             }

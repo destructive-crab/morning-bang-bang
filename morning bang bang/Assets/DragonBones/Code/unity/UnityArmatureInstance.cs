@@ -122,11 +122,11 @@ namespace DragonBones
 #endif
             if (IsDataSetupCorrectly())
             {
-                var dragonBonesData = DBUnityFactory.factory.LoadData(unityData, isUGUI);
+                var dragonBonesData = DBUnityFactory.Instance.LoadData(unityData, isUGUI);
 
                 if (dragonBonesData != null && !string.IsNullOrEmpty(armatureName))
                 {
-                    DBUnityFactory.factory.BuildArmatureComponent(armatureName, unityData.dataName, null, null,
+                    DBUnityFactory.Instance.BuildArmatureComponent(armatureName, unityData.dataName, null, null,
                         gameObject, isUGUI);
                 }
             }
@@ -196,7 +196,7 @@ namespace DragonBones
 
                 if (!Application.isPlaying)
                 {
-                    DBUnityFactory.factory._dragonBones.AdvanceTime(0.0f);
+                    DBUnityFactory.Instance._dragonBones.AdvanceTime(0.0f);
                 }
             }
 

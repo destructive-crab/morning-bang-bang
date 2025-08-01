@@ -1,28 +1,4 @@
-/**
- * The MIT License (MIT)
- *
- * Copyright (c) 2012-2017 DragonBones team and other contributors
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace DragonBones
 {
@@ -427,21 +403,6 @@ namespace DragonBones
         /// </example>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 强制骨骼在下一帧更新变换。
-        /// 当该骨骼没有动画状态或其动画状态播放完成时，骨骼将不在继续更新，而此时由于某些原因必须更新骨骼时，则需要显式调用该方法。
-        /// </summary>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     let bone = armature.getBone("arm");
-        ///     bone.offset.scaleX = 2.0;
-        ///     bone.invalidUpdate();
-        /// </pre>
-        /// </example>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public void InvalidUpdate()
         {
             this._transformDirty = true;
@@ -453,14 +414,6 @@ namespace DragonBones
         /// <see cref="DragonBones.Slot"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 检查该骨骼是否包含特定的骨骼或插槽。
-        /// </summary>
-        /// <see cref="DragonBones.Bone"/>
-        /// <see cref="DragonBones.Slot"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public bool Contains(Bone value)
         {
             if (value == this)
@@ -481,12 +434,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 骨骼数据。
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public BoneData boneData
         {
             get { return this._boneData; }
@@ -499,14 +446,6 @@ namespace DragonBones
         /// <see cref="DragonBones.Slot.visible"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 此骨骼所有插槽的可见。
-        /// </summary>
-        /// <default>true</default>
-        /// <see cref="DragonBones.Slot.visible"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public bool visible
         {
             get { return this._visible; }
@@ -534,12 +473,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 骨骼名称。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public string name
         {
             get { return this._boneData.name; }
@@ -550,12 +483,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 所属的父骨骼。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public Bone parent
         {
             get { return this._parent; }
@@ -564,11 +491,6 @@ namespace DragonBones
         /// - Deprecated, please refer to {@link dragonBones.Armature#getSlot()}.
         /// </summary>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 已废弃，请参考 {@link dragonBones.Armature#getSlot()}。
-        /// </summary>
-        /// <language>zh_CN</language>
         [System.Obsolete("")]
         public Slot slot
         {

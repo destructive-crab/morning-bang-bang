@@ -1,25 +1,3 @@
-/**
- * The MIT License (MIT)
- *
- * Copyright (c) 2012-2017 DragonBones team and other contributors
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 using System.Collections.Generic;
 
 namespace DragonBones
@@ -32,13 +10,6 @@ namespace DragonBones
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
 
-    /// <summary>
-    /// - 动画播放器用来播放动画数据和管理动画状态。
-    /// </summary>
-    /// <see cref="DragonBones.AnimationData"/>
-    /// <see cref="DragonBones.AnimationState"/>
-    /// <version>DragonBones 3.0</version>
-    /// <language>zh_CN</language>
     public class Animation : BaseObject
     {
         /// <summary>
@@ -48,12 +19,6 @@ namespace DragonBones
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
 
-        /// <summary>
-        /// - 所有动画的播放速度。 [0: 停止播放, (0~1): 慢速播放, 1: 正常播放, (1~N): 快速播放]
-        /// </summary>
-        /// <default>1.0</default>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public float timeScale;
 
         private bool _lockUpdate;
@@ -293,12 +258,6 @@ namespace DragonBones
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
 
-        /// <summary>
-        /// - 清除所有的动画状态。
-        /// </summary>
-        /// <see cref="DragonBones.AnimationState"/>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public void Reset()
         {
             foreach (var animationState in this._animationStates)
@@ -319,13 +278,6 @@ namespace DragonBones
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
 
-        /// <summary>
-        /// - 暂停指定动画状态的播放。
-        /// </summary>
-        /// <param name="animationName">- 动画状态名称。 （如果未设置，则暂停所有动画）</param>
-        /// <see cref="DragonBones.AnimationState"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public void Stop(string animationName = null)
         {
             if (animationName != null)
@@ -355,16 +307,6 @@ namespace DragonBones
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
 
-        /// <summary>
-        /// - 通过指定的动画配置来播放动画。
-        /// 该 API 仍在实验阶段，使用时可能遭遇 bug 或稳定性或兼容性问题。
-        /// </summary>
-        /// <param name="animationConfig">- 动画配置。</param>
-        /// <returns>播放的动画状态。</returns>
-        /// <see cref="DragonBones.AnimationConfig"/>
-        /// <beta/>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public AnimationState PlayConfig(AnimationConfig animationConfig)
         {
             var animationName = animationConfig.animation;
@@ -529,21 +471,6 @@ namespace DragonBones
         /// </example>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 播放指定动画。
-        /// </summary>
-        /// <param name="animationName">- 动画数据名称。 （如果未设置，则播放默认动画，或将暂停状态切换为播放状态，或重新播放之前播放的动画）</param>
-        /// <param name="playTimes">- 循环播放次数。 [-1: 使用动画数据默认值, 0: 无限循环播放, [1~N]: 循环播放 N 次] （默认: -1）</param>
-        /// <returns>播放的动画状态。</returns>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     armature.animation.play("walk");
-        /// </pre>
-        /// </example>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public AnimationState Play(string animationName = null, int playTimes = -1)
         {
             this._animationConfig.Clear();
@@ -596,26 +523,6 @@ namespace DragonBones
         /// </example>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 淡入播放指定的动画。
-        /// </summary>
-        /// <param name="animationName">- 动画数据名称。</param>
-        /// <param name="fadeInTime">- 淡入时间。 [-1: 使用动画数据默认值, [0~N]: 淡入时间 (以秒为单位)] （默认: -1）</param>
-        /// <param name="playTimes">- 播放次数。 [-1: 使用动画数据默认值, 0: 无限循环播放, [1~N]: 循环播放 N 次] （默认: -1）</param>
-        /// <param name="layer">- 混合图层，图层高的动画状态会优先获取混合权重，当混合权重分配总和超过 1.0 时，剩余的动画状态将不能再获得权重分配。 （默认: 0）</param>
-        /// <param name="group">- 混合组名称，该属性通常用来指定多个动画状态混合时的相互替换关系。 （默认: null）</param>
-        /// <param name="fadeOutMode">- 淡出模式，该属性通常用来指定多个动画状态混合时的相互替换模式。 （默认: AnimationFadeOutMode.SameLayerAndGroup）</param>
-        /// <returns>播放的动画状态。</returns>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     armature.animation.fadeIn("walk", 0.3, 0, 0, "normalGroup").resetToPose = false;
-        ///     armature.animation.fadeIn("attack", 0.3, 1, 0, "attackGroup").resetToPose = false;
-        /// </pre>
-        /// </example>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public AnimationState FadeIn(string animationName, float fadeInTime = -1.0f, int playTimes = -1,
                                     int layer = 0, string group = null,
                                     AnimationFadeOutMode fadeOutMode = AnimationFadeOutMode.SameLayerAndGroup)
@@ -639,16 +546,6 @@ namespace DragonBones
         /// <returns>The played animation state.</returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 从指定时间开始播放指定的动画。
-        /// </summary>
-        /// <param name="animationName">- 动画数据名称。</param>
-        /// <param name="time">- 播放开始的时间。 (以秒为单位)</param>
-        /// <param name="playTimes">- 循环播放次数。 [-1: 使用动画数据默认值, 0: 无限循环播放, [1~N]: 循环播放 N 次] （默认: -1）</param>
-        /// <returns>播放的动画状态。</returns>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public AnimationState GotoAndPlayByTime(string animationName, float time = 0.0f, int playTimes = -1)
         {
             this._animationConfig.Clear();
@@ -669,16 +566,6 @@ namespace DragonBones
         /// <returns>The played animation state.</returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 从指定帧开始播放指定的动画。
-        /// </summary>
-        /// <param name="animationName">- 动画数据名称。</param>
-        /// <param name="frame">- 播放开始的帧数。</param>
-        /// <param name="playTimes">- 播放次数。 [-1: 使用动画数据默认值, 0: 无限循环播放, [1~N]: 循环播放 N 次] （默认: -1）</param>
-        /// <returns>播放的动画状态。</returns>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public AnimationState GotoAndPlayByFrame(string animationName, uint frame = 0, int playTimes = -1)
         {
             this._animationConfig.Clear();
@@ -704,16 +591,6 @@ namespace DragonBones
         /// <returns>The played animation state.</returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 从指定进度开始播放指定的动画。
-        /// </summary>
-        /// <param name="animationName">- 动画数据名称。</param>
-        /// <param name="progress">- 开始播放的进度。</param>
-        /// <param name="playTimes">- 播放次数。 [-1: 使用动画数据默认值, 0: 无限循环播放, [1~N]: 循环播放 N 次] （默认: -1）</param>
-        /// <returns>播放的动画状态。</returns>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public AnimationState GotoAndPlayByProgress(string animationName, float progress = 0.0f, int playTimes = -1)
         {
             this._animationConfig.Clear();
@@ -738,15 +615,6 @@ namespace DragonBones
         /// <returns>The played animation state.</returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 在指定时间停止指定动画播放
-        /// </summary>
-        /// <param name="animationName">- 动画数据名称。</param>
-        /// <param name="time">- 停止的时间。 (以秒为单位)</param>
-        /// <returns>播放的动画状态。</returns>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public AnimationState GotoAndStopByTime(string animationName, float time = 0.0f)
         {
             var animationState = this.GotoAndPlayByTime(animationName, time, 1);
@@ -765,15 +633,6 @@ namespace DragonBones
         /// <returns>The played animation state.</returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 在指定帧停止指定动画的播放
-        /// </summary>
-        /// <param name="animationName">- 动画数据名称。</param>
-        /// <param name="frame">- 停止的帧数。</param>
-        /// <returns>播放的动画状态。</returns>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public AnimationState GotoAndStopByFrame(string animationName, uint frame = 0)
         {
             var animationState = this.GotoAndPlayByFrame(animationName, frame, 1);
@@ -792,15 +651,6 @@ namespace DragonBones
         /// <returns>The played animation state.</returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 在指定的进度停止指定的动画播放。
-        /// </summary>
-        /// <param name="animationName">- 动画数据名称。</param>
-        /// <param name="progress">- 停止进度。</param>
-        /// <returns>播放的动画状态。</returns>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public AnimationState GotoAndStopByProgress(string animationName, float progress = 0.0f)
         {
             var animationState = this.GotoAndPlayByProgress(animationName, progress, 1);
@@ -825,21 +675,6 @@ namespace DragonBones
         /// </example>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 获取指定的动画状态
-        /// </summary>
-        /// <param name="animationName">- 动画状态名称。</param>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     armature.animation.play("walk");
-        ///     let walkState = armature.animation.getState("walk");
-        ///     walkState.timeScale = 0.5;
-        /// </pre>
-        /// </example>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public AnimationState GetState(string animationName)
         {
             var i = this._animationStates.Count;
@@ -861,14 +696,6 @@ namespace DragonBones
         /// <see cref="DragonBones.AnimationData"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 检查是否包含指定的动画数据
-        /// </summary>
-        /// <param name="animationName">- 动画数据名称。</param>
-        /// <see cref="DragonBones.AnimationData"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public bool HasAnimation(string animationName)
         {
             return this._animations.ContainsKey(animationName);
@@ -878,12 +705,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 5.1</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 获取所有的动画状态
-        /// </summary>
-        /// <version>DragonBones 5.1</version>
-        /// <language>zh_CN</language>
         public List<AnimationState> GetStates()
         {
             return this._animationStates;
@@ -894,13 +715,6 @@ namespace DragonBones
         /// <see cref="DragonBones.AnimationState"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 检查是否有动画状态正在播放
-        /// </summary>
-        /// <see cref="DragonBones.AnimationState"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public bool isPlaying
         {
             get
@@ -922,13 +736,6 @@ namespace DragonBones
         /// <see cref="DragonBones.AnimationState"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 检查是否所有的动画状态均已播放完毕。
-        /// </summary>
-        /// <see cref="DragonBones.AnimationState"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public bool isCompleted
         {
             get
@@ -950,13 +757,6 @@ namespace DragonBones
         /// <see cref="lastAnimationState"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 上一个播放的动画状态名称
-        /// </summary>
-        /// <see cref="lastAnimationState"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public string lastAnimationName
         {
             get { return this._lastAnimationState != null ? this._lastAnimationState.name : ""; }
@@ -966,12 +766,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 所有动画数据的名称
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public List<string> animationNames
         {
             get { return this._animationNames; }
@@ -981,12 +775,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 所有的动画数据。
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public Dictionary<string, AnimationData> animations
         {
             get { return this._animations; }
@@ -1014,13 +802,6 @@ namespace DragonBones
         /// <see cref="DragonBones.AnimationConfig"/>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 一个可以快速使用的动画配置实例。
-        /// </summary>
-        /// <see cref="DragonBones.AnimationConfig"/>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public AnimationConfig animationConfig
         {
             get
@@ -1035,13 +816,6 @@ namespace DragonBones
         /// <see cref="DragonBones.AnimationState"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 上一个播放的动画状态
-        /// </summary>
-        /// <see cref="DragonBones.AnimationState"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public AnimationState lastAnimationState
         {
             get { return this._lastAnimationState; }

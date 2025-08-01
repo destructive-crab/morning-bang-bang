@@ -1,25 +1,3 @@
-/**
- * The MIT License (MIT)
- *
- * Copyright (c) 2012-2017 DragonBones team and other contributors
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 using System;
 using System.Collections.Generic;
 
@@ -32,14 +10,6 @@ namespace DragonBones
     /// <see cref="DragonBones.AnimationData"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-
-    /// <summary>
-    /// - 动画状态由播放动画数据时产生。
-    /// </summary>
-    /// <see cref="DragonBones.Animation"/>
-    /// <see cref="DragonBones.AnimationData"/>
-    /// <version>DragonBones 3.0</version>
-    /// <language>zh_CN</language>
     public class AnimationState : BaseObject
     {
         /// <private/>
@@ -54,15 +24,6 @@ namespace DragonBones
         /// <default>true</default>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 动画状态是否对插槽的显示对象属性有控制权。
-        /// 有时混合一个动画状态并不希望其控制插槽的显示对象属性，
-        /// 尤其是其他动画状态正在控制这些插槽的显示对象属性时。
-        /// </summary>
-        /// <default>true</default>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public bool displayControl;
         /// <summary>
         /// - Whether to reset the objects without animation to the armature pose when the animation state is start to play.
@@ -71,26 +32,12 @@ namespace DragonBones
         /// <default>true</default>
         /// <version>DragonBones 5.1</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 开始播放动画状态时是否将没有动画的对象重置为骨架初始值。
-        /// 通常在混合多个动画状态时应该将该属性设置为 false。
-        /// </summary>
-        /// <default>true</default>
-        /// <version>DragonBones 5.1</version>
-        /// <language>zh_CN</language>
         public bool resetToPose;
         /// <summary>
         /// - The play times. [0: Loop play, [1~N]: Play N times]
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 播放次数。 [0: 无限循环播放, [1~N]: 循环播放 N 次]
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public int playTimes;
         /// <summary>
         /// - The blend layer.
@@ -100,15 +47,6 @@ namespace DragonBones
         /// <readonly/>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 混合图层。
-        /// 图层高的动画状态会优先获取混合权重。
-        /// 当混合权重分配超过 1 时，剩余的动画状态将不再获得权重分配。
-        /// </summary>
-        /// <readonly/>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public int layer;
         /// <summary>
         /// - The play speed.
@@ -118,15 +56,6 @@ namespace DragonBones
         /// <default>1.0</default>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 播放速度。
-        /// 该值与 {@link dragonBones.Animation#timeScale} 是叠加关系。
-        /// [(-N~0): 倒转播放, 0: 停止播放, (0~1): 慢速播放, 1: 正常播放, (1~N): 快速播放]
-        /// </summary>
-        /// <default>1.0</default>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public float timeScale;
         /// <summary>
         /// - The blend weight.
@@ -134,13 +63,6 @@ namespace DragonBones
         /// <default>1.0</default>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 混合权重。
-        /// </summary>
-        /// <default>1.0</default>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public float weight;
         /// <summary>
         /// - The auto fade out time when the animation state play completed.
@@ -149,14 +71,6 @@ namespace DragonBones
         /// <default>-1.0</default>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 动画状态播放完成后的自动淡出时间。
-        /// [-1: 不自动淡出, [0~N]: 淡出时间] （以秒为单位）
-        /// </summary>
-        /// <default>-1.0</default>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public float autoFadeOutTime;
         /// <private/>
         public float fadeTotalTime;
@@ -166,13 +80,6 @@ namespace DragonBones
         /// <readonly/>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 动画状态名称。 （可以不同于动画数据）
-        /// </summary>
-        /// <readonly/>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public string name;
         /// <summary>
         /// - The blend group name of the animation state.
@@ -181,14 +88,6 @@ namespace DragonBones
         /// <readonly/>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 混合组名称。
-        /// 该属性通常用来指定多个动画状态混合时的相互替换关系。
-        /// </summary>
-        /// <readonly/>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public string group;
 
         private int _timelineDirty;
@@ -1020,12 +919,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 继续播放。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public void Play()
         {
             this._playheadState = 3; // 11
@@ -1035,12 +928,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 暂停播放。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public void Stop()
         {
             this._playheadState &= 1; // 0x
@@ -1052,14 +939,6 @@ namespace DragonBones
         /// <param name="pausePlayhead">- Whether to pause the animation playing when fade out.</param>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 淡出动画状态。
-        /// </summary>
-        /// <param name="fadeOutTime">- 淡出时间。 （以秒为单位）</param>
-        /// <param name="pausePlayhead">- 淡出时是否暂停播放。</param>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public void FadeOut(float fadeOutTime, bool pausePlayhead = true)
         {
             if (fadeOutTime < 0.0f)
@@ -1117,13 +996,6 @@ namespace DragonBones
         /// <param name="boneName">- The bone name.</param>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 检查是否包含特定骨骼遮罩。
-        /// </summary>
-        /// <param name="boneName">- 骨骼名称。</param>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public bool ContainsBoneMask(string boneName)
         {
             return this._boneMask.Count == 0 || this._boneMask.IndexOf(boneName) >= 0;
@@ -1135,14 +1007,6 @@ namespace DragonBones
         /// <param name="recursive">- Whether or not to add a mask to the bone's sub-bone.</param>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 添加特定的骨骼遮罩。
-        /// </summary>
-        /// <param name="boneName">- 骨骼名称。</param>
-        /// <param name="recursive">- 是否为该骨骼的子骨骼添加遮罩。</param>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public void AddBoneMask(string boneName, bool recursive = true)
         {
             var currentBone = this._armature.GetBone(boneName);
@@ -1178,13 +1042,6 @@ namespace DragonBones
         /// <param name="recursive">- Whether to remove the bone's sub-bone mask.</param>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 删除特定骨骼的遮罩。
-        /// </summary>
-        /// <param name="boneName">- 骨骼名称。</param>
-        /// <param name="recursive">- 是否删除该骨骼的子骨骼遮罩。</param>
-        /// <version>DragonBones 3.0</version>
         /// <language>zh_CN</language>
         public void RemoveBoneMask(string boneName, bool recursive = true)
         {
@@ -1236,12 +1093,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 删除所有骨骼遮罩。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public void RemoveAllBoneMask()
         {
             this._boneMask.Clear();
@@ -1252,12 +1103,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 5.1</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 是否正在淡入。
-        /// </summary>
-        /// <version>DragonBones 5.1</version>
-        /// <language>zh_CN</language>
         public bool isFadeIn
         {
             get { return this._fadeState < 0; }
@@ -1267,12 +1112,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 5.1</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 是否正在淡出。
-        /// </summary>
-        /// <version>DragonBones 5.1</version>
-        /// <language>zh_CN</language>
         public bool isFadeOut
         {
             get { return this._fadeState > 0; }
@@ -1282,12 +1121,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 5.1</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 是否淡入或淡出完毕。
-        /// </summary>
-        /// <version>DragonBones 5.1</version>
-        /// <language>zh_CN</language>
         public bool isFadeComplete
         {
             get { return this._fadeState == 0; }
@@ -1297,12 +1130,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 是否正在播放。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public bool isPlaying
         {
             get { return (this._playheadState & 2) != 0 && this._actionTimeline.playState <= 0; }
@@ -1312,12 +1139,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 是否播放完毕。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public bool isCompleted
         {
             get { return this._actionTimeline.playState > 0; }
@@ -1327,12 +1148,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 已经循环播放的次数。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public int currentPlayTimes
         {
             get { return this._actionTimeline.currentPlayTimes; }
@@ -1343,12 +1158,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 总播放时间。 （以秒为单位）
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public float totalTime
         {
             get { return this._duration; }
@@ -1358,12 +1167,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 当前播放的时间。 （以秒为单位）
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public float currentTime
         {
             get { return this._actionTimeline.currentTime; }

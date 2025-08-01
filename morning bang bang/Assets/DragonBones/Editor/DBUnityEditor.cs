@@ -154,7 +154,7 @@ namespace DragonBones
                 UnityDragonBonesData data = DBUnityEditor.CreateUnityDragonBonesData(dragonBoneJSON, textureAtlas);
                 unityArmatureInstance.unityData = data;
 
-                var dragonBonesData = DBUnityFactory.factory.LoadData(data, unityArmatureInstance.isUGUI);
+                var dragonBonesData = DBUnityFactory.Instance.LoadData(data, unityArmatureInstance.isUGUI);
                 if (dragonBonesData != null)
                 {
                     Undo.RecordObject(unityArmatureInstance, "Set DragonBones");
@@ -207,7 +207,7 @@ namespace DragonBones
                 slot = unityArmatureInstance.Armature.parent;
                 unityArmatureInstance.Dispose(false);
 
-                DBUnityFactory.factory._dragonBones.AdvanceTime(0.0f);
+                DBUnityFactory.Instance._dragonBones.AdvanceTime(0.0f);
 
                 unityArmatureInstance.unityData = unityData;
             }
@@ -215,7 +215,7 @@ namespace DragonBones
             unityArmatureInstance.armatureName = armatureName;
             unityArmatureInstance.isUGUI = isUGUI;
 
-            unityArmatureInstance = DBUnityFactory.factory.BuildArmatureComponent(unityArmatureInstance.armatureName, dragonBonesName, null, unityArmatureInstance.unityData.dataName, unityArmatureInstance.gameObject, unityArmatureInstance.isUGUI);
+            unityArmatureInstance = DBUnityFactory.Instance.BuildArmatureComponent(unityArmatureInstance.armatureName, dragonBonesName, null, unityArmatureInstance.unityData.dataName, unityArmatureInstance.gameObject, unityArmatureInstance.isUGUI);
             if (slot != null)
             {
                 slot.childArmature = unityArmatureInstance.Armature;
@@ -334,7 +334,7 @@ namespace DragonBones
                 var dataName = jsonObject.ContainsKey("name") ? jsonObject["name"] as string : "";
 
                 //先从缓存里面取
-                UnityDragonBonesData data = DBUnityFactory.factory.GetCacheUnityDragonBonesData(dataName);
+                UnityDragonBonesData data = DBUnityFactory.Instance.GetCacheUnityDragonBonesData(dataName);
 
                 //缓存中没有，从资源里面取
                 if (data == null)
@@ -396,7 +396,7 @@ namespace DragonBones
                 }
 
                 //
-                DBUnityFactory.factory.AddCacheUnityDragonBonesData(data);
+                DBUnityFactory.Instance.AddCacheUnityDragonBonesData(data);
 
                 AssetDatabase.SaveAssets();
                 return data;

@@ -1,6 +1,4 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace DragonBones
 {
@@ -11,14 +9,6 @@ namespace DragonBones
     /// <see cref="DragonBones.ArmatureData"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-
-    /// <summary>
-    /// - 龙骨数据。
-    /// 一个龙骨数据包含多个骨架数据。
-    /// </summary>
-    /// <see cref="DragonBones.ArmatureData"/>
-    /// <version>DragonBones 3.0</version>
-    /// <language>zh_CN</language>
     public class DragonBonesData : BaseObject
     {
         /// <private/>
@@ -29,23 +19,12 @@ namespace DragonBones
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
 
-        /// <summary>
-        /// - 动画帧频。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public uint frameRate;
         /// <summary>
         /// - The data version.
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 数据版本。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public string version;
 
         /// <summary>
@@ -57,12 +36,6 @@ namespace DragonBones
 
         public int PixelsPerUnit = 512;
         
-        /// <summary>
-        /// - 龙骨数据名称。
-        /// 该名称与龙骨项目名保持一致。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public string name;
         /// <private/>
         public ArmatureData stage;
@@ -78,11 +51,6 @@ namespace DragonBones
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
 
-        /// <summary>
-        /// - 所有的骨架数据名称。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public readonly List<string> armatureNames = new List<string>();
         /// <private/>
         public readonly Dictionary<string, ArmatureData> armatures = new Dictionary<string, ArmatureData>();
@@ -164,13 +132,6 @@ namespace DragonBones
         /// <param name="armatureName">- The armature data name.</param>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 获取特定的骨架数据。
-        /// </summary>
-        /// <param name="armatureName">- 骨架数据名称。</param>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public ArmatureData GetArmature(string armatureName)
         {
             return this.armatures.ContainsKey(armatureName) ? this.armatures[armatureName] : null;

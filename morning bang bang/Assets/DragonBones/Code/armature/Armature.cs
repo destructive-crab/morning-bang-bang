@@ -1,28 +1,4 @@
-/**
- * The MIT License (MIT)
- *
- * Copyright (c) 2012-2017 DragonBones team and other contributors
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace DragonBones
 {
@@ -35,16 +11,6 @@ namespace DragonBones
     /// <see cref="DragonBones.Animation"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-
-    /// <summary>
-    /// - 骨架是骨骼动画系统的核心。
-    /// </summary>
-    /// <see cref="ArmatureData"/>
-    /// <see cref="Bone"/>
-    /// <see cref="Slot"/>
-    /// <see cref="DragonBones.Animation"/>
-    /// <version>DragonBones 3.0</version>
-    /// <language>zh_CN</language>
     public class Armature : BaseObject, IAnimatable
     {
         private static int _OnSortSlots(Slot a, Slot b)
@@ -68,14 +34,6 @@ namespace DragonBones
         /// <default>true</default>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 是否继承父骨架的动画控制。
-        /// 如果该值为 true，当父骨架播放动画时，会尝试让子骨架播放同名动画。
-        /// </summary>
-        /// <default>true</default>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public bool inheritAnimation;
         /// <private/>
         public object userData;
@@ -262,19 +220,6 @@ namespace DragonBones
         /// </example>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 释放骨架。 （回收到对象池）
-        /// </summary>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     removeChild(armature.display);
-        ///     armature.dispose();
-        /// </pre>
-        /// </example>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public void Dispose()
         {
             if (this._armatureData != null)
@@ -408,16 +353,6 @@ namespace DragonBones
         /// <see cref="Slot.InvalidUpdate()"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 强制特定骨骼或其拥有的插槽在下一帧更新变换或显示属性。
-        /// </summary>
-        /// <param name="boneName">- 骨骼名称。 （如果未设置，将更新所有骨骼）</param>
-        /// <param name="updateSlot">- 是否更新骨骼的插槽。 （默认: false）</param>
-        /// <see cref="Bone.InvalidUpdate()"/>
-        /// <see cref="Slot.InvalidUpdate()"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public void InvalidUpdate(string boneName = null, bool updateSlot = false)
         {
             if (!string.IsNullOrEmpty(boneName))
@@ -464,16 +399,6 @@ namespace DragonBones
         /// <param name="y">- The vertical coordinate of the point.</param>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 检查特定点是否在某个插槽的自定义边界框内。
-        /// 点的坐标系为骨架内坐标系。
-        /// 自定义边界框需要在 DragonBones Pro 中自定义。
-        /// </summary>
-        /// <param name="x">- 点的水平坐标。</param>
-        /// <param name="y">- 点的垂直坐标。</param>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public Slot ContainsPoint(float x, float y)
         {
             foreach (var slot in this._slots)
@@ -501,22 +426,6 @@ namespace DragonBones
         /// <returns>The slot of the first custom bounding box where the segment intersects from the start point to the end point.</returns>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 检查特定线段是否与骨架的某个插槽的自定义边界框相交。
-        /// 线段和交点的坐标系均为骨架内坐标系。
-        /// 自定义边界框需要在 DragonBones Pro 中自定义。
-        /// </summary>
-        /// <param name="xA">- 线段起点的水平坐标。</param>
-        /// <param name="yA">- 线段起点的垂直坐标。</param>
-        /// <param name="xB">- 线段终点的水平坐标。</param>
-        /// <param name="yB">- 线段终点的垂直坐标。</param>
-        /// <param name="intersectionPointA">- 线段从起点到终点与边界框相交的第一个交点。 （如果未设置，则不计算交点）</param>
-        /// <param name="intersectionPointB">- 线段从终点到起点与边界框相交的第一个交点。 （如果未设置，则不计算交点）</param>
-        /// <param name="normalRadians">- 交点边界框切线的法线弧度。 [x: 第一个交点切线的法线弧度, y: 第二个交点切线的法线弧度] （如果未设置，则不计算法线）</param>
-        /// <returns>线段从起点到终点相交的第一个自定义边界框的插槽。</returns>
-        /// <version>DragonBones 5.0</version>
-        /// <language>zh_CN</language>
         public Slot IntersectsSegment(float xA, float yA, float xB, float yB,
                                        Point intersectionPointA = null,
                                        Point intersectionPointB = null,
@@ -624,14 +533,6 @@ namespace DragonBones
         /// <see cref="Bone"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 获取特定的骨骼。
-        /// </summary>
-        /// <param name="name">- 骨骼名称。</param>
-        /// <see cref="Bone"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public Bone GetBone(string name)
         {
             foreach (var bone in this._bones)
@@ -651,14 +552,6 @@ namespace DragonBones
         /// <see cref="Bone"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 通过显示对象获取特定的骨骼。
-        /// </summary>
-        /// <param name="display">- 显示对象。</param>
-        /// <see cref="Bone"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public Bone GetBoneByDisplay(object display)
         {
             var slot = this.GetSlotByDisplay(display);
@@ -672,14 +565,6 @@ namespace DragonBones
         /// <see cref="Slot"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 获取特定的插槽。
-        /// </summary>
-        /// <param name="name">- 插槽名称。</param>
-        /// <see cref="Slot"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public Slot GetSlot(string name)
         {
             foreach (var slot in this._slots)
@@ -699,14 +584,6 @@ namespace DragonBones
         /// <see cref="Slot"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 通过显示对象获取特定的插槽。
-        /// </summary>
-        /// <param name="display">- 显示对象。</param>
-        /// <see cref="Slot"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public Slot GetSlotByDisplay(object display)
         {
             if (display != null)
@@ -728,13 +605,6 @@ namespace DragonBones
         /// <see cref="Bone"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 获取所有的骨骼。
-        /// </summary>
-        /// <see cref="Bone"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public List<Bone> GetBones()
         {
             return this._bones;
@@ -745,13 +615,6 @@ namespace DragonBones
         /// <see cref="Slot"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 获取所有的插槽。
-        /// </summary>
-        /// <see cref="Slot"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public List<Slot> GetSlots()
         {
             return this._slots;
@@ -762,12 +625,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 5.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 是否将骨架水平翻转。
-        /// </summary>
-        /// <version>DragonBones 5.5</version>
-        /// <language>zh_CN</language>
         public bool flipX
         {
             get { return this._flipX; }
@@ -787,12 +644,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 5.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 是否将骨架垂直翻转。
-        /// </summary>
-        /// <version>DragonBones 5.5</version>
-        /// <language>zh_CN</language>
         public bool flipY
         {
             get { return this._flipY; }
@@ -823,23 +674,6 @@ namespace DragonBones
         /// <see cref="ArmatureData.frameRate"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 动画缓存帧率，当设置的值大于 0 的时，将会开启动画缓存。
-        /// 通过将动画数据缓存在内存中来提高运行性能，会有一定的内存开销。
-        /// 帧率不宜设置的过高，通常跟动画的帧率相当且低于程序运行的帧率。
-        /// 开启动画缓存后，某些功能将会失效，比如骨骼的 offset 属性等。
-        /// </summary>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     armature.cacheFrameRate = 24;
-        /// </pre>
-        /// </example>
-        /// <see cref="DragonBonesData.frameRate"/>
-        /// <see cref="ArmatureData.frameRate"/>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public uint cacheFrameRate
         {
             get { return this._armatureData.cacheFrameRate; }
@@ -866,12 +700,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 骨架名称。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public string name
         {
             get { return this._armatureData.name; }
@@ -882,13 +710,6 @@ namespace DragonBones
         /// <see cref="ArmatureData"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 骨架数据。
-        /// </summary>
-        /// <see cref="ArmatureData"/>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public ArmatureData armatureData
         {
             get { return this._armatureData; }
@@ -899,13 +720,6 @@ namespace DragonBones
         /// <see cref="DragonBones.Animation"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 动画播放器。
-        /// </summary>
-        /// <see cref="DragonBones.Animation"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public Animation animation
         {
             get { return this._animation; }
@@ -921,12 +735,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 该骨架的 EventDispatcher 实例。
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public IEventDispatcher<EventObject> eventDispatcher
         {
             get { return this._proxy; }
@@ -938,14 +746,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 显示容器实例。
-        /// 插槽的显示对象都会以此显示容器为父级。
-        /// 根据渲染引擎的不同，类型会不同，通常是 DisplayObjectContainer 类型。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public object display
         {
             get { return this._display; }
@@ -1016,13 +816,6 @@ namespace DragonBones
         /// <see cref="Slot"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 该骨架所属的父插槽。
-        /// </summary>
-        /// <see cref="Slot"/>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public Slot parent
         {
             get { return this._parent; }

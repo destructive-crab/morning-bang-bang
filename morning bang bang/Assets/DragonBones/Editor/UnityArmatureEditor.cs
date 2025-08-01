@@ -59,17 +59,17 @@ namespace DragonBones
                 !string.IsNullOrEmpty(unityArmatureInstance.armatureName))
             {
                 // Clear cache
-                DBUnityFactory.factory.Clear(true);
+                DBUnityFactory.Instance.Clear(true);
 
                 // Unload
                 EditorUtility.UnloadUnusedAssetsImmediate();
                 System.GC.Collect();
 
                 // Load data.
-                var dragonBonesData = DBUnityFactory.factory.LoadData(unityArmatureInstance.unityData);
+                var dragonBonesData = DBUnityFactory.Instance.LoadData(unityArmatureInstance.unityData);
 
                 // Refresh texture atlas.
-                DBUnityFactory.factory.RefreshAllTextureAtlas(unityArmatureInstance);
+                DBUnityFactory.Instance.RefreshAllTextureAtlas(unityArmatureInstance);
 
                 // Refresh armature.
                 DBUnityEditor.ChangeArmatureData(unityArmatureInstance, unityArmatureInstance.armatureName, dragonBonesData.name);
@@ -151,7 +151,7 @@ namespace DragonBones
             if (created)
             {
                 //clear cache
-                DBUnityFactory.factory.Clear(true);
+                DBUnityFactory.Instance.Clear(true);
                 ClearUp();
                 unityArmatureInstance.animationName = null;
 
@@ -169,7 +169,7 @@ namespace DragonBones
                 var dragonBonesData = unityArmatureInstance.Armature.armatureData.parent;
 
                 // Armature
-                if (DBUnityFactory.factory.GetAllDragonBonesData().ContainsValue(dragonBonesData) && _armatureNames != null)
+                if (DBUnityFactory.Instance.GetAllDragonBonesData().ContainsValue(dragonBonesData) && _armatureNames != null)
                 {
                     var armatureIndex = EditorGUILayout.Popup("Armature", _armatureIndex, _armatureNames.ToArray());
                     if (_armatureIndex != armatureIndex)

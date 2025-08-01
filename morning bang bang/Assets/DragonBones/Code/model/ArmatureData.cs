@@ -107,24 +107,12 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 默认插槽数据。
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public SkinData defaultSkin = null;
         /// <summary>
         /// - The default animation data.
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 默认动画数据。
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         public AnimationData defaultAnimation = null;
         /// <private/>
         public CanvasData canvas = null; // Initial value.
@@ -428,13 +416,6 @@ namespace DragonBones
         /// <param name="boneName">- The bone name.</param>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 获取特定的骨骼数据。
-        /// </summary>
-        /// <param name="boneName">- 骨骼名称。</param>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public BoneData GetBone(string boneName)
         {
             return (!string.IsNullOrEmpty(boneName) && bones.ContainsKey(boneName)) ? bones[boneName] : null;
@@ -445,13 +426,6 @@ namespace DragonBones
         /// <param name="slotName">- The slot name.</param>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 获取特定的插槽数据。
-        /// </summary>
-        /// <param name="slotName">- 插槽名称。</param>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public SlotData GetSlot(string slotName)
         {
             return (!string.IsNullOrEmpty(slotName) && slots.ContainsKey(slotName)) ? slots[slotName] : null;
@@ -467,13 +441,6 @@ namespace DragonBones
         /// <param name="skinName">- The skin name.</param>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 获取特定皮肤数据。
-        /// </summary>
-        /// <param name="skinName">- 皮肤名称。</param>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public SkinData GetSkin(string skinName)
         {
             return !string.IsNullOrEmpty(skinName) ? (skins.ContainsKey(skinName) ? skins[skinName] : null) : defaultSkin;
@@ -496,13 +463,6 @@ namespace DragonBones
         /// <param name="animationName">- The animation animationName.</param>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 获取特定的动画数据。
-        /// </summary>
-        /// <param name="animationName">- 动画名称。</param>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public AnimationData GetAnimation(string animationName)
         {
             return !string.IsNullOrEmpty(animationName) ? (animations.ContainsKey(animationName) ? animations[animationName] : null) : defaultAnimation;
@@ -514,12 +474,6 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-
-    /// <summary>
-    /// - 骨骼数据。
-    /// </summary>
-    /// <version>DragonBones 3.0</version>
-    /// <language>zh_CN</language>
     public class BoneData : BaseObject
     {
         /// <private/>
@@ -535,24 +489,12 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 骨骼长度。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public float length;
         /// <summary>
         /// - The bone name.
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 骨骼名称。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public string name;
         /// <private/>
         public readonly DBTransform DBTransform = new DBTransform();
@@ -563,12 +505,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 父骨骼数据。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public BoneData parent = null;
 
         /// <inheritDoc/>
@@ -614,12 +550,6 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-
-    /// <summary>
-    /// - 插槽数据。
-    /// </summary>
-    /// <version>DragonBones 3.0</version>
-    /// <language>zh_CN</language>
     public class SlotData : BaseObject
     {
         /// <internal/>
@@ -644,12 +574,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 插槽名称。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public string name;
         /// <private/>
         public ColorTransform color = null; // Initial value.
@@ -660,12 +584,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 父骨骼数据。
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>zh_CN</language>
         public BoneData parent;
         /// <inheritDoc/>
         protected override void _OnClear()

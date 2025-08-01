@@ -36,12 +36,12 @@ namespace banging_code.player_logic
 
         public override void ContainerStarted()
         {
-            DBUnityFactory.factory.LoadDragonBonesData("animations/rat_gun_ske");
-            DBUnityFactory.factory.LoadTextureAtlasData("animations/rat_gun_tex");
+            DBUnityFactory.Instance.LoadDragonBonesData("animations/rat_gun_ske");
+            DBUnityFactory.Instance.LoadTextureAtlasData("animations/rat_gun_tex");
 
-            side = DBUnityFactory.factory.BuildArmatureComponent("rat_gun_side", "rat_gun");
-            up = DBUnityFactory.factory.BuildArmatureComponent("rat_gun_up", "rat_gun");
-            down = DBUnityFactory.factory.BuildArmatureComponent("rat_gun_down", "rat_gun");
+            side = DBUnityFactory.Instance.BuildArmatureComponent("rat_gun_side", "rat_gun");
+            up = DBUnityFactory.Instance.BuildArmatureComponent("rat_gun_up", "rat_gun");
+            down = DBUnityFactory.Instance.BuildArmatureComponent("rat_gun_down", "rat_gun");
             side.transform.parent = Owner.transform;
             up.transform.parent = Owner.transform;
             down.transform.parent = Owner.transform;
