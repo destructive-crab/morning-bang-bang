@@ -67,9 +67,9 @@ namespace banging_code.level
                 {
                     var enemies = spawner.Spawn();
                     
-                    foreach (Enemy enemy in enemies)
+                    foreach (var monoEntity in enemies)
                     {
-                        Modules.Get<LocationManager>().AddEntity(enemy, room.RoomID);
+                        Modules.Get<LocationManager>().AddEntity(monoEntity, room.RoomID);
                     }
                 }
             }

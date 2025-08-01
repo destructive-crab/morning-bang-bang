@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dd3110a7f344944828a11097edadab2, type: 3}
   m_Name: PlayerAnimatorBundle
   m_EditorClassIdentifier: 
-  <side>k__BackingField: {fileID: 9100000, guid: 0efffd4e4eace0648be2acff186f4271, type: 2}
-  <up>k__BackingField: {fileID: 9100000, guid: 4aa70a3b7b6bb984b89102e88f287cc9, type: 2}
-  <down>k__BackingField: {fileID: 9100000, guid: b1c1802966683304b9a1dd43860254c6, type: 2}
+  <side>k__BackingField: {fileID: 11400000, guid: 1fcdbb40879b3fc459a1e2b4798727f1, type: 2}
+  <up>k__BackingField: {fileID: 11400000, guid: 1b46f451101156a4985a839271ebb055, type: 2}
+  <down>k__BackingField: {fileID: 11400000, guid: 23b00e0d1ff1b3643abee903e9ff5293, type: 2}

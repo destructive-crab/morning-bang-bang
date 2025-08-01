@@ -1,3 +1,4 @@
+using banging_code.common;
 using banging_code.health;
 using MothDIed;
 
@@ -32,5 +33,7 @@ namespace banging_code.player_logic.rat
         {
             TakeHit(data);
         }
+
+        public override ID EntityID { get; }
     }
 }

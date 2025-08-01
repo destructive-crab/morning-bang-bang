@@ -52,23 +52,23 @@ namespace banging_code.player_logic
 
         public void RotateTo(GameDirection direction)
         {
-            switch (direction)
-            {
-                case GameDirection.Left:
-                    SwitchRoot(sideRoot);
-                    break;
-                case GameDirection.Right:
-                    SwitchRoot(sideRoot);
-                    break;
-                case GameDirection.Top:
-                    SwitchRoot(upRoot);
-                    break;
-                case GameDirection.Bottom:
-                    SwitchRoot(downRoot);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
-            }
+//            switch (direction)
+//            {
+//                case GameDirection.Left:
+//                    SwitchRoot(sideRoot);
+//                    break;
+//                case GameDirection.Right:
+//                    SwitchRoot(sideRoot);
+//                    break;
+//                case GameDirection.Top:
+//                    SwitchRoot(upRoot);
+//                    break;
+//                case GameDirection.Bottom:
+//                    SwitchRoot(downRoot);
+//                    break;
+//                default:
+//                    throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+//            }
         }
         
         public void EnableItem<T>() where T : InHandsItemInstance

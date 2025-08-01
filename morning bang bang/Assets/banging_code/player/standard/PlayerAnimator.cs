@@ -1,5 +1,6 @@
 using banging_code.common;
 using banging_code.player_logic.states;
+using DragonBones;
 using MothDIed.DI;
 using MothDIed.MonoSystems;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace banging_code.player_logic
     public class PlayerAnimator : MonoSystem
     {
         //dependencies
-        [Inject] private Animator animator;
+        private UnityArmatureInstance armatureAPI;
         [Inject] private PlayerRoot playerRoot;
         
         //data
@@ -18,12 +19,16 @@ namespace banging_code.player_logic
         private float currentSpeed;
 
         //animations
-        private const string Idle = "Idle";
-        private const string Run = "Run";
-        private const string Roll = "Roll";
+        private const string Idle = "idle";
+        private const string Run = "run";
+        private const string Roll = "roll";
 
         private PlayerAnimatorBundle playerAnimatorBundle;
 
+        private UnityArmatureInstance side;
+        private UnityArmatureInstance up;
+        private UnityArmatureInstance down;
+        
         public override bool EnableOnStart()
         {
             return true;
@@ -31,32 +36,54 @@ namespace banging_code.player_logic
 
         public override void ContainerStarted()
         {
-            playerAnimatorBundle = Resources.Load<PlayerAnimatorBundle>(PTH.PlayerAnimatorBundle);
-        }
+            DBUnityFactory.factory.LoadDragonBonesData("animations/rat_gun_ske");
+            DBUnityFactory.factory.LoadTextureAtlasData("animations/rat_gun_tex");
 
+            side = DBUnityFactory.factory.BuildArmatureComponent("rat_gun_side", "rat_gun");
+            up = DBUnityFactory.factory.BuildArmatureComponent("rat_gun_up", "rat_gun");
+            down = DBUnityFactory.factory.BuildArmatureComponent("rat_gun_down", "rat_gun");
+            side.transform.parent = Owner.transform;
+            up.transform.parent = Owner.transform;
+            down.transform.parent = Owner.transform;
+            side.gameObject.SetActive(true);
+            armatureAPI = side;
+            up.gameObject.SetActive(false);
+            down.gameObject.SetActive(false);
+        }
+        
         public override void Update()
         {
-            if ((playerRoot.Direction == GameDirection.Left || playerRoot.Direction == GameDirection.Right) && animator.runtimeAnimatorController != playerAnimatorBundle.side)
+            if ((playerRoot.Direction == GameDirection.Left || playerRoot.Direction == GameDirection.Right) && !side.isActiveAndEnabled)
             {
-                animator.runtimeAnimatorController = playerAnimatorBundle.side;
-                Play(currentAnimation, currentSpeed);
+                side.gameObject.SetActive(true);
+                down.gameObject.SetActive(false);
+                up.gameObject.SetActive(false);
+                side.Animation.Play(currentAnimation);
+                armatureAPI = side;
             }
-            else if (playerRoot.Direction == GameDirection.Top && animator.runtimeAnimatorController != playerAnimatorBundle.up)
+            else if (playerRoot.Direction == GameDirection.Top && armatureAPI.Armature.name != "rat_gun_up")
             {
-                animator.runtimeAnimatorController = playerAnimatorBundle.up;
-                Play(currentAnimation, currentSpeed);
+                up.gameObject.SetActive(true); 
+                down.gameObject.SetActive(false);
+                side.gameObject.SetActive(false);
+                up.Animation.Play(currentAnimation);
+                armatureAPI = up;
             }
-            else if (playerRoot.Direction == GameDirection.Bottom && animator.runtimeAnimatorController != playerAnimatorBundle.down)
+            else if (playerRoot.Direction == GameDirection.Bottom && armatureAPI.Armature.name != "rat_gun_down")
             {
-                animator.runtimeAnimatorController = playerAnimatorBundle.down;
-                Play(currentAnimation, currentSpeed);
+                down.gameObject.SetActive(true);                
+                side.gameObject.SetActive(false);
+                up.gameObject.SetActive(false);
+                down.Animation.Play(currentAnimation);
+                armatureAPI = down;
             }
         }
-
+        
         private void Play(string name, float speed)
         {
-            animator.speed = speed;
-            animator.Play(name);
+            if(armatureAPI.Animation == null)return;
+            if (armatureAPI.Animation.lastAnimationName == name) return;
+            armatureAPI.Animation.Play(name, 0);
         }
         
         public void PlayIdle(float speed)
@@ -73,7 +100,5 @@ namespace banging_code.player_logic
         {
             Play(Roll, speed);
         }
-
-
     }
 }

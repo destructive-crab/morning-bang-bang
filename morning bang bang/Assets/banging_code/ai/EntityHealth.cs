@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using banging_code.common;
 using banging_code.health;
 using UnityEngine;
 
@@ -49,5 +50,7 @@ namespace banging_code.ai
         {
             TakeHit(data);
         }
+
+        public override ID EntityID { get; }
     }
 }

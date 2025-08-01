@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using banging_code.ai;
 using banging_code.camera_logic;
+using banging_code.health;
 using banging_code.level.light;
 using MothDIed.DI;
 
@@ -10,6 +11,7 @@ namespace banging_code.common.rooms
     public class BangRoom : Room
     {
         public List<Moody> Moodys;
+        public List<IBodyDeathRequire> toDie;
         private List<Enemy> entities = new();
 
         private LightManager lightManager;
@@ -73,8 +75,23 @@ namespace banging_code.common.rooms
             }
             
             onBreakIntoRoomSubs = ContentRoot.GetComponentsInChildren<IOnBreakIntoRoom>();
+            toDie = new(ContentRoot.GetComponentsInChildren<IBodyDeathRequire>());
+
+            foreach (var body in toDie)
+            {
+                body.OnDie += OnDie;
+            }
             
             Moodys = new List<Moody>(GetComponentsInChildren<Moody>());
+        }
+
+        private void OnDie(IBodyDeathRequire require, HitableBody body)
+        {
+            toDie.Remove(require);
+            if (toDie.Count == 0)
+            {
+                cCamera.EnterChillCamera();
+            }
         }
     }
 }

@@ -609,6 +609,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notURPMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  floor: {fileID: 11400000, guid: 77b65161f33a5e04d90c65d8ca644044, type: 2}
+  wall: {fileID: 11400000, guid: 49945af8acc4cba4a86eaa2b5a443340, type: 2}
 --- !u!1 &8130890521638650839
 GameObject:
   m_ObjectHideFlags: 0

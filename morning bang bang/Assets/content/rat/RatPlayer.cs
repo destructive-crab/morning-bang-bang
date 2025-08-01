@@ -4,6 +4,7 @@ using banging_code.interactions;
 using banging_code.items;
 using banging_code.player_logic.standard;
 using banging_code.player_logic.states;
+using DragonBones;
 using MothDIed;
 using MothDIed.InputsHandling;
 using UnityEngine;
@@ -27,7 +28,6 @@ namespace banging_code.player_logic.rat
             CachedComponents.Register(GetComponent<Collider2D>());
 
             //visuals
-            CachedComponents.Register(GetComponentInChildren<Animator>());
             CachedComponents.Register(GetComponentInChildren<SpriteRenderer>());
 
             //interactions

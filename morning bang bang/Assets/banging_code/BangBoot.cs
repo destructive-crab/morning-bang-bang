@@ -11,7 +11,7 @@ namespace banging_code
         
         public override IDependenciesProvider[] GetProviders()
         {
-            return new[] { new CoinPrefabProvider(coinPrefab) };
+            return new IDependenciesProvider[] { new CoinPrefabProvider(coinPrefab) };
         }
 
         protected override void StartGame()

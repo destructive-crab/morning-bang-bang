@@ -1,6 +1,7 @@
 using System;
 using banging_code.bullets;
 using banging_code.common;
+using Cysharp.Threading.Tasks;
 using MothDIed;
 using MothDIed.InputsHandling;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace banging_code.items
         {
             gunAnimator = GetComponent<Animator>();
         }
+
 
         private void OnEnable()
         {
@@ -43,10 +45,13 @@ namespace banging_code.items
             }
         }
 
-        private void SpawnBullet()
+        private async void SpawnBullet()
         {
+            Game.RunSystem.Data.Level.PlayerInstance.GetComponentInChildren<Animator>().Play("rat_side_gun_shoot");
+            await UniTask.WaitForSeconds(20 / 60);
             var bullet = Game.SceneSwitcher.CurrentScene.Fabric.Instantiate(bulletPrefab, firePoint.position);
-            bullet.AddForce(UTLS.DirectionToVector(Game.RunSystem.Data.Level.PlayerInstance.Direction), 2);
+//            bullet.AddForce(UTLS.DirectionToVector(Game.RunSystem.Data.Level.PlayerInstance.Direction), 2);
+            
         }
     }
 }

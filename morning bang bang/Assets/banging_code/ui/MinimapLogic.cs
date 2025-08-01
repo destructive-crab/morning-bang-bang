@@ -1,3 +1,7 @@
+using banging_code.common;
+using banging_code.level;
+using banging_code.level.structure;
+using MohDIed.Tilemaps;
 using MothDIed;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -5,6 +9,8 @@ using UnityEngine.Tilemaps;
 public class MinimapLogic : MonoBehaviour
 {
     public Material notURPMaterial;
+    public Tile floor;
+    public Tile wall;
     
     private void Start()
     {
@@ -21,6 +27,12 @@ public class MinimapLogic : MonoBehaviour
             gridChild.gameObject.layer = LayerMask.NameToLayer("Minimap");
         }
 
+        var floor = minimapGrid.transform.Find(G_O_NAMES.GLOBAL_FLOOR_TM).GetComponent<Tilemap>();
+        floor.ForEachTile<FloorTile>((Vector3Int pos, FloorTile tile) => floor.SetTile(pos, this.floor));
+
+        var walls = minimapGrid.transform.Find(G_O_NAMES.GLOBAL_OBSTACLES_TM).GetComponent<Tilemap>();
+        walls.ForEachTile<WallTile>((Vector3Int pos, WallTile tile) => walls.SetTile(pos, this.wall));
+        
         foreach (var tilemap in minimapGrid.GetComponentsInChildren<TilemapRenderer>())
         {
             tilemap.material = notURPMaterial;

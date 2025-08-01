@@ -7,10 +7,10 @@ using UnityEngine;
 using banging_code.pause;
 using banging_code.runs_system;
 using banging_code.settings;
+using DragonBones;
 using MohDIed.Audio;
 using MothDIed.Audio;
 using MothDIed.InputsHandling;
-using Newtonsoft.Json;
 
 namespace MothDIed
 {
@@ -102,6 +102,7 @@ namespace MothDIed
 
                     InputService.Tick();
                     EventManager.Tick();
+                    DBUnityFactory.factory._dragonBones.AdvanceTime(Time.deltaTime);
 
                     if (RunSystem.IsInRun && RunSystem.Data.Level != null && SceneSwitcher.IsSceneLoaded)
                     {
