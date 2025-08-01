@@ -311,18 +311,17 @@ namespace DragonBones
         {
             _armatureGameObject = gameObject;
             _isUGUI = isUGUI;
-            var armature = BuildArmature(armatureName, dragonBonesName, skinName, textureAtlasName);
+            Armature armature = BuildArmature(armatureName, dragonBonesName, skinName, textureAtlasName);
 
             if (armature != null)
             {
                 _dragonBones.Clock.Add(armature);
 
-                var armatureDisplay = armature.display as GameObject;
-                var armatureComponent = armatureDisplay.GetComponent<UnityArmatureInstance>();
+                GameObject armatureDisplay = armature.display as GameObject;
+                UnityArmatureInstance armatureComponent = armatureDisplay.GetComponent<UnityArmatureInstance>();
 
                 return armatureComponent;
             }
-
 
             return null;
         }

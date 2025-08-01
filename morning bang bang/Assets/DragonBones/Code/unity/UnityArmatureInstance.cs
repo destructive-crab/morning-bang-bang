@@ -6,7 +6,6 @@ using UnityEditor;
 
 namespace DragonBones
 {
-    ///<inheritDoc/>
     [ExecuteInEditMode, DisallowMultipleComponent]
     [RequireComponent(typeof(SortingGroup))]
     public class UnityArmatureInstance : DragonBoneEventDispatcher, IArmatureProxy
@@ -36,7 +35,6 @@ namespace DragonBones
         [SerializeField] protected bool _closeCombineMeshs;
 
         private bool _hasSortingGroup = false;
-
 
         public Armature Armature { get; internal set; } = null;
         public Animation Animation => Armature != null ? Armature.animation : null;
@@ -72,7 +70,7 @@ namespace DragonBones
         ///
         public void DBInit(Armature armature)
         {
-            this.Armature = armature;
+            Armature = armature;
         }
 
         public void DBUpdate()
