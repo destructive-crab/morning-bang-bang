@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
-using System;
 
 namespace DragonBones
 {
@@ -179,95 +177,45 @@ namespace DragonBones
         Single = 5
     }
 
-    internal static class Helper
-    {
-        public static readonly int INT16_SIZE = 2;
-        public static readonly int UINT16_SIZE = 2;
-        public static readonly int FLOAT_SIZE = 4;
-
-        internal static void Assert(bool condition, string message)
-        {
-            Debug.Assert(condition, message);
-        }
-
-        internal static void ResizeList<T>(this List<T> list, int count, T value = default(T))
-        {
-            if (list.Count == count)
-            {
-                return;
-            }
-
-            if (list.Count > count)
-            {
-                list.RemoveRange(count, list.Count - count);
-            }
-            else
-            {
-                //fixed gc,may be memory will grow
-                //list.Capacity = count;
-                for (int i = list.Count, l = count; i < l; ++i)
-                {
-                    list.Add(value);
-                }
-            }
-        }
-
-        internal static List<float> Convert(this List<object> list)
-        {
-            List<float> res = new List<float>();
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                res[i] = float.Parse(list[i].ToString());
-            }
-
-            return res;
-        }
-        internal static bool FloatEqual(float f0, float f1)
-        {
-            float f = Math.Abs(f0 - f1);
-
-            return (f < 0.000000001f);
-        }
-    }
-
-    /// <private/>
-    public class DragonBones
+    public sealed class DBKernel
     {
         public static bool yDown = true;
-        public static bool debug = false;
-        public static bool debugDraw = false;
         public static readonly string VERSION = "5.6.300";
 
         private readonly List<EventObject> _events = new List<EventObject>();
         private readonly List<BaseObject> _objects = new List<BaseObject>();
 
+        //components
+        public DBDataStorage DataStorage { get; private set; }
+        public DBFactory Factory { get; private set; }
         public WorldClock Clock { get; } = new WorldClock();
-        public IEventDispatcher<EventObject> EventManager { get; } = null;
+        public IEventDispatcher<EventObject> EventManager { get; }
 
-        public DragonBones(IEventDispatcher<EventObject> eventManager)
+        public DBKernel(IEventDispatcher<EventObject> eventManager, DBFactory factory)
         {
-            this.EventManager = eventManager;
+            EventManager = eventManager;
+            Factory = factory;
+            DataStorage = new DBDataStorage();
         }
 
         public void AdvanceTime(float passedTime)
         {
-            if (this._objects.Count > 0)
+            if (_objects.Count > 0)
             {
-                for (int i = 0; i < this._objects.Count; ++i)
+                for (int i = 0; i < _objects.Count; ++i)
                 {
-                    var obj = this._objects[i];
+                    var obj = _objects[i];
                     obj.ReturnToPool();
                 }
 
-                this._objects.Clear();
+                _objects.Clear();
             }
 
-            if (this._events.Count > 0)
+            if (_events.Count > 0)
             {
-                for (int i = 0; i < this._events.Count; ++i)
+                for (int i = 0; i < _events.Count; ++i)
                 {
-                    var eventObject = this._events[i];
+                    var eventObject = _events[i];
                     var armature = eventObject.armature;
                     if (armature._armatureData != null)
                     {
@@ -275,36 +223,36 @@ namespace DragonBones
                         armature.eventDispatcher.DispatchDBEvent(eventObject.type, eventObject);
                         if (eventObject.type == EventObject.SOUND_EVENT)
                         {
-                            this.EventManager.DispatchDBEvent(eventObject.type, eventObject);
+                            EventManager.DispatchDBEvent(eventObject.type, eventObject);
                         }
                     }
 
-                    this.BufferObject(eventObject);
+                    BufferObject(eventObject);
                 }
 
-                this._events.Clear();
+                _events.Clear();
             }
 
-            this.Clock.AdvanceTime(passedTime);
+            Clock.AdvanceTime(passedTime);
         }
 
         public void BufferEvent(EventObject value)
         {
-            if (!this._events.Contains(value))
+            if (!_events.Contains(value))
             {
-                this._events.Add(value);
+                _events.Add(value);
             }
         }
 
         public void BufferObject(BaseObject value)
         {
-            if (!this._objects.Contains(value))
+            if (!_objects.Contains(value))
             {
-                this._objects.Add(value);
+                _objects.Add(value);
             }
         }
 
-        public static implicit operator bool(DragonBones exists)
+        public static implicit operator bool(DBKernel exists)
         {
             return exists != null;
         }

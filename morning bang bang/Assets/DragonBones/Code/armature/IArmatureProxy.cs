@@ -3,7 +3,7 @@ namespace DragonBones
     /// <summary>
     /// - The armature proxy interface, the docking engine needs to implement it concretely.
     /// </summary>
-    /// <see cref="DragonBones.Armature"/>
+    /// <see cref="DBKernel.Armature"/>
     /// <version>DragonBones 5.0</version>
     /// <language>en_US</language>
     public interface IArmatureProxy : IEventDispatcher<EventObject>
@@ -29,19 +29,6 @@ namespace DragonBones
         /// </example>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
-        /// <summary>
-        /// - 释放该实例和骨架。 （骨架会回收到对象池）
-        /// </summary>
-        /// <example>
-        /// TypeScript 风格，仅供参考。
-        /// <pre>
-        ///     removeChild(armatureDisplay);
-        ///     armatureDisplay.dispose();
-        /// </pre>
-        /// </example>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         void Dispose(bool disposeProxy);
          /// <summary>
          /// - The armature.
@@ -55,5 +42,7 @@ namespace DragonBones
          /// <version>DragonBones 3.0</version>
          /// <language>en_US</language>>
          Animation Animation { get; }
+
+         void ApplyPPU(uint armatureDataPixelsPerUnit);
     }
 }

@@ -68,14 +68,14 @@ namespace DragonBones
         /// <summary>
         /// - The armature that dispatch the event.
         /// </summary>
-        /// <see cref="DragonBones.Armature"/>
+        /// <see cref="DBKernel.Armature"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
 
         /// <summary>
         /// - The custom data.
         /// </summary>
-        /// <see cref="DragonBones.CustomData"/>
+        /// <see cref="DBKernel.CustomData"/>
         /// <private/>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
@@ -128,21 +128,21 @@ namespace DragonBones
         /// <summary>
         /// - The bone that dispatch the event.
         /// </summary>
-        /// <see cref="DragonBones.Bone"/>
+        /// <see cref="DBKernel.Bone"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
         public Bone bone;
         /// <summary>
         /// - The slot that dispatch the event.
         /// </summary>
-        /// <see cref="DragonBones.Slot"/>
+        /// <see cref="DBKernel.Slot"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
         public Slot slot;
         /// <summary>
         /// - The animation state that dispatch the event.
         /// </summary>
-        /// <see cref="DragonBones.AnimationState"/>
+        /// <see cref="DBKernel.AnimationState"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
 

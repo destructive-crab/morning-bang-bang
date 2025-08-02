@@ -6,7 +6,7 @@ namespace DragonBones
     /// - The DragonBones data.
     /// A DragonBones data contains multiple armature data.
     /// </summary>
-    /// <see cref="DragonBones.ArmatureData"/>
+    /// <see cref="DBKernel.ArmatureData"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
     public class DragonBonesData : BaseObject
@@ -34,7 +34,7 @@ namespace DragonBones
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
 
-        public int PixelsPerUnit = 512;
+        public uint PixelsPerUnit = 512;
         
         public string name;
         /// <private/>

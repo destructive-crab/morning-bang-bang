@@ -3,7 +3,7 @@ namespace DragonBones
     /// <summary>
     /// - The base class of the transform object.
     /// </summary>
-    /// <see cref="DragonBones.Transform"/>
+    /// <see cref="DBKernel.Transform"/>
     /// <version>DragonBones 4.5</version>
     /// <language>en_US</language>
     public abstract class TransformObject : BaseObject

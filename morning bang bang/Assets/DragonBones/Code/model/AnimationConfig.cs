@@ -6,7 +6,7 @@ namespace DragonBones
     /// - The animation config is used to describe all the information needed to play an animation state.
     /// The API is still in the experimental phase and may encounter bugs or stability or compatibility issues when used.
     /// </summary>
-    /// <see cref="DragonBones.AnimationState"/>
+    /// <see cref="DBKernel.AnimationState"/>
     /// <beta/>
     /// <version>DragonBones 5.0</version>
     /// <language>en_US</language>

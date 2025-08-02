@@ -68,6 +68,8 @@ namespace MothDIed
             }
 
             AudioSystem.Setup(args.AudioSystemConfig);
+            DBInitial.InitializeDragonBones();
+            
             IsBootstrapping = false;
             Awake = true;
             
@@ -102,7 +104,7 @@ namespace MothDIed
 
                     InputService.Tick();
                     EventManager.Tick();
-                    DBUnityFactory.Instance._dragonBones.AdvanceTime(Time.deltaTime);
+                    DBInitial.Kernel.AdvanceTime(Time.deltaTime);
 
                     if (RunSystem.IsInRun && RunSystem.Data.Level != null && SceneSwitcher.IsSceneLoaded)
                     {

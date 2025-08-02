@@ -6,9 +6,9 @@ namespace DragonBones
     /// <summary>
     /// - The base class of bounding box data.
     /// </summary>
-    /// <see cref="DragonBones.RectangleData"/>
-    /// <see cref="DragonBones.EllipseData"/>
-    /// <see cref="DragonBones.PolygonData"/>
+    /// <see cref="DBKernel.RectangleData"/>
+    /// <see cref="DBKernel.EllipseData"/>
+    /// <see cref="DBKernel.PolygonData"/>
     /// <version>DragonBones 5.0</version>
     /// <language>en_US</language>
     public abstract class BoundingBoxData : BaseObject

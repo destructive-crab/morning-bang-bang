@@ -6,8 +6,8 @@ namespace DragonBones
     /// <summary>
     /// - Worldclock provides clock support for animations, advance time for each IAnimatable object added to the instance.
     /// </summary>
-    /// <see cref="DragonBones.IAnimateble"/>
-    /// <see cref="DragonBones.Armature"/>
+    /// <see cref="DBKernel.IAnimateble"/>
+    /// <see cref="DBKernel.Armature"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
     public class WorldClock : IAnimatable

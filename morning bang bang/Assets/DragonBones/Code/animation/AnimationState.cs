@@ -6,8 +6,8 @@ namespace DragonBones
     /// <summary>
     /// - The animation state is generated when the animation data is played.
     /// </summary>
-    /// <see cref="DragonBones.Animation"/>
-    /// <see cref="DragonBones.AnimationData"/>
+    /// <see cref="DBKernel.Animation"/>
+    /// <see cref="DBKernel.AnimationData"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
     public class AnimationState : BaseObject
@@ -578,7 +578,7 @@ namespace DragonBones
                     eventObject.type = eventType;
                     eventObject.armature = this._armature;
                     eventObject.animationState = this;
-                    this._armature._dragonBones.BufferEvent(eventObject);
+                    this._armature._DBKernel.BufferEvent(eventObject);
                 }
             }
 
@@ -622,7 +622,7 @@ namespace DragonBones
                     eventObject.type = eventType;
                     eventObject.armature = this._armature;
                     eventObject.animationState = this;
-                    this._armature._dragonBones.BufferEvent(eventObject);
+                    this._armature._DBKernel.BufferEvent(eventObject);
                 }
             }
         }

@@ -11,9 +11,9 @@ namespace DragonBones
     /// The display object can be a normal texture, or it can be a display of a child armature, a grid display object,
     /// and a custom other display object.
     /// </summary>
-    /// <see cref="DragonBones.Armature"/>
-    /// <see cref="DragonBones.Bone"/>
-    /// <see cref="DragonBones.SlotData"/>
+    /// <see cref="DBKernel.Armature"/>
+    /// <see cref="DBKernel.Bone"/>
+    /// <see cref="DBKernel.SlotData"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
     public abstract class Slot : TransformObject
@@ -22,9 +22,9 @@ namespace DragonBones
         /// - Displays the animated state or mixed group name controlled by the object, set to null to be controlled by all animation states.
         /// </summary>
         /// <default>null</default>
-        /// <see cref="DragonBones.AnimationState.displayControl"/>
-        /// <see cref="DragonBones.AnimationState.name"/>
-        /// <see cref="DragonBones.AnimationState.group"/>
+        /// <see cref="DBKernel.AnimationState.displayControl"/>
+        /// <see cref="DBKernel.AnimationState.name"/>
+        /// <see cref="DBKernel.AnimationState.group"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
         public string displayController;
@@ -347,7 +347,7 @@ namespace DragonBones
                         this._pivotY += Slot._helpPoint.y;
                     }
 
-                    if (!DragonBones.yDown)
+                    if (!DBKernel.yDown)
                     {
                         this._pivotY = (this._textureData.rotated ? this._textureData.region.width : this._textureData.region.height) * scale - this._pivotY;
                     }
@@ -1007,7 +1007,7 @@ namespace DragonBones
         /// <summary>
         /// - The slot name.
         /// </summary>
-        /// <see cref="DragonBones.SlotData.name"/>
+        /// <see cref="DBKernel.SlotData.name"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         public string name
@@ -1062,7 +1062,7 @@ namespace DragonBones
         /// <summary>
         /// - The slot data.
         /// </summary>
-        /// <see cref="DragonBones.SlotData"/>
+        /// <see cref="DBKernel.SlotData"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
         public SlotData slotData

@@ -41,7 +41,7 @@ namespace DragonBones
             var boneData = this._boneData;
             var parent = this._parent;
             var flipX = this._armature.flipX;
-            var flipY = this._armature.flipY == DragonBones.yDown;
+            var flipY = this._armature.flipY == DBKernel.yDown;
             var rotation = 0.0f;
             var global = this.global;
             var inherit = parent != null;
@@ -410,8 +410,8 @@ namespace DragonBones
         /// <summary>
         /// - Check whether the bone contains a specific bone or slot.
         /// </summary>
-        /// <see cref="DragonBones.Bone"/>
-        /// <see cref="DragonBones.Slot"/>
+        /// <see cref="DBKernel.Bone"/>
+        /// <see cref="DBKernel.Slot"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         public bool Contains(Bone value)
@@ -443,7 +443,7 @@ namespace DragonBones
         /// - The visible of all slots in the bone.
         /// </summary>
         /// <default>true</default>
-        /// <see cref="DragonBones.Slot.visible"/>
+        /// <see cref="DBKernel.Slot.visible"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         public bool visible

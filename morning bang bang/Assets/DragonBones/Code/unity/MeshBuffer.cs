@@ -1,30 +1,6 @@
-/**
- * The MIT License (MIT)
- *
- * Copyright (c) 2012-2017 DragonBones team and other contributors
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DragonBones;
 
 namespace DragonBones
 {
@@ -60,7 +36,8 @@ namespace DragonBones
             {
                 return 1;
             }
-            else if(a._zOrder < b._zOrder)
+
+            if(a._zOrder < b._zOrder)
             {
                 return -1;
             }
@@ -70,113 +47,114 @@ namespace DragonBones
 
         public void Dispose()
         {
-            if (this.sharedMesh != null)
+            if (sharedMesh != null)
             {
-                UnityFactoryHelper.DestroyUnityObject(this.sharedMesh);
+                DBUnityFactory.UnityFactoryHelper.DestroyUnityObject(sharedMesh);
             }
 
-            this.combineSlots.Clear();
-            this.name = string.Empty;
-            this.sharedMesh = null;
-            this.vertexCount = 0;
-            this.rawVertextBuffers = null;
-            this.uvBuffers = null;
-            this.vertexBuffers = null;
-            this.color32Buffers = null;
-            this.vertexDirty = false;
-            this.enabled = false;
+            combineSlots.Clear();
+            name = string.Empty;
+            sharedMesh = null;
+            vertexCount = 0;
+            rawVertextBuffers = null;
+            uvBuffers = null;
+            vertexBuffers = null;
+            color32Buffers = null;
+            vertexDirty = false;
+            enabled = false;
         }
 
         public void Clear()
         {
-            if (this.sharedMesh != null)
+            if (sharedMesh != null)
             {
-                this.sharedMesh.Clear();
-                this.sharedMesh.uv = null;
-                this.sharedMesh.vertices = null;
-                this.sharedMesh.normals = null;
-                this.sharedMesh.triangles = null;
-                this.sharedMesh.colors32 = null;
+                sharedMesh.Clear();
+                sharedMesh.uv = null;
+                sharedMesh.vertices = null;
+                sharedMesh.normals = null;
+                sharedMesh.triangles = null;
+                sharedMesh.colors32 = null;
             }
 
-            this.name = string.Empty;
+            name = string.Empty;
         }
 
         public void CombineMeshes(CombineInstance[] combines)
         {
-            if (this.sharedMesh == null)
+            if (sharedMesh == null)
             {
-                this.sharedMesh = GenerateMesh();
+                sharedMesh = GenerateMesh();
             }
 
-            this.sharedMesh.CombineMeshes(combines);
+            sharedMesh.CombineMeshes(combines);
 
             //
-            this.uvBuffers = this.sharedMesh.uv;
-            this.rawVertextBuffers = this.sharedMesh.vertices;
-            this.vertexBuffers = this.sharedMesh.vertices;
-            this.color32Buffers = this.sharedMesh.colors32;
-            this.triangleBuffers = this.sharedMesh.triangles;
+            uvBuffers = sharedMesh.uv;
+            rawVertextBuffers = sharedMesh.vertices;
+            vertexBuffers = sharedMesh.vertices;
+            color32Buffers = sharedMesh.colors32;
+            triangleBuffers = sharedMesh.triangles;
 
-            this.vertexCount = this.vertexBuffers.Length;
+            vertexCount = vertexBuffers.Length;
             //
-            if (this.color32Buffers == null || this.color32Buffers.Length != this.vertexCount)
+            if (color32Buffers == null || color32Buffers.Length != vertexCount)
             {
-                this.color32Buffers = new Color32[vertexCount];
+                color32Buffers = new Color32[vertexCount];
             }
         }
 
         public void InitMesh()
         {
-            if (this.vertexBuffers != null)
+            if (vertexBuffers != null)
             {
-                this.vertexCount = this.vertexBuffers.Length;
+                vertexCount = vertexBuffers.Length;
             }
             else
             {
-                this.vertexCount = 0;
+                vertexCount = 0;
             }
 
-            if (this.color32Buffers == null || this.color32Buffers.Length != this.vertexCount)
+            if (color32Buffers == null || color32Buffers.Length != vertexCount)
             {
-                this.color32Buffers = new Color32[this.vertexCount];
+                color32Buffers = new Color32[vertexCount];
             }
 
-            this.sharedMesh.vertices = this.vertexBuffers;// Must set vertices before uvs.
-            this.sharedMesh.uv = this.uvBuffers;
-            this.sharedMesh.colors32 = this.color32Buffers;
-            this.sharedMesh.triangles = this.triangleBuffers;
-            this.sharedMesh.RecalculateBounds();
+            sharedMesh.vertices = vertexBuffers;// Must set vertices before uvs.
+            sharedMesh.uv = uvBuffers;
+            sharedMesh.colors32 = color32Buffers;
+            sharedMesh.triangles = triangleBuffers;
+            sharedMesh.RecalculateBounds();
+            
 
-            this.enabled = true;
+            enabled = true;
         }
 
         public void UpdateVertices()
         {
-            this.sharedMesh.vertices = this.vertexBuffers;
-            this.sharedMesh.RecalculateBounds();
+            sharedMesh.vertices = vertexBuffers;
+            sharedMesh.RecalculateBounds();
         }
 
         public void UpdateColors()
         {
-            this.sharedMesh.colors32 = this.color32Buffers;
+            sharedMesh.colors32 = color32Buffers;
         }
 
         public void UpdateOrder()
         {
-            this.combineSlots.Sort(_OnSortSlots);
+            combineSlots.Sort(_OnSortSlots);
 
             var index = 0;
             var newVerticeIndex = 0;
             var oldVerticeOffset = 0;
 
-            var newUVs = new Vector2[this.vertexCount];
-            var newVertices = new Vector3[this.vertexCount];
-            var newColors = new Color32[this.vertexCount];
-            CombineInstance[] combines = new CombineInstance[this.combineSlots.Count];
+            var newUVs = new Vector2[vertexCount];
+            var newVertices = new Vector3[vertexCount];
+            var newColors = new Color32[vertexCount];
+            CombineInstance[] combines = new CombineInstance[combineSlots.Count];
             for (int i = 0; i < combineSlots.Count; i++)
             {
-                var slot = combineSlots[i] as UnitySlot;
+                var slot = combineSlots[i];
                 oldVerticeOffset = slot._verticeOffset;
 
                 //重新赋值
@@ -191,16 +169,16 @@ namespace DragonBones
             }
 
             //
-            this.sharedMesh.Clear();
-            this.sharedMesh.CombineMeshes(combines);
+            sharedMesh.Clear();
+            sharedMesh.CombineMeshes(combines);
             //
-            this.uvBuffers = newUVs;
-            this.vertexBuffers = newVertices;
-            this.color32Buffers = newColors;
+            uvBuffers = newUVs;
+            vertexBuffers = newVertices;
+            color32Buffers = newColors;
 
-            this.triangleBuffers = this.sharedMesh.triangles;
+            triangleBuffers = sharedMesh.triangles;
 
-            this.InitMesh();
+            InitMesh();
         }
     }
 }

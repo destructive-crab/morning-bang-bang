@@ -5,8 +5,8 @@ namespace DragonBones
     /// <summary>
     /// - The animation player is used to play the animation data and manage the animation states.
     /// </summary>
-    /// <see cref="DragonBones.AnimationData"/>
-    /// <see cref="DragonBones.AnimationState"/>
+    /// <see cref="DBKernel.AnimationData"/>
+    /// <see cref="DBKernel.AnimationState"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
 
@@ -166,7 +166,7 @@ namespace DragonBones
                 var animationState = this._animationStates[0];
                 if (animationState._fadeState > 0 && animationState._subFadeState > 0)
                 {
-                    this._armature._dragonBones.BufferObject(animationState);
+                    this._armature._DBKernel.BufferObject(animationState);
                     this._animationStates.Clear();
                     this._lastAnimationState = null;
                 }
@@ -215,7 +215,7 @@ namespace DragonBones
                     if (animationState._fadeState > 0 && animationState._subFadeState > 0)
                     {
                         r++;
-                        this._armature._dragonBones.BufferObject(animationState);
+                        this._armature._DBKernel.BufferObject(animationState);
                         this._animationDirty = true;
                         if (this._lastAnimationState == animationState)
                         {
@@ -254,7 +254,7 @@ namespace DragonBones
         /// <summary>
         /// - Clear all animations states.
         /// </summary>
-        /// <see cref="DragonBones.AnimationState"/>
+        /// <see cref="DBKernel.AnimationState"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
 
@@ -274,7 +274,7 @@ namespace DragonBones
         /// - Pause a specific animation state.
         /// </summary>
         /// <param name="animationName">- The name of animation state. (If not set, it will pause all animations)</param>
-        /// <see cref="DragonBones.AnimationState"/>
+        /// <see cref="DBKernel.AnimationState"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
 
@@ -302,7 +302,7 @@ namespace DragonBones
         /// </summary>
         /// <param name="animationConfig">- The animation config.</param>
         /// <returns>The playing animation state.</returns>
-        /// <see cref="DragonBones.AnimationConfig"/>
+        /// <see cref="DBKernel.AnimationConfig"/>
         /// <beta/>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
@@ -693,7 +693,7 @@ namespace DragonBones
         /// - Check whether a specific animation data is included.
         /// </summary>
         /// <param name="animationName">- The name of animation data.</param>
-        /// <see cref="DragonBones.AnimationData"/>
+        /// <see cref="DBKernel.AnimationData"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         public bool HasAnimation(string animationName)
@@ -712,7 +712,7 @@ namespace DragonBones
         /// <summary>
         /// - Check whether there is an animation state is playing
         /// </summary>
-        /// <see cref="DragonBones.AnimationState"/>
+        /// <see cref="DBKernel.AnimationState"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         public bool isPlaying
@@ -733,7 +733,7 @@ namespace DragonBones
         /// <summary>
         /// - Check whether all the animation states' playing were finished.
         /// </summary>
-        /// <see cref="DragonBones.AnimationState"/>
+        /// <see cref="DBKernel.AnimationState"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         public bool isCompleted
@@ -799,7 +799,7 @@ namespace DragonBones
         /// <summary>
         /// - An AnimationConfig instance that can be used quickly.
         /// </summary>
-        /// <see cref="DragonBones.AnimationConfig"/>
+        /// <see cref="DBKernel.AnimationConfig"/>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
         public AnimationConfig animationConfig
@@ -813,7 +813,7 @@ namespace DragonBones
         /// <summary>
         /// - The last playing animation state
         /// </summary>
-        /// <see cref="DragonBones.AnimationState"/>
+        /// <see cref="DBKernel.AnimationState"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         public AnimationState lastAnimationState

@@ -38,6 +38,11 @@ namespace DragonBones
 
         public Armature Armature { get; internal set; } = null;
         public Animation Animation => Armature != null ? Armature.animation : null;
+        public void ApplyPPU(uint armatureDataPixelsPerUnit)
+        {
+            transform.localScale = new Vector3(100f / armatureDataPixelsPerUnit, 100f / armatureDataPixelsPerUnit, 1);
+        }
+
         public void DBClear()
         {
             if (this.Armature != null)
@@ -45,7 +50,7 @@ namespace DragonBones
                 this.Armature = null;
                 if (this._disposeProxy)
                 {
-                    UnityFactoryHelper.DestroyUnityObject(gameObject);
+                    DBUnityFactory.UnityFactoryHelper.DestroyUnityObject(gameObject);
                 }
             }
 
@@ -122,11 +127,11 @@ namespace DragonBones
 #endif
             if (IsDataSetupCorrectly())
             {
-                var dragonBonesData = DBUnityFactory.Instance.LoadData(unityData, isUGUI);
+                var dragonBonesData = DBInitial.UnityDataLoader.LoadData(unityData, isUGUI);
 
                 if (dragonBonesData != null && !string.IsNullOrEmpty(armatureName))
                 {
-                    DBUnityFactory.Instance.BuildArmatureComponent(armatureName, unityData.dataName, null, null,
+                    DBInitial.UnityFactory.BuildArmatureComponent(armatureName, unityData.dataName, null, null,
                         gameObject, isUGUI);
                 }
             }
@@ -196,7 +201,7 @@ namespace DragonBones
 
                 if (!Application.isPlaying)
                 {
-                    DBUnityFactory.Instance._dragonBones.AdvanceTime(0.0f);
+                    DBInitial.Kernel.AdvanceTime(0.0f);
                 }
             }
 

@@ -20,16 +20,16 @@ namespace DragonBones
         public TextAsset dragonBonesJSON;
         public TextureAtlas[] textureAtlas;
 
-        public void RemoveFromFactory(bool disposeData =true)
+        public void RemoveFromCash(bool disposeData =true)
         {
-            DBUnityFactory.Instance.RemoveDragonBonesData(dataName, disposeData);
+            DBInitial.Kernel.DataStorage.RemoveDragonBonesData(dataName, disposeData);
             if(textureAtlas != null)
             {
                 foreach(TextureAtlas ta in textureAtlas)
                 {
                     if(ta != null && ta.texture != null)
                     {
-                        DBUnityFactory.Instance.RemoveTextureAtlasData(ta.texture.name,disposeData);
+                        DBInitial.Kernel.DataStorage.RemoveTextureAtlasData(ta.texture.name,disposeData);
                     }
                 }
             }

@@ -23,7 +23,7 @@ namespace DragonBones
         /// </summary>
         /// <param name="type">- Event type.</param>
         /// <param name="eventObject">- Event object.</param>
-        /// <see cref="DragonBones.EventObject"/>
+        /// <see cref="DBKernel.EventObject"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
 

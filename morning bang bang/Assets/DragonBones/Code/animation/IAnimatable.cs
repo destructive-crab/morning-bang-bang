@@ -4,8 +4,8 @@
     /// - Play animation interface. (Both Armature and Wordclock implement the interface)
     /// Any instance that implements the interface can be added to the Worldclock instance and advance time by Worldclock instance uniformly.
     /// </summary>
-    /// <see cref="DragonBones.WorldClock"/>
-    /// <see cref="DragonBones.Armature"/>
+    /// <see cref="DBKernel.WorldClock"/>
+    /// <see cref="DBKernel.Armature"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
     public interface IAnimatable

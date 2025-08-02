@@ -6,9 +6,13 @@ namespace DragonBones
     /// - Armature is the core of the skeleton animation system.
     /// </summary>
     /// <see cref="ArmatureData"/>
+    ///,
     /// <see cref="Bone"/>
+    ///,
     /// <see cref="Slot"/>
-    /// <see cref="DragonBones.Animation"/>
+    ///,
+    /// <see cref="Animation"/>
+    ///,
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
     public class Armature : BaseObject, IAnimatable
@@ -65,7 +69,7 @@ namespace DragonBones
         private object _replacedTexture;
         /// <internal/>
         /// <private/>
-        internal DragonBones _dragonBones;
+        internal DBKernel _DBKernel;
         private WorldClock _clock = null; // Initial value.
 
         /// <internal/>
@@ -129,7 +133,7 @@ namespace DragonBones
             this._display = null;
             this._replaceTextureAtlasData = null;
             this._replacedTexture = null;
-            this._dragonBones = null; //
+            this._DBKernel = null; //
             this._clock = null;
             this._parent = null;
         }
@@ -226,15 +230,15 @@ namespace DragonBones
             {
                 this._lockUpdate = true;
 
-                if (this._dragonBones != null)
+                if (this._DBKernel != null)
                 {
-                    this._dragonBones.BufferObject(this);
+                    this._DBKernel.BufferObject(this);
                 }
             }
         }
         /// <internal/>
         /// <private/>
-        internal void Init(ArmatureData armatureData, IArmatureProxy proxy, object display, DragonBones dragonBones)
+        internal void Init(ArmatureData armatureData, IArmatureProxy proxy, object display, DBKernel dbKernel)
         {
             if (this._armatureData != null)
             {
@@ -245,7 +249,8 @@ namespace DragonBones
             this._animation = BaseObject.BorrowObject<Animation>();
             this._proxy = proxy;
             this._display = display;
-            this._dragonBones = dragonBones;
+            proxy.ApplyPPU(armatureData.PixelsPerUnit);
+            this._DBKernel = dbKernel;
 
             this._proxy.DBInit(this);
             this._animation.Init(this);
@@ -717,7 +722,7 @@ namespace DragonBones
         /// <summary>
         /// - The animation player.
         /// </summary>
-        /// <see cref="DragonBones.Animation"/>
+        /// <see cref="DBKernel.Animation"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         public Animation animation
