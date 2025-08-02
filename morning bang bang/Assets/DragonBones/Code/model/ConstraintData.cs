@@ -2,7 +2,7 @@ namespace DragonBones
 {
     /// <internal/>
     /// <private/>
-    public abstract class ConstraintData : BaseObject
+    public abstract class ConstraintData : DBObject
     {
         public int order;
         public string name;
@@ -10,7 +10,7 @@ namespace DragonBones
         public BoneData root;
         public BoneData bone = null;
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.order = 0;
             this.name = string.Empty;
@@ -27,9 +27,9 @@ namespace DragonBones
         public bool bendPositive;
         public float weight;
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             this.scaleEnabled = false;
             this.bendPositive = false;

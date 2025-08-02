@@ -59,5 +59,25 @@ namespace banging_code.debug
 
             debugger.Console.InvokeCommand(true, "echo_warning", warning);
         }
+
+        public static void AM(bool condition,  string message)
+        {
+            if(!condition) return;
+            
+#if UNITY_EDITOR
+            UnityEngine.Debug.Log(message);
+            return;
+#endif
+            if (LGR.debugger == null && Game.TryGetDebugger(out BangDebugger debugger))
+            {
+                LGR.debugger = debugger;
+            }
+            else
+            {
+                return;
+            }
+            
+            debugger.Console.InvokeCommand(true, "echo", message);
+        }
     }
 }

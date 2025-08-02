@@ -2,7 +2,7 @@ namespace DragonBones
 {
     /// <internal/>
     /// <private/>
-    public class CanvasData : BaseObject
+    public class CanvasData : DBObject
     {
         public bool hasBackground;
         public int color;
@@ -11,7 +11,7 @@ namespace DragonBones
         public float width;
         public float height;
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.hasBackground = false;
             this.color = 0x000000;

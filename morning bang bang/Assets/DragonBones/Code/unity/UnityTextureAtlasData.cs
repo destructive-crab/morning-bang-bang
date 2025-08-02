@@ -3,36 +3,16 @@ using UnityEngine;
 
 namespace DragonBones
 {
-    /**
-     * @language zh_CN
-     * Unity 贴图集数据。
-     * @version DragonBones 3.0
-     */
     public class UnityTextureAtlasData : TextureAtlasData
     {
-        /**
-         * @private
-         */
         internal bool _disposeEnabled;
-        /**
-         * @language zh_CN
-         * Unity 贴图。
-         * @version DragonBones 3.0
-         */
+
         public Material texture;
         public Material uiTexture;
-        /**
-         * @private
-         */
-        public UnityTextureAtlasData()
+
+        protected override void ClearObject()
         {
-        }
-        /**
-         * @private
-         */
-        protected override void _OnClear()
-        {
-            base._OnClear();
+            base.ClearObject();
 
             if (_disposeEnabled && texture != null)
             {
@@ -48,16 +28,13 @@ namespace DragonBones
             texture = null;
             uiTexture = null;
         }
-        /**
-         * @private
-         */
+
         public override TextureData CreateTexture()
         {
-            return BaseObject.BorrowObject<UnityTextureData>();
+            return DBObject.BorrowObject<UnityTextureData>();
         }
     }
 
-    /// <private/>
     internal class UnityTextureData : TextureData
     {
         public const string SHADER_PATH = "Shaders/";
@@ -66,18 +43,15 @@ namespace DragonBones
         public const string UI_SHADER_GRAP = "DB_BlendMode_UIGrab";
         public const string UI_SHADER_FRAME_BUFFER = "DB_BlendMode_UIFramebuffer";
 
-        /// <summary>
-        /// 叠加模式材质球的缓存池
-        /// </summary>
         internal Dictionary<string, Material> _cacheBlendModeMats = new Dictionary<string, Material>();
 
         public UnityTextureData()
         {
         }
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             foreach (var key in this._cacheBlendModeMats.Keys)
             {
@@ -86,12 +60,9 @@ namespace DragonBones
                 {
                     DBUnityFactory.UnityFactoryHelper.DestroyUnityObject(mat);
                 }
-
-                //this._cacheBlendModeMats[key] = null;
             }
 
-            //
-            this._cacheBlendModeMats.Clear();
+            _cacheBlendModeMats.Clear();
         }
 
         private Material _GetMaterial(BlendMode blendMode)
@@ -172,7 +143,6 @@ namespace DragonBones
         {
             base.CopyFrom(value);
 
-            //
             (value as UnityTextureData)._cacheBlendModeMats = this._cacheBlendModeMats;
         }
     }

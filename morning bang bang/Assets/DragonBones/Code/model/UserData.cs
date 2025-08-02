@@ -7,7 +7,7 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 5.0</version>
     /// <language>en_US</language>
-    public class UserData : BaseObject
+    public class UserData : DBObject
     {
         /// <summary>
         /// - The custom int numbers.
@@ -29,7 +29,7 @@ namespace DragonBones
         public readonly List<string> strings = new List<string>();
 
         /// <inheritDoc/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.ints.Clear();
             this.floats.Clear();
@@ -86,7 +86,7 @@ namespace DragonBones
 
     /// <internal/>
     /// <private/>
-    public class ActionData : BaseObject
+    public class ActionData : DBObject
     {
         public ActionType type;
         // Frame event name | Sound event name | Animation name
@@ -95,7 +95,7 @@ namespace DragonBones
         public SlotData slot;
         public UserData data;
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             if (this.data != null)
             {

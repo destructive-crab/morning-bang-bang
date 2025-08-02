@@ -3,50 +3,19 @@ using UnityEngine;
 
 namespace DragonBones
 {
-    /**
-     * @inheritDoc
-     */
-    public class UnityEventDispatcher<T> : MonoBehaviour
+    [DisallowMultipleComponent]
+    public class UnityEventDispatcher : MonoBehaviour, IEventDispatcher<EventObject>
     {
-        private readonly Dictionary<string, ListenerDelegate<T>> _listeners = new Dictionary<string, ListenerDelegate<T>>();
-        /**
-         * @private
-         */
-        public UnityEventDispatcher()
-        {
-        }
-        /**
-         * @inheritDoc
-         */
-        public void DispatchEvent(string type, T eventObject)
-        {
-            if (!_listeners.ContainsKey(type))
-            {
-                return;
-            }
-            else
-            {
-                _listeners[type](type, eventObject);
-            }
-        }
-        /**
-         * @inheritDoc
-         */
-        public bool HasEventListener(string type)
-        {
-            return _listeners.ContainsKey(type);
-        }
-        /**
-         * @inheritDoc
-         */
-        public void AddEventListener(string type, ListenerDelegate<T> listener)
+        private readonly Dictionary<string, ListenerDelegate<EventObject>> _listeners = new();
+        
+        public void AddDBEventListener(string type, ListenerDelegate<EventObject> listener)
         {
             if (_listeners.ContainsKey(type))
             {
                 var delegates = _listeners[type].GetInvocationList();
                 for (int i = 0, l = delegates.Length; i < l; ++i)
                 {
-                    if (listener == delegates[i] as ListenerDelegate<T>)
+                    if (listener == delegates[i] as ListenerDelegate<EventObject>)
                     {
                         return;
                     }
@@ -58,11 +27,27 @@ namespace DragonBones
             {
                 _listeners.Add(type, listener);
             }
+
         }
-        /**
-         * @inheritDoc
-         */
-        public void RemoveEventListener(string type, ListenerDelegate<T> listener)
+
+        public void DispatchDBEvent(string type, EventObject eventObject)
+        {
+            if (!_listeners.ContainsKey(type))
+            {
+                return;
+            }
+            else
+            {
+                _listeners[type](type, eventObject);
+            }
+        }
+
+        public bool HasDBEventListener(string type)
+        {
+            return _listeners.ContainsKey(type);
+        }
+
+        public void RemoveDBEventListener(string type, ListenerDelegate<EventObject> listener)
         {
             if (!_listeners.ContainsKey(type))
             {
@@ -72,7 +57,7 @@ namespace DragonBones
             var delegates = _listeners[type].GetInvocationList();
             for (int i = 0, l = delegates.Length; i < l; ++i)
             {
-                if (listener == delegates[i] as ListenerDelegate<T>)
+                if (listener == delegates[i] as ListenerDelegate<EventObject>)
                 {
                     _listeners[type] -= listener;
                     break;
@@ -83,6 +68,7 @@ namespace DragonBones
             {
                 _listeners.Remove(type);
             }
+
         }
     }
 }

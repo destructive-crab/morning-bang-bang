@@ -4,7 +4,7 @@ namespace DragonBones
 {
     /// <internal/>
     /// <private/>
-    internal abstract class Constraint : BaseObject
+    internal abstract class Constraint : DBObject
     {
         protected static readonly Matrix _helpMatrix = new Matrix();
         protected static readonly DBTransform HelpDBTransform = new DBTransform();
@@ -29,7 +29,7 @@ namespace DragonBones
         internal Bone _root;
         internal Bone _bone;
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this._armature = null;
             this._target = null; //
@@ -62,9 +62,9 @@ namespace DragonBones
         /// <internal/>
         internal float _weight;
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             this._scaleEnabled = false;
             this._bendPositive = false;

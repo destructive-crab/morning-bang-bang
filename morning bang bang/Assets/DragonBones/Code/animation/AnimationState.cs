@@ -10,7 +10,7 @@ namespace DragonBones
     /// <see cref="DBKernel.AnimationData"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public class AnimationState : BaseObject
+    public class AnimationState : DBObject
     {
         /// <private/>
         public bool actionEnabled;
@@ -144,7 +144,7 @@ namespace DragonBones
         /// <private/>
         public AnimationState _parent = null; // Initial value.
         /// <private/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             foreach (var timeline in this._boneTimelines)
             {
@@ -228,7 +228,7 @@ namespace DragonBones
                             {
                                 case TimelineType.IKConstraint:
                                     {
-                                        var timeline = BaseObject.BorrowObject<IKConstraintTimelineState>();
+                                        var timeline = DBObject.BorrowObject<IKConstraintTimelineState>();
                                         timeline.constraint = constraint;
                                         timeline.Init(this._armature, this, timelineData);
                                         this._constraintTimelines.Add(timeline);
@@ -242,7 +242,7 @@ namespace DragonBones
                     }
                     else if (this.resetToPose)
                     { // Pose timeline.
-                        var timeline = BaseObject.BorrowObject<IKConstraintTimelineState>();
+                        var timeline = DBObject.BorrowObject<IKConstraintTimelineState>();
                         timeline.constraint = constraint;
                         timeline.Init(this._armature, this, null);
                         this._constraintTimelines.Add(timeline);
@@ -286,7 +286,7 @@ namespace DragonBones
                     else
                     {
                         // Create new bone timeline.
-                        var bonePose = this._bonePoses.ContainsKey(timelineName) ? this._bonePoses[timelineName] : (this._bonePoses[timelineName] = BaseObject.BorrowObject<BonePose>());
+                        var bonePose = this._bonePoses.ContainsKey(timelineName) ? this._bonePoses[timelineName] : (this._bonePoses[timelineName] = DBObject.BorrowObject<BonePose>());
                         if (timelineDatas != null)
                         {
                             foreach (var timelineData in timelineDatas)
@@ -295,7 +295,7 @@ namespace DragonBones
                                 {
                                     case TimelineType.BoneAll:
                                         {
-                                            var timeline = BaseObject.BorrowObject<BoneAllTimelineState>();
+                                            var timeline = DBObject.BorrowObject<BoneAllTimelineState>();
                                             timeline.bone = bone;
                                             timeline.bonePose = bonePose;
                                             timeline.Init(this._armature, this, timelineData);
@@ -304,7 +304,7 @@ namespace DragonBones
                                         }
                                     case TimelineType.BoneTranslate:
                                         {
-                                            var timeline = BaseObject.BorrowObject<BoneTranslateTimelineState>();
+                                            var timeline = DBObject.BorrowObject<BoneTranslateTimelineState>();
                                             timeline.bone = bone;
                                             timeline.bonePose = bonePose;
                                             timeline.Init(this._armature, this, timelineData);
@@ -313,7 +313,7 @@ namespace DragonBones
                                         }
                                     case TimelineType.BoneRotate:
                                         {
-                                            var timeline = BaseObject.BorrowObject<BoneRotateTimelineState>();
+                                            var timeline = DBObject.BorrowObject<BoneRotateTimelineState>();
                                             timeline.bone = bone;
                                             timeline.bonePose = bonePose;
                                             timeline.Init(this._armature, this, timelineData);
@@ -322,7 +322,7 @@ namespace DragonBones
                                         }
                                     case TimelineType.BoneScale:
                                         {
-                                            var timeline = BaseObject.BorrowObject<BoneScaleTimelineState>();
+                                            var timeline = DBObject.BorrowObject<BoneScaleTimelineState>();
                                             timeline.bone = bone;
                                             timeline.bonePose = bonePose;
                                             timeline.Init(this._armature, this, timelineData);
@@ -337,7 +337,7 @@ namespace DragonBones
                         }
                         else if (this.resetToPose)
                         { // Pose timeline.
-                            var timeline = BaseObject.BorrowObject<BoneAllTimelineState>();
+                            var timeline = DBObject.BorrowObject<BoneAllTimelineState>();
                             timeline.bone = bone;
                             timeline.bonePose = bonePose;
                             timeline.Init(this._armature, this, null);
@@ -405,7 +405,7 @@ namespace DragonBones
                                 {
                                     case TimelineType.SlotDisplay:
                                         {
-                                            var timeline = BaseObject.BorrowObject<SlotDislayTimelineState>();
+                                            var timeline = DBObject.BorrowObject<SlotDislayTimelineState>();
                                             timeline.slot = slot;
                                             timeline.Init(this._armature, this, timelineData);
                                             this._slotTimelines.Add(timeline);
@@ -414,7 +414,7 @@ namespace DragonBones
                                         }
                                     case TimelineType.SlotColor:
                                         {
-                                            var timeline = BaseObject.BorrowObject<SlotColorTimelineState>();
+                                            var timeline = DBObject.BorrowObject<SlotColorTimelineState>();
                                             timeline.slot = slot;
                                             timeline.Init(this._armature, this, timelineData);
                                             this._slotTimelines.Add(timeline);
@@ -423,7 +423,7 @@ namespace DragonBones
                                         }
                                     case TimelineType.SlotDeform:
                                         {
-                                            var timeline = BaseObject.BorrowObject<DeformTimelineState>();
+                                            var timeline = DBObject.BorrowObject<DeformTimelineState>();
                                             timeline.slot = slot;
                                             timeline.Init(this._armature, this, timelineData);
                                             this._slotTimelines.Add(timeline);
@@ -442,7 +442,7 @@ namespace DragonBones
                             // Pose timeline.
                             if (!displayIndexFlag)
                             {
-                                var timeline = BaseObject.BorrowObject<SlotDislayTimelineState>();
+                                var timeline = DBObject.BorrowObject<SlotDislayTimelineState>();
                                 timeline.slot = slot;
                                 timeline.Init(this._armature, this, null);
                                 this._slotTimelines.Add(timeline);
@@ -451,7 +451,7 @@ namespace DragonBones
 
                             if (!colorFlag)
                             {
-                                var timeline = BaseObject.BorrowObject<SlotColorTimelineState>();
+                                var timeline = DBObject.BorrowObject<SlotColorTimelineState>();
                                 timeline.slot = slot;
                                 timeline.Init(this._armature, this, null);
                                 this._slotTimelines.Add(timeline);
@@ -467,7 +467,7 @@ namespace DragonBones
                                         var meshOffset = (displayData as MeshDisplayData).vertices.offset;
                                         if (!ffdFlags.Contains(meshOffset))
                                         {
-                                            var timeline = BaseObject.BorrowObject<DeformTimelineState>();
+                                            var timeline = DBObject.BorrowObject<DeformTimelineState>();
                                             timeline.vertexOffset = meshOffset; //
                                             timeline.slot = slot;
                                             timeline.Init(this._armature, this, null);
@@ -574,11 +574,11 @@ namespace DragonBones
                 var eventType = isFadeOut ? EventObject.FADE_OUT : EventObject.FADE_IN;
                 if (this._armature.eventDispatcher.HasDBEventListener(eventType))
                 {
-                    var eventObject = BaseObject.BorrowObject<EventObject>();
+                    var eventObject = DBObject.BorrowObject<EventObject>();
                     eventObject.type = eventType;
                     eventObject.armature = this._armature;
                     eventObject.animationState = this;
-                    this._armature._DBKernel.BufferEvent(eventObject);
+                    DBInitial.Kernel.BufferEvent(eventObject);
                 }
             }
 
@@ -618,11 +618,11 @@ namespace DragonBones
                 var eventType = isFadeOut ? EventObject.FADE_OUT_COMPLETE : EventObject.FADE_IN_COMPLETE;
                 if (this._armature.eventDispatcher.HasDBEventListener(eventType))
                 {
-                    var eventObject = BaseObject.BorrowObject<EventObject>();
+                    var eventObject = DBObject.BorrowObject<EventObject>();
                     eventObject.type = eventType;
                     eventObject.armature = this._armature;
                     eventObject.animationState = this;
-                    this._armature._DBKernel.BufferEvent(eventObject);
+                    DBInitial.Kernel.BufferEvent(eventObject);
                 }
             }
         }
@@ -707,7 +707,7 @@ namespace DragonBones
                 }
             }
 
-            this._actionTimeline = BaseObject.BorrowObject<ActionTimelineState>();
+            this._actionTimeline = DBObject.BorrowObject<ActionTimelineState>();
             this._actionTimeline.Init(this._armature, this, this._animationData.actionTimeline);
             this._actionTimeline.currentTime = this._time;
             if (this._actionTimeline.currentTime < 0.0f)
@@ -717,7 +717,7 @@ namespace DragonBones
 
             if (this._animationData.zOrderTimeline != null)
             {
-                this._zOrderTimeline = BaseObject.BorrowObject<ZOrderTimelineState>();
+                this._zOrderTimeline = DBObject.BorrowObject<ZOrderTimelineState>();
                 this._zOrderTimeline.Init(this._armature, this, this._animationData.zOrderTimeline);
             }
         }
@@ -1215,13 +1215,13 @@ namespace DragonBones
 
     /// <internal/>
     /// <private/>
-    internal class BonePose : BaseObject
+    internal class BonePose : DBObject
     {
         public readonly DBTransform current = new DBTransform();
         public readonly DBTransform delta = new DBTransform();
         public readonly DBTransform result = new DBTransform();
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.current.Identity();
             this.delta.Identity();

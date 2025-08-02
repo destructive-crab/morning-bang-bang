@@ -271,5 +271,8 @@ namespace DragonBones
         public abstract DragonBonesData ParseDragonBonesData(object rawData, float scale);
 
         public abstract bool ParseTextureAtlasData(object rawData, TextureAtlasData textureAtlasData, float scale);
+        public static readonly int FLOAT_SIZE = 4;
+        public static readonly int UINT16_SIZE = 2;
+        public static readonly int INT16_SIZE = 2;
     }
 }

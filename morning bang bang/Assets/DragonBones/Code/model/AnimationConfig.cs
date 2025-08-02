@@ -10,7 +10,7 @@ namespace DragonBones
     /// <beta/>
     /// <version>DragonBones 5.0</version>
     /// <language>en_US</language>
-    public class AnimationConfig : BaseObject
+    public class AnimationConfig : DBObject
     {
         /// <private/>
         public bool pauseFadeOut;
@@ -138,7 +138,7 @@ namespace DragonBones
         public readonly List<string> boneMask = new List<string>();
 
         /// <private/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.pauseFadeOut = true;
             this.fadeOutMode = AnimationFadeOutMode.All;
@@ -168,7 +168,7 @@ namespace DragonBones
         /// <private/>
         public void Clear()
         {
-            this._OnClear();
+            this.ClearObject();
         }
 
         /// <private/>

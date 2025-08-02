@@ -11,13 +11,104 @@ namespace DragonBones
     ///,
     /// <see cref="Slot"/>
     ///,
-    /// <see cref="Animation"/>
+    /// <see cref="AnimationPlayer"/>
     ///,
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public class Armature : BaseObject, IAnimatable
+    public class Armature : DBObject, IAnimatable
     {
-        private static int _OnSortSlots(Slot a, Slot b)
+        /// <summary>
+        /// - Whether to inherit the animation control of the parent armature.
+        /// True to try to have the child armature play an animation with the same name when the parent armature play the animation.
+        /// </summary>
+        /// <default>true</default>
+        /// <version>DragonBones 4.5</version>
+        /// <language>en_US</language>
+        public bool inheritAnimation;
+        public object userData;
+
+        private bool _lockUpdate;
+        private bool _slotsDirty;
+        private bool _zOrderDirty;
+        private bool _flipX;
+        private bool _flipY;
+
+        internal int _cacheFrameIndex;
+        private readonly List<Bone> _bones = new List<Bone>();
+        private readonly List<Slot> _slots = new List<Slot>();
+        internal readonly List<Constraint> _constraints = new List<Constraint>();
+        private readonly List<EventObject> _actions = new List<EventObject>();
+
+        public ArmatureData _armatureData;
+        private object _display;
+
+        internal TextureAtlasData _replaceTextureAtlasData = null; // Initial value.
+        private object _replacedTexture;
+
+        private WorldClock _clock = null; // Initial value.
+
+        internal Slot _parent;
+        protected override void ClearObject()
+        {
+            if (_clock != null)
+            {
+                // Remove clock first.
+                _clock.Remove(this);
+            }
+
+            foreach (var bone in _bones)
+            {
+                bone.ReturnToPool();
+            }
+
+            foreach (var slot in _slots)
+            {
+                slot.ReturnToPool();
+            }
+
+            foreach (var constraint in _constraints)
+            {
+                constraint.ReturnToPool();
+            }
+
+            if (AnimationPlayer != null)
+            {
+                AnimationPlayer.ReturnToPool();
+            }
+
+            if (Display != null)
+            {
+                Display.DBClear();
+            }
+
+            if (_replaceTextureAtlasData != null)
+            {
+                _replaceTextureAtlasData.ReturnToPool();
+            }
+
+            inheritAnimation = true;
+            userData = null;
+
+            _lockUpdate = false;
+            _slotsDirty = false;
+            _zOrderDirty = false;
+            _flipX = false;
+            _flipY = false;
+            _cacheFrameIndex = -1;
+            _bones.Clear();
+            _slots.Clear();
+            _constraints.Clear();
+            _actions.Clear();
+            _armatureData = null; 
+            AnimationPlayer = null; 
+            Display = null;
+            _display = null;
+            _replaceTextureAtlasData = null;
+            _replacedTexture = null;
+            _clock = null;
+            _parent = null;
+        }
+        private static int OnSortSlots(Slot a, Slot b)
         {
             if (a._zOrder > b._zOrder)
             {
@@ -30,122 +121,12 @@ namespace DragonBones
 
             return 0;//fixed slots sort error
         }
-
-        /// <summary>
-        /// - Whether to inherit the animation control of the parent armature.
-        /// True to try to have the child armature play an animation with the same name when the parent armature play the animation.
-        /// </summary>
-        /// <default>true</default>
-        /// <version>DragonBones 4.5</version>
-        /// <language>en_US</language>
-        public bool inheritAnimation;
-        /// <private/>
-        public object userData;
-
-        private bool _lockUpdate;
-        private bool _slotsDirty;
-        private bool _zOrderDirty;
-        private bool _flipX;
-        private bool _flipY;
-
-        /// <internal/>
-        /// <private/>
-        internal int _cacheFrameIndex;
-        private readonly List<Bone> _bones = new List<Bone>();
-        private readonly List<Slot> _slots = new List<Slot>();
-        /// <internal/>
-        /// <private/>
-        internal readonly List<Constraint> _constraints = new List<Constraint>();
-        private readonly List<EventObject> _actions = new List<EventObject>();
-        /// <internal/>
-        /// <private/>
-        public ArmatureData _armatureData;
-        private Animation _animation = null; // Initial value.
-        private IArmatureProxy _proxy = null; // Initial value.
-        private object _display;
-        /// <internal/>
-        /// <private/>
-        internal TextureAtlasData _replaceTextureAtlasData = null; // Initial value.
-        private object _replacedTexture;
-        /// <internal/>
-        /// <private/>
-        internal DBKernel _DBKernel;
-        private WorldClock _clock = null; // Initial value.
-
-        /// <internal/>
-        /// <private/>
-        internal Slot _parent;
-        /// <private/>
-        protected override void _OnClear()
+        internal void SortZOrder(short[] slotIndices, int offset)
         {
-            if (this._clock != null)
-            {
-                // Remove clock first.
-                this._clock.Remove(this);
-            }
-
-            foreach (var bone in this._bones)
-            {
-                bone.ReturnToPool();
-            }
-
-            foreach (var slot in this._slots)
-            {
-                slot.ReturnToPool();
-            }
-
-            foreach (var constraint in this._constraints)
-            {
-                constraint.ReturnToPool();
-            }
-
-            if (this._animation != null)
-            {
-                this._animation.ReturnToPool();
-            }
-
-            if (this._proxy != null)
-            {
-                this._proxy.DBClear();
-            }
-
-            if (this._replaceTextureAtlasData != null)
-            {
-                this._replaceTextureAtlasData.ReturnToPool();
-            }
-
-            this.inheritAnimation = true;
-            this.userData = null;
-
-            this._lockUpdate = false;
-            this._slotsDirty = false;
-            this._zOrderDirty = false;
-            this._flipX = false;
-            this._flipY = false;
-            this._cacheFrameIndex = -1;
-            this._bones.Clear();
-            this._slots.Clear();
-            this._constraints.Clear();
-            this._actions.Clear();
-            this._armatureData = null; //
-            this._animation = null; //
-            this._proxy = null; //
-            this._display = null;
-            this._replaceTextureAtlasData = null;
-            this._replacedTexture = null;
-            this._DBKernel = null; //
-            this._clock = null;
-            this._parent = null;
-        }
-
-        /// <internal/>
-        /// <private/>
-        internal void _SortZOrder(short[] slotIndices, int offset)
-        {
-            var slotDatas = this._armatureData.sortedSlots;
+            var slotDatas = _armatureData.sortedSlots;
             var isOriginal = slotIndices == null;
 
-            if (this._zOrderDirty || !isOriginal)
+            if (_zOrderDirty || !isOriginal)
             {
                 for (int i = 0, l = slotDatas.Count; i < l; ++i)
                 {
@@ -156,59 +137,55 @@ namespace DragonBones
                     }
 
                     var slotData = slotDatas[slotIndex];
-                    var slot = this.GetSlot(slotData.name);
+                    var slot = GetSlot(slotData.name);
                     if (slot != null)
                     {
-                        slot._SetZorder(i);
+                        slot._SetZOrder(i);
                     }
                 }
 
-                this._slotsDirty = true;
-                this._zOrderDirty = !isOriginal;
-            }
-        }
-        /// <internal/>
-        /// <private/>
-        internal void _AddBone(Bone value)
-        {
-            if (!this._bones.Contains(value))
-            {
-                this._bones.Add(value);
-            }
-        }
-        /// <internal/>
-        /// <private/>
-        internal void _AddSlot(Slot value)
-        {
-            if (!this._slots.Contains(value))
-            {
-                this._slotsDirty = true;
-                this._slots.Add(value);
+                _slotsDirty = true;
+                _zOrderDirty = !isOriginal;
             }
         }
 
-        /// <internal/>
-        /// <private/>
-        internal void _AddConstraint(Constraint value)
+        internal void AddBone(Bone value)
         {
-            if (!this._constraints.Contains(value))
+            if (!_bones.Contains(value))
             {
-                this._constraints.Add(value);
+                _bones.Add(value);
             }
         }
-        /// <internal/>
-        /// <private/>
-        internal void _BufferAction(EventObject action, bool append)
+
+        internal void AddSlot(Slot value)
         {
-            if (!this._actions.Contains(action))
+            if (!_slots.Contains(value))
+            {
+                _slotsDirty = true;
+                _slots.Add(value);
+            }
+        }
+
+
+        internal void AddConstraint(Constraint value)
+        {
+            if (!_constraints.Contains(value))
+            {
+                _constraints.Add(value);
+            }
+        }
+
+        internal void BufferAction(EventObject action, bool append)
+        {
+            if (!_actions.Contains(action))
             {
                 if (append)
                 {
-                    this._actions.Add(action);
+                    _actions.Add(action);
                 }
                 else
                 {
-                    this._actions.Insert(0, action);                    
+                    _actions.Insert(0, action);                    
                 }
             }
         }
@@ -226,85 +203,77 @@ namespace DragonBones
         /// <language>en_US</language>
         public void Dispose()
         {
-            if (this._armatureData != null)
+            if (_armatureData != null)
             {
-                this._lockUpdate = true;
+                _lockUpdate = true;
 
-                if (this._DBKernel != null)
-                {
-                    this._DBKernel.BufferObject(this);
-                }
+                DBInitial.Kernel.BufferObject(this);
             }
         }
         /// <internal/>
         /// <private/>
-        internal void Init(ArmatureData armatureData, IArmatureProxy proxy, object display, DBKernel dbKernel)
+        internal void Init(ArmatureData armatureData, IEngineArmatureDisplay engineDisplay)
         {
-            if (this._armatureData != null)
+            if (_armatureData != null)
             {
                 return;
             }
 
-            this._armatureData = armatureData;
-            this._animation = BaseObject.BorrowObject<Animation>();
-            this._proxy = proxy;
-            this._display = display;
-            proxy.ApplyPPU(armatureData.PixelsPerUnit);
-            this._DBKernel = dbKernel;
+            _armatureData = armatureData;
+            AnimationPlayer = BorrowObject<AnimationPlayer>();
+            Display = engineDisplay;
 
-            this._proxy.DBInit(this);
-            this._animation.Init(this);
-            this._animation.animations = this._armatureData.animations;
+            Display.DBInit(this);
+            AnimationPlayer.Init(this);
+            AnimationPlayer.animations = _armatureData.animations;
         }
         /// <inheritDoc/>
         public void AdvanceTime(float passedTime)
         {
-            if (this._lockUpdate)
+            if (_lockUpdate)
             {
                 return;
             }
 
-            if (this._armatureData == null)
+            if (_armatureData == null)
             {
-                Helper.Assert(false, "The armature has been disposed.");
+                DBLogger.Assert(false, "The armature has been disposed.");
                 return;
             }
-            else if (this._armatureData.parent == null)
+            else if (_armatureData.parent == null)
             {
-                Helper.Assert(false, "The armature data has been disposed.\nPlease make sure dispose armature before call factory.clear().");
+                DBLogger.Assert(false, "The armature data has been disposed.\nPlease make sure dispose armature before call factory.clear().");
                 return;
             }
 
-            var prevCacheFrameIndex = this._cacheFrameIndex;
+            var prevCacheFrameIndex = _cacheFrameIndex;
 
             // Update animation.
-            this._animation.AdvanceTime(passedTime);
-
+            AnimationPlayer.AdvanceTime(passedTime);
             if (this._slotsDirty)
             {
                 this._slotsDirty = false;
-                this._slots.Sort(Armature._OnSortSlots);
+                this._slots.Sort(OnSortSlots);
             }
-
             // Update bones and slots.
-            if (this._cacheFrameIndex < 0 || this._cacheFrameIndex != prevCacheFrameIndex)
+            if (_cacheFrameIndex < 0 || _cacheFrameIndex != prevCacheFrameIndex)
             {
                 int i = 0, l = 0;
-                for (i = 0, l = this._bones.Count; i < l; ++i)
+                for (i = 0, l = _bones.Count; i < l; ++i)
                 {
-                    this._bones[i].Update(this._cacheFrameIndex);
+                    _bones[i].Update(_cacheFrameIndex);
                 }
 
-                for (i = 0, l = this._slots.Count; i < l; ++i)
+                for (i = 0, l = _slots.Count; i < l; ++i)
                 {
-                    this._slots[i].Update(this._cacheFrameIndex);
+                    _slots[i].Update(_cacheFrameIndex);
                 }
             }
 
-            if (this._actions.Count > 0)
+            if (_actions.Count > 0)
             {
-                this._lockUpdate = true;
-                foreach (var action in this._actions)
+                _lockUpdate = true;
+                foreach (var action in _actions)
                 {
                     var actionData = action.actionData;
                     if (actionData != null)
@@ -313,29 +282,29 @@ namespace DragonBones
                         {
                             if (action.slot != null)
                             {
-                                var childArmature = action.slot.childArmature;
+                                var childArmature = action.slot.ChildArmature;
                                 if (childArmature != null)
                                 {
-                                    childArmature.animation.FadeIn(actionData.name);
+                                    childArmature.AnimationPlayer.FadeIn(actionData.name);
                                 }
                             }
                             else if (action.bone != null)
                             {
-                                foreach (var slot in this.GetSlots())
+                                foreach (var slot in GetSlots())
                                 {
                                     if (slot.parent == action.bone)
                                     {
-                                        var childArmature = slot.childArmature;
+                                        var childArmature = slot.ChildArmature;
                                         if (childArmature != null)
                                         {
-                                            childArmature.animation.FadeIn(actionData.name);
+                                            childArmature.AnimationPlayer.FadeIn(actionData.name);
                                         }
                                     }
                                 }
                             }
                             else
                             {
-                                this._animation.FadeIn(actionData.name);
+                                AnimationPlayer.FadeIn(actionData.name);
                             }
                         }
                     }
@@ -343,11 +312,11 @@ namespace DragonBones
                     action.ReturnToPool();
                 }
 
-                this._actions.Clear();
-                this._lockUpdate = false;
+                _actions.Clear();
+                _lockUpdate = false;
             }
 
-            this._proxy.DBUpdate();
+            Display.DBUpdate();
         }
         /// <summary>
         /// - Forces a specific bone or its owning slot to update the transform or display property in the next frame.
@@ -362,14 +331,14 @@ namespace DragonBones
         {
             if (!string.IsNullOrEmpty(boneName))
             {
-                Bone bone = this.GetBone(boneName);
+                Bone bone = GetBone(boneName);
                 if (bone != null)
                 {
                     bone.InvalidUpdate();
 
                     if (updateSlot)
                     {
-                        foreach (var slot in this._slots)
+                        foreach (var slot in _slots)
                         {
                             if (slot.parent == bone)
                             {
@@ -381,14 +350,14 @@ namespace DragonBones
             }
             else
             {
-                foreach (var bone in this._bones)
+                foreach (var bone in _bones)
                 {
                     bone.InvalidUpdate();
                 }
 
                 if (updateSlot)
                 {
-                    foreach (var slot in this._slots)
+                    foreach (var slot in _slots)
                     {
                         slot.InvalidUpdate();
                     }
@@ -406,7 +375,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public Slot ContainsPoint(float x, float y)
         {
-            foreach (var slot in this._slots)
+            foreach (var slot in _slots)
             {
                 if (slot.ContainsPoint(x, y))
                 {
@@ -448,7 +417,7 @@ namespace DragonBones
             Slot intSlotA = null;
             Slot intSlotB = null;
 
-            foreach (var slot in this._slots)
+            foreach (var slot in _slots)
             {
                 var intersectionCount = slot.IntersectsSegment(xA, yA, xB, yB, intersectionPointA, intersectionPointB, normalRadians);
                 if (intersectionCount > 0)
@@ -540,7 +509,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public Bone GetBone(string name)
         {
-            foreach (var bone in this._bones)
+            foreach (var bone in _bones)
             {
                 if (bone.name == name)
                 {
@@ -559,7 +528,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public Bone GetBoneByDisplay(object display)
         {
-            var slot = this.GetSlotByDisplay(display);
+            var slot = GetSlotByDisplay(display);
 
             return slot != null ? slot.parent : null;
         }
@@ -572,7 +541,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public Slot GetSlot(string name)
         {
-            foreach (var slot in this._slots)
+            foreach (var slot in _slots)
             {
                 if (slot.name == name)
                 {
@@ -593,9 +562,9 @@ namespace DragonBones
         {
             if (display != null)
             {
-                foreach (var slot in this._slots)
+                foreach (var slot in _slots)
                 {
-                    if (slot.display == display)
+                    if (slot.Display == display)
                     {
                         return slot;
                     }
@@ -612,7 +581,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public List<Bone> GetBones()
         {
-            return this._bones;
+            return _bones;
         }
         /// <summary>
         /// - Get all slots.
@@ -622,7 +591,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public List<Slot> GetSlots()
         {
-            return this._slots;
+            return _slots;
         }
 
         /// <summary>
@@ -632,16 +601,16 @@ namespace DragonBones
         /// <language>en_US</language>
         public bool flipX
         {
-            get { return this._flipX; }
+            get { return _flipX; }
             set
             {
-                if (this._flipX == value)
+                if (_flipX == value)
                 {
                     return;
                 }
 
-                this._flipX = value;
-                this.InvalidUpdate();
+                _flipX = value;
+                InvalidUpdate();
             }
         }
         /// <summary>
@@ -651,16 +620,16 @@ namespace DragonBones
         /// <language>en_US</language>
         public bool flipY
         {
-            get { return this._flipY; }
+            get { return _flipY; }
             set
             {
-                if (this._flipY == value)
+                if (_flipY == value)
                 {
                     return;
                 }
 
-                this._flipY = value;
-                this.InvalidUpdate();
+                _flipY = value;
+                InvalidUpdate();
             }
         }
         /// <summary>
@@ -681,17 +650,17 @@ namespace DragonBones
         /// <language>en_US</language>
         public uint cacheFrameRate
         {
-            get { return this._armatureData.cacheFrameRate; }
+            get { return _armatureData.cacheFrameRate; }
             set
             {
-                if (this._armatureData.cacheFrameRate != value)
+                if (_armatureData.cacheFrameRate != value)
                 {
-                    this._armatureData.CacheFrames(value);
+                    _armatureData.CacheFrames(value);
 
                     // Set child armature frameRate.
-                    foreach (var slot in this._slots)
+                    foreach (var slot in _slots)
                     {
-                        var childArmature = slot.childArmature;
+                        var childArmature = slot.ChildArmature;
                         if (childArmature != null)
                         {
                             childArmature.cacheFrameRate = value;
@@ -707,7 +676,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public string name
         {
-            get { return this._armatureData.name; }
+            get { return _armatureData.name; }
         }
         /// <summary>
         /// - The armature data.
@@ -717,7 +686,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public ArmatureData armatureData
         {
-            get { return this._armatureData; }
+            get { return _armatureData; }
         }
         /// <summary>
         /// - The animation player.
@@ -725,15 +694,9 @@ namespace DragonBones
         /// <see cref="DBKernel.Animation"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public Animation animation
-        {
-            get { return this._animation; }
-        }
-        /// <pivate/>
-        public IArmatureProxy proxy
-        {
-            get { return this._proxy; }
-        }
+        public AnimationPlayer AnimationPlayer { get; private set; } = null;
+
+        public IEngineArmatureDisplay Display { get; private set; } = null;
 
         /// <summary>
         /// - The EventDispatcher instance of the armature.
@@ -742,7 +705,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public IEventDispatcher<EventObject> eventDispatcher
         {
-            get { return this._proxy; }
+            get { return Display; }
         }
         /// <summary>
         /// - The display container.
@@ -751,30 +714,26 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public object display
-        {
-            get { return this._display; }
-        }
-        /// <private/>
+
         public object replacedTexture
         {
-            get { return this._replacedTexture; }
+            get { return _replacedTexture; }
             set
             {
-                if (this._replacedTexture == value)
+                if (_replacedTexture == value)
                 {
                     return;
                 }
 
-                if (this._replaceTextureAtlasData != null)
+                if (_replaceTextureAtlasData != null)
                 {
-                    this._replaceTextureAtlasData.ReturnToPool();
-                    this._replaceTextureAtlasData = null;
+                    _replaceTextureAtlasData.ReturnToPool();
+                    _replaceTextureAtlasData = null;
                 }
 
-                this._replacedTexture = value;
+                _replacedTexture = value;
 
-                foreach (var slot in this._slots)
+                foreach (var slot in _slots)
                 {
                     slot.InvalidUpdate();
                     slot.Update(-1);
@@ -784,33 +743,33 @@ namespace DragonBones
         /// <inheritDoc/>
         public WorldClock clock
         {
-            get { return this._clock; }
+            get { return _clock; }
             set
             {
-                if (this._clock == value)
+                if (_clock == value)
                 {
                     return;
                 }
 
-                if (this._clock != null)
+                if (_clock != null)
                 {
-                    this._clock.Remove(this);
+                    _clock.Remove(this);
                 }
 
-                this._clock = value;
+                _clock = value;
 
-                if (this._clock != null)
+                if (_clock != null)
                 {
-                    this._clock.Add(this);
+                    _clock.Add(this);
                 }
 
                 // Update childArmature clock.
-                foreach (var slot in this._slots)
+                foreach (var slot in _slots)
                 {
-                    var childArmature = slot.childArmature;
+                    var childArmature = slot.ChildArmature;
                     if (childArmature != null)
                     {
-                        childArmature.clock = this._clock;
+                        childArmature.clock = _clock;
                     }
                 }
             }
@@ -823,7 +782,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public Slot parent
         {
-            get { return this._parent; }
+            get { return _parent; }
         }
 
         public bool IsPivotApplied { get; private set; } = false;

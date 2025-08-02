@@ -121,6 +121,7 @@ namespace DragonBones
                 _animatebles.ResizeList(l - r, null);
             }
         }
+        
         /// <summary>
         /// - Check whether contains a specific instance of IAnimatable.
         /// </summary>

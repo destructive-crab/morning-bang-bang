@@ -24,7 +24,7 @@ namespace DragonBones
 
         private TimelineData _ParseBinaryTimeline(TimelineType type, uint offset, TimelineData timelineData = null)
         {
-            var timeline = timelineData != null ? timelineData : BaseObject.BorrowObject<TimelineData>();
+            var timeline = timelineData != null ? timelineData : DBObject.BorrowObject<TimelineData>();
             timeline.type = type;
             timeline.offset = offset;
 
@@ -78,7 +78,7 @@ namespace DragonBones
             var weightOffset = this._intArrayBuffer[vertices.offset + (int)BinaryOffset.MeshWeightOffset];
             if (weightOffset >= 0)
             {
-                var weight = BaseObject.BorrowObject<WeightData>();
+                var weight = DBObject.BorrowObject<WeightData>();
                 var vertexCount = this._intArrayBuffer[vertices.offset + (int)BinaryOffset.MeshVertexCount];
                 var boneCount = this._intArrayBuffer[weightOffset + (int)BinaryOffset.WeigthBoneCount];
                 weight.offset = weightOffset;
@@ -109,7 +109,7 @@ namespace DragonBones
         }
         protected override AnimationData _ParseAnimation(Dictionary<string, object> rawData)
         {
-            var animation = BaseObject.BorrowObject<AnimationData>();
+            var animation = DBObject.BorrowObject<AnimationData>();
             animation.frameCount = (uint)Math.Max(ObjectDataParser._GetNumber(rawData, DataParser.DURATION, 1), 1);
             animation.playTimes = (uint)ObjectDataParser._GetNumber(rawData, DataParser.PLAY_TIMES, 1);
             animation.duration = (float)animation.frameCount / (float)this._armature.frameRate;//Must float
@@ -237,12 +237,12 @@ namespace DragonBones
                 //ToRead
                 reader.Seek(this._binaryOffset, SeekOrigin.Begin);
 
-                intArray = reader.ReadInt16s(l0, l1 / Helper.INT16_SIZE);
-                floatArray = reader.ReadSingles(0, l2 / Helper.FLOAT_SIZE);
-                frameIntArray = reader.ReadInt16s(0, l3 / Helper.INT16_SIZE);
-                frameFloatArray = reader.ReadSingles(0, l4 / Helper.FLOAT_SIZE);
-                frameArray = reader.ReadInt16s(0, l5 / Helper.INT16_SIZE);
-                timelineArray = reader.ReadUInt16s(0, l6 / Helper.UINT16_SIZE);
+                intArray = reader.ReadInt16s(l0, l1 / INT16_SIZE);
+                floatArray = reader.ReadSingles(0, l2 / FLOAT_SIZE);
+                frameIntArray = reader.ReadInt16s(0, l3 / INT16_SIZE);
+                frameFloatArray = reader.ReadSingles(0, l4 / FLOAT_SIZE);
+                frameArray = reader.ReadInt16s(0, l5 / INT16_SIZE);
+                timelineArray = reader.ReadUInt16s(0, l6 / UINT16_SIZE);
 
                 reader.Close();
                 ms.Close();
@@ -268,7 +268,7 @@ namespace DragonBones
 
         public override DragonBonesData ParseDragonBonesData(object rawObj, float scale = 1)
         {
-            Helper.Assert(rawObj != null && rawObj is byte[], "Data error.");
+            DBLogger.Assert(rawObj != null && rawObj is byte[], "Data error.");
 
             byte[] bytes = rawObj as byte[];
             int headerLength = 0;
@@ -299,7 +299,7 @@ namespace DragonBones
                      tag[2] != array[2] ||
                      tag[3] != array[3])
                 {
-                    Helper.Assert(false, "Nonsupport data.");
+                    DBLogger.Assert(false, "Nonsupport data.");
                     return null;
                 }
 

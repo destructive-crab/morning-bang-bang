@@ -35,7 +35,7 @@ namespace DragonBones
     }
     /// <internal/>
     /// <private/>
-    public abstract class DisplayData : BaseObject
+    public abstract class DisplayData : DBObject
     {
         public DisplayType type;
         public string name;
@@ -43,7 +43,7 @@ namespace DragonBones
         public SkinData parent;
         public readonly DBTransform DBTransform = new DBTransform();
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.name = "";
             this.path = "";
@@ -59,9 +59,9 @@ namespace DragonBones
         public readonly Point pivot = new Point();
         public TextureData texture = null;
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             this.type = DisplayType.Image;
             this.pivot.Clear();
@@ -77,9 +77,9 @@ namespace DragonBones
         public readonly List<ActionData> actions = new List<ActionData>();
         public ArmatureData armature = null;
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             foreach (var action in this.actions)
             {
@@ -106,9 +106,9 @@ namespace DragonBones
         public readonly VerticesData vertices = new VerticesData();
         public TextureData texture;
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             this.type = DisplayType.Mesh;
             this.vertices.Clear();
@@ -122,9 +122,9 @@ namespace DragonBones
     {
         public BoundingBoxData boundingBox = null; // Initial value.
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             if (this.boundingBox != null)
             {
@@ -145,9 +145,9 @@ namespace DragonBones
         public readonly VerticesData vertices = new VerticesData();
         public readonly List<float> curveLengths = new List<float>();
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             this.type = DisplayType.Path;
             this.closed = false;
@@ -159,13 +159,13 @@ namespace DragonBones
 
     /// <internal/>
     /// <private/>
-    public class WeightData : BaseObject
+    public class WeightData : DBObject
     {
         public int count;
         public int offset; // IntArray.
         public readonly List<BoneData> bones = new List<BoneData>();
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.count = 0;
             this.offset = 0;

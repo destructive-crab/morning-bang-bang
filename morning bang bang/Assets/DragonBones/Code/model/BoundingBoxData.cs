@@ -11,7 +11,7 @@ namespace DragonBones
     /// <see cref="DBKernel.PolygonData"/>
     /// <version>DragonBones 5.0</version>
     /// <language>en_US</language>
-    public abstract class BoundingBoxData : BaseObject
+    public abstract class BoundingBoxData : DBObject
     {
         /// <summary>
         /// - The bounding box type.
@@ -27,7 +27,7 @@ namespace DragonBones
         public float height;
 
         /// <private/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.color = 0x000000;
             this.width = 0.0f;
@@ -277,9 +277,9 @@ namespace DragonBones
         }
         /// <inheritDoc/>
         /// <private/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             this.type = BoundingBoxType.Rectangle;
         }
@@ -447,9 +447,9 @@ namespace DragonBones
         }
         /// <inheritDoc/>
         /// <private/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             this.type = BoundingBoxType.Ellipse;
         }
@@ -675,9 +675,9 @@ namespace DragonBones
 
         /// <inheritDoc/>
         /// <private/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             this.type = BoundingBoxType.Polygon;
             this.x = 0.0f;

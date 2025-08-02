@@ -234,7 +234,7 @@ namespace DragonBones
                     return;
                 }
 
-                Helper.Assert(false, "Can not add same name data: " + name);
+                DBLogger.Assert(false, "Can not add same name data: " + name);
                 return;
             }
 
@@ -338,12 +338,12 @@ namespace DragonBones
         public virtual ArmatureData GetArmatureData(string name, string dragonBonesName = "")
         {
             var dataPackage = new BuildArmaturePackage();
-            if (!FillBuildArmaturePackage(dataPackage, dragonBonesName, name, "", ""))
+            if (!FillBuildArmaturePackage(dataPackage, dragonBonesName, name, "", "", null))
             {
                 return null;
             }
 
-            return dataPackage.armature;
+            return dataPackage.armatureData;
         }
         /// <summary>
         /// - Clear all cached DragonBonesData instances and TextureAtlasData instances.
@@ -377,7 +377,8 @@ namespace DragonBones
                                                 string dragonBonesName,
                                                 string armatureName,
                                                 string skinName,
-                                                string textureAtlasName)
+                                                string textureAtlasName,
+                                                IEngineArmatureDisplay display)
         {
             DragonBonesData dragonBonesData = null;
             ArmatureData armatureData = null;
@@ -415,7 +416,7 @@ namespace DragonBones
                 dataPackage.dataName = dragonBonesName;
                 dataPackage.textureAtlasName = textureAtlasName;
                 dataPackage.data = dragonBonesData;
-                dataPackage.armature = armatureData;
+                dataPackage.armatureData = armatureData;
                 dataPackage.skin = null;
 
                 if (!string.IsNullOrEmpty(skinName))
@@ -441,6 +442,7 @@ namespace DragonBones
                     dataPackage.skin = armatureData.defaultSkin;
                 }
 
+                dataPackage.display = display;
                 return true;
             }
 

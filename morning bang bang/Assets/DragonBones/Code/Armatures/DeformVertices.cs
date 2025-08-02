@@ -2,14 +2,14 @@ using System.Collections.Generic;
 namespace DragonBones
 {
     /// <internal/>
-    public class DeformVertices : BaseObject
+    public class DeformVertices : DBObject
     {
         public bool verticesDirty;
         public readonly List<float> vertices = new List<float>();
         public readonly List<Bone> bones = new List<Bone>();
         public VerticesData verticesData;
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.verticesDirty = false;
             this.vertices.Clear();

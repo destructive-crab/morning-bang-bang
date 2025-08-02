@@ -8,7 +8,7 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public class AnimationData : BaseObject
+    public class AnimationData : DBObject
     {
         /// <summary>
         /// - FrameIntArray.
@@ -87,7 +87,7 @@ namespace DragonBones
         }
 
         /// <inheritDoc/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             foreach (var pair in boneTimelines)
             {
@@ -274,13 +274,13 @@ namespace DragonBones
 
     /// <internal/>
     /// <private/>
-    public class TimelineData : BaseObject
+    public class TimelineData : DBObject
     {
         public TimelineType type;
         public uint offset; // TimelineArray.
         public int frameIndicesOffset; // FrameIndices.
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.type = TimelineType.BoneAll;
             this.offset = 0;

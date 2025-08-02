@@ -61,14 +61,14 @@ namespace MothDIed
 
             AllowDebug = Settings.Data.EnableDebugFeatures;
             
-            if (AllowDebug)
+            if (true)
             {
                 debugger = new BangDebugger(args.DebuggerConfig); 
                 await debugger.SetupDebugger();
             }
-
-            AudioSystem.Setup(args.AudioSystemConfig);
+            
             DBInitial.InitializeDragonBones();
+            AudioSystem.Setup(args.AudioSystemConfig);
             
             IsBootstrapping = false;
             Awake = true;

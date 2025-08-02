@@ -12,8 +12,8 @@ namespace DragonBones
         
         public static bool InitializeDragonBones()
         {
-            UnityDataLoader = new();
-            UnityFactory = new();
+            UnityDataLoader = new UnityDataLoader();
+            UnityFactory = new DBUnityFactory();
             
             Debug.Log("DragonBones Factory Initialized");
             if (Application.isPlaying)
@@ -31,17 +31,17 @@ namespace DragonBones
 
                 GameObject.DontDestroyOnLoad(_gameObject);
 
-                var eventManager = _gameObject.GetComponent<DragonBoneEventDispatcher>();
+                var eventManager = _gameObject.GetComponent<UnityEventDispatcher>();
                 if (eventManager == null)
                 {
-                    eventManager = _gameObject.AddComponent<DragonBoneEventDispatcher>();
+                    eventManager = _gameObject.AddComponent<UnityEventDispatcher>();
                 }
 
                 if (Kernel == null)
                 {
                     Kernel = new DBKernel(eventManager, UnityFactory);
                     //
-                    DBKernel.yDown = false;
+                    DBKernel.IsNegativeYDown = false;
                 }
             }
             else
@@ -50,11 +50,11 @@ namespace DragonBones
                 {
                     Kernel = new DBKernel(null, UnityFactory);
                     //
-                    DBKernel.yDown = false;
+                    DBKernel.IsNegativeYDown = false;
                 }
             }
             
-            return false;
+            return true;
         }
     }
 }

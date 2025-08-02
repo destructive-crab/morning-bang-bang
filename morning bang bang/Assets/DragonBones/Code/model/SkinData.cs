@@ -8,7 +8,7 @@ namespace DragonBones
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
 
-    public class SkinData : BaseObject
+    public class SkinData : DBObject
     {
         /// <summary>
         /// - The skin name.
@@ -23,7 +23,7 @@ namespace DragonBones
         public ArmatureData parent;
 
         /// <inheritDoc/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             foreach (var list in this.displays.Values)
             {

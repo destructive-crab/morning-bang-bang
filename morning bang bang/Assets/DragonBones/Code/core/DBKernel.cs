@@ -179,76 +179,92 @@ namespace DragonBones
 
     public sealed class DBKernel
     {
-        public static bool yDown = true;
         public static readonly string VERSION = "5.6.300";
+        
+        /// <summary>
+        /// Y orientation in game engine
+        /// </summary>
+        /// <language>en_US</language>
+        public static bool IsNegativeYDown = true;
 
-        private readonly List<EventObject> _events = new List<EventObject>();
-        private readonly List<BaseObject> _objects = new List<BaseObject>();
+        private readonly List<EventObject> eventsToDispatch = new();
+        private readonly List<DBObject> objectsToDispose = new();
 
         //components
         public DBDataStorage DataStorage { get; private set; }
         public DBFactory Factory { get; private set; }
         public WorldClock Clock { get; } = new WorldClock();
-        public IEventDispatcher<EventObject> EventManager { get; }
+        
+        public IEventDispatcher<EventObject> SoundEventManager { get; }
 
-        public DBKernel(IEventDispatcher<EventObject> eventManager, DBFactory factory)
+        public DBKernel(IEventDispatcher<EventObject> soundEventManager, DBFactory factory)
         {
-            EventManager = eventManager;
+            SoundEventManager = soundEventManager;
             Factory = factory;
             DataStorage = new DBDataStorage();
         }
 
         public void AdvanceTime(float passedTime)
         {
-            if (_objects.Count > 0)
-            {
-                for (int i = 0; i < _objects.Count; ++i)
-                {
-                    var obj = _objects[i];
-                    obj.ReturnToPool();
-                }
-
-                _objects.Clear();
-            }
-
-            if (_events.Count > 0)
-            {
-                for (int i = 0; i < _events.Count; ++i)
-                {
-                    var eventObject = _events[i];
-                    var armature = eventObject.armature;
-                    if (armature._armatureData != null)
-                    {
-                        // May be armature disposed before advanceTime.
-                        armature.eventDispatcher.DispatchDBEvent(eventObject.type, eventObject);
-                        if (eventObject.type == EventObject.SOUND_EVENT)
-                        {
-                            EventManager.DispatchDBEvent(eventObject.type, eventObject);
-                        }
-                    }
-
-                    BufferObject(eventObject);
-                }
-
-                _events.Clear();
-            }
+            DisposeObjects();
+            DispatchEvents();
 
             Clock.AdvanceTime(passedTime);
         }
 
-        public void BufferEvent(EventObject value)
+        private void DispatchEvents()
         {
-            if (!_events.Contains(value))
+            if (eventsToDispatch.Count == 0) return;
+            
+            for (int i = 0; i < eventsToDispatch.Count; i++)
             {
-                _events.Add(value);
+                var eventObject = eventsToDispatch[i];
+                var armature = eventObject.armature;
+                    
+                if (armature._armatureData != null)
+                {
+                    // May be armature disposed before advanceTime.
+                    armature.eventDispatcher.DispatchDBEvent(eventObject.type, eventObject);
+                        
+                    if (eventObject.type == EventObject.SOUND_EVENT)
+                    {
+                        SoundEventManager.DispatchDBEvent(eventObject.type, eventObject);
+                    }
+                }
+
+                BufferObject(eventObject);
+            }
+
+            eventsToDispatch.Clear();
+        }
+
+        private void DisposeObjects()
+        {
+            if (objectsToDispose.Count > 0)
+            {
+                for (int i = 0; i < objectsToDispose.Count; ++i)
+                {
+                    var obj = objectsToDispose[i];
+                    obj.ReturnToPool();
+                }
+
+                objectsToDispose.Clear();
             }
         }
 
-        public void BufferObject(BaseObject value)
+        public void BufferEvent(EventObject value)
         {
-            if (!_objects.Contains(value))
+            if (!eventsToDispatch.Contains(value))
             {
-                _objects.Add(value);
+                eventsToDispatch.Add(value);
+            }
+        }
+
+        public void BufferObject(DBObject value)
+        {
+            if (!objectsToDispose.Contains(value))
+            {
+                objectsToDispose.Add(value);
             }
         }
 

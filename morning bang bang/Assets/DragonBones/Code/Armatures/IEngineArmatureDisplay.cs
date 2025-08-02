@@ -3,19 +3,13 @@ namespace DragonBones
     /// <summary>
     /// - The armature proxy interface, the docking engine needs to implement it concretely.
     /// </summary>
-    /// <see cref="DBKernel.Armature"/>
+    /// <see cref="Armature"/>
     /// <version>DragonBones 5.0</version>
     /// <language>en_US</language>
-    public interface IArmatureProxy : IEventDispatcher<EventObject>
+    public interface IEngineArmatureDisplay : IEventDispatcher<EventObject>
     {
-        /// <internal/>
-        /// <private/>
         void DBInit(Armature armature);
-        /// <internal/>
-        /// <private/>
         void DBClear();
-        /// <internal/>
-        /// <private/>
         void DBUpdate();
         /// <summary>
         /// - Dispose the instance and the Armature instance. (The Armature instance will return to the object pool)
@@ -30,19 +24,8 @@ namespace DragonBones
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
         void Dispose(bool disposeProxy);
-         /// <summary>
-         /// - The armature.
-         /// </summary>
-         /// <version>DragonBones 4.5</version>
-         /// <language>en_US</language>
-         Armature Armature { get; }
-         /// <summary>
-         /// - The animation player.
-         /// </summary>
-         /// <version>DragonBones 3.0</version>
-         /// <language>en_US</language>>
-         Animation Animation { get; }
 
-         void ApplyPPU(uint armatureDataPixelsPerUnit);
+         Armature Armature { get; }
+         AnimationPlayer AnimationPlayer { get; }
     }
 }

@@ -5,12 +5,11 @@ namespace DragonBones
     /// <summary>
     /// - The animation player is used to play the animation data and manage the animation states.
     /// </summary>
-    /// <see cref="DBKernel.AnimationData"/>
-    /// <see cref="DBKernel.AnimationState"/>
+    /// <see cref="AnimationData"/>
+    /// <see cref="AnimationState"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-
-    public class Animation : BaseObject
+    public class AnimationPlayer : DBObject
     {
         /// <summary>
         /// - The play speed of all animations. [0: Stop, (0~1): Slow, 1: Normal, (1~N): Fast]
@@ -33,7 +32,7 @@ namespace DragonBones
         private AnimationConfig _animationConfig = null; // Initial value.
         private AnimationState _lastAnimationState;
         /// <private/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             foreach (var animationState in this._animationStates)
             {
@@ -133,7 +132,7 @@ namespace DragonBones
             }
 
             this._armature = armature;
-            this._animationConfig = BaseObject.BorrowObject<AnimationConfig>();
+            this._animationConfig = DBObject.BorrowObject<AnimationConfig>();
         }
         /// <internal/>
         /// <private/>
@@ -148,7 +147,7 @@ namespace DragonBones
             if (this._armature.inheritAnimation && this._armature._parent != null)
             {
                 // Inherit parent animation timeScale.
-                this._inheritTimeScale = this._armature._parent._armature.animation._inheritTimeScale * this.timeScale;
+                this._inheritTimeScale = this._armature._parent._armature.AnimationPlayer._inheritTimeScale * this.timeScale;
             }
             else
             {
@@ -166,7 +165,7 @@ namespace DragonBones
                 var animationState = this._animationStates[0];
                 if (animationState._fadeState > 0 && animationState._subFadeState > 0)
                 {
-                    this._armature._DBKernel.BufferObject(animationState);
+                    DBInitial.Kernel.BufferObject(animationState);
                     this._animationStates.Clear();
                     this._lastAnimationState = null;
                 }
@@ -215,8 +214,8 @@ namespace DragonBones
                     if (animationState._fadeState > 0 && animationState._subFadeState > 0)
                     {
                         r++;
-                        this._armature._DBKernel.BufferObject(animationState);
-                        this._animationDirty = true;
+                        DBInitial.Kernel.BufferObject(animationState);
+                        _animationDirty = true;
                         if (this._lastAnimationState == animationState)
                         {
                             // Update last animation state.
@@ -312,7 +311,7 @@ namespace DragonBones
             var animationName = animationConfig.animation;
             if (!(this._animations.ContainsKey(animationName)))
             {
-                Helper.Assert(false,
+                DBLogger.Assert(false,
                     "Non-existent animation.\n" +
                     "DragonBones name: " + this._armature.armatureData.parent.name +
                     "Armature name: " + this._armature.name +
@@ -397,7 +396,7 @@ namespace DragonBones
 
             this._FadeOut(animationConfig);
 
-            var animationState = BaseObject.BorrowObject<AnimationState>();
+            var animationState = DBObject.BorrowObject<AnimationState>();
             animationState.Init(this._armature, animationData, animationConfig);
             this._animationDirty = true;
             this._armature._cacheFrameIndex = -1;
@@ -434,13 +433,13 @@ namespace DragonBones
             // Child armature play same name animation.
             foreach (var slot in this._armature.GetSlots())
             {
-                var childArmature = slot.childArmature;
+                var childArmature = slot.ChildArmature;
                 if (childArmature != null &&
                     childArmature.inheritAnimation &&
-                    childArmature.animation.HasAnimation(animationName) &&
-                    childArmature.animation.GetState(animationName) == null)
+                    childArmature.AnimationPlayer.HasAnimation(animationName) &&
+                    childArmature.AnimationPlayer.GetState(animationName) == null)
                 {
-                    childArmature.animation.FadeIn(animationName); //
+                    childArmature.AnimationPlayer.FadeIn(animationName); //
                 }
             }
 

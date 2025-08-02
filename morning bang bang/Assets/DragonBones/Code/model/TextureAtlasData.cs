@@ -7,7 +7,7 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public abstract class TextureAtlasData : BaseObject
+    public abstract class TextureAtlasData : DBObject
     {
         /// <private/>
         public bool autoSearch;
@@ -37,7 +37,7 @@ namespace DragonBones
         {
         }
         /// <inheritDoc/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             foreach (var value in this.textures.Values)
             {
@@ -87,7 +87,7 @@ namespace DragonBones
             {
                 if (this.textures.ContainsKey(value.name))
                 {
-                    Helper.Assert(false, "Same texture: " + value.name);
+                    DBLogger.Assert(false, "Same texture: " + value.name);
                     this.textures[value.name].ReturnToPool();
                 }
 
@@ -104,7 +104,7 @@ namespace DragonBones
     }
     /// <internal/>
     /// <private/>
-    public abstract class TextureData : BaseObject
+    public abstract class TextureData : DBObject
     {
         public static Rectangle CreateRectangle()
         {
@@ -117,7 +117,7 @@ namespace DragonBones
         public TextureAtlasData parent;
         public Rectangle frame = null; // Initial value.
 
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.rotated = false;
             this.name = "";

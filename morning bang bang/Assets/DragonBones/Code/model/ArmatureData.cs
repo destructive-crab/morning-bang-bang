@@ -7,7 +7,7 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public class ArmatureData : BaseObject
+    public class ArmatureData : DBObject
     {
         /// <private/>
         public ArmatureType type;
@@ -17,8 +17,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        public uint PixelsPerUnit;
 
         public uint frameRate;
         /// <private/>
@@ -80,7 +78,7 @@ namespace DragonBones
         /// <private/>
         public DragonBonesData parent;
         /// <inheritDoc/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             foreach (var action in this.defaultActions)
             {
@@ -270,7 +268,7 @@ namespace DragonBones
             {
                 if (this.bones.ContainsKey(value.name))
                 {
-                    Helper.Assert(false, "Same bone: " + value.name);
+                    DBLogger.Assert(false, "Same bone: " + value.name);
                     this.bones[value.name].ReturnToPool();
                 }
 
@@ -286,7 +284,7 @@ namespace DragonBones
             {
                 if (this.slots.ContainsKey(value.name))
                 {
-                    Helper.Assert(false, "Same slot: " + value.name);
+                    DBLogger.Assert(false, "Same slot: " + value.name);
                     this.slots[value.name].ReturnToPool();
                 }
 
@@ -302,7 +300,7 @@ namespace DragonBones
             {
                 if (this.constraints.ContainsKey(value.name))
                 {
-                    Helper.Assert(false, "Same constraint: " + value.name);
+                    DBLogger.Assert(false, "Same constraint: " + value.name);
                     this.slots[value.name].ReturnToPool();
                 }
 
@@ -317,7 +315,7 @@ namespace DragonBones
             {
                 if (this.skins.ContainsKey(value.name))
                 {
-                    Helper.Assert(false, "Same slot: " + value.name);
+                    DBLogger.Assert(false, "Same slot: " + value.name);
                     this.skins[value.name].ReturnToPool();
                 }
 
@@ -342,7 +340,7 @@ namespace DragonBones
             {
                 if (this.animations.ContainsKey(value.name))
                 {
-                    Helper.Assert(false, "Same animation: " + value.name);
+                    DBLogger.Assert(false, "Same animation: " + value.name);
                     this.animations[value.name].ReturnToPool();
                 }
 
@@ -433,7 +431,7 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public class BoneData : BaseObject
+    public class BoneData : DBObject
     {
         /// <private/>
         public bool inheritTranslation;
@@ -467,7 +465,7 @@ namespace DragonBones
         public BoneData parent = null;
 
         /// <inheritDoc/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             if (this.userData != null)
             {
@@ -494,9 +492,9 @@ namespace DragonBones
         public float vertexCountY;
         public readonly List<float> vertices = new List<float>();
         /// <inheritDoc/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             this.vertexCountX = 0;
             this.vertexCountY = 0;
@@ -509,7 +507,7 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public class SlotData : BaseObject
+    public class SlotData : DBObject
     {
         /// <internal/>
         /// <private/>
@@ -545,7 +543,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public BoneData parent;
         /// <inheritDoc/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             if (this.userData != null)
             {

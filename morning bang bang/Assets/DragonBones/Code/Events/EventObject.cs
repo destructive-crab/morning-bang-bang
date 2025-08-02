@@ -6,7 +6,7 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 4.5</version>
     /// <language>en_US</language>
-    public class EventObject : BaseObject
+    public class EventObject : DBObject
     {
         /// <summary>
         /// - Animation start play.
@@ -152,7 +152,7 @@ namespace DragonBones
         public UserData data;
 
         /// <private/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.time = 0.0f;
             this.type = string.Empty;

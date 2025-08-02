@@ -16,6 +16,11 @@ namespace DragonBones
             get { return _texture == null ? material.mainTexture : _texture; }
         }
 
+        private void Update()
+        {
+            canvasRenderer.SetMesh(sharedMesh);
+        }
+
         /// <summary>
         /// Texture to be used.
         /// </summary>
@@ -34,12 +39,12 @@ namespace DragonBones
             }
         }
 
-        protected override void OnPopulateMesh (VertexHelper vh)
+        protected override void OnPopulateMesh(VertexHelper vh)
         {
             vh.Clear();
         }
 
-        public override void Rebuild (CanvasUpdate update)
+        public override void Rebuild(CanvasUpdate update)
         {
             base.Rebuild(update);
             if (canvasRenderer.cull)
@@ -51,11 +56,6 @@ namespace DragonBones
             {
                 canvasRenderer.SetMesh(sharedMesh);
             }
-        }
-
-        void Update()
-        {
-            canvasRenderer.SetMesh(sharedMesh);
         }
     }
 }

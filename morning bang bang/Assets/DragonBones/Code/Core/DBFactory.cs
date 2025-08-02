@@ -1,17 +1,19 @@
+using System;
 using System.Collections.Generic;
 
 namespace DragonBones
 {
-    /// <internal/>
-    /// <private/>
     public class BuildArmaturePackage
     {
         public string dataName = "";
         public string textureAtlasName = "";
+        
         public DragonBonesData data;
-        public ArmatureData armature;
+        public ArmatureData armatureData;
         public SkinData skin;
+        public object display;
     }
+    
     /// <summary>
     /// - Base class for the factory that create the armatures. (Typically only one global factory instance is required)
     /// The factory instance create armatures by parsed and added DragonBonesData instances and TextureAtlasData instances.
@@ -40,27 +42,24 @@ namespace DragonBones
             return true;
         }
 
-        /// <private/>
-
-        /// <private/>
-        protected void _BuildBones(BuildArmaturePackage dataPackage, Armature armature)
+        protected void BuildBonesFor(BuildArmaturePackage dataPackage, Armature armature)
         {
-            var bones = dataPackage.armature.sortedBones;
+            var bones = dataPackage.armatureData.sortedBones;
             
             for (int i = 0, l = bones.Count; i < l; ++i)
             {
                 var boneData = bones[i];
-                var bone = BaseObject.BorrowObject<Bone>();
+                var bone = DBObject.BorrowObject<Bone>();
                 bone.Init(boneData, armature);
             }
 
             armature.BonesBuildingFinished();
         }
-        /// <private/>
-        protected void _BuildSlots(BuildArmaturePackage dataPackage, Armature armature)
+        
+        protected void BuildSlotsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
             var currentSkin = dataPackage.skin;
-            var defaultSkin = dataPackage.armature.defaultSkin;
+            var defaultSkin = dataPackage.armatureData.defaultSkin;
             if (currentSkin == null || defaultSkin == null)
             {
                 return;
@@ -82,10 +81,10 @@ namespace DragonBones
                 }
             }
 
-            foreach (var slotData in dataPackage.armature.sortedSlots)
+            foreach (var slotData in dataPackage.armatureData.sortedSlots)
             {
                 var displayDatas = skinSlots.ContainsKey(slotData.name) ? skinSlots[slotData.name] : null;
-                var slot = this._BuildSlot(dataPackage, slotData, armature);
+                var slot = _BuildSlot(dataPackage, slotData, armature);
                 slot.rawDisplayDatas = displayDatas;
 
                 if (displayDatas != null)
@@ -97,7 +96,7 @@ namespace DragonBones
 
                         if (displayData != null)
                         {
-                            displayList.Add(this._GetSlotDisplay(dataPackage, displayData, null, slot));
+                            displayList.Add(_GetSlotDisplay(dataPackage, displayData, null, slot));
                         }
                         else
                         {
@@ -113,28 +112,29 @@ namespace DragonBones
         }
 
         /// <private/>
-        protected void _BuildConstraints(BuildArmaturePackage dataPackage, Armature armature)
+        protected void BuildConstraintsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
-            var constraints = dataPackage.armature.constraints;
+            var constraints = dataPackage.armatureData.constraints;
             foreach (var constraintData in constraints.Values)
             {
                 // TODO more constraint type.
-                var constraint = BaseObject.BorrowObject<IKConstraint>();
+                var constraint = DBObject.BorrowObject<IKConstraint>();
                 constraint.Init(constraintData, armature);
-                armature._AddConstraint(constraint);
+                armature.AddConstraint(constraint);
             }
         }
 
-        /// <private/>
         protected virtual Armature _BuildChildArmature(BuildArmaturePackage dataPackage, Slot slot, DisplayData displayData)
         {
-            return this.BuildArmature(displayData.path, dataPackage != null ? dataPackage.dataName : "", "", dataPackage != null ? dataPackage.textureAtlasName : "");
+            return BuildArmature(displayData.path, dataPackage != null ? dataPackage.dataName : "", "", dataPackage != null ? dataPackage.textureAtlasName : "");
         }
-        /// <private/>
+        
         protected object _GetSlotDisplay(BuildArmaturePackage dataPackage, DisplayData displayData, DisplayData rawDisplayData, Slot slot)
         {
             var dataName = dataPackage != null ? dataPackage.dataName : displayData.parent.parent.parent.name;
+            
             object display = null;
+            
             switch (displayData.type)
             {
                 case DisplayType.Image:
@@ -149,7 +149,7 @@ namespace DragonBones
                             imageDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.textureAtlasName, displayData.path);
                         }
 
-                        if (rawDisplayData != null && rawDisplayData.type == DisplayType.Mesh && this._IsSupportMesh())
+                        if (rawDisplayData != null && rawDisplayData.type == DisplayType.Mesh && _IsSupportMesh())
                         {
                             display = slot.meshDisplay;
                         }
@@ -171,7 +171,7 @@ namespace DragonBones
                             meshDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.textureAtlasName, meshDisplayData.path);
                         }
 
-                        if (this._IsSupportMesh())
+                        if (_IsSupportMesh())
                         {
                             display = slot.meshDisplay;
                         }
@@ -184,7 +184,7 @@ namespace DragonBones
                 case DisplayType.Armature:
                     {
                         var armatureDisplayData = displayData as ArmatureDisplayData;
-                        var childArmature = this._BuildChildArmature(dataPackage, slot, displayData);
+                        var childArmature = _BuildChildArmature(dataPackage, slot, displayData);
                         if (childArmature != null)
                         {
                             childArmature.inheritAnimation = armatureDisplayData.inheritAnimation;
@@ -195,15 +195,15 @@ namespace DragonBones
                                 {
                                     foreach (var action in actions)
                                     {
-                                        var eventObject = BaseObject.BorrowObject<EventObject>();
+                                        var eventObject = DBObject.BorrowObject<EventObject>();
                                         EventObject.ActionDataToInstance(action, eventObject, slot.armature);
                                         eventObject.slot = slot;
-                                        slot.armature._BufferAction(eventObject, false);
+                                        slot.armature.BufferAction(eventObject, false);
                                     }
                                 }
                                 else
                                 {
-                                    childArmature.animation.Play();
+                                    childArmature.AnimationPlayer.Play();
                                 }
                             }
 
@@ -222,7 +222,7 @@ namespace DragonBones
 
         public abstract void Clear(bool disposeData = true);
         public abstract TextureAtlasData BuildTextureAtlasData(TextureAtlasData textureAtlasData, object textureAtlas);
-        protected abstract Armature _BuildArmature(BuildArmaturePackage dataPackage);
+        protected abstract Armature BuildArmatureProxy(BuildArmaturePackage dataPackage);
         protected abstract Slot _BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, Armature armature);
        
         /// <summary>
@@ -244,23 +244,24 @@ namespace DragonBones
         /// <see cref="DBKernel.ArmatureData"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public virtual Armature BuildArmature(string armatureName, string dragonBonesName = "", string skinName = null, string textureAtlasName = null)
+        public virtual Armature BuildArmature(string armatureName, string dragonBonesName = "", string skinName = null, string textureAtlasName = null, IEngineArmatureDisplay display = null)
         {
             var dataPackage = new BuildArmaturePackage();
             
-            if (!DBInitial.Kernel.DataStorage.FillBuildArmaturePackage(dataPackage, dragonBonesName, armatureName, skinName, textureAtlasName))
+            if (!DBInitial.Kernel.DataStorage.FillBuildArmaturePackage(dataPackage, dragonBonesName, armatureName, skinName, textureAtlasName, display))
             {
-                Helper.Assert(false, "No armature data: " + armatureName + ", " + (dragonBonesName != "" ? dragonBonesName : ""));
+                DBLogger.Assert(false, "No armature data: " + armatureName + ", " + (dragonBonesName != "" ? dragonBonesName : ""));
                 return null;
             }
 
-            var armature = this._BuildArmature(dataPackage);
-            this._BuildBones(dataPackage, armature);
-            this._BuildSlots(dataPackage, armature);
-            this._BuildConstraints(dataPackage, armature);
+            Armature armature = BuildArmatureProxy(dataPackage);
+            
+            BuildBonesFor(dataPackage, armature);
+            BuildSlotsFor(dataPackage, armature);
+            BuildConstraintsFor(dataPackage, armature);
+            
             armature.InvalidUpdate(null, true);
-            // Update armature pose.
-            armature.AdvanceTime(0.0f);
+            armature.AdvanceTime(0.0f); // Update armature pose.
 
             return armature;
         }
@@ -279,7 +280,7 @@ namespace DragonBones
 
             slot.ReplaceDisplayData(displayData, displayIndex);
 
-            var displayList = slot.displayList; // Copy.
+            var displayList = slot.DisplayList; // Copy.
             if (displayList.Count <= displayIndex)
             {
                 displayList.ResizeList(displayIndex + 1);
@@ -304,14 +305,14 @@ namespace DragonBones
                     }
                 }
 
-                displayList[displayIndex] = this._GetSlotDisplay(null, displayData, rawDisplayData, slot);
+                displayList[displayIndex] = _GetSlotDisplay(null, displayData, rawDisplayData, slot);
             }
             else
             {
                 displayList[displayIndex] = null;
             }
 
-            slot.displayList = displayList;
+            slot.DisplayList = displayList;
         }
         /// <summary>
         /// - Replaces the current display data for a particular slot with a specific display data.
@@ -350,7 +351,7 @@ namespace DragonBones
                 return false;
             }
 
-            this.ReplaceDisplay(slot, displayData, displayIndex);
+            ReplaceDisplay(slot, displayData, displayIndex);
 
             return true;
         }
@@ -374,7 +375,7 @@ namespace DragonBones
             for (int i = 0, l = displays.Count; i < l; ++i)
             {
                 var displayData = displays[i];
-                this.ReplaceDisplay(slot, displayData, displayIndex++);
+                ReplaceDisplay(slot, displayData, displayIndex++);
             }
 
             return true;
@@ -425,21 +426,21 @@ namespace DragonBones
                         if (isOverride)
                         {
                             slot.rawDisplayDatas = null;
-                            slot.displayList.Clear(); //
+                            slot.DisplayList.Clear(); //
                         }
 
                         continue;
                     }
                 }
                 var displayCount = displays.Count;
-                var displayList = slot.displayList; // Copy.
+                var displayList = slot.DisplayList; // Copy.
                 displayList.ResizeList(displayCount); // Modify displayList length.
                 for (int i = 0, l = displayCount; i < l; ++i)
                 {
                     var displayData = displays[i];
                     if (displayData != null)
                     {
-                        displayList[i] = this._GetSlotDisplay(null, displayData, null, slot);
+                        displayList[i] = _GetSlotDisplay(null, displayData, null, slot);
                     }
                     else
                     {
@@ -449,7 +450,7 @@ namespace DragonBones
 
                 success = true;
                 slot.rawDisplayDatas = displays;
-                slot.displayList = displayList;
+                slot.DisplayList = displayList;
             }
 
             return success;
@@ -488,11 +489,11 @@ namespace DragonBones
 
             if (isOverride)
             {
-                armature.animation.animations = armatureData.animations;
+                armature.AnimationPlayer.animations = armatureData.animations;
             }
             else
             {
-                var rawAnimations = armature.animation.animations;
+                var rawAnimations = armature.AnimationPlayer.animations;
                 Dictionary<string, AnimationData> animations = new Dictionary<string, AnimationData>();
 
                 foreach (var k in rawAnimations.Keys)
@@ -505,13 +506,13 @@ namespace DragonBones
                     animations[k] = armatureData.animations[k];
                 }
 
-                armature.animation.animations = animations;
+                armature.AnimationPlayer.animations = animations;
             }
 
             foreach (var slot in armature.GetSlots())
             {
                 var index = 0;
-                foreach (var display in slot.displayList)
+                foreach (var display in slot.DisplayList)
                 {
                     if (display is Armature)
                     {
@@ -525,7 +526,7 @@ namespace DragonBones
 
                                 if (childArmatureData != null)
                                 {
-                                    this.ReplaceAnimation(display as Armature, childArmatureData, isOverride);
+                                    ReplaceAnimation(display as Armature, childArmatureData, isOverride);
                                 }
                             }
                         }
@@ -550,7 +551,7 @@ namespace DragonBones
         /// </summary>
         /// <language>en_US</language>
 
-        [System.Obsolete("")]
+        [Obsolete("")]
         public bool ChangeSkin(Armature armature, SkinData skin, List<string> exclude = null)
         {
             return ReplaceSkin(armature, skin, false, exclude);

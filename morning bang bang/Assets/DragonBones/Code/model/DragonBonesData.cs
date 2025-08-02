@@ -9,7 +9,7 @@ namespace DragonBones
     /// <see cref="DBKernel.ArmatureData"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public class DragonBonesData : BaseObject
+    public class DragonBonesData : DBObject
     {
         /// <private/>
         public bool autoSearch;
@@ -79,7 +79,7 @@ namespace DragonBones
         internal UserData userData = null; // Initial value.
 
         /// <inheritDoc/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             foreach (var k in this.armatures.Keys)
             {
@@ -117,7 +117,7 @@ namespace DragonBones
         {
             if (this.armatures.ContainsKey(value.name))
             {
-                Helper.Assert(false, "Same armature: " + value.name);
+                DBLogger.Assert(false, "Same armature: " + value.name);
                 this.armatures[value.name].ReturnToPool();
             }
 

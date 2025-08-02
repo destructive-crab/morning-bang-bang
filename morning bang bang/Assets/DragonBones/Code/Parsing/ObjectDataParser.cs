@@ -347,7 +347,7 @@ namespace DragonBones
 
         private ArmatureData _ParseArmature(Dictionary<string, object> rawData, float scale)
         {
-            var armature = BaseObject.BorrowObject<ArmatureData>();
+            var armature = DBObject.BorrowObject<ArmatureData>();
             armature.name = ObjectDataParser._GetString(rawData, ObjectDataParser.NAME, "");
             armature.frameRate = ObjectDataParser._GetNumber(rawData, ObjectDataParser.FRAME_RATE, this._data.frameRate);
             armature.scale = scale;
@@ -373,7 +373,7 @@ namespace DragonBones
             if (rawData != null && rawData.ContainsKey(ObjectDataParser.CANVAS))
             {
                 var rawCanvas = rawData[ObjectDataParser.CANVAS] as Dictionary<string, object>;
-                var canvas = BaseObject.BorrowObject<CanvasData>();
+                var canvas = DBObject.BorrowObject<CanvasData>();
 
                 if (rawData.ContainsKey(ObjectDataParser.COLOR))
                 {
@@ -559,7 +559,7 @@ namespace DragonBones
         {
             var scale = this._armature.scale;
 
-            var bone = BaseObject.BorrowObject<BoneData>();
+            var bone = DBObject.BorrowObject<BoneData>();
             bone.inheritTranslation = ObjectDataParser._GetBoolean(rawData, ObjectDataParser.INHERIT_TRANSLATION, true);
             bone.inheritRotation = ObjectDataParser._GetBoolean(rawData, ObjectDataParser.INHERIT_ROTATION, true);
             bone.inheritScale = ObjectDataParser._GetBoolean(rawData, ObjectDataParser.INHERIT_SCALE, true);
@@ -588,7 +588,7 @@ namespace DragonBones
                 return null;
             }
 
-            var constraint = BaseObject.BorrowObject<IKConstraintData>();
+            var constraint = DBObject.BorrowObject<IKConstraintData>();
             constraint.scaleEnabled = ObjectDataParser._GetBoolean(rawData, ObjectDataParser.SCALE, false);
             constraint.bendPositive = ObjectDataParser._GetBoolean(rawData, ObjectDataParser.BEND_POSITIVE, true);
             constraint.weight = ObjectDataParser._GetNumber(rawData, ObjectDataParser.WEIGHT, 1.0f);
@@ -613,7 +613,7 @@ namespace DragonBones
 
         private SlotData _ParseSlot(Dictionary<string, object> rawData, int zOrder)
         {
-            var slot = BaseObject.BorrowObject<SlotData>();
+            var slot = DBObject.BorrowObject<SlotData>();
             slot.displayIndex = ObjectDataParser._GetNumber(rawData, ObjectDataParser.DISPLAY_INDEX, 0);
             slot.zOrder = zOrder;
             slot.name = ObjectDataParser._GetString(rawData, ObjectDataParser.NAME, "");
@@ -648,7 +648,7 @@ namespace DragonBones
 
         protected SkinData _ParseSkin(Dictionary<string, object> rawData)
         {
-            var skin = BaseObject.BorrowObject<SkinData>();
+            var skin = DBObject.BorrowObject<SkinData>();
             skin.name = ObjectDataParser._GetString(rawData, ObjectDataParser.NAME, ObjectDataParser.DEFAULT_NAME);
 
             if (rawData.ContainsKey(ObjectDataParser.SLOT))
@@ -702,14 +702,14 @@ namespace DragonBones
             switch (type)
             {
                 case DisplayType.Image:
-                    var imageDisplay = BaseObject.BorrowObject<ImageDisplayData>();
+                    var imageDisplay = DBObject.BorrowObject<ImageDisplayData>();
                     display = imageDisplay;
                     imageDisplay.name = name;
                     imageDisplay.path = path.Length > 0 ? path : name;
                     this._ParsePivot(rawData, imageDisplay);
                     break;
                 case DisplayType.Armature:
-                    var armatureDisplay = BaseObject.BorrowObject<ArmatureDisplayData>();
+                    var armatureDisplay = DBObject.BorrowObject<ArmatureDisplayData>();
                     display = armatureDisplay;
                     armatureDisplay.name = name;
                     armatureDisplay.path = path.Length > 0 ? path : name;
@@ -740,7 +740,7 @@ namespace DragonBones
                     break;
 
                 case DisplayType.Mesh:
-                    var meshDisplay = BaseObject.BorrowObject<MeshDisplayData>();
+                    var meshDisplay = DBObject.BorrowObject<MeshDisplayData>();
                     display = meshDisplay;
                     meshDisplay.vertices.inheritDeform = ObjectDataParser._GetBoolean(rawData, DataParser.INHERIT_DEFORM, true);
                     meshDisplay.name = name;
@@ -762,7 +762,7 @@ namespace DragonBones
                     var boundingBox = this._ParseBoundingBox(rawData);
                     if (boundingBox != null)
                     {
-                        var boundingBoxDisplay = BaseObject.BorrowObject<BoundingBoxDisplayData>();
+                        var boundingBoxDisplay = DBObject.BorrowObject<BoundingBoxDisplayData>();
                         display = boundingBoxDisplay;
                         boundingBoxDisplay.name = name;
                         boundingBoxDisplay.path = path.Length > 0 ? path : name;
@@ -835,7 +835,7 @@ namespace DragonBones
                 var floatOffset = this._floatArray.Count;
                 var weightCount = (int)Math.Floor((double)rawWeights.Count - (double)vertexCount) / 2; // uint
                 var weightOffset = this._intArray.Count;
-                var weight = BaseObject.BorrowObject<WeightData>();
+                var weight = DBObject.BorrowObject<WeightData>();
 
                 weight.count = weightCount;
                 weight.offset = weightOffset;
@@ -904,11 +904,11 @@ namespace DragonBones
             switch (type)
             {
                 case BoundingBoxType.Rectangle:
-                    boundingBox = BaseObject.BorrowObject<RectangleBoundingBoxData>();
+                    boundingBox = DBObject.BorrowObject<RectangleBoundingBoxData>();
                     break;
 
                 case BoundingBoxType.Ellipse:
-                    boundingBox = BaseObject.BorrowObject<EllipseBoundingBoxData>();
+                    boundingBox = DBObject.BorrowObject<EllipseBoundingBoxData>();
                     break;
 
                 case BoundingBoxType.Polygon:
@@ -930,7 +930,7 @@ namespace DragonBones
         }
         protected PolygonBoundingBoxData _ParsePolygonBoundingBox(Dictionary<string, object> rawData)
         {
-            var polygonBoundingBox = BaseObject.BorrowObject<PolygonBoundingBoxData>();
+            var polygonBoundingBox = DBObject.BorrowObject<PolygonBoundingBoxData>();
 
             if (rawData.ContainsKey(ObjectDataParser.VERTICES))
             {
@@ -981,7 +981,7 @@ namespace DragonBones
             }
             else
             {
-                Helper.Assert(false, "Data error.\n Please reexport DragonBones Data to fixed the bug.");
+                DBLogger.Assert(false, "Data error.\n Please reexport DragonBones Data to fixed the bug.");
             }
 
             return polygonBoundingBox;
@@ -989,7 +989,7 @@ namespace DragonBones
         }
         protected virtual AnimationData _ParseAnimation(Dictionary<string, object> rawData)
         {
-            var animation = BaseObject.BorrowObject<AnimationData>();
+            var animation = DBObject.BorrowObject<AnimationData>();
 
             animation.frameCount = (uint)Math.Max(ObjectDataParser._GetNumber(rawData, ObjectDataParser.DURATION, 1), 1);
             animation.playTimes = (uint)ObjectDataParser._GetNumber(rawData, ObjectDataParser.PLAY_TIMES, 1);
@@ -1115,7 +1115,7 @@ namespace DragonBones
 
             if (this._actionFrames.Count > 0)
             {
-                var timeline = this._animation.actionTimeline = BaseObject.BorrowObject<TimelineData>();
+                var timeline = this._animation.actionTimeline = DBObject.BorrowObject<TimelineData>();
                 var keyFrameCount = this._actionFrames.Count;
                 timeline.type = TimelineType.Action;
                 timeline.offset = (uint)this._timelineArray.Count;
@@ -1199,7 +1199,7 @@ namespace DragonBones
 
             var frameIntArrayLength = this._frameIntArray.Count;
             var frameFloatArrayLength = this._frameFloatArray.Count;
-            var timeline = BaseObject.BorrowObject<TimelineData>();
+            var timeline = DBObject.BorrowObject<TimelineData>();
             var timelineOffset = this._timelineArray.Count;
 
             this._timelineArray.ResizeList(this._timelineArray.Count + 1 + 1 + 1 + 1 + 1 + keyFrameCount, (ushort)0);
@@ -1861,7 +1861,7 @@ namespace DragonBones
             var actions = new List<ActionData>();
             if (rawData is string)
             {
-                var action = BaseObject.BorrowObject<ActionData>();
+                var action = DBObject.BorrowObject<ActionData>();
                 action.type = type;
                 action.name = (string)rawData;
                 action.bone = bone;
@@ -1873,7 +1873,7 @@ namespace DragonBones
                 var actionsObject = rawData as List<object>;
                 foreach (Dictionary<string, object> rawAction in actionsObject)
                 {
-                    var action = BaseObject.BorrowObject<ActionData>();
+                    var action = DBObject.BorrowObject<ActionData>();
                     if (rawAction.ContainsKey(ObjectDataParser.GOTO_AND_PLAY))
                     {
                         action.type = ActionType.Play;
@@ -1919,7 +1919,7 @@ namespace DragonBones
                     {
                         if (userData == null)
                         {
-                            userData = BaseObject.BorrowObject<UserData>();
+                            userData = DBObject.BorrowObject<UserData>();
                         }
 
                         var rawInts = (rawAction[ObjectDataParser.INTS] as List<object>).ConvertAll<int>(Convert.ToInt32);
@@ -1933,7 +1933,7 @@ namespace DragonBones
                     {
                         if (userData == null)
                         {
-                            userData = BaseObject.BorrowObject<UserData>();
+                            userData = DBObject.BorrowObject<UserData>();
                         }
 
                         var rawFloats = (rawAction[ObjectDataParser.FLOATS] as List<object>).ConvertAll<float>(Convert.ToSingle);
@@ -1947,7 +1947,7 @@ namespace DragonBones
                     {
                         if (userData == null)
                         {
-                            userData = BaseObject.BorrowObject<UserData>();
+                            userData = DBObject.BorrowObject<UserData>();
                         }
 
                         var rawStrings = (rawAction[ObjectDataParser.STRINGS] as List<object>).ConvertAll<string>(Convert.ToString);
@@ -2010,32 +2010,32 @@ namespace DragonBones
         protected void _ModifyArray()
         {
             // Align.
-            if ((this._intArray.Count % Helper.INT16_SIZE) != 0)
+            if ((this._intArray.Count % INT16_SIZE) != 0)
             {
                 this._intArray.Add(0);
             }
 
-            if ((this._frameIntArray.Count % Helper.INT16_SIZE) != 0)
+            if ((this._frameIntArray.Count % INT16_SIZE) != 0)
             {
                 this._frameIntArray.Add(0);
             }
 
-            if ((this._frameArray.Count % Helper.INT16_SIZE) != 0)
+            if ((this._frameArray.Count % INT16_SIZE) != 0)
             {
                 this._frameArray.Add(0);
             }
 
-            if ((this._timelineArray.Count % Helper.UINT16_SIZE) != 0)
+            if ((this._timelineArray.Count % UINT16_SIZE) != 0)
             {
                 this._timelineArray.Add(0);
             }
 
-            var l1 = this._intArray.Count * Helper.INT16_SIZE;
-            var l2 = this._floatArray.Count * Helper.FLOAT_SIZE;
-            var l3 = this._frameIntArray.Count * Helper.INT16_SIZE;
-            var l4 = this._frameFloatArray.Count * Helper.FLOAT_SIZE;
-            var l5 = this._frameArray.Count * Helper.INT16_SIZE;
-            var l6 = this._timelineArray.Count * Helper.UINT16_SIZE;
+            var l1 = this._intArray.Count * INT16_SIZE;
+            var l2 = this._floatArray.Count * FLOAT_SIZE;
+            var l3 = this._frameIntArray.Count * INT16_SIZE;
+            var l4 = this._frameFloatArray.Count * FLOAT_SIZE;
+            var l5 = this._frameArray.Count * INT16_SIZE;
+            var l6 = this._timelineArray.Count * UINT16_SIZE;
             var lTotal = l1 + l2 + l3 + l4 + l5 + l6;
 
             using (MemoryStream ms = new MemoryStream(lTotal))
@@ -2069,8 +2069,8 @@ namespace DragonBones
         }
         public override DragonBonesData ParseDragonBonesData(object rawObj, float scale = 1.0f)
         {
-            var rawData = rawObj as Dictionary<string, object>;
-            Helper.Assert(rawData != null, "Data error.");
+            Dictionary<string, object> rawData = rawObj as Dictionary<string, object>;
+            DBLogger.Assert(rawData == null, "Data error.");
 
             var version = ObjectDataParser._GetString(rawData, ObjectDataParser.VERSION, "");
             var compatibleVersion = ObjectDataParser._GetString(rawData, ObjectDataParser.COMPATIBLE_VERSION, "");
@@ -2078,7 +2078,7 @@ namespace DragonBones
             if (ObjectDataParser.DATA_VERSIONS.IndexOf(version) >= 0 ||
                 ObjectDataParser.DATA_VERSIONS.IndexOf(compatibleVersion) >= 0)
             {
-                var data = BaseObject.BorrowObject<DragonBonesData>();
+                var data = DBObject.BorrowObject<DragonBonesData>();
                 data.version = version;
                 data.name = ObjectDataParser._GetString(rawData, ObjectDataParser.NAME, "");
                 data.frameRate = ObjectDataParser._GetNumber(rawData, ObjectDataParser.FRAME_RATE, (uint)24);
@@ -2127,7 +2127,7 @@ namespace DragonBones
             }
             else
             {
-                Helper.Assert(
+                DBLogger.Assert(
                     false,
                     "Nonsupport data version: " + version + "\n" +
                     "Please convert DragonBones data to support version.\n" +

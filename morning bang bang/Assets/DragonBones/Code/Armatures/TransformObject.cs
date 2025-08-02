@@ -6,7 +6,7 @@ namespace DragonBones
     /// <see cref="DBKernel.Transform"/>
     /// <version>DragonBones 4.5</version>
     /// <language>en_US</language>
-    public abstract class TransformObject : BaseObject
+    public abstract class TransformObject : DBObject
     {
         /// <private/>
         protected static readonly Matrix _helpMatrix  = new Matrix();
@@ -47,7 +47,7 @@ namespace DragonBones
         /// <private/>
         internal Armature _armature;
         /// <private/>
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
             this.globalTransformMatrix.Identity();
             this.global.Identity();

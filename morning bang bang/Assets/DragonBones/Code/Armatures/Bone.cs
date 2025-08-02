@@ -17,9 +17,9 @@ namespace DragonBones
         protected Bone _parent;
         internal List<int> _cachedFrameIndices = new List<int>();
         
-        protected override void _OnClear()
+        protected override void ClearObject()
         {
-            base._OnClear();
+            base.ClearObject();
 
             this.offsetMode = OffsetMode.Additive;
             this.animationPose.Identity();
@@ -41,7 +41,7 @@ namespace DragonBones
             var boneData = this._boneData;
             var parent = this._parent;
             var flipX = this._armature.flipX;
-            var flipY = this._armature.flipY == DBKernel.yDown;
+            var flipY = this._armature.flipY == DBKernel.IsNegativeYDown;
             var rotation = 0.0f;
             var global = this.global;
             var inherit = parent != null;
@@ -262,7 +262,7 @@ namespace DragonBones
             }
 
             this.origin = this._boneData.DBTransform;
-            this._armature._AddBone(this);
+            this._armature.AddBone(this);
         }
         /// <internal/>
         /// <private/>

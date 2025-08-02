@@ -11,7 +11,7 @@ namespace banging_code.player_logic
     public class PlayerAnimator : MonoSystem
     {
         //dependencies
-        private UnityArmatureInstance armatureAPI;
+        private UnityEngineArmatureDisplay engineArmatureAPI;
         [Inject] private PlayerRoot playerRoot;
         
         //data
@@ -25,9 +25,9 @@ namespace banging_code.player_logic
 
         private PlayerAnimatorBundle playerAnimatorBundle;
 
-        private UnityArmatureInstance side;
-        private UnityArmatureInstance up;
-        private UnityArmatureInstance down;
+        private UnityEngineArmatureDisplay side;
+        private UnityEngineArmatureDisplay up;
+        private UnityEngineArmatureDisplay down;
         
         public override bool EnableOnStart()
         {
@@ -40,51 +40,55 @@ namespace banging_code.player_logic
             DBInitial.UnityDataLoader.LoadTextureAtlasData("animations/rat_gun_tex");
 
             side = DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_side", "rat_gun");
-            up = DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_up", "rat_gun");
-            down = DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_down", "rat_gun");
-            
-            side.transform.parent = Owner.transform;
-            up.transform.parent = Owner.transform;
-            down.transform.parent = Owner.transform;
-            side.gameObject.SetActive(true);
-            armatureAPI = side;
-            up.gameObject.SetActive(false);
-            down.gameObject.SetActive(false);
+            engineArmatureAPI = side;
+//            up = DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_up", "rat_gun");
+//            down = DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_down", "rat_gun");
+//            
+//            side.transform.parent = Owner.transform;
+//            up.transform.parent = Owner.transform;
+//            down.transform.parent = Owner.transform;
+//            side.gameObject.SetActive(true);
+//            
+//            up.gameObject.SetActive(false);
+//            down.gameObject.SetActive(false);
         }
         
         public override void Update()
         {
-            if ((playerRoot.Direction == GameDirection.Left || playerRoot.Direction == GameDirection.Right) && !side.isActiveAndEnabled)
+            if ((playerRoot.Direction == GameDirection.Left || playerRoot.Direction == GameDirection.Right) && engineArmatureAPI.Armature.name != "rat_gun_side")
             {
-                side.gameObject.SetActive(true);
-                down.gameObject.SetActive(false);
-                up.gameObject.SetActive(false);
-                side.Animation.Play(currentAnimation);
-                armatureAPI = side;
+//                side.gameObject.SetActive(true);
+//                down.gameObject.SetActive(false);
+//                up.gameObject.SetActive(false);
+//                side.AnimationPlayer.Play(currentAnimation);
+//                engineArmatureAPI = side; 
+                DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_side", "rat_gun", side);
             }
-            else if (playerRoot.Direction == GameDirection.Top && armatureAPI.Armature.name != "rat_gun_up")
+            else if (playerRoot.Direction == GameDirection.Top && engineArmatureAPI.Armature.name != "rat_gun_up")
             {
-                up.gameObject.SetActive(true); 
-                down.gameObject.SetActive(false);
-                side.gameObject.SetActive(false);
-                up.Animation.Play(currentAnimation);
-                armatureAPI = up;
+ //               up.gameObject.SetActive(true); 
+ //               down.gameObject.SetActive(false);
+ //               side.gameObject.SetActive(false);
+ //               up.AnimationPlayer.Play(currentAnimation);
+ //               engineArmatureAPI = up;
+                DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_up", "rat_gun",side);
             }
-            else if (playerRoot.Direction == GameDirection.Bottom && armatureAPI.Armature.name != "rat_gun_down")
+            else if (playerRoot.Direction == GameDirection.Bottom && engineArmatureAPI.Armature.name != "rat_gun_down")
             {
-                down.gameObject.SetActive(true);                
-                side.gameObject.SetActive(false);
-                up.gameObject.SetActive(false);
-                down.Animation.Play(currentAnimation);
-                armatureAPI = down;
+  //              down.gameObject.SetActive(true);                
+  //              side.gameObject.SetActive(false);
+  //              up.gameObject.SetActive(false);
+  //              down.AnimationPlayer.Play(currentAnimation);
+  //              engineArmatureAPI = down; 
+                DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_down", "rat_gun", side);
             }
         }
         
         private void Play(string name, float speed)
         {
-            if(armatureAPI.Animation == null)return;
-            if (armatureAPI.Animation.lastAnimationName == name) return;
-            armatureAPI.Animation.Play(name, 0);
+            if(engineArmatureAPI.AnimationPlayer == null)return;
+            if (engineArmatureAPI.AnimationPlayer.lastAnimationName == name) return;
+            engineArmatureAPI.AnimationPlayer.Play(name, 0);
         }
         
         public void PlayIdle(float speed)

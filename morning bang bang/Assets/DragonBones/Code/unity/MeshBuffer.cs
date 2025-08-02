@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace DragonBones
 {
-    //[Serializable]
     public class MeshBuffer : IDisposable
     {
         public readonly List<UnitySlot> combineSlots = new List<UnitySlot>();
@@ -157,15 +156,28 @@ namespace DragonBones
                 var slot = combineSlots[i];
                 oldVerticeOffset = slot._verticeOffset;
 
-                //重新赋值
+                //Reassign
                 slot._verticeOrder = i;
                 slot._verticeOffset = newVerticeIndex;
-                //
-                CombineInstance com = new CombineInstance();
+                
+                CombineInstance combineInstance = new CombineInstance();
                 slot._meshBuffer.InitMesh();
-                com.mesh = slot._meshBuffer.sharedMesh;
+                combineInstance.mesh = slot._meshBuffer.sharedMesh;
 
-                combines[i] = com;
+                combines[i] = combineInstance;
+                
+                var zspace = (slot._armature.Display as UnityEngineArmatureDisplay).zSpace;
+                for (int j = 0; j < slot._meshBuffer.vertexCount; j++)
+                {
+                    index = oldVerticeOffset + j;
+                    newUVs[newVerticeIndex] = this.uvBuffers[index];
+                    newVertices[newVerticeIndex] = this.vertexBuffers[index];
+                    newColors[newVerticeIndex] = this.color32Buffers[index];
+
+                    newVertices[newVerticeIndex].z = -slot._verticeOrder * (zspace + UnitySlot.Z_OFFSET);
+
+                    newVerticeIndex++;
+                } 
             }
 
             //
