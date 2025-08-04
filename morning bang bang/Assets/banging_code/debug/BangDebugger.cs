@@ -40,7 +40,7 @@ namespace banging_code.debug
         public async UniTask SetupDebugger()
         {
             Lines = new DebugLinesDrawer(debuggerConfig, this);
-            Lines.Setup();
+            await Lines.Setup();
 
             Map = new DebugMapDrawer();
             Map.Setup(debuggerConfig);

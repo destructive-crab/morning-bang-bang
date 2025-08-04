@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using MothDIed.Scenes;
 using UnityEngine;
 
@@ -50,6 +51,25 @@ namespace MothDIed.Core.GameObjects.Pool
             return this;
         }
 
+        
+        public async UniTask<GameObjectPool<TObject>> WarmAsync()
+        {
+            if (IsPoolReady) return this;
+            
+            Root = new GameObject().AddComponent<PoolInstanceRoot>();
+            Root.Setup(PoolConfiguration.Name);
+            
+            if(PoolConfiguration.Persistent)
+            {
+                Game.MakeGameObjectPersistent(Root.gameObject);
+            }
+
+            await TryPopulateUntilPoolWillBeFullAsync();
+            
+            IsPoolReady = true;
+            return this;
+        }
+        
         public TObject Get()
         {
             if (IsPoolReady && Available.Count == 0 && !TryExpandPoolAndPopulate()) return null;
@@ -90,6 +110,21 @@ namespace MothDIed.Core.GameObjects.Pool
             while (TotalCount < CurrentSize)
             {
                 TObject newInstance = PoolConfiguration.Fabric.Instantiate(PoolConfiguration.Prefab, Vector3.zero,  Root.transform);
+                
+                newInstance.gameObject.SetActive(false);
+                Available.Add(newInstance);
+            }
+
+            return true;
+        }
+        
+        private async UniTask<bool> TryPopulateUntilPoolWillBeFullAsync()
+        {
+            if (!IsConfigurationValid()) return false;
+
+            while (TotalCount < CurrentSize)
+            {
+                TObject newInstance = await PoolConfiguration.Fabric.InstantiateAsync(PoolConfiguration.Prefab, Vector3.zero,  Root.transform);
                 
                 newInstance.gameObject.SetActive(false);
                 Available.Add(newInstance);

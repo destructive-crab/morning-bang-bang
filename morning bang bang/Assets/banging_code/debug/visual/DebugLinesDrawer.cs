@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using MothDIed.Core.GameObjects.Pool;
 using UnityEngine;
 
@@ -51,9 +52,9 @@ namespace banging_code.debug
             linesPool.ReleaseAll();
         }
 
-        public void Setup()
+        public async UniTask Setup()
         {
-            linesPool.Warm();
+            await linesPool.WarmAsync();
         }
     }
 }

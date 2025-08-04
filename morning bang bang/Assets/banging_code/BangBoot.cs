@@ -23,6 +23,7 @@ namespace banging_code
         private async void TODO()
         {
             await Game.StartGame(Args);
+            
             Game.SceneSwitcher.SwitchTo(new MainMenuScene());
         }
     }

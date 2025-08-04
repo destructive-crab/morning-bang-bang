@@ -16,7 +16,7 @@ public class DragonBonesArmatureStarter : MonoBehaviour
         c.transform.position += Vector3.right * 3;
 
         a.AnimationPlayer.Play("run");
-        c.AnimationPlayer.Play("idle");
+        b.AnimationPlayer.Play("run");
         c.AnimationPlayer.Play("run");
     }
 }

@@ -1,3 +1,5 @@
+using banging_code.debug;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace DragonBones
@@ -10,17 +12,19 @@ namespace DragonBones
         public static DBUnityFactory UnityFactory { get; private set; }
         public static UnityDataLoader UnityDataLoader { get; private set; }
         
-        public static bool InitializeDragonBones()
+        public static async UniTask InitializeDragonBones()
         {
             UnityDataLoader = new UnityDataLoader();
             UnityFactory = new DBUnityFactory();
+
+            await UnityFactory.Init();
             
-            Debug.Log("DragonBones Factory Initialized");
             if (Application.isPlaying)
             {
                 if (_gameObject == null)
                 {
                     _gameObject = GameObject.Find("DragonBones Object");
+                    
                     if (_gameObject == null)
                     {
                         _gameObject = new GameObject("DragonBones Object");
@@ -54,7 +58,7 @@ namespace DragonBones
                 }
             }
             
-            return true;
+            DBLogger.LogMessage("DragonBones was successfully initialized");
         }
     }
 }

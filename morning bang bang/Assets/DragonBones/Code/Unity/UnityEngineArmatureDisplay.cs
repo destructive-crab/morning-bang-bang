@@ -155,14 +155,6 @@ namespace DragonBones
 #endif
             }
         }
-
-        private bool _IsPrefab()
-        {
-            return PrefabUtility.GetPrefabParent(gameObject) == null
-                   && PrefabUtility.GetPrefabObject(gameObject) != null;
-        } 
-        
-        
         
         public const int ORDER_SPACE = 10;
         public UnityDragonBonesData unityData = null;

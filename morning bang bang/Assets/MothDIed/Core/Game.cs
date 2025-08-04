@@ -67,7 +67,8 @@ namespace MothDIed
                 await debugger.SetupDebugger();
             }
             
-            DBInitial.InitializeDragonBones();
+            await DBInitial.InitializeDragonBones();
+            
             AudioSystem.Setup(args.AudioSystemConfig);
             
             IsBootstrapping = false;

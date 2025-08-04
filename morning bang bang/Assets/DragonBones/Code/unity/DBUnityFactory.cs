@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using MothDIed.Core.GameObjects.Pool;
 using UnityEngine;
 #if UNITY_EDITOR
@@ -17,12 +18,7 @@ namespace DragonBones
 
         private bool _isUGUI = false;
 
-        public DBUnityFactory()
-        {
-            Init();
-        }
-
-        private void Init()
+        public async UniTask Init()
         {
             displaysPool = new GameObjectPool<UnityEngineArmatureDisplay>(Resources.Load<UnityEngineArmatureDisplay>("DragonBones/DisplayPrefab"));
             displaysPool.PoolConfiguration.Expandable = true;
@@ -30,7 +26,7 @@ namespace DragonBones
             displaysPool.PoolConfiguration.Persistent = true;
             displaysPool.PoolConfiguration.Fabric = new PoolFabric(true, false);
 
-            displaysPool.Warm();
+            await displaysPool.WarmAsync();
         }
 
         public override TextureAtlasData BuildTextureAtlasData(TextureAtlasData textureAtlasData, object textureAtlas)
@@ -426,11 +422,7 @@ namespace DragonBones
             string childDisplayName = slot.SlotData.name + " (" + displayData.path + ")"; 
             UnityEngineArmatureDisplay proxy = slot.Armature.Display as UnityEngineArmatureDisplay;
             Transform childTransform = proxy.transform.Find(childDisplayName);
-            
-            Debug.Log(proxy.name);
-            Debug.Log(childTransform);
-            Debug.Log(childDisplayName);
-            
+
             Armature childArmature = null;
             
             if (childTransform == null)
@@ -488,7 +480,6 @@ namespace DragonBones
             
             if (slotGameObject == null)
             {
-                Debug.Log(slotGameObject + " null go slot");
                 slotGameObject = new GameObject(slotData.name);
             }
             else
