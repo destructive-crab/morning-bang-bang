@@ -9,11 +9,11 @@ namespace MothDIed.Core.GameObjects.Pool
 {
     public class PoolFabric : IFabric
     {
-        public readonly bool AvoidSceneFabric; 
+        public bool AvoidSceneFabric; 
         //if true, objects will be directly instantiated and destroyed with GameObject.Instantiate.
         //if false, Game.CurrentScene.Fabric will be used
         //if there is no scene in game, objects cannot be populated
-        public readonly bool AutoInject;
+        public bool AutoInject;
         //auto inject module analog
         //if scene has own auto inject -> inject in this fabric will be skipped
 
@@ -21,6 +21,14 @@ namespace MothDIed.Core.GameObjects.Pool
         {
             AvoidSceneFabric = avoidSceneFabric;
             AutoInject = autoInject;
+        }
+
+        public PoolFabric SetInstantiateParameters(bool avoidSceneFabric, bool autoInject)
+        {
+            AvoidSceneFabric = avoidSceneFabric;
+            AutoInject = autoInject;
+            
+            return this;
         }
 
         public UniTask<TObject> InstantiateAsync<TObject>(TObject original, Action<TObject> callback = null) where TObject : Object => InstantiateAsync(original, Vector3.zero, Quaternion.identity, null, callback);

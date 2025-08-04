@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using MothDIed.Core.GameObjects.Pool;
 using UnityEngine;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -18,13 +19,16 @@ namespace DragonBones
 
         private bool _isUGUI = false;
 
-        public async UniTask Init()
+        public async UniTask InitializeFactory()
         {
-            displaysPool = new GameObjectPool<UnityEngineArmatureDisplay>(Resources.Load<UnityEngineArmatureDisplay>("DragonBones/DisplayPrefab"));
-            displaysPool.PoolConfiguration.Expandable = true;
-            displaysPool.PoolConfiguration.Name = "Armature Displays";
-            displaysPool.PoolConfiguration.Persistent = true;
-            displaysPool.PoolConfiguration.Fabric = new PoolFabric(true, false);
+            displaysPool = new GameObjectPool<UnityEngineArmatureDisplay>(new GameObjectPool<UnityEngineArmatureDisplay>.Config<UnityEngineArmatureDisplay>("Dragon Bones Armature Displays"));
+            
+            displaysPool.PoolConfiguration
+                .SetSize(64)
+                .IsExpandable(true)
+                .IsPersistent(true)
+                .SetFabric(new PoolFabric(true, false))
+                .SetPrefab(null); //means pool will be filled with empty GO with UnityEngineArmatureDisplay component
 
             await displaysPool.WarmAsync();
         }
@@ -47,8 +51,6 @@ namespace DragonBones
             return textureAtlasData;
         }
 
-       
-
         /// <summary>
         /// Create a armature from cached DragonBonesData instances and TextureAtlasData instances, then use the {@link #clock} to update it.
         /// The difference is that the armature created by {@link #buildArmature} is not WorldClock instance update.
@@ -57,7 +59,6 @@ namespace DragonBones
         /// <param name="dragonBonesName">The cached name of the DragonBonesData instance (If not set, all DragonBonesData instances are retrieved, and when multiple DragonBonesData instances contain a the same name armature data, it may not be possible to accurately create a specific armature)</param>
         /// <param name="skinName">The skin name, you can set a different ArmatureData name to share it's skin data (If not set, use the default skin data)</param>
         /// <param name="textureAtlasName">The textureAtlas name</param>
-        /// <param name="gameObject"></param>
         /// <param name="isUGUI">isUGUI default is false</param>
         /// <returns>The armature display container.</returns>
         /// <version> DragonBones 4.5</version>
@@ -79,34 +80,6 @@ namespace DragonBones
             return null;
         }
 
-        public GameObject GetTextureDisplay(string textureName, string textureAtlasName = null)
-        {
-            /*var textureData = _getTextureData(textureAtlasName, textureName) as UnityTextureData;
-            if (textureData != null)
-            {
-                if (textureData.texture == null)
-                {
-                    var textureAtlasTexture = (textureData.parent as UnityTextureAtlasData).texture;
-
-                    var rect = new Rect(
-                        textureData.region.x,
-                        textureAtlasTexture.height - textureData.region.y - textureData.region.height,
-                        textureData.region.width,
-                        textureData.region.height
-                    );
-
-                    textureData.texture = Sprite.Create(textureAtlasTexture, rect, new Vector2(), 1.0f);
-                }
-
-                var gameObject = new GameObject();
-                gameObject.AddComponent<SpriteRenderer>().sprite = textureData.texture;
-                return gameObject;
-            }*/
-
-            return null;
-        }
-
-        /// <private/>
         public static void RefreshTextureAtlas(UnityTextureAtlasData textureAtlasData, bool isUGUI,
             bool isEditor = false)
         {
@@ -170,7 +143,6 @@ namespace DragonBones
 #endif
                 }
 
-                //
                 textureAtlasData.uiTexture = material;
             }
             else if (!isUGUI && textureAtlasData.texture == null)
@@ -283,57 +255,36 @@ namespace DragonBones
             Slot slot, Texture2D texture, Material material = null,
             bool isUGUI = false, int displayIndex = -1)
         {
-            var armatureData = DBInitial.Kernel.DataStorage.GetArmatureData(armatureName, dragonBonesName);
-            if (armatureData == null || armatureData.defaultSkin == null)
+            ArmatureData armatureData = DBInitial.Kernel.DataStorage.GetArmatureData(armatureName, dragonBonesName);
+            
+            if (armatureData == null || armatureData.defaultSkin == null) { return; }
+
+            DisplayData previousDisplayData = armatureData.defaultSkin.GetDisplay(slotName, displayName);
+
+            if (previousDisplayData == null || !((previousDisplayData is ImageDisplayData) || (previousDisplayData is MeshDisplayData)))
             {
                 return;
             }
 
-            var displays = armatureData.defaultSkin.GetDisplays(slotName);
-            if (displays == null)
-            {
-                return;
-            }
-
-            DisplayData prevDispalyData = null;
-            foreach (var displayData in displays)
-            {
-                if (displayData.name == displayName)
-                {
-                    prevDispalyData = displayData;
-                    break;
-                }
-            }
-
-            if (prevDispalyData == null ||
-                !((prevDispalyData is ImageDisplayData) || (prevDispalyData is MeshDisplayData)))
-            {
-                return;
-            }
-
-            TextureData prevTextureData = null;
-            if (prevDispalyData is ImageDisplayData)
-            {
-                prevTextureData = (prevDispalyData as ImageDisplayData).texture;
-            }
-            else
-            {
-                prevTextureData = (prevDispalyData as MeshDisplayData).texture;
-            }
+            TextureData previousTextureData = null;
+            
+            if (previousDisplayData is ImageDisplayData) { previousTextureData = (previousDisplayData as ImageDisplayData).texture; }
+            else { previousTextureData = (previousDisplayData as MeshDisplayData).texture; }
 
             UnityTextureData newTextureData = new UnityTextureData();
-            newTextureData.CopyFrom(prevTextureData);
+            
+            newTextureData.CopyFrom(previousTextureData);
             newTextureData.rotated = false;
             newTextureData.region.x = 0.0f;
             newTextureData.region.y = 0.0f;
             newTextureData.region.width = texture.width;
             newTextureData.region.height = texture.height;
             newTextureData.frame = newTextureData.region;
-            newTextureData.name = prevTextureData.name;
+            newTextureData.name = previousTextureData.name;
             newTextureData.parent = new UnityTextureAtlasData();
             newTextureData.parent.width = (uint)texture.width;
             newTextureData.parent.height = (uint)texture.height;
-            newTextureData.parent.scale = prevTextureData.parent.scale;
+            newTextureData.parent.scale = previousTextureData.parent.scale;
 
             //
             if (material == null)
@@ -361,40 +312,38 @@ namespace DragonBones
             material.mainTexture = texture;
 
             DisplayData newDisplayData = null;
-            if (prevDispalyData is ImageDisplayData)
+            
+            if (previousDisplayData is ImageDisplayData)
             {
                 newDisplayData = new ImageDisplayData();
-                newDisplayData.type = prevDispalyData.type;
-                newDisplayData.name = prevDispalyData.name;
-                newDisplayData.path = prevDispalyData.path;
-                newDisplayData.DBTransform.CopyFrom(prevDispalyData.DBTransform);
-                newDisplayData.parent = prevDispalyData.parent;
-                (newDisplayData as ImageDisplayData).pivot.CopyFrom((prevDispalyData as ImageDisplayData).pivot);
+                newDisplayData.type = previousDisplayData.type;
+                newDisplayData.name = previousDisplayData.name;
+                newDisplayData.path = previousDisplayData.path;
+                newDisplayData.DBTransform.CopyFrom(previousDisplayData.DBTransform);
+                newDisplayData.parent = previousDisplayData.parent;
+                (newDisplayData as ImageDisplayData).pivot.CopyFrom((previousDisplayData as ImageDisplayData).pivot);
                 (newDisplayData as ImageDisplayData).texture = newTextureData;
             }
-            else if (prevDispalyData is MeshDisplayData)
+            else if (previousDisplayData is MeshDisplayData meshDisplayData)
             {
                 newDisplayData = new MeshDisplayData();
-                newDisplayData.type = prevDispalyData.type;
-                newDisplayData.name = prevDispalyData.name;
-                newDisplayData.path = prevDispalyData.path;
-                newDisplayData.DBTransform.CopyFrom(prevDispalyData.DBTransform);
-                newDisplayData.parent = prevDispalyData.parent;
-                (newDisplayData as MeshDisplayData).texture = newTextureData;
-
-                (newDisplayData as MeshDisplayData).vertices.inheritDeform =
-                    (prevDispalyData as MeshDisplayData).vertices.inheritDeform;
-                (newDisplayData as MeshDisplayData).vertices.offset =
-                    (prevDispalyData as MeshDisplayData).vertices.offset;
-                (newDisplayData as MeshDisplayData).vertices.data = (prevDispalyData as MeshDisplayData).vertices.data;
-                (newDisplayData as MeshDisplayData).vertices.weight =
-                    (prevDispalyData as MeshDisplayData).vertices.weight;
+                newDisplayData.type = previousDisplayData.type;
+                newDisplayData.name = previousDisplayData.name;
+                newDisplayData.path = previousDisplayData.path;
+                newDisplayData.DBTransform.CopyFrom(previousDisplayData.DBTransform);
+                newDisplayData.parent = previousDisplayData.parent;
+                
+                ((MeshDisplayData)newDisplayData).texture = newTextureData;
+                ((MeshDisplayData)newDisplayData).vertices.inheritDeform = meshDisplayData.vertices.inheritDeform;
+                ((MeshDisplayData)newDisplayData).vertices.offset = meshDisplayData.vertices.offset;
+                ((MeshDisplayData)newDisplayData).vertices.data = meshDisplayData.vertices.data;
+                ((MeshDisplayData)newDisplayData).vertices.weight = meshDisplayData.vertices.weight;
             }
 
             ReplaceDisplay(slot, newDisplayData, displayIndex);
         }
 
-         protected override Armature BuildArmatureProxy(BuildArmaturePackage dataPackage)
+        protected override Armature BuildArmatureProxy(BuildArmaturePackage dataPackage)
         {
             Armature armature = DBObject.BorrowObject<Armature>();
             UnityEngineArmatureDisplay armatureDisplay = null;
@@ -406,7 +355,7 @@ namespace DragonBones
             else
             {
                 armatureDisplay = dataPackage.display as UnityEngineArmatureDisplay;
-                armatureDisplay.Armature.ReturnToPool();
+                armatureDisplay.Armature?.ReturnToPool();
                 
                 (dataPackage.display as IEngineArmatureDisplay).DBClear();
             }
@@ -438,15 +387,12 @@ namespace DragonBones
             }
             else
             {
-                Debug.Log(childTransform.gameObject.GetComponent<UnityEngineArmatureDisplay>());
                 if (dataPackage != null)
                 {
-                    //TODO DISPLAY NEEDS TO BE 
                     childArmature = BuildArmatureComponent(displayData.path, dataPackage != null ? dataPackage.dataName : "", childTransform.gameObject.GetComponent<UnityEngineArmatureDisplay>(), null, dataPackage.textureAtlasName).Armature;
                 }
                 else
                 {
-                    
                     childArmature =
                         BuildArmatureComponent(displayData.path, null, childTransform.gameObject.GetComponent<UnityEngineArmatureDisplay>(), null, null).Armature;
                 }
@@ -461,12 +407,10 @@ namespace DragonBones
             childArmatureDisplay.isUGUI = proxy.GetComponent<UnityEngineArmatureDisplay>().isUGUI;
             childArmatureDisplay.name = childDisplayName;
             childArmatureDisplay.transform.SetParent(proxy.transform, false);
-//            childArmatureDisplay.gameObject.hideFlags = HideFlags.HideInHierarchy;
             childArmatureDisplay.gameObject.SetActive(false);
             return childArmature;
         }
 
-        /// <private/>
         protected override Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, Armature armature)
         {
             UnitySlot slot = DBObject.BorrowObject<UnitySlot>();

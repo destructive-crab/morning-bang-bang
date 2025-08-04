@@ -17,7 +17,7 @@ namespace DragonBones
             UnityDataLoader = new UnityDataLoader();
             UnityFactory = new DBUnityFactory();
 
-            await UnityFactory.Init();
+            await UnityFactory.InitializeFactory();
             
             if (Application.isPlaying)
             {

@@ -206,10 +206,6 @@ namespace DragonBones
 
         public Armature Armature { get; internal set; } = null;
         public AnimationPlayer AnimationPlayer => Armature != null ? Armature.AnimationPlayer : null;
-        public void ApplyPPU(uint armatureDataPixelsPerUnit)
-        {
-            transform.localScale = new Vector3(100f / armatureDataPixelsPerUnit, 100f / armatureDataPixelsPerUnit, 1);
-        }
 
         public void DBClear()
         {

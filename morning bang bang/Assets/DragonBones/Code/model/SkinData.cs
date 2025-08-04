@@ -18,7 +18,7 @@ namespace DragonBones
 
         public string name;
         /// <private/>
-        public readonly Dictionary<string, List<DisplayData>> displays = new Dictionary<string, List<DisplayData>>();
+        public readonly Dictionary<string, List<DisplayData>> displays = new();
         /// <private/>
         public ArmatureData parent;
 
@@ -61,7 +61,8 @@ namespace DragonBones
         /// <private/>
         public DisplayData GetDisplay(string slotName, string displayName)
         {
-            var slotDisplays = this.GetDisplays(slotName);
+            List<DisplayData> slotDisplays = this.GetDisplays(slotName);
+            
             if (slotDisplays != null)
             {
                 foreach (var display in slotDisplays)

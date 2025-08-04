@@ -107,9 +107,11 @@ namespace MothDIed.Core.GameObjects.Pool
         {
             if (!IsConfigurationValid()) return false;
 
+            var instantiateFrom = GetOriginToPopulateFrom();
+
             while (TotalCount < CurrentSize)
             {
-                TObject newInstance = PoolConfiguration.Fabric.Instantiate(PoolConfiguration.Prefab, Vector3.zero,  Root.transform);
+                TObject newInstance = PoolConfiguration.Fabric.Instantiate(instantiateFrom, Vector3.zero,  Root.transform);
                 
                 newInstance.gameObject.SetActive(false);
                 Available.Add(newInstance);
@@ -117,14 +119,16 @@ namespace MothDIed.Core.GameObjects.Pool
 
             return true;
         }
-        
+
         private async UniTask<bool> TryPopulateUntilPoolWillBeFullAsync()
         {
             if (!IsConfigurationValid()) return false;
 
+            TObject instantiateFrom = GetOriginToPopulateFrom();
+
             while (TotalCount < CurrentSize)
             {
-                TObject newInstance = await PoolConfiguration.Fabric.InstantiateAsync(PoolConfiguration.Prefab, Vector3.zero,  Root.transform);
+                TObject newInstance = await PoolConfiguration.Fabric.InstantiateAsync(instantiateFrom, Vector3.zero,  Root.transform);
                 
                 newInstance.gameObject.SetActive(false);
                 Available.Add(newInstance);
@@ -141,14 +145,25 @@ namespace MothDIed.Core.GameObjects.Pool
             return true;
         }
 
+        private TObject GetOriginToPopulateFrom()
+        {
+            TObject instantiateFrom = PoolConfiguration.Prefab;
+
+            if (instantiateFrom == null)
+            {
+                instantiateFrom = new GameObject(PoolConfiguration.Name + " Instance").AddComponent<TObject>();
+                
+                instantiateFrom.transform.parent = Root.transform;
+                instantiateFrom.gameObject.SetActive(false);
+                Available.Add(instantiateFrom);
+            }
+
+            return instantiateFrom;
+        }
+
         public bool IsConfigurationValid()
         {
 #if UNITY_EDITOR
-            if (PoolConfiguration.Prefab == null)
-            {
-                Debug.LogError($"[GAME OBJECT POOL] NULL PREFAB WAS FOUND IN {PoolConfiguration.Name}");
-                return false;
-            }
             if (PoolConfiguration.Fabric == null)
             {
                 Debug.LogError($"[GAME OBJECT POOL] NULL FABRIC WAS FOUND IN {PoolConfiguration.Name}");
@@ -162,7 +177,7 @@ namespace MothDIed.Core.GameObjects.Pool
             }
 #endif
 
-            return PoolConfiguration.Prefab != null && PoolConfiguration.Fabric != null;
+            return PoolConfiguration.Fabric != null;
         }
 
 
@@ -170,45 +185,97 @@ namespace MothDIed.Core.GameObjects.Pool
         public sealed class Config<ConfigTObject>
             where ConfigTObject : Component
         {
+            /// <summary>
+            /// - Will be applied to root instance
+            /// </summary>
+            public string Name; 
+
+            /// <summary>
+            /// - If set as null, pool will be filled with empty game object with ConfigTObject component
+            /// </summary>
+            public ConfigTObject Prefab; 
+
+            [field: SerializeField] public ushort Size { get; private set; } 
+
+            /// <summary>
+            /// - If true, when pool is full it will populate another count of SIZE objects
+            /// </summary>
+            public bool Expandable; 
+
+            /// <summary>
+            /// - If true, pool will be moved to persistent scene
+            /// </summary>
+            public bool Persistent; 
+
+            /// <summary>
+            /// - Custom fabric can be used in pool. By default pool will use PoolFabric
+            /// </summary>
+            public IFabric Fabric { get; private set; }
+            
             public Config(ConfigTObject prefab, string name = "", ushort size = 32, bool expandable = true, bool persistent = false, IFabric fabric = null)
             {
-                if (prefab == null)
-                {
-#if UNITY_EDITOR
-                    Debug.LogError($"NULL PREFAB WAS GIVEN TO POOL CONFIG; Pool name: {name}");
-#endif
-                    return;
-                }
-                
-                Name = name;
-                if (Name == "")
-                {
-                    Name = $"{prefab.name} pool";
-                }
-                Size = size;
-                if (Size == 0) Size = 1;
-                Expandable = expandable;
-                Persistent = persistent;
-                Prefab = prefab;
-                Fabric = fabric;
+                SetName(name);
+                SetSize(size);
+                IsExpandable(expandable);
+                IsPersistent(persistent);
+                SetPrefab(prefab);
+                SetFabric(fabric);
+            }
+            public Config(string name)
+            {
+                SetName(name);
+            }
 
+            public Config<ConfigTObject> SetFabric(IFabric fabric)
+            {
+                Fabric = fabric;
+                
                 if (fabric == null)
                 {
                     Fabric = new PoolFabric(false, true);
                 }
+
+                return this;
             }
 
-            public string Name; //will be applied to root instance
-            
-            public ConfigTObject Prefab; //object of pool
+            public Config<ConfigTObject> SetPrefab(ConfigTObject prefab)
+            {
+                Prefab = prefab;
+                return this;
+            }
 
-            [field: SerializeField] public ushort Size { get; private set; } //size of pool
-            
-            public bool Expandable; //if true when pool is full it will populate another count of SIZE objects
-            
-            public bool Persistent; //if true pool will be moved to persistent scene
-            
-            [HideInInspector] public IFabric Fabric; //custom fabric can be added
+            public Config<ConfigTObject> IsPersistent(bool persistent)
+            {
+                Persistent = persistent;
+                return this;
+            }
+
+            public Config<ConfigTObject> IsExpandable(bool expandable)
+            {
+                Expandable = expandable;
+                return this;
+            }
+
+            public Config<ConfigTObject> SetName(string name)
+            {
+                Name = name;
+                
+                switch (Name)
+                {
+                    case "" when Prefab != null: Name = $"{Prefab.name} Pool"; break; 
+                    case "" when Prefab == null: Name = $"{nameof(ConfigTObject)} Pool"; break;
+                }
+
+                return this;
+            }
+
+            public Config<ConfigTObject> SetSize(ushort size)
+            {
+                if (size < 8) size = 8;
+
+                Size = size;
+                return this;
+            }
         }
     }
 }
