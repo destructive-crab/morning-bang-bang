@@ -421,13 +421,18 @@ namespace DragonBones
             return armature;
         }
 
-        protected override Armature _BuildChildArmature(BuildArmaturePackage dataPackage, Slot slot,
-            DisplayData displayData)
+        protected override Armature BuildChildArmature(BuildArmaturePackage dataPackage, Slot slot, DisplayData displayData)
         {
-            var childDisplayName = slot.slotData.name + " (" + displayData.path + ")"; //
-            var proxy = slot.armature.Display as UnityEngineArmatureDisplay;
-            var childTransform = proxy.transform.Find(childDisplayName);
+            string childDisplayName = slot.slotData.name + " (" + displayData.path + ")"; 
+            UnityEngineArmatureDisplay proxy = slot.armature.Display as UnityEngineArmatureDisplay;
+            Transform childTransform = proxy.transform.Find(childDisplayName);
+            
+            Debug.Log(proxy.name);
+            Debug.Log(childTransform);
+            Debug.Log(childDisplayName);
+            
             Armature childArmature = null;
+            
             if (childTransform == null)
             {
                 if (dataPackage != null)
@@ -441,17 +446,17 @@ namespace DragonBones
             }
             else
             {
+                Debug.Log(childTransform.gameObject.GetComponent<UnityEngineArmatureDisplay>());
                 if (dataPackage != null)
                 {
                     //TODO DISPLAY NEEDS TO BE 
-                    childArmature = BuildArmatureComponent(displayData.path,
-                        dataPackage != null ? dataPackage.dataName : "",
-                        null, null, dataPackage.textureAtlasName).Armature;
+                    childArmature = BuildArmatureComponent(displayData.path, dataPackage != null ? dataPackage.dataName : "", childTransform.gameObject.GetComponent<UnityEngineArmatureDisplay>(), null, dataPackage.textureAtlasName).Armature;
                 }
                 else
                 {
+                    
                     childArmature =
-                        BuildArmatureComponent(displayData.path, null, null, null, null).Armature;
+                        BuildArmatureComponent(displayData.path, null, childTransform.gameObject.GetComponent<UnityEngineArmatureDisplay>(), null, null).Armature;
                 }
             }
 
@@ -472,20 +477,25 @@ namespace DragonBones
         }
 
         /// <private/>
-        protected override Slot _BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, Armature armature)
+        protected override Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, Armature armature)
         {
-            var slot = DBObject.BorrowObject<UnitySlot>();
-            var armatureDisplay = armature.Display as UnityEngineArmatureDisplay;
-            var transform = armatureDisplay.transform.Find(slotData.name);
-            var gameObject = transform == null ? null : transform.gameObject;
-            var isNeedIngoreCombineMesh = false;
-            if (gameObject == null)
+            UnitySlot slot = DBObject.BorrowObject<UnitySlot>();
+            
+            UnityEngineArmatureDisplay armatureDisplay = armature.Display as UnityEngineArmatureDisplay;
+            
+            Transform slotTransform = armatureDisplay.transform.Find(slotData.name);
+            GameObject slotGameObject = slotTransform == null ? null : slotTransform.gameObject;
+            
+            bool isNeedIngoreCombineMesh = false;
+            
+            if (slotGameObject == null)
             {
-                gameObject = new GameObject(slotData.name);
+                Debug.Log(slotGameObject + " null go slot");
+                slotGameObject = new GameObject(slotData.name);
             }
             else
             {
-                if (gameObject.hideFlags == HideFlags.None)
+                if (slotGameObject.hideFlags == HideFlags.None)
                 {
                     var combineMeshs = (armature.Display as UnityEngineArmatureDisplay).GetComponent<UnityCombineMeshes>();
                     if (combineMeshs != null)
@@ -495,7 +505,7 @@ namespace DragonBones
                 }
             }
 
-            slot.Init(slotData, armature, gameObject, gameObject);
+            slot.Init(slotData, armature, slotGameObject, slotGameObject);
 
             if (isNeedIngoreCombineMesh)
             {

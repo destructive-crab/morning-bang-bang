@@ -14,8 +14,6 @@ namespace DragonBones
             public Material uiMaterial;
         }
 
-        public int PixelsPerUnit = 100;
-
         public string dataName;
         public TextAsset dragonBonesJSON;
         public TextureAtlas[] textureAtlas;

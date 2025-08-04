@@ -8,127 +8,89 @@ namespace DragonBones
     [RequireComponent(typeof(UnityEngineArmatureDisplay))]
     public class UnityCombineMeshes : MonoBehaviour
     {
-        [HideInInspector]
-        public List<string> slotNames = new List<string>();
-        [HideInInspector]
-        public MeshBuffer[] meshBuffers;
-        [HideInInspector]
-        public bool dirty = false;
+        [HideInInspector] public List<string> slotNames = new List<string>();
+        [HideInInspector] public MeshBuffer[] meshBuffers;
+        
+        public bool Dirty { get; private set; }
+        public void MarkAsDirty() => Dirty = true;
 
-        private UnityEngineArmatureDisplay monoEventEngineArmature;
+        private UnityEngineArmatureDisplay armatureDisplay;
+        
         private int _subSlotCount;
         private int _verticeOffset;
 
-        private bool _isCanCombineMesh = false;
+        private bool CanCombineMesh = false;
 
         private void Start()
         {
-            this.monoEventEngineArmature = GetComponent<UnityEngineArmatureDisplay>();
-            this._isCanCombineMesh = true;
-            this.dirty = true;
+            armatureDisplay = GetComponent<UnityEngineArmatureDisplay>();
+            
+            CanCombineMesh = true;
+            MarkAsDirty();
         }
 
         private void OnDestroy()
         {
-            if (this.monoEventEngineArmature != null)
+            if (armatureDisplay != null)
             {
-                this.RestoreArmature(this.monoEventEngineArmature.Armature);
+                RestoreArmature(armatureDisplay.Armature);
             }
 
-            if (this.meshBuffers != null)
+            if (meshBuffers != null)
             {
-                for (var i = 0; i < this.meshBuffers.Length; i++)
+                for (var i = 0; i < meshBuffers.Length; i++)
                 {
-                    var meshBuffer = this.meshBuffers[i];
+                    var meshBuffer = meshBuffers[i];
                     meshBuffer.Dispose();
                 }
             }
 
-            this.meshBuffers = null;
-            this.dirty = false;
+            meshBuffers = null;
+            Dirty = false;
 
-            this.monoEventEngineArmature = null;
-            this._subSlotCount = 0;
-            this._verticeOffset = -1;
+            armatureDisplay = null;
+            _subSlotCount = 0;
+            _verticeOffset = -1;
 
-            this._isCanCombineMesh = false;
-        }
-
-        private void RestoreArmature(Armature armature)
-        {
-            if (armature == null)
-            {
-                return;
-            }
-            //
-            foreach (UnitySlot slot in armature.GetSlots())
-            {
-                if (slot.ChildArmature == null)
-                {
-                    slot.CancelCombineMesh();
-                }
-            }
+            CanCombineMesh = false;
         }
 
         private void LateUpdate()
         {
-            if (this.dirty)
+            if (Dirty)
             {
-                this.BeginCombineMesh();
-                this.dirty = false;
+                BeginCombineMesh();
+                Dirty = false;
             }
 
-            if (this.meshBuffers == null)
-            {
-                return;
-            }
-
-            for (var i = 0; i < this.meshBuffers.Length; i++)
-            {
-                var meshBuffer = this.meshBuffers[i];
-                if (meshBuffer.zorderDirty)
-                {
-                    meshBuffer.UpdateOrder();
-                    meshBuffer.zorderDirty = false;
-                }
-                else if (meshBuffer.vertexDirty)
-                {
-                    meshBuffer.UpdateVertices();
-                    meshBuffer.vertexDirty = false;
-                }
-            }
+            UpdateMeshBuffers();
         }
 
         public void BeginCombineMesh()
         {
-            if (!this._isCanCombineMesh || monoEventEngineArmature.isUGUI)
-            {
-                return;
-            }
-            //
-            this._verticeOffset = 0;
-            this._subSlotCount = 0;
-            this.slotNames.Clear();
+            if (!CanCombineMesh || armatureDisplay.isUGUI) { return; }
+            
+            _verticeOffset = 0;
+            _subSlotCount = 0;
+            slotNames.Clear();
 
-            //
-            if (this.meshBuffers != null)
+            if (meshBuffers != null)
             {
-                for (var i = 0; i < this.meshBuffers.Length; i++)
+                for (var i = 0; i < meshBuffers.Length; i++)
                 {
-                    var meshBuffer = this.meshBuffers[i];
+                    var meshBuffer = meshBuffers[i];
                     meshBuffer.Dispose();
                 }
 
-                this.meshBuffers = null;
+                meshBuffers = null;
             }
 
             List<CombineMeshInfo> combineSlots = new List<CombineMeshInfo>();
             //
-            this.CollectMesh(this.monoEventEngineArmature.Armature, combineSlots);
+            CollectMesh(armatureDisplay.Armature, combineSlots);
 
             //
-            //先合并
-            this.meshBuffers = new MeshBuffer[combineSlots.Count];
+            meshBuffers = new MeshBuffer[combineSlots.Count];
             for (var i = 0; i < combineSlots.Count; i++)
             {
                 var combineSlot = combineSlots[i];
@@ -140,23 +102,23 @@ namespace DragonBones
                 meshBuffer.sharedMesh.Clear();
 
                 meshBuffer.CombineMeshes(combineSlot.combines.ToArray());
-                meshBuffer.vertexDirty = true;
+                meshBuffer.VertexDirty = true;
                 //
                 proxySlot._meshFilter.sharedMesh = meshBuffer.sharedMesh;
 
-                this.meshBuffers[i] = meshBuffer;
+                meshBuffers[i] = meshBuffer;
 
                 //
-                this._verticeOffset = 0;
+                _verticeOffset = 0;
                 for (int j = 0; j < combineSlot.slots.Count; j++)
                 {
                     var slot = combineSlot.slots[j];
 
-                    slot._isCombineMesh = true;
+                    slot.IsCombineMesh = true;
                     slot._sumMeshIndex = i;
                     slot._verticeOrder = j;
-                    slot._verticeOffset = this._verticeOffset;
-                    slot._combineMesh = this;
+                    slot._verticeOffset = _verticeOffset;
+                    slot.CombineMeshComponent = this;
                     slot._meshBuffer.enabled = false;
 
                     if (slot._renderDisplay != null)
@@ -182,13 +144,12 @@ namespace DragonBones
                     //
                     meshBuffer.combineSlots.Add(slot);
 
-                    this.slotNames.Add(slot.name);
+                    slotNames.Add(slot.name);
 
-                    this._verticeOffset += slot._meshBuffer.vertexBuffers.Length;
-                    this._subSlotCount++;
+                    _verticeOffset += slot._meshBuffer.vertexBuffers.Length;
+                    _subSlotCount++;
                 }
 
-                //被合并的显示
                 if (proxySlot._renderDisplay != null)
                 {
                     proxySlot._renderDisplay.SetActive(true);
@@ -197,28 +158,69 @@ namespace DragonBones
             }
         }
 
+        private void RestoreArmature(Armature armature)
+        {
+            if (armature == null)  return; 
+            
+            foreach (Slot slot in armature.GetSlots())
+            {
+                UnitySlot unitySlot = (UnitySlot)slot;
+                
+                if(unitySlot == null || slot == null) continue;
+                
+                if (unitySlot.ChildArmature == null)
+                {
+                    unitySlot.CancelCombineMesh();
+                }
+            }
+        }
+
+        private void UpdateMeshBuffers()
+        {
+            if (meshBuffers == null)
+            {
+                return;
+            }
+
+            for (var i = 0; i < meshBuffers.Length; i++)
+            {
+                var meshBuffer = meshBuffers[i];
+                
+                if (meshBuffer.ZOrderDirty)
+                {
+                    meshBuffer.UpdateOrder();
+                    meshBuffer.ZOrderDirty = false;
+                }
+                else if (meshBuffer.VertexDirty)//dont quite understand why they used else if here. maybe vertices update included in UpdateOrder
+                {
+                    meshBuffer.UpdateVertices();
+                    meshBuffer.VertexDirty = false;
+                }
+            }
+        }
+
         public void CollectMesh(Armature armature, List<CombineMeshInfo> combineSlots)
         {
             if (armature == null)
             {
+                DBLogger.LogWarning($"Trying to collect mesh but armature is not initialized in UnityCombineMeshes({gameObject.name})");
                 return;
             }
 
-            var slots = new List<Slot>(armature.GetSlots());
-            if (slots.Count == 0)
-            {
-                return;
-            }
-            //
-            var isBreakCombineMesh = false;
-            var isSameMaterial = false;
-            var isChildAramture = false;
+            if (armature.SlotsCount == 0) return; 
+            
+            List<Slot> slots = new List<Slot>(armature.GetSlots());
+            
+            bool isBreakCombineMesh = false;
+            bool isSameMaterial = false;
+            bool isChildAramture = false;
+            
             UnitySlot slotMeshProxy = null;
-
             GameObject slotDisplay = null;
+            
             for (var i = 0; i < slots.Count; i++)
             {
-                var slot = slots[i] as UnitySlot;
+                UnitySlot slot = slots[i] as UnitySlot;
 
                 slot.CancelCombineMesh();
 
@@ -241,13 +243,10 @@ namespace DragonBones
                     isSameMaterial = slotMeshProxy == null;
                 }
 
-                //先检查这个slot会不会打断网格合并
-                isBreakCombineMesh = isChildAramture ||
-                                    slot._isIgnoreCombineMesh ||
-                                    slot._blendMode != BlendMode.Normal ||
-                                    !isSameMaterial;
+                //First check if this slot will interrupt the grid merge
+                isBreakCombineMesh = isChildAramture || slot.IgnoreCombineMesh || slot._blendMode != BlendMode.Normal || !isSameMaterial;
 
-                //如果会打断，那么先合并一次
+                //If it will be interrupted, then merge once first
                 if (isBreakCombineMesh)
                 {
                     if (combineSlots.Count > 0)
@@ -272,15 +271,13 @@ namespace DragonBones
                     slotMeshProxy = slot;
                 }
 
-                //如果不会合并，检查一下是否是子骨架
                 if (isChildAramture)
                 {
                     continue;
                 }
 
-                if (slotMeshProxy != null && slotDisplay != null && slotDisplay.activeSelf && !slot._isIgnoreCombineMesh)
+                if (slotMeshProxy != null && slotDisplay != null && slotDisplay.activeSelf && !slot.IgnoreCombineMesh)
                 {
-                    var parentTransfrom = (slot._armature.Display as UnityEngineArmatureDisplay).transform;
                     CombineInstance com = new CombineInstance();
                     com.mesh = slot._meshBuffer.sharedMesh;
 
@@ -289,11 +286,12 @@ namespace DragonBones
                     combineSlots[combineSlots.Count - 1].combines.Add(com);
                     combineSlots[combineSlots.Count - 1].slots.Add(slot);
                 }
+                
                 if (i != slots.Count - 1)
                 {
                     continue;
                 }
-                //
+                
                 if (combineSlots.Count > 0)
                 {
                     if (combineSlots[combineSlots.Count - 1].combines.Count == 1)
@@ -301,6 +299,7 @@ namespace DragonBones
                         combineSlots.RemoveAt(combineSlots.Count - 1);
                     }
                 }
+                
                 slotMeshProxy = null;
             }
         }

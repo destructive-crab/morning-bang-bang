@@ -16,20 +16,20 @@ namespace DragonBones
         public Color32[] color32Buffers;
         public int[] triangleBuffers;
 
-        public bool vertexDirty;
-        public bool zorderDirty;
+        public bool VertexDirty;
+        public bool ZOrderDirty;
         public bool enabled;
 
         public static Mesh GenerateMesh()
         {
-            var mesh = new Mesh();
+            Mesh mesh = new Mesh();
             mesh.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
             mesh.MarkDynamic();
 
             return mesh;
         }
 
-        private static int _OnSortSlots(Slot a, Slot b)
+        private static int CompareSlots(Slot a, Slot b)
         {
             if(a._zOrder > b._zOrder)
             {
@@ -59,7 +59,7 @@ namespace DragonBones
             uvBuffers = null;
             vertexBuffers = null;
             color32Buffers = null;
-            vertexDirty = false;
+            VertexDirty = false;
             enabled = false;
         }
 
@@ -141,7 +141,7 @@ namespace DragonBones
 
         public void UpdateOrder()
         {
-            combineSlots.Sort(_OnSortSlots);
+            combineSlots.Sort(CompareSlots);
 
             var index = 0;
             var newVerticeIndex = 0;

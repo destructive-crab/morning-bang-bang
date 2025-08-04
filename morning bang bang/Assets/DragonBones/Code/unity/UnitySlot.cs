@@ -6,23 +6,23 @@ namespace DragonBones
     {
         internal const float Z_OFFSET = 0.001f;
         private static readonly int[] TRIANGLES = { 0, 1, 2, 0, 2, 3 };
-        private static Vector3 _helpVector3 = new Vector3();
+        private static Vector3 _helpVector3;
 
         internal GameObject _renderDisplay;
         internal UnityUGUIDisplay _uiDisplay = null;
 
-        internal MeshBuffer _meshBuffer;
-
         internal MeshRenderer _meshRenderer = null;
         internal MeshFilter _meshFilter = null;
+        
+        internal MeshBuffer _meshBuffer;
 
         //combineMesh
-        internal bool _isIgnoreCombineMesh;
-        internal bool _isCombineMesh;
+        internal bool IgnoreCombineMesh { get; private set; } = true;
+        internal bool IsCombineMesh;
         internal int _sumMeshIndex = -1;
         internal int _verticeOrder = -1;
         internal int _verticeOffset = -1;
-        internal UnityCombineMeshes _combineMesh = null;
+        internal UnityCombineMeshes CombineMeshComponent { get; set; }
         internal bool _isActive = false;
 
         private bool _skewed;
@@ -35,24 +35,23 @@ namespace DragonBones
 
             _meshBuffer?.Dispose();
 
-            _skewed = false;
             _proxy = null;
 
             _renderDisplay = null;
             _uiDisplay = null;
 
             _meshBuffer = null;
-
             _meshRenderer = null;
             _meshFilter = null;
 
-            _isIgnoreCombineMesh = false;
-            _isCombineMesh = false;
+            IgnoreCombineMesh = false;
+            IsCombineMesh = false;
+            CombineMeshComponent = null;
             _sumMeshIndex = -1;
             _verticeOrder = -1;
             _verticeOffset = -1;
 
-            _combineMesh = null;
+            _skewed = false;
 
             _currentBlendMode = BlendMode.Normal;
             _isActive = false;
@@ -118,15 +117,13 @@ namespace DragonBones
                 _renderDisplay.transform.SetParent(container.transform);
 
                 _helpVector3.Set(0.0f, 0.0f, 0.0f);
+                SetZOrder(_helpVector3);
             }
         }
-        /**
-         * @private
-         */
         protected override void _ReplaceDisplay(object value)
         {
-            var container = _proxy;
-            var prevDisplay = value as GameObject;
+            UnityEngineArmatureDisplay container = _proxy;
+            GameObject prevDisplay = value as GameObject;
             int index = prevDisplay.transform.GetSiblingIndex();
             prevDisplay.SetActive(false);
 
@@ -135,10 +132,9 @@ namespace DragonBones
             _renderDisplay.SetActive(true);
             _renderDisplay.transform.SetSiblingIndex(index);
 
+            SetZOrder(_helpVector3);
         }
-        /**
-         * @private
-         */
+
         protected override void _RemoveDisplay()
         {
             _renderDisplay.transform.parent = null;
@@ -146,28 +142,27 @@ namespace DragonBones
 
         protected override void _UpdateZOrder()
         {
-            SetZOrder(this._renderDisplay.transform.localPosition);
+            SetZOrder(_renderDisplay.transform.localPosition);
 
-            //
-            if (this.childArmature != null || !this._isActive)
+            if (childArmature != null || !_isActive)
             {
-                this._CombineMesh();
+                _CombineMesh();
             } 
         }
-        internal void SetZOrder(Vector3 zorderPos)
+        internal void SetZOrder(Vector3 zOrderPosition)
         {
-            if (this._isCombineMesh)
+            if (IsCombineMesh)
             {
-                var meshBuffer = this._combineMesh.meshBuffers[this._sumMeshIndex];
-                meshBuffer.zorderDirty = true;
+                MeshBuffer meshBuffer = CombineMeshComponent.meshBuffers[_sumMeshIndex];
+                meshBuffer.ZOrderDirty = true;
             }
-
+            else
             {
-                zorderPos.z = -this._zOrder * (this._proxy._zSpace + Z_OFFSET);
+                zOrderPosition.z = -_zOrder * (_proxy._zSpace + Z_OFFSET);
 
                 if (_renderDisplay != null)
                 {
-                    _renderDisplay.transform.localPosition = zorderPos;
+                    _renderDisplay.transform.localPosition = zOrderPosition;
                     _renderDisplay.transform.SetSiblingIndex(_zOrder);
 
                     if (_proxy.isUGUI)
@@ -199,26 +194,23 @@ namespace DragonBones
                         else
                         {
                             childArmatureComp.sortingOrder = _proxy._sortingOrder;
-                        }}
-                    
+                        }
+                    }
                 }
             }
         }
-        /**
-         * @private
-         */
 
         public void DisallowCombineMesh()
         {
             CancelCombineMesh();
-            _isIgnoreCombineMesh = true;
+            IgnoreCombineMesh = true;
         }
 
         internal void CancelCombineMesh()
         {
-            if (_isCombineMesh)
+            if (IsCombineMesh)
             {
-                _isCombineMesh = false;
+                IsCombineMesh = false;
                 if (_meshFilter != null)
                 {
                     _meshFilter.sharedMesh = _meshBuffer.sharedMesh;
@@ -261,7 +253,7 @@ namespace DragonBones
             }
 
             //
-            _isCombineMesh = false;
+            IsCombineMesh = false;
             _sumMeshIndex = -1;
             _verticeOrder = -1;
             _verticeOffset = -1;
@@ -273,24 +265,24 @@ namespace DragonBones
         {
             //引起合并的条件,Display改变，混合模式改变，Visible改变，Zorder改变
             //已经关闭合并，不再考虑
-            if (_isIgnoreCombineMesh || _proxy.isUGUI)
+            if (IgnoreCombineMesh || _proxy.isUGUI)
             {
                 return;
             }
 
             //已经合并过了，又触发合并，那么打断合并，用自己的网格数据还原
-            if (_isCombineMesh)
+            if (IsCombineMesh)
             {
                 //已经合并过，除非满足一下情况，否则都不能再合并, TODO
                 CancelCombineMesh();
-                _isIgnoreCombineMesh = true;
+                IgnoreCombineMesh = true;
             }
 
             var combineMeshComp = _proxy.GetComponent<UnityCombineMeshes>();
             //从来没有合并过，触发合并，那么尝试合并
             if (combineMeshComp != null)
             {
-                combineMeshComp.dirty = true;
+                combineMeshComp.MarkAsDirty();
             }
         }
 
@@ -301,7 +293,7 @@ namespace DragonBones
         {
             _renderDisplay.SetActive(_parent.visible);
 
-            if (_isCombineMesh && !_parent.visible)
+            if (IsCombineMesh && !_parent.visible)
             {
                 _CombineMesh();
             }
@@ -349,9 +341,9 @@ namespace DragonBones
             if (childArmature == null)
             {
                 var proxyTrans = _proxy._colorTransform;
-                if (_isCombineMesh)
+                if (IsCombineMesh)
                 {
-                    var meshBuffer = _combineMesh.meshBuffers[_sumMeshIndex];
+                    var meshBuffer = CombineMeshComponent.meshBuffers[_sumMeshIndex];
                     for (var i = 0; i < _meshBuffer.vertexBuffers.Length; i++)
                     {
                         var index = _verticeOffset + i;
@@ -581,7 +573,7 @@ namespace DragonBones
 
             _renderDisplay.transform.localPosition = _helpVector3;
 
-            if (_isCombineMesh)
+            if (IsCombineMesh)
             {
                 _CombineMesh();
             }
@@ -624,9 +616,9 @@ namespace DragonBones
                 }
 
                 MeshBuffer meshBuffer = null;
-                if (_isCombineMesh)
+                if (IsCombineMesh)
                 {
-                    meshBuffer = _combineMesh.meshBuffers[_sumMeshIndex];
+                    meshBuffer = CombineMeshComponent.meshBuffers[_sumMeshIndex];
                 }
                 int iB = weightData.offset + (int)BinaryOffset.WeigthBoneIndices + weightData.bones.Count, iV = weightFloatOffset, iF = 0;
                 for (int i = 0; i < vertextCount; ++i)
@@ -666,7 +658,7 @@ namespace DragonBones
 
                 if (meshBuffer != null)
                 {
-                    meshBuffer.vertexDirty = true;
+                    meshBuffer.VertexDirty = true;
                 }
                 else
                 {
@@ -697,9 +689,9 @@ namespace DragonBones
                 var vx = 0.0f;
                 var vy = 0.0f;
                 MeshBuffer meshBuffer = null;
-                if (_isCombineMesh)
+                if (IsCombineMesh)
                 {
-                    meshBuffer = _combineMesh.meshBuffers[_sumMeshIndex];
+                    meshBuffer = CombineMeshComponent.meshBuffers[_sumMeshIndex];
                 }
 
                 for (int i = 0, iV = 0, iF = 0, l = vertextCount; i < l; ++i)
@@ -725,7 +717,7 @@ namespace DragonBones
                 }
                 if (meshBuffer != null)
                 {
-                    meshBuffer.vertexDirty = true;
+                    meshBuffer.VertexDirty = true;
                 }
                 // else if (this._meshRenderer && this._meshRenderer.enabled)
                 else
@@ -737,7 +729,7 @@ namespace DragonBones
 
         protected override void _UpdateTransform()
         {
-            if (_isCombineMesh)
+            if (IsCombineMesh)
             {
                 var a = globalTransformMatrix.a;
                 var b = globalTransformMatrix.b;
@@ -751,7 +743,7 @@ namespace DragonBones
                 var ry = 0.0f;
                 var vx = 0.0f;
                 var vy = 0.0f;
-                var meshBuffer = _combineMesh.meshBuffers[_sumMeshIndex];
+                var meshBuffer = CombineMeshComponent.meshBuffers[_sumMeshIndex];
                 for (int i = 0, l = _meshBuffer.vertexBuffers.Length; i < l; i++)
                 {
                     index = i + _verticeOffset;
@@ -769,7 +761,7 @@ namespace DragonBones
                     meshBuffer.vertexBuffers[index].y = vy;
                 }
                 //
-                meshBuffer.vertexDirty = true;
+                meshBuffer.VertexDirty = true;
             }
             else
             {
@@ -934,11 +926,6 @@ namespace DragonBones
         public UnityEngineArmatureDisplay proxy
         {
             get { return _proxy; }
-        }
-
-        public bool isIgnoreCombineMesh
-        {
-            get { return _isIgnoreCombineMesh; }
         }
     }
 }

@@ -78,7 +78,7 @@ namespace DragonBones
                 }
 #endif
 
-                _UpdateSlotsSorting();
+                UpdateSlotsSorting();
             }
         } 
         [SerializeField]
@@ -99,14 +99,14 @@ namespace DragonBones
 
                 _sortingOrder = value;
 
-                _UpdateSlotsSorting();
+                UpdateSlotsSorting();
             }
         } 
         [SerializeField]
         
         internal UnityEngine.Rendering.SortingGroup _sortingGroup;
         
-        private void _UpdateSlotsSorting()
+        private void UpdateSlotsSorting()
         {
             if (Armature == null)
             {
@@ -144,7 +144,7 @@ namespace DragonBones
 
                 if (slot.ChildArmature != null)
                 {
-                    (slot.ChildArmature.Display as UnityEngineArmatureDisplay)._UpdateSlotsSorting();
+                    (slot.ChildArmature.Display as UnityEngineArmatureDisplay).UpdateSlotsSorting();
                 }
 
 #if UNITY_EDITOR
@@ -204,7 +204,7 @@ namespace DragonBones
 
                 _zSpace = value;
 
-                _UpdateSlotsSorting();
+                UpdateSlotsSorting();
             }
         }
         //default open combineMeshs

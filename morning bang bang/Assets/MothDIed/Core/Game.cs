@@ -61,7 +61,7 @@ namespace MothDIed
 
             AllowDebug = Settings.Data.EnableDebugFeatures;
             
-            if (true)
+            if (AllowDebug)
             {
                 debugger = new BangDebugger(args.DebuggerConfig); 
                 await debugger.SetupDebugger();

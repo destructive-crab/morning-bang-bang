@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SceneSwitcherSettings
   m_EditorClassIdentifier: 
   Settings:
-    WhichScenesCollect: 0
+    WhichScenesCollect: 2
     ShowReturnToPreviousButton: 1
     AutoEnableCustomPlayModeStartScene: 1
     CustomPlayModeStartSceneBuildIndex: 0

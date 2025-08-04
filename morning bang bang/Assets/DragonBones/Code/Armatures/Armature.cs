@@ -34,8 +34,8 @@ namespace DragonBones
         private bool _flipY;
 
         internal int _cacheFrameIndex;
-        private readonly List<Bone> _bones = new List<Bone>();
-        private readonly List<Slot> _slots = new List<Slot>();
+        private readonly List<Bone> _bones = new();
+        private readonly List<Slot> _slots = new();
         internal readonly List<Constraint> _constraints = new List<Constraint>();
         private readonly List<EventObject> _actions = new List<EventObject>();
 
@@ -786,6 +786,8 @@ namespace DragonBones
         }
 
         public bool IsPivotApplied { get; private set; } = false;
+        public int SlotsCount => _slots.Count;
+
         public void BonesBuildingFinished()
         {
             
