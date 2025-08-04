@@ -65,7 +65,7 @@ namespace DragonBones
         {
             if (!isRelease)
             {
-                DBUnityFactory.UnityFactoryHelper.DestroyUnityObject(value as GameObject);
+                DBUnityFactory.Helper.DestroyUnityObject(value as GameObject);
             }
         }
 

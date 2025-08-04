@@ -48,7 +48,7 @@ namespace DragonBones
         {
             if (sharedMesh != null)
             {
-                DBUnityFactory.UnityFactoryHelper.DestroyUnityObject(sharedMesh);
+                DBUnityFactory.Helper.DestroyUnityObject(sharedMesh);
             }
 
             combineSlots.Clear();

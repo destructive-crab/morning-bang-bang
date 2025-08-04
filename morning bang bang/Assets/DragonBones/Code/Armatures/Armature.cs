@@ -193,21 +193,21 @@ namespace DragonBones
             Structure = new ArmatureStructure(this);
             AnimationPlayer = new AnimationPlayer(this);
         }
-
-        internal void Init(ArmatureData armatureData, IEngineArmatureDisplay engineDisplay)
+        
+        internal void Initialize(ArmatureData armatureData, IEngineArmatureDisplay engineDisplay)
         {
-            if (this.ArmatureData != null)
-            {
-                return;
-            }
+            if (ArmatureData != null) return;
 
-            this.ArmatureData = armatureData;
+            ArmatureData = armatureData;
             Display = engineDisplay;
 
             Display.DBInit(this);
+            AnimationPlayer.Init(ArmatureData.animations);
+        }
+
+        internal void ArmatureReady()
+        {
             
-            AnimationPlayer.Init();
-            AnimationPlayer.animations = this.ArmatureData.animations;
         }
 
         /// <summary>

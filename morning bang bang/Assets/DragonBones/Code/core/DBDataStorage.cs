@@ -343,7 +343,7 @@ namespace DragonBones
                 return null;
             }
 
-            return dataPackage.armatureData;
+            return dataPackage.ArmatureData;
         }
         /// <summary>
         /// - Clear all cached DragonBonesData instances and TextureAtlasData instances.
@@ -413,16 +413,16 @@ namespace DragonBones
 
             if (armatureData != null)
             {
-                dataPackage.dataName = dragonBonesName;
-                dataPackage.textureAtlasName = textureAtlasName;
-                dataPackage.data = dragonBonesData;
-                dataPackage.armatureData = armatureData;
-                dataPackage.skin = null;
+                dataPackage.DataName = dragonBonesName;
+                dataPackage.TextureAtlasName = textureAtlasName;
+                dataPackage.DragonBonesData = dragonBonesData;
+                dataPackage.ArmatureData = armatureData;
+                dataPackage.Skin = null;
 
                 if (!string.IsNullOrEmpty(skinName))
                 {
-                    dataPackage.skin = armatureData.GetSkin(skinName);
-                    if (dataPackage.skin == null && autoSearch)
+                    dataPackage.Skin = armatureData.GetSkin(skinName);
+                    if (dataPackage.Skin == null && autoSearch)
                     {
                         foreach (var k in dragonBonesDataMap.Keys)
                         {
@@ -430,19 +430,19 @@ namespace DragonBones
                             var skinArmatureData = skinDragonBonesData.GetArmature(skinName);
                             if (skinArmatureData != null)
                             {
-                                dataPackage.skin = skinArmatureData.defaultSkin;
+                                dataPackage.Skin = skinArmatureData.defaultSkin;
                                 break;
                             }
                         }
                     }
                 }
 
-                if (dataPackage.skin == null)
+                if (dataPackage.Skin == null)
                 {
-                    dataPackage.skin = armatureData.defaultSkin;
+                    dataPackage.Skin = armatureData.defaultSkin;
                 }
 
-                dataPackage.display = display;
+                dataPackage.Display = display;
                 return true;
             }
 

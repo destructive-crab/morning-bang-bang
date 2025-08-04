@@ -60,9 +60,10 @@ namespace DragonBones
             _lastAnimationState = null;
         }
 
-        internal void Init()
+        internal void Init(Dictionary<string, AnimationData> armatureDataAnimations)
         {
             _animationConfig = DBObject.BorrowObject<AnimationConfig>();
+            Animations = armatureDataAnimations;
         }
 
         internal void AdvanceTime(float passedTime)
@@ -769,9 +770,9 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-        public Dictionary<string, AnimationData> animations
+        public Dictionary<string, AnimationData> Animations
         {
-            get { return _animations; }
+            get => _animations;
             set
             {
                 if (_animations == value)

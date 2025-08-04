@@ -16,12 +16,12 @@ namespace DragonBones
 
             if (_disposeEnabled && texture != null)
             {
-                DBUnityFactory.UnityFactoryHelper.DestroyUnityObject(texture);
+                DBUnityFactory.Helper.DestroyUnityObject(texture);
             }
 
             if (_disposeEnabled && uiTexture != null)
             {
-                DBUnityFactory.UnityFactoryHelper.DestroyUnityObject(uiTexture);
+                DBUnityFactory.Helper.DestroyUnityObject(uiTexture);
             }
 
             _disposeEnabled = false;
@@ -58,7 +58,7 @@ namespace DragonBones
                 var mat = this._cacheBlendModeMats[key];
                 if (mat != null)
                 {
-                    DBUnityFactory.UnityFactoryHelper.DestroyUnityObject(mat);
+                    DBUnityFactory.Helper.DestroyUnityObject(mat);
                 }
             }
 

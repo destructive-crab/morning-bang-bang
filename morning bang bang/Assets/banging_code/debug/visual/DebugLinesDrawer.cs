@@ -20,7 +20,7 @@ namespace banging_code.debug
             
             poolConfig.Persistent = true;
             poolConfig.Expandable = true;
-            poolConfig.Fabric = new DebugPoolFabric();
+            poolConfig.SetFabric(new DebugPoolFabric());
             
             linesPool = new GameObjectPool<LineRenderer>(poolConfig);
         }

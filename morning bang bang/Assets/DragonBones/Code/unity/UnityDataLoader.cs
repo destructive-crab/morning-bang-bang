@@ -116,7 +116,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public DragonBonesData LoadDragonBonesData(string dragonBonesJSONPath, string name = "", float scale = 0.01f)
         {
-            dragonBonesJSONPath = DBUnityFactory.UnityFactoryHelper.CheckResourcesPath(dragonBonesJSONPath);
+            dragonBonesJSONPath = DBUnityFactory.Helper.CheckResourcesPath(dragonBonesJSONPath);
 
             TextAsset dragonBonesJSON = Resources.Load<TextAsset>(dragonBonesJSONPath);
 
@@ -176,7 +176,7 @@ namespace DragonBones
         /// <language>en_US</language>  
         public UnityTextureAtlasData LoadTextureAtlasData(string textureAtlasJSONPath, string name = "", float scale = 1.0f, bool isUGUI = false)
         {
-            textureAtlasJSONPath = DBUnityFactory.UnityFactoryHelper.CheckResourcesPath(textureAtlasJSONPath);
+            textureAtlasJSONPath = DBUnityFactory.Helper.CheckResourcesPath(textureAtlasJSONPath);
 
             TextAsset textureAtlasJSON = Resources.Load<TextAsset>(textureAtlasJSONPath);
 
@@ -188,7 +188,7 @@ namespace DragonBones
 
                 if (textureAtlasData != null)
                 {
-                    textureAtlasData.imagePath = DBUnityFactory.UnityFactoryHelper.GetTextureAtlasImagePath(textureAtlasJSONPath, textureAtlasData.imagePath);
+                    textureAtlasData.imagePath = DBUnityFactory.Helper.GetTextureAtlasImagePath(textureAtlasJSONPath, textureAtlasData.imagePath);
 
                     DBUnityFactory.RefreshTextureAtlas(textureAtlasData, isUGUI);
                 }

@@ -6,13 +6,15 @@ namespace DragonBones
 {
     public class BuildArmaturePackage
     {
-        public string dataName = "";
-        public string textureAtlasName = "";
+        public string DataName = "";
+        public string TextureAtlasName = "";
         
-        public DragonBonesData data;
-        public ArmatureData armatureData;
-        public SkinData skin;
-        public object display;
+        public DragonBonesData DragonBonesData;
+        public ArmatureData ArmatureData;
+        public SkinData Skin;
+        
+        public IEngineArmatureDisplay Display;
+        public Armature Armature;
     }
     
     /// <summary>
@@ -31,21 +33,78 @@ namespace DragonBones
     /// <language>en_US</language>
     public abstract class DBFactory
     {
+        protected static bool IsSupportMesh() => true;
+
+        public abstract void Clear(bool disposeData = true);
+
         /// <summary>
-        /// - Create a factory instance. (typically only one global factory instance is required)
+        /// - Create a armature from cached DragonBonesData instances and TextureAtlasData instances.
+        /// Note that when the created armature that is no longer in use, you need to explicitly dispose {@link #dragonBones.Armature#dispose()}.
         /// </summary>
+        /// <param name="armatureName">- The armature data name.</param>
+        /// <param name="dragonBonesName">- The cached name of the DragonBonesData instance. (If not set, all DragonBonesData instances are retrieved, and when multiple DragonBonesData instances contain a the same name armature data, it may not be possible to accurately create a specific armature)</param>
+        /// <param name="skinName">- The skin name, you can set a different ArmatureData name to share it's skin data. (If not set, use the default skin data)</param>
+        /// <returns>The armature.</returns>
+        /// <example>
+        /// TypeScript style, for reference only.
+        /// <pre>
+        ///     let armature = factory.buildArmature("armatureName", "dragonBonesName");
+        ///     armature.clock = factory.clock;
+        /// </pre>
+        /// </example>
+        /// <see cref="DragonBonesData"/>, <see cref="ArmatureData"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
-        /// <private/>
-        protected bool _IsSupportMesh()
+        public virtual Armature BuildArmature(string armatureName, string dragonBonesName = "", string skinName = null, string textureAtlasName = null, IEngineArmatureDisplay providedDisplay = null)
         {
-            return true;
+            Armature armature = GetEmptyArmature();
+            IEngineArmatureDisplay armatureDisplay = null;
+
+            if (providedDisplay == null)
+            {
+                armatureDisplay = GetNewArmatureDisplayFor(armature);
+            }
+            else
+            {
+                providedDisplay.Armature?.ReturnToPool();
+                providedDisplay.DBClear(false);
+                armatureDisplay = providedDisplay;
+            }
+            
+            BuildArmaturePackage dataPackage = new BuildArmaturePackage();
+            
+            if (!DBInitial.Kernel.DataStorage.FillBuildArmaturePackage(dataPackage, dragonBonesName, armatureName, skinName, textureAtlasName, armatureDisplay))
+            {
+                DBLogger.Assert(false, "No armature data: " + armatureName + ", " + (dragonBonesName != "" ? dragonBonesName : ""));
+                return null;
+            }
+            
+            armature.Initialize(dataPackage.ArmatureData, armatureDisplay);
+            
+            BuildBonesFor(dataPackage, armature);
+            BuildSlotsFor(dataPackage, armature);
+            BuildConstraintsFor(dataPackage, armature);
+            
+            armature.InvalidUpdate(null, true);
+            armature.AdvanceTime(0.0f); // Update armature pose.
+
+            DBInitial.Kernel.Clock.Add(armature);
+            
+            return armature;
         }
+
+        protected virtual Armature BuildChildArmature(BuildArmaturePackage dataPackage, Slot slot, DisplayData displayData)
+        {
+            return BuildArmature(displayData.path, dataPackage != null ? dataPackage.DataName : "", "", dataPackage != null ? dataPackage.TextureAtlasName : "");
+        }
+
+        protected abstract IEngineArmatureDisplay GetNewArmatureDisplayFor(Armature armature);
+
+        public abstract TextureAtlasData BuildTextureAtlasData(TextureAtlasData textureAtlasData, object textureAtlas);
 
         protected void BuildBonesFor(BuildArmaturePackage dataPackage, Armature armature)
         {
-            var bones = dataPackage.armatureData.sortedBones;
+            var bones = dataPackage.ArmatureData.sortedBones;
             
             for (int i = 0, l = bones.Count; i < l; ++i)
             {
@@ -54,11 +113,11 @@ namespace DragonBones
                 bone.Init(boneData, armature);
             }
         }
-        
+
         protected void BuildSlotsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
-            var currentSkin = dataPackage.skin;
-            var defaultSkin = dataPackage.armatureData.defaultSkin;
+            var currentSkin = dataPackage.Skin;
+            var defaultSkin = dataPackage.ArmatureData.defaultSkin;
             
             if (currentSkin == null || defaultSkin == null)
             {
@@ -81,7 +140,7 @@ namespace DragonBones
                 }
             }
 
-            foreach (var slotData in dataPackage.armatureData.sortedSlots)
+            foreach (var slotData in dataPackage.ArmatureData.sortedSlots)
             {
                 List<DisplayData> displayDatas = skinSlots.ContainsKey(slotData.name) ? skinSlots[slotData.name] : null;
                 Slot slot = BuildSlot(dataPackage, slotData, armature);
@@ -111,10 +170,11 @@ namespace DragonBones
             }
         }
 
-        /// <private/>
+        protected abstract Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, Armature armature);
+
         protected void BuildConstraintsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
-            var constraints = dataPackage.armatureData.constraints;
+            var constraints = dataPackage.ArmatureData.constraints;
             foreach (var constraintData in constraints.Values)
             {
                 // TODO more constraint type.
@@ -124,14 +184,9 @@ namespace DragonBones
             }
         }
 
-        protected virtual Armature BuildChildArmature(BuildArmaturePackage dataPackage, Slot slot, DisplayData displayData)
-        {
-            return BuildArmature(displayData.path, dataPackage != null ? dataPackage.dataName : "", "", dataPackage != null ? dataPackage.textureAtlasName : "");
-        }
-        
         protected object GetSlotDisplay(BuildArmaturePackage dataPackage, DisplayData displayData, DisplayData rawDisplayData, Slot slot)
         {
-            var dataName = dataPackage != null ? dataPackage.dataName : displayData.parent.parent.parent.name;
+            var dataName = dataPackage != null ? dataPackage.DataName : displayData.parent.parent.parent.name;
             
             object display = null;
             
@@ -145,12 +200,12 @@ namespace DragonBones
                         {
                             imageDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataName, displayData.path);
                         }
-                        else if (dataPackage != null && !string.IsNullOrEmpty(dataPackage.textureAtlasName))
+                        else if (dataPackage != null && !string.IsNullOrEmpty(dataPackage.TextureAtlasName))
                         {
-                            imageDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.textureAtlasName, displayData.path);
+                            imageDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.TextureAtlasName, displayData.path);
                         }
 
-                        if (rawDisplayData != null && rawDisplayData.type == DisplayType.Mesh && _IsSupportMesh())
+                        if (rawDisplayData != null && rawDisplayData.type == DisplayType.Mesh && IsSupportMesh())
                         {
                             display = slot.MeshDisplay;
                         }
@@ -167,12 +222,12 @@ namespace DragonBones
                         {
                             meshDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataName, meshDisplayData.path);
                         }
-                        else if (dataPackage != null && !string.IsNullOrEmpty(dataPackage.textureAtlasName))
+                        else if (dataPackage != null && !string.IsNullOrEmpty(dataPackage.TextureAtlasName))
                         {
-                            meshDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.textureAtlasName, meshDisplayData.path);
+                            meshDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.TextureAtlasName, meshDisplayData.path);
                         }
 
-                        if (_IsSupportMesh())
+                        if (IsSupportMesh())
                         {
                             display = slot.MeshDisplay;
                         }
@@ -219,53 +274,8 @@ namespace DragonBones
 
             return display;
         }
+        protected virtual Armature GetEmptyArmature() => DBObject.BorrowObject<Armature>();
 
-        public abstract void Clear(bool disposeData = true);
-        public abstract TextureAtlasData BuildTextureAtlasData(TextureAtlasData textureAtlasData, object textureAtlas);
-        protected abstract Armature BuildArmatureProxy(BuildArmaturePackage dataPackage);
-        protected abstract Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, Armature armature);
-       
-        /// <summary>
-        /// - Create a armature from cached DragonBonesData instances and TextureAtlasData instances.
-        /// Note that when the created armature that is no longer in use, you need to explicitly dispose {@link #dragonBones.Armature#dispose()}.
-        /// </summary>
-        /// <param name="armatureName">- The armature data name.</param>
-        /// <param name="dragonBonesName">- The cached name of the DragonBonesData instance. (If not set, all DragonBonesData instances are retrieved, and when multiple DragonBonesData instances contain a the same name armature data, it may not be possible to accurately create a specific armature)</param>
-        /// <param name="skinName">- The skin name, you can set a different ArmatureData name to share it's skin data. (If not set, use the default skin data)</param>
-        /// <returns>The armature.</returns>
-        /// <example>
-        /// TypeScript style, for reference only.
-        /// <pre>
-        ///     let armature = factory.buildArmature("armatureName", "dragonBonesName");
-        ///     armature.clock = factory.clock;
-        /// </pre>
-        /// </example>
-        /// <see cref="DBKernel.DragonBonesData"/>
-        /// <see cref="DBKernel.ArmatureData"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>en_US</language>
-        public virtual Armature BuildArmature(string armatureName, string dragonBonesName = "", string skinName = null, string textureAtlasName = null, IEngineArmatureDisplay display = null)
-        {
-            var dataPackage = new BuildArmaturePackage();
-            
-            if (!DBInitial.Kernel.DataStorage.FillBuildArmaturePackage(dataPackage, dragonBonesName, armatureName, skinName, textureAtlasName, display))
-            {
-                DBLogger.Assert(false, "No armature data: " + armatureName + ", " + (dragonBonesName != "" ? dragonBonesName : ""));
-                return null;
-            }
-
-            Armature armature = BuildArmatureProxy(dataPackage);
-            
-            BuildBonesFor(dataPackage, armature);
-            BuildSlotsFor(dataPackage, armature);
-            BuildConstraintsFor(dataPackage, armature);
-            
-            armature.InvalidUpdate(null, true);
-            armature.AdvanceTime(0.0f); // Update armature pose.
-
-            return armature;
-        }
-        /// <private/>
         public virtual void ReplaceDisplay(Slot slot, DisplayData displayData, int displayIndex = -1)
         {
             if (displayIndex < 0)
@@ -314,6 +324,7 @@ namespace DragonBones
 
             slot.DisplayList = displayList;
         }
+        
         /// <summary>
         /// - Replaces the current display data for a particular slot with a specific display data.
         /// Specify display data with "dragonBonesName/armatureName/slotName/displayName".
@@ -489,11 +500,11 @@ namespace DragonBones
 
             if (isOverride)
             {
-                armature.AnimationPlayer.animations = armatureData.animations;
+                armature.AnimationPlayer.Animations = armatureData.animations;
             }
             else
             {
-                var rawAnimations = armature.AnimationPlayer.animations;
+                var rawAnimations = armature.AnimationPlayer.Animations;
                 Dictionary<string, AnimationData> animations = new Dictionary<string, AnimationData>();
 
                 foreach (var k in rawAnimations.Keys)
@@ -506,7 +517,7 @@ namespace DragonBones
                     animations[k] = armatureData.animations[k];
                 }
 
-                armature.AnimationPlayer.animations = animations;
+                armature.AnimationPlayer.Animations = animations;
             }
 
             foreach (var slot in armature.Structure.Slots)
@@ -536,26 +547,5 @@ namespace DragonBones
 
             return true;
         }
-
-        /// <summary>
-        /// - An Worldclock instance updated by engine.
-        /// </summary>
-        /// <version>DragonBones 5.7</version>
-        /// <language>en_US</language>
-        public WorldClock clock
-        {
-            get { return DBInitial.Kernel.Clock; }
-        }
-        /// <summary>
-        /// - Deprecated, please refer to {@link #replaceSkin}.
-        /// </summary>
-        /// <language>en_US</language>
-
-        [Obsolete("")]
-        public bool ChangeSkin(Armature armature, SkinData skin, List<string> exclude = null)
-        {
-            return ReplaceSkin(armature, skin, false, exclude);
-        }
     }
-    
 }

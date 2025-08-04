@@ -17,8 +17,6 @@ namespace DragonBones
         
         private GameObjectPool<UnityEngineArmatureDisplay> displaysPool;
 
-        private bool _isUGUI = false;
-
         public async UniTask InitializeFactory()
         {
             displaysPool = new GameObjectPool<UnityEngineArmatureDisplay>(new GameObjectPool<UnityEngineArmatureDisplay>.Config<UnityEngineArmatureDisplay>("Dragon Bones Armature Displays"));
@@ -28,9 +26,132 @@ namespace DragonBones
                 .IsExpandable(true)
                 .IsPersistent(true)
                 .SetFabric(new PoolFabric(true, false))
-                .SetPrefab(null); //means pool will be filled with empty GO with UnityEngineArmatureDisplay component
+                .SetPrefab(null); //means pool will be filled with empty GO with UnityEngineArmatureDisplay component on them
 
             await displaysPool.WarmAsync();
+        }
+
+        public override void Clear(bool disposeData = true)
+        {
+            if (disposeData)
+            {
+                displaysPool.Dispose();
+            }
+        }
+        
+        /// <summary>
+        /// Create a armature from cached DragonBonesData instances and TextureAtlasData instances, then use the {@link #clock} to update it.
+        /// The difference is that the armature created by {@link #buildArmature} is not WorldClock instance update.
+        /// </summary>
+        /// <param name="armatureName">The armature data name</param>
+        /// <param name="dragonBonesName">The cached name of the DragonBonesData instance (If not set, all DragonBonesData instances are retrieved, and when multiple DragonBonesData instances contain a the same name armature data, it may not be possible to accurately create a specific armature)</param>
+        /// <param name="skinName">The skin name, you can set a different ArmatureData name to share it's skin data (If not set, use the default skin data)</param>
+        /// <param name="textureAtlasName">The textureAtlas name</param>
+        /// <returns>The armature display container.</returns>
+        /// <language>en_US</language>
+        public UnityEngineArmatureDisplay CreateNewArmature(string armatureName, string dragonBonesName = "", IEngineArmatureDisplay display = null, 
+            string skinName = "", string textureAtlasName = "")
+        {
+            Armature armature = BuildArmature(armatureName, dragonBonesName, skinName, textureAtlasName, display);
+            return armature.Display as UnityEngineArmatureDisplay;
+        }
+
+        protected override Armature BuildChildArmature(BuildArmaturePackage dataPackage, Slot slot, DisplayData displayData)
+        {
+            string childDisplayName = slot.SlotData.name + " (" + displayData.path + ")"; 
+            UnityEngineArmatureDisplay proxy = slot.Armature.Display as UnityEngineArmatureDisplay;
+            Transform childTransform = proxy.transform.Find(childDisplayName);
+
+            Armature childArmature = null;
+            
+            if (childTransform == null)
+            {
+                if (dataPackage != null)
+                {
+                    childArmature = BuildArmature(displayData.path, dataPackage.DataName);
+                }
+                else
+                {
+                    childArmature = BuildArmature(displayData.path, displayData.parent.parent.parent.name);
+                }
+            }
+            else
+            {
+                if (dataPackage != null)
+                {
+                    childArmature = CreateNewArmature(displayData.path, dataPackage != null ? dataPackage.DataName : "", childTransform.gameObject.GetComponent<UnityEngineArmatureDisplay>(), null, dataPackage.TextureAtlasName).Armature;
+                }
+                else
+                {
+                    childArmature =
+                        CreateNewArmature(displayData.path, null, childTransform.gameObject.GetComponent<UnityEngineArmatureDisplay>(), null, null).Armature;
+                }
+            }
+
+            if (childArmature == null)
+            {
+                return null;
+            }
+
+            UnityEngineArmatureDisplay childArmatureDisplay = childArmature.Display as UnityEngineArmatureDisplay;
+            childArmatureDisplay.isUGUI = proxy.GetComponent<UnityEngineArmatureDisplay>().isUGUI;
+            childArmatureDisplay.name = childDisplayName;
+            childArmatureDisplay.transform.SetParent(proxy.transform, false);
+            childArmatureDisplay.gameObject.SetActive(false);
+            return childArmature;
+        }
+
+        protected override IEngineArmatureDisplay GetNewArmatureDisplayFor(Armature armature)
+        {
+            if (armature == null)
+            {
+                DBLogger.LogWarning($"No armature instance was provided for building display");
+                return null;
+            }
+            if (armature.Display != null)
+            {
+                DBLogger.LogWarning($"Armature ({armature.Name}) already has display");
+                return armature.Display;
+            }
+            
+            return displaysPool.Get();
+        }
+
+        protected override Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, Armature armature)
+        {
+            UnitySlot slot = DBObject.BorrowObject<UnitySlot>();
+            
+            UnityEngineArmatureDisplay armatureDisplay = dataPackage.Display as UnityEngineArmatureDisplay;
+            
+            Transform slotTransform = armatureDisplay.transform.Find(slotData.name);
+            GameObject slotGameObject = slotTransform == null ? null : slotTransform.gameObject;
+            
+            bool isNeedIngoreCombineMesh = false;
+            
+            if (slotGameObject == null)
+            {
+                slotGameObject = new GameObject(slotData.name);
+            }
+            else
+            {
+                if (slotGameObject.hideFlags == HideFlags.None)
+                {
+                    var combineMeshs = (armature.Display as UnityEngineArmatureDisplay).GetComponent<UnityCombineMeshes>();
+                    if (combineMeshs != null)
+                    {
+                        isNeedIngoreCombineMesh = !combineMeshs.slotNames.Contains(slotData.name);
+                    }
+                }
+            }
+
+            slot.Init(slotData, armature, slotGameObject, slotGameObject);
+
+            if (isNeedIngoreCombineMesh)
+            {
+                slot.DisallowCombineMesh();
+            }
+
+            return slot;
         }
 
         public override TextureAtlasData BuildTextureAtlasData(TextureAtlasData textureAtlasData, object textureAtlas)
@@ -49,35 +170,6 @@ namespace DragonBones
             }
 
             return textureAtlasData;
-        }
-
-        /// <summary>
-        /// Create a armature from cached DragonBonesData instances and TextureAtlasData instances, then use the {@link #clock} to update it.
-        /// The difference is that the armature created by {@link #buildArmature} is not WorldClock instance update.
-        /// </summary>
-        /// <param name="armatureName">The armature data name</param>
-        /// <param name="dragonBonesName">The cached name of the DragonBonesData instance (If not set, all DragonBonesData instances are retrieved, and when multiple DragonBonesData instances contain a the same name armature data, it may not be possible to accurately create a specific armature)</param>
-        /// <param name="skinName">The skin name, you can set a different ArmatureData name to share it's skin data (If not set, use the default skin data)</param>
-        /// <param name="textureAtlasName">The textureAtlas name</param>
-        /// <param name="isUGUI">isUGUI default is false</param>
-        /// <returns>The armature display container.</returns>
-        /// <version> DragonBones 4.5</version>
-        /// <language>en_US</language>
-
-        public UnityEngineArmatureDisplay BuildArmatureComponent(string armatureName, string dragonBonesName = "", IEngineArmatureDisplay display = null, 
-            string skinName = "", string textureAtlasName = "", bool isUGUI = false)
-        {
-            _isUGUI = isUGUI;
-            Armature armature = BuildArmature(armatureName, dragonBonesName, skinName, textureAtlasName, display);
-
-            if (armature != null)
-            {
-                DBInitial.Kernel.Clock.Add(armature);
-
-                return armature.Display as UnityEngineArmatureDisplay;
-            }
-
-            return null;
         }
 
         public static void RefreshTextureAtlas(UnityTextureAtlasData textureAtlasData, bool isUGUI,
@@ -119,7 +211,7 @@ namespace DragonBones
                         textureAtlas = Resources.Load<Texture2D>(textureAtlasData.imagePath);
                     }
 
-                    material = UnityFactoryHelper.GenerateMaterial(defaultUIShaderName, textureAtlas.name + "_UI_Mat",
+                    material = Helper.GenerateMaterial(defaultUIShaderName, textureAtlas.name + "_UI_Mat",
                         textureAtlas);
                     if (textureAtlasData.width < 2)
                     {
@@ -179,7 +271,7 @@ namespace DragonBones
                         textureAtlas = Resources.Load<Texture2D>(textureAtlasData.imagePath);
                     }
 
-                    material = UnityFactoryHelper.GenerateMaterial(defaultShaderName, textureAtlas.name + "_Mat",
+                    material = Helper.GenerateMaterial(defaultShaderName, textureAtlas.name + "_Mat",
                         textureAtlas);
                     if (textureAtlasData.width < 2)
                     {
@@ -207,11 +299,6 @@ namespace DragonBones
             }
         }
 
-        public override void Clear(bool disposeData = true)
-        {
-            _isUGUI = false;
-        }
-
         public void RefreshAllTextureAtlas(UnityEngineArmatureDisplay unityEngineArmature)
         {
             foreach (List<TextureAtlasData> textureAtlasDatas in DBInitial.Kernel.DataStorage.GetAllTextureAtlases().Values)
@@ -229,8 +316,8 @@ namespace DragonBones
             //UGUI Display Object and Normal Display Object cannot be replaced with each other
             if (displayData.type == DisplayType.Image || displayData.type == DisplayType.Mesh)
             {
-                var dataName = displayData.parent.parent.parent.name;
-                var textureData = DBInitial.Kernel.DataStorage.GetTextureData(dataName, displayData.path);
+                string dataName = displayData.parent.parent.parent.name;
+                TextureData textureData = DBInitial.Kernel.DataStorage.GetTextureData(dataName, displayData.path);
                 if (textureData != null)
                 {
                     var textureAtlasData = textureData.parent as UnityTextureAtlasData;
@@ -291,12 +378,12 @@ namespace DragonBones
             {
                 if (isUGUI)
                 {
-                    material = UnityFactoryHelper.GenerateMaterial(defaultUIShaderName, texture.name + "_UI_Mat",
+                    material = Helper.GenerateMaterial(defaultUIShaderName, texture.name + "_UI_Mat",
                         texture);
                 }
                 else
                 {
-                    material = UnityFactoryHelper.GenerateMaterial(defaultShaderName, texture.name + "_Mat", texture);
+                    material = Helper.GenerateMaterial(defaultShaderName, texture.name + "_Mat", texture);
                 }
             }
 
@@ -343,112 +430,7 @@ namespace DragonBones
             ReplaceDisplay(slot, newDisplayData, displayIndex);
         }
 
-        protected override Armature BuildArmatureProxy(BuildArmaturePackage dataPackage)
-        {
-            Armature armature = DBObject.BorrowObject<Armature>();
-            UnityEngineArmatureDisplay armatureDisplay = null;
-
-            if (dataPackage.display == null)
-            {
-                armatureDisplay = displaysPool.Get();
-            }
-            else
-            {
-                armatureDisplay = dataPackage.display as UnityEngineArmatureDisplay;
-                armatureDisplay.Armature?.ReturnToPool();
-                
-                (dataPackage.display as IEngineArmatureDisplay).DBClear();
-            }
-
-            armatureDisplay.Armature = armature;
-            armature.Init(dataPackage.armatureData, armatureDisplay);
-
-            return armature;
-        }
-
-        protected override Armature BuildChildArmature(BuildArmaturePackage dataPackage, Slot slot, DisplayData displayData)
-        {
-            string childDisplayName = slot.SlotData.name + " (" + displayData.path + ")"; 
-            UnityEngineArmatureDisplay proxy = slot.Armature.Display as UnityEngineArmatureDisplay;
-            Transform childTransform = proxy.transform.Find(childDisplayName);
-
-            Armature childArmature = null;
-            
-            if (childTransform == null)
-            {
-                if (dataPackage != null)
-                {
-                    childArmature = BuildArmature(displayData.path, dataPackage.dataName);
-                }
-                else
-                {
-                    childArmature = BuildArmature(displayData.path, displayData.parent.parent.parent.name);
-                }
-            }
-            else
-            {
-                if (dataPackage != null)
-                {
-                    childArmature = BuildArmatureComponent(displayData.path, dataPackage != null ? dataPackage.dataName : "", childTransform.gameObject.GetComponent<UnityEngineArmatureDisplay>(), null, dataPackage.textureAtlasName).Armature;
-                }
-                else
-                {
-                    childArmature =
-                        BuildArmatureComponent(displayData.path, null, childTransform.gameObject.GetComponent<UnityEngineArmatureDisplay>(), null, null).Armature;
-                }
-            }
-
-            if (childArmature == null)
-            {
-                return null;
-            }
-
-            UnityEngineArmatureDisplay childArmatureDisplay = childArmature.Display as UnityEngineArmatureDisplay;
-            childArmatureDisplay.isUGUI = proxy.GetComponent<UnityEngineArmatureDisplay>().isUGUI;
-            childArmatureDisplay.name = childDisplayName;
-            childArmatureDisplay.transform.SetParent(proxy.transform, false);
-            childArmatureDisplay.gameObject.SetActive(false);
-            return childArmature;
-        }
-
-        protected override Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, Armature armature)
-        {
-            UnitySlot slot = DBObject.BorrowObject<UnitySlot>();
-            
-            UnityEngineArmatureDisplay armatureDisplay = armature.Display as UnityEngineArmatureDisplay;
-            
-            Transform slotTransform = armatureDisplay.transform.Find(slotData.name);
-            GameObject slotGameObject = slotTransform == null ? null : slotTransform.gameObject;
-            
-            bool isNeedIngoreCombineMesh = false;
-            
-            if (slotGameObject == null)
-            {
-                slotGameObject = new GameObject(slotData.name);
-            }
-            else
-            {
-                if (slotGameObject.hideFlags == HideFlags.None)
-                {
-                    var combineMeshs = (armature.Display as UnityEngineArmatureDisplay).GetComponent<UnityCombineMeshes>();
-                    if (combineMeshs != null)
-                    {
-                        isNeedIngoreCombineMesh = !combineMeshs.slotNames.Contains(slotData.name);
-                    }
-                }
-            }
-
-            slot.Init(slotData, armature, slotGameObject, slotGameObject);
-
-            if (isNeedIngoreCombineMesh)
-            {
-                slot.DisallowCombineMesh();
-            }
-
-            return slot;
-        }
-        
-        internal static class UnityFactoryHelper
+        internal static class Helper
         {
             internal static Material GenerateMaterial(string shaderName, string materialName, Texture texture)
             {
@@ -535,15 +517,12 @@ namespace DragonBones
 
             internal static void DestroyUnityObject(UnityEngine.Object obj)
             {
-                if (obj == null)
-                {
-                    return;
-                }
+                if (obj == null) { return; }
 
 #if UNITY_EDITOR
                 UnityEngine.Object.DestroyImmediate(obj);
 #else
-            UnityEngine.Object.Destroy(obj);
+                UnityEngine.Object.Destroy(obj);
 #endif
             }
         }

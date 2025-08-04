@@ -14,24 +14,12 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-        /// 
-        /// <summary>
-        /// 按照插槽显示对象的z值排序
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         SortByZ,
         /// <summary>
         /// Renderer's order within a sorting layer.
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-        /// 
-        /// <summary>
-        /// 在同一层sorting layer中插槽按照sortingOrder排序
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>zh_CN</language>
         SortByOrder
     } 
     [ExecuteInEditMode, DisallowMultipleComponent]
@@ -167,8 +155,6 @@ namespace DragonBones
 
         public string animationName = null;
 
-        private bool _disposeDisplay = true;
-
         [Tooltip("0 : Loop")] [Range(0, 100)] [SerializeField]
         protected int _playTimes = 0;
 
@@ -207,23 +193,24 @@ namespace DragonBones
         public Armature Armature { get; internal set; } = null;
         public AnimationPlayer AnimationPlayer => Armature != null ? Armature.AnimationPlayer : null;
 
-        public void DBClear()
+        ///
+        public void DBInit(Armature armature)
         {
-            if (Armature != null)
-            {
-                Armature = null;
-                if (_disposeDisplay)
-                {
-                    //DBUnityFactory.UnityFactoryHelper.DestroyUnityObject(gameObject);
-                }
-            }
+            Armature = armature;
+        }
 
+        public void DBClear(bool disposeDisplay = false)
+        {
+            if (disposeDisplay)
+            {
+                DBUnityFactory.Helper.DestroyUnityObject(gameObject);
+            }
+            
             unityData = null;
             armatureName = null;
             animationName = null;
             isUGUI = false;
 
-            _disposeDisplay = true;
             Armature = null;
             _colorTransform.Identity();
             _playTimes = 0;
@@ -237,12 +224,6 @@ namespace DragonBones
             _closeCombineMeshs = false;
         }
 
-        ///
-        public void DBInit(Armature armature)
-        {
-            Armature = armature;
-        }
-
         public void DBUpdate()
         {
 
@@ -250,8 +231,6 @@ namespace DragonBones
 
         public void Dispose(bool disposeDisplay = true)
         {
-            _disposeDisplay = disposeDisplay;
-
             if (Armature != null)
             {
                 Armature.Dispose();
@@ -295,8 +274,7 @@ namespace DragonBones
 
                 if (dragonBonesData != null && !string.IsNullOrEmpty(armatureName))
                 {
-                    DBInitial.UnityFactory.BuildArmatureComponent(armatureName, unityData.dataName, this,null, null,
-                         isUGUI);
+                    DBInitial.UnityFactory.CreateNewArmature(armatureName, unityData.dataName, this,null, null);
                 }
             }
 
@@ -367,7 +345,6 @@ namespace DragonBones
                 }
             }
 
-            _disposeDisplay = true;
             Armature = null;
         }
 
