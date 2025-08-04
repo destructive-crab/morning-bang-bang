@@ -267,7 +267,7 @@ namespace DragonBones
                 {
                     var textureAtlasData = textureData.parent as UnityTextureAtlasData;
 
-                    var oldIsUGUI = (slot._armature.Display as UnityEngineArmatureDisplay).isUGUI;
+                    var oldIsUGUI = (slot.Armature.Display as UnityEngineArmatureDisplay).isUGUI;
 
                     if ((oldIsUGUI && textureAtlasData.uiTexture == null) ||
                         (!oldIsUGUI && textureAtlasData.texture == null))
@@ -423,8 +423,8 @@ namespace DragonBones
 
         protected override Armature BuildChildArmature(BuildArmaturePackage dataPackage, Slot slot, DisplayData displayData)
         {
-            string childDisplayName = slot.slotData.name + " (" + displayData.path + ")"; 
-            UnityEngineArmatureDisplay proxy = slot.armature.Display as UnityEngineArmatureDisplay;
+            string childDisplayName = slot.SlotData.name + " (" + displayData.path + ")"; 
+            UnityEngineArmatureDisplay proxy = slot.Armature.Display as UnityEngineArmatureDisplay;
             Transform childTransform = proxy.transform.Find(childDisplayName);
             
             Debug.Log(proxy.name);
@@ -465,14 +465,12 @@ namespace DragonBones
                 return null;
             }
 
-            //
-          //  var childArmatureDisplay = childArmature.Display;
-          //  childArmatureDisplay.GetComponent<UnityEngineArmatureDisplay>().isUGUI =
-          //      proxy.GetComponent<UnityEngineArmatureDisplay>().isUGUI;
-          //  childArmatureDisplay.name = childDisplayName;
-          //  childArmatureDisplay.transform.SetParent(proxy.transform, false);
-          //  childArmatureDisplay.gameObject.hideFlags = HideFlags.HideInHierarchy;
-          //  childArmatureDisplay.SetActive(false);
+            UnityEngineArmatureDisplay childArmatureDisplay = childArmature.Display as UnityEngineArmatureDisplay;
+            childArmatureDisplay.isUGUI = proxy.GetComponent<UnityEngineArmatureDisplay>().isUGUI;
+            childArmatureDisplay.name = childDisplayName;
+            childArmatureDisplay.transform.SetParent(proxy.transform, false);
+//            childArmatureDisplay.gameObject.hideFlags = HideFlags.HideInHierarchy;
+            childArmatureDisplay.gameObject.SetActive(false);
             return childArmature;
         }
 

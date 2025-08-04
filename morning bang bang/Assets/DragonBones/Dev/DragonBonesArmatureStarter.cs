@@ -1,4 +1,3 @@
-using System;
 using DragonBones;
 using UnityEngine;
 
@@ -9,8 +8,15 @@ public class DragonBonesArmatureStarter : MonoBehaviour
         DBInitial.UnityDataLoader.LoadDragonBonesData("animations/rat_gun_ske");
         DBInitial.UnityDataLoader.LoadTextureAtlasData("animations/rat_gun_tex");
 
-        DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_side", "rat_gun");
-        DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_down", "rat_gun").transform.position += Vector3.right*3;
-        DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_up", "rat_gun").transform.position += Vector3.up*3;
+        var a = DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_side", "rat_gun");
+        var b = DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_down", "rat_gun");
+        var c = DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_up", "rat_gun");
+
+        b.transform.position += Vector3.up * 3;
+        c.transform.position += Vector3.right * 3;
+
+        a.AnimationPlayer.Play("run");
+        c.AnimationPlayer.Play("idle");
+        c.AnimationPlayer.Play("run");
     }
 }

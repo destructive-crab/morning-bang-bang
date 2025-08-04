@@ -53,8 +53,6 @@ namespace DragonBones
                 var bone = DBObject.BorrowObject<Bone>();
                 bone.Init(boneData, armature);
             }
-
-            armature.BonesBuildingFinished();
         }
         
         protected void BuildSlotsFor(BuildArmaturePackage dataPackage, Armature armature)
@@ -87,7 +85,7 @@ namespace DragonBones
             {
                 List<DisplayData> displayDatas = skinSlots.ContainsKey(slotData.name) ? skinSlots[slotData.name] : null;
                 Slot slot = BuildSlot(dataPackage, slotData, armature);
-                slot.rawDisplayDatas = displayDatas;
+                slot.AllDisplaysData = displayDatas;
 
                 if (displayDatas != null)
                 {
@@ -122,7 +120,7 @@ namespace DragonBones
                 // TODO more constraint type.
                 var constraint = DBObject.BorrowObject<IKConstraint>();
                 constraint.Init(constraintData, armature);
-                armature.AddConstraint(constraint);
+                armature.Structure.AddConstraint(constraint);
             }
         }
 
@@ -154,11 +152,11 @@ namespace DragonBones
 
                         if (rawDisplayData != null && rawDisplayData.type == DisplayType.Mesh && _IsSupportMesh())
                         {
-                            display = slot.meshDisplay;
+                            display = slot.MeshDisplay;
                         }
                         else
                         {
-                            display = slot.rawDisplay;
+                            display = slot.RawDisplay;
                         }
                     }
                     break;
@@ -176,11 +174,11 @@ namespace DragonBones
 
                         if (_IsSupportMesh())
                         {
-                            display = slot.meshDisplay;
+                            display = slot.MeshDisplay;
                         }
                         else
                         {
-                            display = slot.rawDisplay;
+                            display = slot.RawDisplay;
                         }
                     } break;
                 case DisplayType.Armature:
@@ -193,15 +191,15 @@ namespace DragonBones
                         childArmature.inheritAnimation = armatureDisplayData.inheritAnimation;
                         if (!childArmature.inheritAnimation)
                         {
-                            var actions = armatureDisplayData.actions.Count > 0 ? armatureDisplayData.actions : childArmature.armatureData.defaultActions;
+                            var actions = armatureDisplayData.actions.Count > 0 ? armatureDisplayData.actions : childArmature.ArmatureData.defaultActions;
                             if (actions.Count > 0)
                             {
                                 foreach (var action in actions)
                                 {
                                     var eventObject = DBObject.BorrowObject<EventObject>();
-                                    EventObject.ActionDataToInstance(action, eventObject, slot.armature);
+                                    EventObject.ActionDataToInstance(action, eventObject, slot.Armature);
                                     eventObject.slot = slot;
-                                    slot.armature.BufferAction(eventObject, false);
+                                    slot.Armature.BufferAction(eventObject, false);
                                 }
                             }
                             else
@@ -210,7 +208,7 @@ namespace DragonBones
                             }
                         }
 
-                        armatureDisplayData.armature = childArmature.armatureData; 
+                        armatureDisplayData.armature = childArmature.ArmatureData; 
                     }
 
                     display = childArmature;
@@ -272,7 +270,7 @@ namespace DragonBones
         {
             if (displayIndex < 0)
             {
-                displayIndex = slot.displayIndex;
+                displayIndex = slot.DisplayIndex;
             }
 
             if (displayIndex < 0)
@@ -296,7 +294,7 @@ namespace DragonBones
 
             if (displayData != null)
             {
-                var rawDisplayDatas = slot.rawDisplayDatas;
+                var rawDisplayDatas = slot.AllDisplaysData;
                 DisplayData rawDisplayData = null;
 
                 if (rawDisplayDatas != null)
@@ -408,7 +406,7 @@ namespace DragonBones
             var success = false;
             var defaultSkin = skin.parent.defaultSkin;
 
-            foreach (var slot in armature.GetSlots())
+            foreach (var slot in armature.Structure.Slots)
             {
                 if (exclude != null && exclude.Contains(slot.name))
                 {
@@ -427,7 +425,7 @@ namespace DragonBones
                     {
                         if (isOverride)
                         {
-                            slot.rawDisplayDatas = null;
+                            slot.AllDisplaysData = null;
                             slot.DisplayList.Clear(); //
                         }
 
@@ -451,7 +449,7 @@ namespace DragonBones
                 }
 
                 success = true;
-                slot.rawDisplayDatas = displays;
+                slot.AllDisplaysData = displays;
                 slot.DisplayList = displayList;
             }
 
@@ -511,7 +509,7 @@ namespace DragonBones
                 armature.AnimationPlayer.animations = animations;
             }
 
-            foreach (var slot in armature.GetSlots())
+            foreach (var slot in armature.Structure.Slots)
             {
                 var index = 0;
                 foreach (var display in slot.DisplayList)

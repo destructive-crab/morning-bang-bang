@@ -173,11 +173,11 @@ namespace DragonBones
                 this._actionTimeline = null; //
             }
 
-            this._frameRate = this._armature.armatureData.frameRate;
+            this._frameRate = this._armature.ArmatureData.frameRate;
             this._frameRateR = 1.0f / this._frameRate;
             this._position = this._animationState._position;
             this._duration = this._animationState._duration;
-            this._dragonBonesData = this._armature.armatureData.parent;
+            this._dragonBonesData = this._armature.ArmatureData.parent;
             this._animationData = this._animationState._animationData;
 
             if (this._timelineData != null)

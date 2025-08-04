@@ -186,9 +186,9 @@ namespace DragonBones
 
             this._constraintData = constraintData;
             this._armature = armature;
-            this._target = this._armature.GetBone(this._constraintData.target.name);
-            this._root = this._armature.GetBone(this._constraintData.root.name);
-            this._bone = this._constraintData.bone != null ? this._armature.GetBone(this._constraintData.bone.name) : null;
+            this._target = this._armature.Structure.GetBone(this._constraintData.target.name);
+            this._root = this._armature.Structure.GetBone(this._constraintData.root.name);
+            this._bone = this._constraintData.bone != null ? this._armature.Structure.GetBone(this._constraintData.bone.name) : null;
 
             {
                 var ikConstraintData = this._constraintData as IKConstraintData;

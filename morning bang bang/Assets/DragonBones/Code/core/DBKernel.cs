@@ -221,10 +221,10 @@ namespace DragonBones
                 var eventObject = eventsToDispatch[i];
                 var armature = eventObject.armature;
                     
-                if (armature._armatureData != null)
+                if (armature.ArmatureData != null)
                 {
                     // May be armature disposed before advanceTime.
-                    armature.eventDispatcher.DispatchDBEvent(eventObject.type, eventObject);
+                    armature.ArmatureEventDispatcher.DispatchDBEvent(eventObject.type, eventObject);
                         
                     if (eventObject.type == EventObject.SOUND_EVENT)
                     {

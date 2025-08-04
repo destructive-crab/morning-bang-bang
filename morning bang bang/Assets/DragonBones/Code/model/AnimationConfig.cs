@@ -213,7 +213,7 @@ namespace DragonBones
         /// <private/>
         public void AddBoneMask(Armature armature, string boneName, bool recursive = false)
         {
-            var currentBone = armature.GetBone(boneName);
+            var currentBone = armature.Structure.GetBone(boneName);
             if (currentBone == null)
             {
                 return;
@@ -226,10 +226,11 @@ namespace DragonBones
 
             if (recursive) // Add recursive mixing.
             {
-                var bones = armature.GetBones();
-                for (int i = 0, l = bones.Count; i < l; ++i)
+                Bone[] bones = armature.Structure.Bones;
+                for (int i = 0, l = bones.Length; i < l; ++i)
                 {
                     var bone = bones[i];
+                    
                     if (!boneMask.Contains(bone.name) && currentBone.Contains(bone))
                     {
                         boneMask.Add(bone.name);
@@ -248,15 +249,15 @@ namespace DragonBones
 
             if (recursive)
             {
-                var currentBone = armature.GetBone(name);
+                Bone currentBone = armature.Structure.GetBone(name);
                 if (currentBone != null)
                 {
-                    var bones = armature.GetBones();
+                    Bone[] bones = armature.Structure.Bones;
                     if (boneMask.Count > 0) // Remove recursive mixing.
                     {
-                        for (int i = 0, l = bones.Count; i < l; ++i)
+                        for (int i = 0, l = bones.Length; i < l; ++i)
                         {
-                            var bone = bones[i];
+                            Bone bone = bones[i];
                             if (boneMask.Contains(bone.name) && currentBone.Contains(bone))
                             {
                                 boneMask.Remove(bone.name);
@@ -265,7 +266,7 @@ namespace DragonBones
                     }
                     else // Add unrecursive mixing.
                     {
-                        for (int i = 0, l = bones.Count; i < l; ++i)
+                        for (int i = 0, l = bones.Length; i < l; ++i)
                         {
                             var bone = bones[i];
                             if (bone == currentBone)

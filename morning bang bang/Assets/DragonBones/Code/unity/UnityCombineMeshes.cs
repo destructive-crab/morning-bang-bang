@@ -121,12 +121,12 @@ namespace DragonBones
                     slot.CombineMeshComponent = this;
                     slot._meshBuffer.enabled = false;
 
-                    if (slot._renderDisplay != null)
+                    if (slot.RenderDisplay != null)
                     {
-                        slot._renderDisplay.SetActive(false);
-                        slot._renderDisplay.hideFlags = HideFlags.HideInHierarchy;
+                        slot.RenderDisplay.SetActive(false);
+                        slot.RenderDisplay.hideFlags = HideFlags.HideInHierarchy;
 
-                        var transform = slot._renderDisplay.transform;
+                        var transform = slot.RenderDisplay.transform;
 
                         transform.localPosition = new Vector3(0.0f, 0.0f, transform.localPosition.z);
                         transform.localEulerAngles = Vector3.zero;
@@ -150,10 +150,10 @@ namespace DragonBones
                     _subSlotCount++;
                 }
 
-                if (proxySlot._renderDisplay != null)
+                if (proxySlot.RenderDisplay != null)
                 {
-                    proxySlot._renderDisplay.SetActive(true);
-                    proxySlot._renderDisplay.hideFlags = HideFlags.None;
+                    proxySlot.RenderDisplay.SetActive(true);
+                    proxySlot.RenderDisplay.hideFlags = HideFlags.None;
                 }
             }
         }
@@ -162,7 +162,7 @@ namespace DragonBones
         {
             if (armature == null)  return; 
             
-            foreach (Slot slot in armature.GetSlots())
+            foreach (Slot slot in armature.Structure.Slots)
             {
                 UnitySlot unitySlot = (UnitySlot)slot;
                 
@@ -207,9 +207,9 @@ namespace DragonBones
                 return;
             }
 
-            if (armature.SlotsCount == 0) return; 
+            if (armature.Structure.Slots.Length == 0) return; 
             
-            List<Slot> slots = new List<Slot>(armature.GetSlots());
+            List<Slot> slots = new List<Slot>(armature.Structure.Slots);
             
             bool isBreakCombineMesh = false;
             bool isSameMaterial = false;
@@ -225,7 +225,7 @@ namespace DragonBones
                 slot.CancelCombineMesh();
 
                 isChildAramture = slot.ChildArmature != null;
-                slotDisplay = slot.renderDisplay;
+                slotDisplay = slot.RenderDisplay;
 
                 if (slotMeshProxy != null)
                 {
@@ -281,7 +281,7 @@ namespace DragonBones
                     CombineInstance com = new CombineInstance();
                     com.mesh = slot._meshBuffer.sharedMesh;
 
-                    com.transform = slotMeshProxy._renderDisplay.transform.worldToLocalMatrix * slotDisplay.transform.localToWorldMatrix;
+                    com.transform = slotMeshProxy.RenderDisplay.transform.worldToLocalMatrix * slotDisplay.transform.localToWorldMatrix;
 
                     combineSlots[combineSlots.Count - 1].combines.Add(com);
                     combineSlots[combineSlots.Count - 1].slots.Add(slot);

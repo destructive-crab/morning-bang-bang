@@ -66,7 +66,7 @@ namespace DragonBones
                         if (this._animationState.displayControl && this._animationState.resetToPose)
                         {
                             // Reset zorder to pose.
-                            this._armature.SortZOrder(null, 0);
+                            this._armature.Structure.SortZOrder(null, 0);
                         }
 
                         prevPlayTimes = this.currentPlayTimes;
@@ -303,11 +303,11 @@ namespace DragonBones
                 var count = this._frameArray[this._frameOffset + 1];
                 if (count > 0)
                 {
-                    this._armature.SortZOrder(this._frameArray, (int)this._frameOffset + 2);
+                    this._armature.Structure.SortZOrder(this._frameArray, (int)this._frameOffset + 2);
                 }
                 else
                 {
-                    this._armature.SortZOrder(null, 0);
+                    this._armature.Structure.SortZOrder(null, 0);
                 }
             }
         }
@@ -325,7 +325,7 @@ namespace DragonBones
             if (this._timelineData != null)
             {
                 var valueOffset = (int)this._animationData.frameFloatOffset + this._frameValueOffset + this._frameIndex * 6; // ...(timeline value offset)|xxxxxx|xxxxxx|(Value offset)xxxxx|(Next offset)xxxxx|xxxxxx|xxxxxx|...
-                var scale = this._armature._armatureData.scale;
+                var scale = this._armature.ArmatureData.scale;
                 var frameFloatArray = this._dragonBonesData.frameFloatArray;
                 var current = this.bonePose.current;
                 var delta = this.bonePose.delta;
@@ -421,7 +421,7 @@ namespace DragonBones
             if (this._timelineData != null)
             {
                 var valueOffset = this._animationData.frameFloatOffset + this._frameValueOffset + this._frameIndex * 2;
-                var scale = this._armature._armatureData.scale;
+                var scale = this._armature.ArmatureData.scale;
                 var frameFloatArray = this._dragonBonesData.frameFloatArray;
                 var current = this.bonePose.current;
                 var delta = this.bonePose.delta;
@@ -621,8 +621,8 @@ namespace DragonBones
         {
             if (this.playState >= 0)
             {
-                var displayIndex = this._timelineData != null ? this._frameArray[this._frameOffset + 1] : this.slot.slotData.displayIndex;
-                if (this.slot.displayIndex != displayIndex)
+                var displayIndex = this._timelineData != null ? this._frameArray[this._frameOffset + 1] : this.slot.SlotData.displayIndex;
+                if (this.slot.DisplayIndex != displayIndex)
                 {
                     this.slot._SetDisplayIndex(displayIndex, true);
                 }
@@ -699,7 +699,7 @@ namespace DragonBones
             else
             {
                 // Pose.
-                var color = this.slot._slotData.color;
+                var color = this.slot.SlotData.color;
                 this._current[0] = (int)(color.alphaMultiplier * 100.0f);
                 this._current[1] = (int)(color.redMultiplier * 100.0f);
                 this._current[2] = (int)(color.greenMultiplier * 100.0f);
@@ -838,7 +838,7 @@ namespace DragonBones
             if (this._timelineData != null)
             {
                 var valueOffset = this._animationData.frameFloatOffset + this._frameValueOffset + this._frameIndex * this._valueCount;
-                var scale = this._armature._armatureData.scale;
+                var scale = this._armature.ArmatureData.scale;
                 var frameFloatArray = this._dragonBonesData.frameFloatArray;
 
                 if (this._tweenState == TweenState.Always)

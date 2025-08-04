@@ -166,7 +166,7 @@ namespace DragonBones
 
                 combines[i] = combineInstance;
                 
-                var zspace = (slot._armature.Display as UnityEngineArmatureDisplay).zSpace;
+                var zspace = (slot.Armature.Display as UnityEngineArmatureDisplay).zSpace;
                 for (int j = 0; j < slot._meshBuffer.vertexCount; j++)
                 {
                     index = oldVerticeOffset + j;

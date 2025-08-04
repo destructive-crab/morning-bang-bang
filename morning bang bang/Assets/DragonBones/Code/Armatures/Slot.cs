@@ -11,9 +11,9 @@ namespace DragonBones
     /// The display object can be a normal texture, or it can be a display of a child armature, a grid display object,
     /// and a custom other display object.
     /// </summary>
-    /// <see cref="DBKernel.Armature"/>
-    /// <see cref="DBKernel.Bone"/>
-    /// <see cref="DBKernel.SlotData"/>
+    /// <see cref="DragonBones.Armature"/>
+    /// <see cref="DragonBones.Bone"/>
+    /// <see cref="DragonBones.SlotData"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
     public abstract class Slot : TransformObject
@@ -22,84 +22,48 @@ namespace DragonBones
         /// - Displays the animated state or mixed group name controlled by the object, set to null to be controlled by all animation states.
         /// </summary>
         /// <default>null</default>
-        /// <see cref="DBKernel.AnimationState.displayControl"/>
-        /// <see cref="DBKernel.AnimationState.name"/>
-        /// <see cref="DBKernel.AnimationState.group"/>
+        /// <see cref="DragonBones.AnimationState.displayControl"/>
+        /// <see cref="DragonBones.AnimationState.name"/>
+        /// <see cref="DragonBones.AnimationState.group"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
         public string displayController;
-        /// <private/>
+        
         protected bool _displayDirty;
-        /// <private/>
         protected bool _zOrderDirty;
-        /// <private/>
         protected bool _visibleDirty;
-        /// <private/>
         protected bool _blendModeDirty;
-        /// <internal/>
-        /// <private/>
         internal bool _colorDirty;
-        /// <private/>
         internal bool _transformDirty;
-        /// <private/>
-        protected bool _visible;
-        /// <private/>
+
+        protected bool visible;
         internal BlendMode _blendMode;
-        /// <private/>
-        protected int _displayIndex;
-        /// <private/>
+        
+        protected int displayIndex;
         protected int _animationDisplayIndex;
-        /// <internal/>
-        /// <private/>
-        internal int _zOrder;
-        /// <private/>
+
         protected int _cachedFrameIndex;
-        /// <internal/>
-        /// <private/>
+
+        internal int _zOrder;
         internal float _pivotX;
-        /// <internal/>
-        /// <private/>
         internal float _pivotY;
-        /// <private/>
+        
         protected readonly Matrix _localMatrix = new Matrix();
-        /// <internal/>
-        /// <private/>
+
         internal readonly ColorTransform _colorTransform = new ColorTransform();
-        /// <private/>
         internal readonly List<DisplayData> _displayDatas = new List<DisplayData>();
-        /// <private/>
         protected readonly List<object> displayList = new();
-        /// <internal/>
-        /// <private/>
-        internal SlotData _slotData;
-        /// <private/>
-        protected List<DisplayData> _rawDisplayDatas;
-        /// <internal/>
-        /// <private/>
+
+        protected List<DisplayData> allDisplaysData;
+
         protected DisplayData _displayData;
-        /// <private/>
-        protected BoundingBoxData _boundingBoxData;
-        /// <private/>
         protected TextureData _textureData;
-        /// <internal/>
         public DeformVertices _deformVertices;
-        /// <private/>
-        protected object _rawDisplay;
-        /// <private/>
-        protected object _meshDisplay;
-        /// <private/>
         protected object display;
-        /// <private/>
         protected Armature childArmature;
-        /// <private/>
-        protected Bone _parent;
-        /// <internal/>
-        /// <private/>
+
         internal List<int> _cachedFrameIndices = new List<int>();
-        public Slot()
-        {
-        }
-        /// <inheritDoc/>
+        
         protected override void ClearObject()
         {
             base.ClearObject();
@@ -108,7 +72,7 @@ namespace DragonBones
             for (int i = 0, l = displayList.Count; i < l; ++i)
             {
                 var eachDisplay = displayList[i];
-                if (eachDisplay != _rawDisplay && eachDisplay != _meshDisplay && !disposeDisplayList.Contains(eachDisplay))
+                if (eachDisplay != RawDisplay && eachDisplay != MeshDisplay && !disposeDisplayList.Contains(eachDisplay))
                 {
                     disposeDisplayList.Add(eachDisplay);
                 }
@@ -132,15 +96,15 @@ namespace DragonBones
                 _deformVertices.ReturnToPool();
             }
 
-            if (_meshDisplay != null && _meshDisplay != _rawDisplay)
+            if (MeshDisplay != null && MeshDisplay != RawDisplay)
             {
                 // May be _meshDisplay and _rawDisplay is the same one.
-                _DisposeDisplay(_meshDisplay, false);
+                _DisposeDisplay(MeshDisplay, false);
             }
 
-            if (_rawDisplay != null)
+            if (RawDisplay != null)
             {
-                _DisposeDisplay(_rawDisplay, false);
+                _DisposeDisplay(RawDisplay, false);
             }
 
             displayController = null;
@@ -150,9 +114,9 @@ namespace DragonBones
             _blendModeDirty = false;
             _colorDirty = false;
             _transformDirty = false;
-            _visible = true;
+            visible = true;
             _blendMode = BlendMode.Normal;
-            _displayIndex = -1;
+            displayIndex = -1;
             _animationDisplayIndex = -1;
             _zOrder = 0;
             _cachedFrameIndex = -1;
@@ -162,45 +126,33 @@ namespace DragonBones
             _colorTransform.Identity();
             displayList.Clear();
             _displayDatas.Clear();
-            _slotData = null; //
-            _rawDisplayDatas = null; //
+            SlotData = null; //
+            allDisplaysData = null; //
             _displayData = null;
-            _boundingBoxData = null;
+            BoundingBoxData = null;
             _textureData = null;
             _deformVertices = null;
-            _rawDisplay = null;
-            _meshDisplay = null;
+            RawDisplay = null;
+            MeshDisplay = null;
             display = null;
             childArmature = null;
-            _parent = null;
+            Parent = null;
             _cachedFrameIndices = null;
         }
 
-        /// <private/>
         protected abstract void _InitDisplay(object value, bool isRetain);
-        /// <private/>
         protected abstract void _DisposeDisplay(object value, bool isRelease);
-        /// <private/>
         protected abstract void _OnUpdateDisplay();
-        /// <private/>
         protected abstract void _AddDisplay();
-        /// <private/>
         protected abstract void _ReplaceDisplay(object value);
-        /// <private/>
         protected abstract void _RemoveDisplay();
         protected abstract void _UpdateZOrder();
         internal abstract void _UpdateVisible();
-        /// <private/>
         internal abstract void _UpdateBlendMode();
-        /// <private/>
         protected abstract void _UpdateColor();
-        /// <private/>
         protected abstract void _UpdateFrame();
-        /// <private/>
         protected abstract void _UpdateMesh();
-        /// <private/>
         protected abstract void _UpdateTransform();
-        /// <private/>
         protected abstract void _IdentityTransform();
 
         /// <summary>
@@ -209,10 +161,10 @@ namespace DragonBones
         /// <private/>
         protected DisplayData _GetDefaultRawDisplayData(int displayIndex)
         {
-            var defaultSkin = _armature._armatureData.defaultSkin;
+            var defaultSkin = Armature.ArmatureData.defaultSkin;
             if (defaultSkin != null)
             {
-                var defaultRawDisplayDatas = defaultSkin.GetDisplays(_slotData.name);
+                var defaultRawDisplayDatas = defaultSkin.GetDisplays(SlotData.name);
                 if (defaultRawDisplayDatas != null)
                 {
                     return displayIndex < defaultRawDisplayDatas.Count ? defaultRawDisplayDatas[displayIndex] : null;
@@ -233,24 +185,24 @@ namespace DragonBones
             VerticesData currentVerticesData = null;
 
             _displayData = null;
-            _boundingBoxData = null;
+            BoundingBoxData = null;
             _textureData = null;
 
-            if (_displayIndex >= 0)
+            if (displayIndex >= 0)
             {
-                if (_rawDisplayDatas != null)
+                if (allDisplaysData != null)
                 {
-                    rawDisplayData = _displayIndex < _rawDisplayDatas.Count ? _rawDisplayDatas[_displayIndex] : null;
+                    rawDisplayData = displayIndex < allDisplaysData.Count ? allDisplaysData[displayIndex] : null;
                 }
 
                 if (rawDisplayData == null)
                 {
-                    rawDisplayData = _GetDefaultRawDisplayData(_displayIndex);
+                    rawDisplayData = _GetDefaultRawDisplayData(displayIndex);
                 }
 
-                if (_displayIndex < _displayDatas.Count)
+                if (displayIndex < _displayDatas.Count)
                 {
-                    _displayData = _displayDatas[_displayIndex];
+                    _displayData = _displayDatas[displayIndex];
                 }
             }
 
@@ -279,13 +231,13 @@ namespace DragonBones
 
                 if (_displayData.type == DisplayType.BoundingBox)
                 {
-                    _boundingBoxData = (_displayData as BoundingBoxDisplayData).boundingBox;
+                    BoundingBoxData = (_displayData as BoundingBoxDisplayData).boundingBox;
                 }
                 else if (rawDisplayData != null)
                 {
                     if (rawDisplayData.type == DisplayType.BoundingBox)
                     {
-                        _boundingBoxData = (rawDisplayData as BoundingBoxDisplayData).boundingBox;
+                        BoundingBoxData = (rawDisplayData as BoundingBoxDisplayData).boundingBox;
                     }
                 }
 
@@ -305,7 +257,7 @@ namespace DragonBones
                 if (currentVerticesData == null && _textureData != null)
                 {
                     var imageDisplayData = _displayData as ImageDisplayData;
-                    var scale = _textureData.parent.scale * _armature._armatureData.scale;
+                    var scale = _textureData.parent.scale * Armature.ArmatureData.scale;
                     var frame = _textureData.frame;
 
                     _pivotX = imageDisplayData.pivot.x;
@@ -330,7 +282,7 @@ namespace DragonBones
                         _pivotY += frame.y * scale;
                     }
 
-                    // Update replace pivot. TODO
+                    // Update replace pivot. 
                     if (_displayData != null && rawDisplayData != null && _displayData != rawDisplayData)
                     {
                         rawDisplayData.DBTransform.ToMatrix(_helpMatrix);
@@ -381,7 +333,7 @@ namespace DragonBones
                         _deformVertices = BorrowObject<DeformVertices>();
                     }
 
-                    _deformVertices.init(currentVerticesData, _armature);
+                    _deformVertices.init(currentVerticesData, Armature);
                 }
                 else if (_deformVertices != null && _textureData != prevTextureData)
                 {
@@ -394,16 +346,15 @@ namespace DragonBones
             }
         }
 
-        /// <private/>
         protected void _UpdateDisplay()
         {
-            var prevDisplay = display != null ? display : _rawDisplay;
+            var prevDisplay = display != null ? display : RawDisplay;
             var prevChildArmature = childArmature;
 
             // Update display and child armature.
-            if (_displayIndex >= 0 && _displayIndex < displayList.Count)
+            if (displayIndex >= 0 && displayIndex < displayList.Count)
             {
-                display = displayList[_displayIndex];
+                display = displayList[displayIndex];
                 if (display != null && display is Armature)
                 {
                     childArmature = display as Armature;
@@ -421,7 +372,7 @@ namespace DragonBones
             }
 
             // Update display.
-            var currentDisplay = display != null ? display : _rawDisplay;
+            var currentDisplay = display != null ? display : RawDisplay;
             if (currentDisplay != prevDisplay)
             {
                 _OnUpdateDisplay();
@@ -434,7 +385,7 @@ namespace DragonBones
             }
 
             // Update frame.
-            if (currentDisplay == _rawDisplay || currentDisplay == _meshDisplay)
+            if (currentDisplay == RawDisplay || currentDisplay == MeshDisplay)
             {
                 _UpdateFrame();
             }
@@ -445,8 +396,8 @@ namespace DragonBones
                 if (prevChildArmature != null)
                 {
                     // Update child armature parent.
-                    prevChildArmature._parent = null;
-                    prevChildArmature.clock = null;
+                    prevChildArmature.Parent = null;
+                    prevChildArmature.Clock = null;
                     if (prevChildArmature.inheritAnimation)
                     {
                         prevChildArmature.AnimationPlayer.Reset();
@@ -456,14 +407,14 @@ namespace DragonBones
                 if (childArmature != null)
                 {
                     // Update child armature parent.
-                    childArmature._parent = this;
-                    childArmature.clock = _armature.clock;
+                    childArmature.Parent = this;
+                    childArmature.Clock = Armature.Clock;
                     if (childArmature.inheritAnimation)
                     {
                         // Set child armature cache frameRate.
                         if (childArmature.cacheFrameRate == 0)
                         {
-                            var cacheFrameRate = _armature.cacheFrameRate;
+                            var cacheFrameRate = Armature.cacheFrameRate;
                             if (cacheFrameRate != 0)
                             {
                                 childArmature.cacheFrameRate = cacheFrameRate;
@@ -476,13 +427,13 @@ namespace DragonBones
                         {
                             actions = (_displayData as ArmatureDisplayData).actions;
                         }
-                        else if (_displayIndex >= 0 && _rawDisplayDatas != null)
+                        else if (displayIndex >= 0 && allDisplaysData != null)
                         {
-                            var rawDisplayData = _displayIndex < _rawDisplayDatas.Count ? _rawDisplayDatas[_displayIndex] : null;
+                            var rawDisplayData = displayIndex < allDisplaysData.Count ? allDisplaysData[displayIndex] : null;
 
                             if (rawDisplayData == null)
                             {
-                                rawDisplayData = _GetDefaultRawDisplayData(_displayIndex);
+                                rawDisplayData = _GetDefaultRawDisplayData(displayIndex);
                             }
 
                             if (rawDisplayData != null && rawDisplayData.type == DisplayType.Armature)
@@ -496,9 +447,9 @@ namespace DragonBones
                             foreach (var action in actions)
                             {
                                 var eventObject = BorrowObject<EventObject>();
-                                EventObject.ActionDataToInstance(action, eventObject, _armature);
+                                EventObject.ActionDataToInstance(action, eventObject, Armature);
                                 eventObject.slot = this;
-                                _armature.BufferAction(eventObject, false);
+                                Armature.BufferAction(eventObject, false);
                             }
                         }
                         else
@@ -514,7 +465,7 @@ namespace DragonBones
         protected void _UpdateGlobalTransformMatrix(bool isCache)
         {
             globalTransformMatrix.CopyFrom(_localMatrix);
-            globalTransformMatrix.Concat(_parent.globalTransformMatrix);
+            globalTransformMatrix.Concat(Parent.globalTransformMatrix);
             if (isCache)
             {
                 global.FromMatrix(globalTransformMatrix);
@@ -538,12 +489,12 @@ namespace DragonBones
                 _animationDisplayIndex = value;
             }
 
-            if (_displayIndex == value)
+            if (displayIndex == value)
             {
                 return false;
             }
 
-            _displayIndex = value;
+            displayIndex = value;
             _displayDirty = true;
 
             _UpdateDisplayData();
@@ -551,7 +502,7 @@ namespace DragonBones
             return _displayDirty;
         }
 
-        internal bool _SetZOrder(int value)
+        internal bool SetZOrder(int value)
         {
             if (_zOrder == value)
             {
@@ -589,8 +540,8 @@ namespace DragonBones
                     // Retain input render displays.
                     var eachDisplay = value[i];
                     if (eachDisplay != null &&
-                        eachDisplay != _rawDisplay &&
-                        eachDisplay != _meshDisplay &&
+                        eachDisplay != RawDisplay &&
+                        eachDisplay != MeshDisplay &&
                         !(eachDisplay is Armature) && displayList.IndexOf(eachDisplay) < 0)
                     {
                         _InitDisplay(eachDisplay, true);
@@ -604,9 +555,9 @@ namespace DragonBones
                 displayList.Clear();
             }
 
-            if (_displayIndex >= 0 && _displayIndex < displayList.Count)
+            if (displayIndex >= 0 && displayIndex < displayList.Count)
             {
-                _displayDirty = display != displayList[_displayIndex];
+                _displayDirty = display != displayList[displayIndex];
             }
             else
             {
@@ -622,52 +573,49 @@ namespace DragonBones
         /// <private/>
         internal virtual void Init(SlotData slotData, Armature armatureValue, object rawDisplay, object meshDisplay)
         {
-            if (_slotData != null)
+            if (this.SlotData != null)
             {
                 return;
             }
 
-            _slotData = slotData;
+            this.SlotData = slotData;
             //
             _visibleDirty = true;
             _blendModeDirty = true;
             _colorDirty = true;
-            _blendMode = _slotData.blendMode;
-            _zOrder = _slotData.zOrder;
-            _colorTransform.CopyFrom(_slotData.color);
-            _rawDisplay = rawDisplay;
-            _meshDisplay = meshDisplay;
+            _blendMode = this.SlotData.blendMode;
+            _zOrder = this.SlotData.zOrder;
+            _colorTransform.CopyFrom(this.SlotData.color);
+            this.RawDisplay = rawDisplay;
+            this.MeshDisplay = meshDisplay;
 
-            _armature = armatureValue;
+            Armature = armatureValue;
 
-            var slotParent = _armature.GetBone(_slotData.parent.name);
+            var slotParent = Armature.Structure.GetBone(this.SlotData.parent.name);
             if (slotParent != null)
             {
-                _parent = slotParent;
+                Parent = slotParent;
             }
             else
             {
                 // Never;
             }
 
-            _armature.AddSlot(this);
+            Armature.Structure.AddSlot(this);
 
             //
-            _InitDisplay(_rawDisplay, false);
-            if (_rawDisplay != _meshDisplay)
+            _InitDisplay(this.RawDisplay, false);
+            if (this.RawDisplay != this.MeshDisplay)
             {
-                _InitDisplay(_meshDisplay, false);
+                _InitDisplay(this.MeshDisplay, false);
             }
 
             _OnUpdateDisplay();
             _AddDisplay();
 
-            //
-            // this.rawDisplayDatas = displayDatas; // TODO
+            //this.rawDisplayDatas = _displayDatas; 
         }
 
-        /// <internal/>
-        /// <private/>
         internal void Update(int cacheFrameIndex)
         {
             if (_displayDirty)
@@ -675,7 +623,6 @@ namespace DragonBones
                 _displayDirty = false;
                 _UpdateDisplay();
 
-                // TODO remove slot
                 if (_transformDirty)
                 {
                     // Update local matrix. (Only updated when both display and transform are dirty.)
@@ -711,7 +658,7 @@ namespace DragonBones
                     _transformDirty = true;
                     _cachedFrameIndex = cachedFrameIndex;
                 }
-                else if (_transformDirty || _parent._childrenTransformDirty)
+                else if (_transformDirty || Parent._childrenTransformDirty)
                 {
                     // Dirty.
                     _transformDirty = true;
@@ -730,7 +677,7 @@ namespace DragonBones
                     _cachedFrameIndex = -1;
                 }
             }
-            else if (_transformDirty || _parent._childrenTransformDirty)
+            else if (_transformDirty || Parent._childrenTransformDirty)
             {
                 // Dirty.
                 cacheFrameIndex = -1;
@@ -761,7 +708,7 @@ namespace DragonBones
                 _UpdateColor();
             }
 
-            if (_deformVertices != null && _deformVertices.verticesData != null && display == _meshDisplay)
+            if (_deformVertices != null && _deformVertices.verticesData != null && display == MeshDisplay)
             {
                 var isSkinned = _deformVertices.verticesData.weight != null;
 
@@ -790,19 +737,18 @@ namespace DragonBones
 
                     if (isCache && _cachedFrameIndices != null)
                     {
-                        _cachedFrameIndex = _cachedFrameIndices[cacheFrameIndex] = _armature._armatureData.SetCacheFrame(globalTransformMatrix, global);
+                        _cachedFrameIndex = _cachedFrameIndices[cacheFrameIndex] = Armature.ArmatureData.SetCacheFrame(globalTransformMatrix, global);
                     }
                 }
                 else
                 {
-                    _armature._armatureData.GetCacheFrame(globalTransformMatrix, global, _cachedFrameIndex);
+                    Armature.ArmatureData.GetCacheFrame(globalTransformMatrix, global, _cachedFrameIndex);
                 }
 
                 _UpdateTransform();
             }
         }
 
-        /// <private/>
         public void UpdateTransformAndMatrix()
         {
             if (_transformDirty)
@@ -812,18 +758,17 @@ namespace DragonBones
             }
         }
 
-        /// <private/>
         internal void ReplaceDisplayData(DisplayData value, int displayIndex = -1)
         {
             if (displayIndex < 0)
             {
-                if (_displayIndex < 0)
+                if (this.displayIndex < 0)
                 {
                     displayIndex = 0;
                 }
                 else
                 {
-                    displayIndex = _displayIndex;
+                    displayIndex = this.displayIndex;
                 }
             }
 
@@ -852,7 +797,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public bool ContainsPoint(float x, float y)
         {
-            if (_boundingBoxData == null)
+            if (BoundingBoxData == null)
             {
                 return false;
             }
@@ -863,7 +808,7 @@ namespace DragonBones
             _helpMatrix.Invert();
             _helpMatrix.TransformPoint(x, y, _helpPoint);
 
-            return _boundingBoxData.ContainsPoint(_helpPoint.x, _helpPoint.y);
+            return BoundingBoxData.ContainsPoint(_helpPoint.x, _helpPoint.y);
         }
 
         /// <summary>
@@ -886,7 +831,7 @@ namespace DragonBones
                                     Point intersectionPointB = null,
                                     Point normalRadians = null)
         {
-            if (_boundingBoxData == null)
+            if (BoundingBoxData == null)
             {
                 return 0;
             }
@@ -901,7 +846,7 @@ namespace DragonBones
             xB = _helpPoint.x;
             yB = _helpPoint.y;
 
-            var intersectionCount = _boundingBoxData.IntersectsSegment(xA, yA, xB, yB, intersectionPointA, intersectionPointB, normalRadians);
+            var intersectionCount = BoundingBoxData.IntersectsSegment(xA, yA, xB, yB, intersectionPointA, intersectionPointB, normalRadians);
             if (intersectionCount > 0)
             {
                 if (intersectionCount == 1 || intersectionCount == 2)
@@ -957,26 +902,28 @@ namespace DragonBones
             _displayDirty = true;
             _transformDirty = true;
         }
+        
         /// <summary>
         /// - The visible of slot's display object.
         /// </summary>
         /// <default>true</default>
         /// <version>DragonBones 5.6</version>
         /// <language>en_US</language>
-        public bool visible
+        public bool Visible
         {
-            get { return _visible; }
+            get => visible;
             set
             {
-                if (_visible == value)
+                if (visible == value)
                 {
                     return;
                 }
 
-                _visible = value;
+                visible = value;
                 _UpdateVisible();
             }
         }
+        
         /// <summary>
         /// - The index of the display object displayed in the display list.
         /// </summary>
@@ -990,9 +937,9 @@ namespace DragonBones
         /// </example>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-        public int displayIndex
+        public int DisplayIndex
         {
-            get { return _displayIndex; }
+            get => displayIndex;
             set
             {
                 if (_SetDisplayIndex(value))
@@ -1010,7 +957,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public string name
         {
-            get { return _slotData.name; }
+            get { return SlotData.name; }
         }
 
         /// <summary>
@@ -1035,8 +982,8 @@ namespace DragonBones
                 foreach (var eachDisplay in backupDisplayList)
                 {
                     if (eachDisplay != null &&
-                        eachDisplay != _rawDisplay &&
-                        eachDisplay != _meshDisplay &&
+                        eachDisplay != RawDisplay &&
+                        eachDisplay != MeshDisplay &&
                         displayList.IndexOf(eachDisplay) < 0 &&
                         disposeDisplayList.IndexOf(eachDisplay) < 0)
                     {
@@ -1057,37 +1004,34 @@ namespace DragonBones
                 }
             }
         }
+        
         /// <summary>
         /// - The slot data.
         /// </summary>
-        /// <see cref="DBKernel.SlotData"/>
+        /// <see cref="DragonBones.SlotData"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-        public SlotData slotData
-        {
-            get { return _slotData; }
-        }
+        public SlotData SlotData { get; internal set; }
 
-        /// <private/>
-        public List<DisplayData> rawDisplayDatas
+        public List<DisplayData> AllDisplaysData
         {
-            get { return _rawDisplayDatas; }
+            get => allDisplaysData;
             set
             {
-                if (_rawDisplayDatas == value)
+                if (allDisplaysData == value)
                 {
                     return;
                 }
 
                 _displayDirty = true;
-                _rawDisplayDatas = value;
+                allDisplaysData = value;
 
-                if (_rawDisplayDatas != null)
+                if (allDisplaysData != null)
                 {
-                    _displayDatas.ResizeList(_rawDisplayDatas.Count);
+                    _displayDatas.ResizeList(allDisplaysData.Count);
                     for (int i = 0, l = _displayDatas.Count; i < l; ++i)
                     {
-                        var rawDisplayData = _rawDisplayDatas[i];
+                        var rawDisplayData = allDisplaysData[i];
 
                         if (rawDisplayData == null)
                         {
@@ -1103,26 +1047,17 @@ namespace DragonBones
                 }
             }
         }
+        
         /// <summary>
         /// - The custom bounding box data for the slot at current time.
         /// </summary>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-        public BoundingBoxData boundingBoxData
-        {
-            get { return _boundingBoxData; }
-        }
-        /// <private/>
-        public object rawDisplay
-        {
-            get { return _rawDisplay; }
-        }
+        public BoundingBoxData BoundingBoxData { get; protected set; }
 
-        /// <private/>
-        public object meshDisplay
-        {
-            get { return _meshDisplay; }
-        }
+        public object RawDisplay { get; protected set; }
+        public object MeshDisplay { get; protected set; }
+
         /// <summary>
         /// - The display object that the slot displays at this time.
         /// </summary>
@@ -1146,25 +1081,25 @@ namespace DragonBones
                 }
 
                 var displayListLength = displayList.Count;
-                if (_displayIndex < 0 && displayListLength == 0)
+                if (displayIndex < 0 && displayListLength == 0)
                 {
                     // Emprty.
-                    _displayIndex = 0;
+                    displayIndex = 0;
                 }
 
-                if (_displayIndex < 0)
+                if (displayIndex < 0)
                 {
                     return;
                 }
                 else
                 {
                     var replaceDisplayList = DisplayList; // Copy.
-                    if (displayListLength <= _displayIndex)
+                    if (displayListLength <= displayIndex)
                     {
-                        replaceDisplayList.ResizeList(_displayIndex + 1);
+                        replaceDisplayList.ResizeList(displayIndex + 1);
                     }
 
-                    replaceDisplayList[_displayIndex] = value;
+                    replaceDisplayList[displayIndex] = value;
                     DisplayList = replaceDisplayList;
                 }
             }
@@ -1176,11 +1111,11 @@ namespace DragonBones
         /// TypeScript style, for reference only.
         /// <pre>
         ///     let slot = armature.getSlot("weapon");
-        /// let prevChildArmature = slot.childArmature;
-        /// if (prevChildArmature) {
-        /// prevChildArmature.dispose();
+        ///     let prevChildArmature = slot.childArmature;
+        ///     if (prevChildArmature) {
+        ///         prevChildArmature.dispose();
         ///     }
-        ///     slot.childArmature = factory.buildArmature("weapon_blabla", "weapon_blabla_project");
+        ///     slot.childArmature = factory.buildArmature("weapon_2", "weapon_2_project");
         /// </pre>
         /// </example>
         /// <version>DragonBones 3.0</version>
@@ -1195,6 +1130,7 @@ namespace DragonBones
                     return;
                 }
 
+                childArmature = value;
                 Display = value.Display;
             }
         }
@@ -1204,9 +1140,6 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public Bone parent
-        {
-            get { return _parent; }
-        }
+        public Bone Parent { get; protected set; }
     }
 }

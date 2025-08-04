@@ -216,7 +216,7 @@ namespace DragonBones
         private void _UpdateTimelines()
         {
             { // Update constraint timelines.
-                foreach (var constraint in this._armature._constraints)
+                foreach (var constraint in this._armature.Structure.Constraints)
                 {
                     var timelineDatas = this._animationData.GetConstraintTimelines(constraint.name);
 
@@ -269,7 +269,7 @@ namespace DragonBones
                     boneTimelines[timelineName].Add(timeline);
                 }
 
-                foreach (var bone in this._armature.GetBones())
+                foreach (var bone in this._armature.Structure.Bones)
                 {
                     var timelineName = bone.name;
                     if (!this.ContainsBoneMask(timelineName))
@@ -374,9 +374,9 @@ namespace DragonBones
                     slotTimelines[timelineName].Add(timeline);
                 }
 
-                foreach (var slot in this._armature.GetSlots())
+                foreach (var slot in this._armature.Structure.Slots)
                 {
-                    var boneName = slot.parent.name;
+                    var boneName = slot.Parent.name;
                     if (!this.ContainsBoneMask(boneName))
                     {
                         continue;
@@ -458,9 +458,9 @@ namespace DragonBones
                                 this._poseTimelines.Add(timeline);
                             }
 
-                            if (slot.rawDisplayDatas != null)
+                            if (slot.AllDisplaysData != null)
                             {
-                                foreach (var displayData in slot.rawDisplayDatas)
+                                foreach (var displayData in slot.AllDisplaysData)
                                 {
                                     if (displayData != null && displayData.type == DisplayType.Mesh)
                                     {
@@ -572,7 +572,7 @@ namespace DragonBones
                 this._subFadeState = 0;
 
                 var eventType = isFadeOut ? EventObject.FADE_OUT : EventObject.FADE_IN;
-                if (this._armature.eventDispatcher.HasDBEventListener(eventType))
+                if (this._armature.ArmatureEventDispatcher.HasDBEventListener(eventType))
                 {
                     var eventObject = DBObject.BorrowObject<EventObject>();
                     eventObject.type = eventType;
@@ -616,7 +616,7 @@ namespace DragonBones
                 }
 
                 var eventType = isFadeOut ? EventObject.FADE_OUT_COMPLETE : EventObject.FADE_IN_COMPLETE;
-                if (this._armature.eventDispatcher.HasDBEventListener(eventType))
+                if (this._armature.ArmatureEventDispatcher.HasDBEventListener(eventType))
                 {
                     var eventObject = DBObject.BorrowObject<EventObject>();
                     eventObject.type = eventType;
@@ -1009,7 +1009,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public void AddBoneMask(string boneName, bool recursive = true)
         {
-            var currentBone = this._armature.GetBone(boneName);
+            var currentBone = this._armature.Structure.GetBone(boneName);
             if (currentBone == null)
             {
                 return;
@@ -1024,7 +1024,7 @@ namespace DragonBones
             if (recursive)
             {
                 // Add recursive mixing.
-                foreach (var bone in this._armature.GetBones())
+                foreach (var bone in this._armature.Structure.Bones)
                 {
                     if (this._boneMask.IndexOf(bone.name) < 0 && currentBone.Contains(bone))
                     {
@@ -1052,10 +1052,10 @@ namespace DragonBones
 
             if (recursive)
             {
-                var currentBone = this._armature.GetBone(boneName);
+                var currentBone = this._armature.Structure.GetBone(boneName);
                 if (currentBone != null)
                 {
-                    var bones = this._armature.GetBones();
+                    var bones = this._armature.Structure.Bones;
                     if (this._boneMask.Count > 0)
                     {
                         // Remove recursive mixing.

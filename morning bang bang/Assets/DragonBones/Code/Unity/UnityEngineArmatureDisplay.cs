@@ -61,15 +61,15 @@ namespace DragonBones
 #if UNITY_5_6_OR_NEWER
                 if (_sortingMode == SortingMode.SortByOrder)
                 {
-                    _sortingGroup = GetComponent<UnityEngine.Rendering.SortingGroup>();
+                    _sortingGroup = GetComponent<SortingGroup>();
                     if (_sortingGroup == null)
                     {
-                        _sortingGroup = gameObject.AddComponent<UnityEngine.Rendering.SortingGroup>();
+                        _sortingGroup = gameObject.AddComponent<SortingGroup>();
                     }
                 }
                 else
                 {
-                    _sortingGroup = GetComponent<UnityEngine.Rendering.SortingGroup>();
+                    _sortingGroup = GetComponent<SortingGroup>();
 
                     if (_sortingGroup != null)
                     {
@@ -104,7 +104,7 @@ namespace DragonBones
         } 
         [SerializeField]
         
-        internal UnityEngine.Rendering.SortingGroup _sortingGroup;
+        internal SortingGroup _sortingGroup;
         
         private void UpdateSlotsSorting()
         {
@@ -132,15 +132,15 @@ namespace DragonBones
             }
 
             //
-            foreach (UnitySlot slot in Armature.GetSlots())
+            foreach (UnitySlot slot in Armature.Structure.Slots)
             {
-                var display = slot._renderDisplay;
+                var display = slot.RenderDisplay;
                 if (display == null)
                 {
                     continue;
                 }
 
-                slot.SetZOrder(new Vector3(display.transform.localPosition.x, display.transform.localPosition.y, -slot._zOrder * (_zSpace + 0.001f)));
+                slot.UpdateZPosition(new Vector3(display.transform.localPosition.x, display.transform.localPosition.y, -slot._zOrder * (_zSpace + 0.001f)));
 
                 if (slot.ChildArmature != null)
                 {
@@ -221,32 +221,32 @@ namespace DragonBones
 
         public void DBClear()
         {
-            if (this.Armature != null)
+            if (Armature != null)
             {
-                this.Armature = null;
-                if (this._disposeDisplay)
+                Armature = null;
+                if (_disposeDisplay)
                 {
                     //DBUnityFactory.UnityFactoryHelper.DestroyUnityObject(gameObject);
                 }
             }
 
-            this.unityData = null;
-            this.armatureName = null;
-            this.animationName = null;
-            this.isUGUI = false;
+            unityData = null;
+            armatureName = null;
+            animationName = null;
+            isUGUI = false;
 
-            this._disposeDisplay = true;
-            this.Armature = null;
-            this._colorTransform.Identity();
-            this._playTimes = 0;
-            this._timeScale = 1.0f;
-            this._zSpace = 0.0f;
-            this._flipX = false;
-            this._flipY = false;
+            _disposeDisplay = true;
+            Armature = null;
+            _colorTransform.Identity();
+            _playTimes = 0;
+            _timeScale = 1.0f;
+            _zSpace = 0.0f;
+            _flipX = false;
+            _flipY = false;
 
-            this._hasSortingGroup = false;
+            _hasSortingGroup = false;
 
-            this._closeCombineMeshs = false;
+            _closeCombineMeshs = false;
         }
 
         ///
@@ -272,12 +272,12 @@ namespace DragonBones
 
         public ColorTransform color
         {
-            get { return this._colorTransform; }
+            get { return _colorTransform; }
             set
             {
-                this._colorTransform.CopyFrom(value);
+                _colorTransform.CopyFrom(value);
 
-                foreach (var slot in this.Armature.GetSlots())
+                foreach (var slot in Armature.Structure.Slots)
                 {
                     slot._colorDirty = true;
                 }
@@ -335,13 +335,13 @@ namespace DragonBones
         {
             // this._closeCombineMeshs = true;
             //默认开启合并
-            if (this._closeCombineMeshs)
+            if (_closeCombineMeshs)
             {
-                this.CloseCombineMeshs();
+                CloseCombineMeshs();
             }
             else
             {
-                this.OpenCombineMeshs();
+                OpenCombineMeshs();
             }
         }
 
@@ -355,7 +355,7 @@ namespace DragonBones
             _flipX = Armature.flipX;
             _flipY = Armature.flipY;
 
-            var hasSortingGroup = GetComponent<UnityEngine.Rendering.SortingGroup>() != null;
+            var hasSortingGroup = GetComponent<SortingGroup>() != null;
             if (hasSortingGroup != _hasSortingGroup)
             {
                 _hasSortingGroup = hasSortingGroup;
@@ -368,8 +368,8 @@ namespace DragonBones
         {
             if (Armature != null)
             {
-                var armature = this.Armature;
-                this.Armature = null;
+                var armature = Armature;
+                Armature = null;
 
                 armature.Dispose();
 
@@ -385,7 +385,7 @@ namespace DragonBones
 
         private void OpenCombineMeshs()
         {
-            if (this.isUGUI)
+            if (isUGUI)
             {
                 return;
             }
@@ -398,12 +398,12 @@ namespace DragonBones
             }
             //
 
-            if (this.Armature == null)
+            if (Armature == null)
             {
                 return;
             }
 
-            var slots = this.Armature.GetSlots();
+            var slots = Armature.Structure.Slots;
             foreach (var slot in slots)
             {
                 if (slot.ChildArmature != null)
@@ -415,7 +415,7 @@ namespace DragonBones
 
         public void CloseCombineMeshs()
         {
-            this._closeCombineMeshs = true;
+            _closeCombineMeshs = true;
             //
             var cm = gameObject.GetComponent<UnityCombineMeshes>();
             if (cm != null)
@@ -423,13 +423,13 @@ namespace DragonBones
                 DestroyImmediate(cm);
             }
 
-            if (this.Armature == null)
+            if (Armature == null)
             {
                 return;
             }
 
             //
-            var slots = this.Armature.GetSlots();
+            var slots = Armature.Structure.Slots;
             foreach (var slot in slots)
             {
                 if (slot.ChildArmature != null)

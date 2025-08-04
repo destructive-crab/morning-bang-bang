@@ -138,7 +138,7 @@ namespace DragonBones
             IAnimatable ancestor = value;
             while (ancestor != this && ancestor != null)
             {
-                ancestor = ancestor.clock;
+                ancestor = ancestor.Clock;
             }
 
             return ancestor == this;
@@ -154,7 +154,7 @@ namespace DragonBones
             if (value != null && !_animatebles.Contains(value))
             {
                 _animatebles.Add(value);
-                value.clock = this;
+                value.Clock = this;
             }
         }
         /// <summary>
@@ -169,7 +169,7 @@ namespace DragonBones
             if (index >= 0)
             {
                 _animatebles[index] = null;
-                value.clock = null;
+                value.Clock = null;
             }
         }
         /// <summary>
@@ -185,7 +185,7 @@ namespace DragonBones
                 _animatebles[i] = null;
                 if (animateble != null)
                 {
-                    animateble.clock = null;
+                    animateble.Clock = null;
                 }
             }
         }
@@ -195,7 +195,7 @@ namespace DragonBones
         /// <language>en_US</language>
         [System.Obsolete("")]
         /// <inheritDoc/>
-        public WorldClock clock
+        public WorldClock Clock
         {
             get { return _clock; }
             set

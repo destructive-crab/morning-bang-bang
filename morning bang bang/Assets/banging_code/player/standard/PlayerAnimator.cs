@@ -55,7 +55,7 @@ namespace banging_code.player_logic
         
         public override void Update()
         {
-            if ((playerRoot.Direction == GameDirection.Left || playerRoot.Direction == GameDirection.Right) && engineArmatureAPI.Armature.name != "rat_gun_side")
+            if ((playerRoot.Direction == GameDirection.Left || playerRoot.Direction == GameDirection.Right) && engineArmatureAPI.Armature.Name != "rat_gun_side")
             {
 //                side.gameObject.SetActive(true);
 //                down.gameObject.SetActive(false);
@@ -64,7 +64,7 @@ namespace banging_code.player_logic
 //                engineArmatureAPI = side; 
                 DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_side", "rat_gun", side);
             }
-            else if (playerRoot.Direction == GameDirection.Top && engineArmatureAPI.Armature.name != "rat_gun_up")
+            else if (playerRoot.Direction == GameDirection.Top && engineArmatureAPI.Armature.Name != "rat_gun_up")
             {
  //               up.gameObject.SetActive(true); 
  //               down.gameObject.SetActive(false);
@@ -73,7 +73,7 @@ namespace banging_code.player_logic
  //               engineArmatureAPI = up;
                 DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_up", "rat_gun",side);
             }
-            else if (playerRoot.Direction == GameDirection.Bottom && engineArmatureAPI.Armature.name != "rat_gun_down")
+            else if (playerRoot.Direction == GameDirection.Bottom && engineArmatureAPI.Armature.Name != "rat_gun_down")
             {
   //              down.gameObject.SetActive(true);                
   //              side.gameObject.SetActive(false);

@@ -40,8 +40,8 @@ namespace DragonBones
         {
             var boneData = this._boneData;
             var parent = this._parent;
-            var flipX = this._armature.flipX;
-            var flipY = this._armature.flipY == DBKernel.IsNegativeYDown;
+            var flipX = this.Armature.flipX;
+            var flipY = this.Armature.flipY == DBKernel.IsNegativeYDown;
             var rotation = 0.0f;
             var global = this.global;
             var inherit = parent != null;
@@ -254,15 +254,15 @@ namespace DragonBones
             }
 
             this._boneData = boneData;
-            this._armature = armatureValue;
+            this.Armature = armatureValue;
 
             if (this._boneData.parent != null)
             {
-                this._parent = this._armature.GetBone(this._boneData.parent.name);
+                this._parent = this.Armature.Structure.GetBone(this._boneData.parent.name);
             }
 
             this.origin = this._boneData.DBTransform;
-            this._armature.AddBone(this);
+            this.Armature.Structure.AddBone(this);
         }
         /// <internal/>
         /// <private/>
@@ -290,7 +290,7 @@ namespace DragonBones
                     if (this._hasConstraint)
                     {
                         // Update constraints.
-                        foreach (var constraint in this._armature._constraints)
+                        foreach (var constraint in this.Armature.Structure.Constraints)
                         {
                             if (constraint._root == this)
                             {
@@ -324,7 +324,7 @@ namespace DragonBones
                 if (this._hasConstraint)
                 {
                     // Update constraints.
-                    foreach (var constraint in this._armature._constraints)
+                    foreach (var constraint in this.Armature.Structure.Constraints)
                     {
                         if (constraint._root == this)
                         {
@@ -357,12 +357,12 @@ namespace DragonBones
 
                     if (isCache && this._cachedFrameIndices != null)
                     {
-                        this._cachedFrameIndex = this._cachedFrameIndices[cacheFrameIndex] = this._armature._armatureData.SetCacheFrame(this.globalTransformMatrix, this.global);
+                        this._cachedFrameIndex = this._cachedFrameIndices[cacheFrameIndex] = this.Armature.ArmatureData.SetCacheFrame(this.globalTransformMatrix, this.global);
                     }
                 }
                 else
                 {
-                    this._armature._armatureData.GetCacheFrame(this.globalTransformMatrix, this.global, this._cachedFrameIndex);
+                    this.Armature.ArmatureData.GetCacheFrame(this.globalTransformMatrix, this.global, this._cachedFrameIndex);
                 }
             }
             else if (this._childrenTransformDirty)
@@ -458,9 +458,9 @@ namespace DragonBones
 
                 this._visible = value;
 
-                foreach (var slot in this._armature.GetSlots())
+                foreach (var slot in this.Armature.Structure.Slots)
                 {
-                    if (slot.parent == this)
+                    if (slot.Parent == this)
                     {
                         slot._UpdateVisible();
                     }
@@ -486,26 +486,6 @@ namespace DragonBones
         public Bone parent
         {
             get { return this._parent; }
-        }
-        /// <summary>
-        /// - Deprecated, please refer to {@link dragonBones.Armature#getSlot()}.
-        /// </summary>
-        /// <language>en_US</language>
-        [System.Obsolete("")]
-        public Slot slot
-        {
-            get
-            {
-                foreach (var slot in this._armature.GetSlots())
-                {
-                    if (slot.parent == this)
-                    {
-                        return slot;
-                    }
-                }
-
-                return null;
-            }
         }
     }
 }

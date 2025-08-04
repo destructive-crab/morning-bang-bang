@@ -46,7 +46,7 @@ namespace DragonBones
                 {
                     for (int i = 0, l = this.verticesData.weight.bones.Count; i < l; ++i)
                     {
-                        var bone = armature.GetBone(this.verticesData.weight.bones[i].name);
+                        var bone = armature.Structure.GetBone(this.verticesData.weight.bones[i].name);
                         this.bones.Add(bone);
                     }
                 }

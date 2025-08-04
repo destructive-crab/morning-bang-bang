@@ -5,11 +5,10 @@ namespace DragonBones
     /// <summary>
     /// - The animation player is used to play the animation data and manage the animation states.
     /// </summary>
-    /// <see cref="AnimationData"/>
-    /// <see cref="AnimationState"/>
+    /// <see cref="AnimationData"/>, <see cref="AnimationState"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public class AnimationPlayer : DBObject
+    public class AnimationPlayer 
     {
         /// <summary>
         /// - The play speed of all animations. [0: Stop, (0~1): Slow, 1: Normal, (1~N): Fast]
@@ -17,7 +16,6 @@ namespace DragonBones
         /// <default>1.0</default>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
         public float timeScale;
 
         private bool _lockUpdate;
@@ -28,114 +26,45 @@ namespace DragonBones
         private readonly List<string> _animationNames = new List<string>();
         private readonly List<AnimationState> _animationStates = new List<AnimationState>();
         private readonly Dictionary<string, AnimationData> _animations = new Dictionary<string, AnimationData>();
-        private Armature _armature;
+        public readonly Armature BelongsTo;
         private AnimationConfig _animationConfig = null; // Initial value.
         private AnimationState _lastAnimationState;
-        /// <private/>
-        protected override void ClearObject()
+
+        public AnimationPlayer(Armature belongsTo)
         {
-            foreach (var animationState in this._animationStates)
+            BelongsTo = belongsTo;
+        }
+
+        public void Clear()
+        {
+            foreach (var animationState in _animationStates)
             {
                 animationState.ReturnToPool();
             }
 
-            if (this._animationConfig != null)
+            if (_animationConfig != null)
             {
-                this._animationConfig.ReturnToPool();
+                _animationConfig.ReturnToPool();
             }
 
-            this.timeScale = 1.0f;
+            timeScale = 1.0f;
 
-            this._lockUpdate = false;
+            _lockUpdate = false;
 
-            this._animationDirty = false;
-            this._inheritTimeScale = 1.0f;
-            this._animationNames.Clear();
-            this._animationStates.Clear();
-            this._animations.Clear();
-            this._armature = null; //
-            this._animationConfig = null; //
-            this._lastAnimationState = null;
+            _animationDirty = false;
+            _inheritTimeScale = 1.0f;
+            _animationNames.Clear();
+            _animationStates.Clear();
+            _animations.Clear();
+            _animationConfig = null; //
+            _lastAnimationState = null;
         }
 
-        private void _FadeOut(AnimationConfig animationConfig)
+        internal void Init()
         {
-            switch (animationConfig.fadeOutMode)
-            {
-                case AnimationFadeOutMode.SameLayer:
-                    foreach (var animationState in this._animationStates)
-                    {
-                        if (animationState._parent != null)
-                        {
-                            continue;
-                        }
-
-                        if (animationState.layer == animationConfig.layer)
-                        {
-                            animationState.FadeOut(animationConfig.fadeOutTime, animationConfig.pauseFadeOut);
-                        }
-                    }
-                    break;
-                case AnimationFadeOutMode.SameGroup:
-                    foreach (var animationState in this._animationStates)
-                    {
-                        if (animationState._parent != null)
-                        {
-                            continue;
-                        }
-
-                        if (animationState.group == animationConfig.group)
-                        {
-                            animationState.FadeOut(animationConfig.fadeOutTime, animationConfig.pauseFadeOut);
-                        }
-                    }
-                    break;
-                case AnimationFadeOutMode.SameLayerAndGroup:
-                    foreach (var animationState in this._animationStates)
-                    {
-                        if (animationState._parent != null)
-                        {
-                            continue;
-                        }
-
-                        if (animationState.layer == animationConfig.layer &&
-                            animationState.group == animationConfig.group)
-                        {
-                            animationState.FadeOut(animationConfig.fadeOutTime, animationConfig.pauseFadeOut);
-                        }
-                    }
-                    break;
-                case AnimationFadeOutMode.All:
-                    foreach (var animationState in this._animationStates)
-                    {
-                        if (animationState._parent != null)
-                        {
-                            continue;
-                        }
-
-                        animationState.FadeOut(animationConfig.fadeOutTime, animationConfig.pauseFadeOut);
-                    }
-                    break;
-                case AnimationFadeOutMode.None:
-                case AnimationFadeOutMode.Single:
-                default:
-                    break;
-            }
+            _animationConfig = DBObject.BorrowObject<AnimationConfig>();
         }
-        /// <internal/>
-        /// <private/>
-        internal void Init(Armature armature)
-        {
-            if (this._armature != null)
-            {
-                return;
-            }
 
-            this._armature = armature;
-            this._animationConfig = DBObject.BorrowObject<AnimationConfig>();
-        }
-        /// <internal/>
-        /// <private/>
         internal void AdvanceTime(float passedTime)
         {
             if (passedTime < 0.0f)
@@ -144,54 +73,54 @@ namespace DragonBones
                 passedTime = -passedTime;
             }
 
-            if (this._armature.inheritAnimation && this._armature._parent != null)
+            if (BelongsTo.inheritAnimation && BelongsTo.Parent != null)
             {
                 // Inherit parent animation timeScale.
-                this._inheritTimeScale = this._armature._parent._armature.AnimationPlayer._inheritTimeScale * this.timeScale;
+                _inheritTimeScale = BelongsTo.Parent.Armature.AnimationPlayer._inheritTimeScale * timeScale;
             }
             else
             {
-                this._inheritTimeScale = this.timeScale;
+                _inheritTimeScale = timeScale;
             }
 
-            if (this._inheritTimeScale != 1.0f)
+            if (_inheritTimeScale != 1.0f)
             {
-                passedTime *= this._inheritTimeScale;
+                passedTime *= _inheritTimeScale;
             }
 
-            var animationStateCount = this._animationStates.Count;
+            var animationStateCount = _animationStates.Count;
             if (animationStateCount == 1)
             {
-                var animationState = this._animationStates[0];
+                var animationState = _animationStates[0];
                 if (animationState._fadeState > 0 && animationState._subFadeState > 0)
                 {
                     DBInitial.Kernel.BufferObject(animationState);
-                    this._animationStates.Clear();
-                    this._lastAnimationState = null;
+                    _animationStates.Clear();
+                    _lastAnimationState = null;
                 }
                 else
                 {
                     var animationData = animationState._animationData;
                     var cacheFrameRate = animationData.cacheFrameRate;
 
-                    if (this._animationDirty && cacheFrameRate > 0.0f)
+                    if (_animationDirty && cacheFrameRate > 0.0f)
                     {
                         // Update cachedFrameIndices.
-                        this._animationDirty = false;
-                        foreach (var bone in this._armature.GetBones())
+                        _animationDirty = false;
+                        foreach (var bone in BelongsTo.Structure.Bones)
                         {
                             bone._cachedFrameIndices = animationData.GetBoneCachedFrameIndices(bone.name);
                         }
 
-                        foreach (var slot in this._armature.GetSlots())
+                        foreach (var slot in BelongsTo.Structure.Slots)
                         {
-                            var rawDisplayDatas = slot.rawDisplayDatas;
+                            var rawDisplayDatas = slot.AllDisplaysData;
                             if (rawDisplayDatas != null && rawDisplayDatas.Count > 0)
                             {
                                 var rawDsplayData = rawDisplayDatas[0];
                                 if (rawDsplayData != null)
                                 {
-                                    if (rawDsplayData.parent == this._armature.armatureData.defaultSkin)
+                                    if (rawDsplayData.parent == BelongsTo.ArmatureData.defaultSkin)
                                     {
                                         slot._cachedFrameIndices = animationData.GetSlotCachedFrameIndices(slot.name);
                                         continue;
@@ -210,23 +139,23 @@ namespace DragonBones
             {
                 for (int i = 0, r = 0; i < animationStateCount; ++i)
                 {
-                    var animationState = this._animationStates[i];
+                    var animationState = _animationStates[i];
                     if (animationState._fadeState > 0 && animationState._subFadeState > 0)
                     {
                         r++;
                         DBInitial.Kernel.BufferObject(animationState);
                         _animationDirty = true;
-                        if (this._lastAnimationState == animationState)
+                        if (_lastAnimationState == animationState)
                         {
                             // Update last animation state.
-                            this._lastAnimationState = null;
+                            _lastAnimationState = null;
                         }
                     }
                     else
                     {
                         if (r > 0)
                         {
-                            this._animationStates[i - r] = animationState;
+                            _animationStates[i - r] = animationState;
                         }
 
                         animationState.AdvanceTime(passedTime, 0.0f);
@@ -235,21 +164,87 @@ namespace DragonBones
                     if (i == animationStateCount - 1 && r > 0)
                     {
                         // Modify animation states size.
-                        this._animationStates.ResizeList(this._animationStates.Count - r);
-                        if (this._lastAnimationState == null && this._animationStates.Count > 0)
+                        _animationStates.ResizeList(_animationStates.Count - r);
+                        if (_lastAnimationState == null && _animationStates.Count > 0)
                         {
-                            this._lastAnimationState = this._animationStates[this._animationStates.Count - 1];
+                            _lastAnimationState = _animationStates[_animationStates.Count - 1];
                         }
                     }
                 }
 
-                this._armature._cacheFrameIndex = -1;
+                BelongsTo._cacheFrameIndex = -1;
             }
             else
             {
-                this._armature._cacheFrameIndex = -1;
+                BelongsTo._cacheFrameIndex = -1;
             }
         }
+
+        private void _FadeOut(AnimationConfig animationConfig)
+        {
+            switch (animationConfig.fadeOutMode)
+            {
+                case AnimationFadeOutMode.SameLayer:
+                    foreach (var animationState in _animationStates)
+                    {
+                        if (animationState._parent != null)
+                        {
+                            continue;
+                        }
+
+                        if (animationState.layer == animationConfig.layer)
+                        {
+                            animationState.FadeOut(animationConfig.fadeOutTime, animationConfig.pauseFadeOut);
+                        }
+                    }
+                    break;
+                case AnimationFadeOutMode.SameGroup:
+                    foreach (var animationState in _animationStates)
+                    {
+                        if (animationState._parent != null)
+                        {
+                            continue;
+                        }
+
+                        if (animationState.group == animationConfig.group)
+                        {
+                            animationState.FadeOut(animationConfig.fadeOutTime, animationConfig.pauseFadeOut);
+                        }
+                    }
+                    break;
+                case AnimationFadeOutMode.SameLayerAndGroup:
+                    foreach (var animationState in _animationStates)
+                    {
+                        if (animationState._parent != null)
+                        {
+                            continue;
+                        }
+
+                        if (animationState.layer == animationConfig.layer &&
+                            animationState.group == animationConfig.group)
+                        {
+                            animationState.FadeOut(animationConfig.fadeOutTime, animationConfig.pauseFadeOut);
+                        }
+                    }
+                    break;
+                case AnimationFadeOutMode.All:
+                    foreach (var animationState in _animationStates)
+                    {
+                        if (animationState._parent != null)
+                        {
+                            continue;
+                        }
+
+                        animationState.FadeOut(animationConfig.fadeOutTime, animationConfig.pauseFadeOut);
+                    }
+                    break;
+                case AnimationFadeOutMode.None:
+                case AnimationFadeOutMode.Single:
+                default:
+                    break;
+            }
+        }
+
         /// <summary>
         /// - Clear all animations states.
         /// </summary>
@@ -259,15 +254,15 @@ namespace DragonBones
 
         public void Reset()
         {
-            foreach (var animationState in this._animationStates)
+            foreach (var animationState in _animationStates)
             {
                 animationState.ReturnToPool();
             }
 
-            this._animationDirty = false;
-            this._animationConfig.Clear();
-            this._animationStates.Clear();
-            this._lastAnimationState = null;
+            _animationDirty = false;
+            _animationConfig.Clear();
+            _animationStates.Clear();
+            _lastAnimationState = null;
         }
         /// <summary>
         /// - Pause a specific animation state.
@@ -281,7 +276,7 @@ namespace DragonBones
         {
             if (animationName != null)
             {
-                var animationState = this.GetState(animationName);
+                var animationState = GetState(animationName);
                 if (animationState != null)
                 {
                     animationState.Stop();
@@ -289,7 +284,7 @@ namespace DragonBones
             }
             else
             {
-                foreach (var animationState in this._animationStates)
+                foreach (var animationState in _animationStates)
                 {
                     animationState.Stop();
                 }
@@ -309,23 +304,23 @@ namespace DragonBones
         public AnimationState PlayConfig(AnimationConfig animationConfig)
         {
             var animationName = animationConfig.animation;
-            if (!(this._animations.ContainsKey(animationName)))
+            if (!(_animations.ContainsKey(animationName)))
             {
                 DBLogger.Assert(false,
                     "Non-existent animation.\n" +
-                    "DragonBones name: " + this._armature.armatureData.parent.name +
-                    "Armature name: " + this._armature.name +
+                    "DragonBones name: " + BelongsTo.ArmatureData.parent.name +
+                    "Armature name: " + BelongsTo.Name +
                     "Animation name: " + animationName
                 );
 
                 return null;
             }
 
-            var animationData = this._animations[animationName];
+            var animationData = _animations[animationName];
 
             if (animationConfig.fadeOutMode == AnimationFadeOutMode.Single)
             {
-                foreach (var aniState in this._animationStates)
+                foreach (var aniState in _animationStates)
                 {
                     if (aniState._animationData == animationData)
                     {
@@ -334,7 +329,7 @@ namespace DragonBones
                 }
             }
 
-            if (this._animationStates.Count == 0)
+            if (_animationStates.Count == 0)
             {
                 animationConfig.fadeInTime = 0.0f;
             }
@@ -394,44 +389,44 @@ namespace DragonBones
                 animationConfig.duration = -1.0f;
             }
 
-            this._FadeOut(animationConfig);
+            _FadeOut(animationConfig);
 
             var animationState = DBObject.BorrowObject<AnimationState>();
-            animationState.Init(this._armature, animationData, animationConfig);
-            this._animationDirty = true;
-            this._armature._cacheFrameIndex = -1;
+            animationState.Init(BelongsTo, animationData, animationConfig);
+            _animationDirty = true;
+            BelongsTo._cacheFrameIndex = -1;
 
-            if (this._animationStates.Count > 0)
+            if (_animationStates.Count > 0)
             {
                 var added = false;
-                for (int i = 0, l = this._animationStates.Count; i < l; ++i)
+                for (int i = 0, l = _animationStates.Count; i < l; ++i)
                 {
-                    if (animationState.layer > this._animationStates[i].layer)
+                    if (animationState.layer > _animationStates[i].layer)
                     {
                         added = true;
-                        this._animationStates.Insert(i, animationState);
+                        _animationStates.Insert(i, animationState);
                         break;
                     }
-                    else if (i != l - 1 && animationState.layer > this._animationStates[i + 1].layer)
+                    else if (i != l - 1 && animationState.layer > _animationStates[i + 1].layer)
                     {
                         added = true;
-                        this._animationStates.Insert(i + 1, animationState);
+                        _animationStates.Insert(i + 1, animationState);
                         break;
                     }
                 }
 
                 if (!added)
                 {
-                    this._animationStates.Add(animationState);
+                    _animationStates.Add(animationState);
                 }
             }
             else
             {
-                this._animationStates.Add(animationState);
+                _animationStates.Add(animationState);
             }
 
             // Child armature play same name animation.
-            foreach (var slot in this._armature.GetSlots())
+            foreach (var slot in BelongsTo.Structure.Slots)
             {
                 var childArmature = slot.ChildArmature;
                 if (childArmature != null &&
@@ -443,16 +438,16 @@ namespace DragonBones
                 }
             }
 
-            if (!this._lockUpdate)
+            if (!_lockUpdate)
             {
                 if (animationConfig.fadeInTime <= 0.0f)
                 {
                     // Blend animation state, update armature.
-                    this._armature.AdvanceTime(0.0f);
+                    BelongsTo.AdvanceTime(0.0f);
                 }
             }
 
-            this._lastAnimationState = animationState;
+            _lastAnimationState = animationState;
 
             return animationState;
         }
@@ -472,36 +467,36 @@ namespace DragonBones
         /// <language>en_US</language>
         public AnimationState Play(string animationName = null, int playTimes = -1)
         {
-            this._animationConfig.Clear();
-            this._animationConfig.resetToPose = true;
-            this._animationConfig.playTimes = playTimes;
-            this._animationConfig.fadeInTime = 0.0f;
-            this._animationConfig.animation = animationName != null ? animationName : "";
+            _animationConfig.Clear();
+            _animationConfig.resetToPose = true;
+            _animationConfig.playTimes = playTimes;
+            _animationConfig.fadeInTime = 0.0f;
+            _animationConfig.animation = animationName != null ? animationName : "";
 
             if (animationName != null && animationName.Length > 0)
             {
-                this.PlayConfig(this._animationConfig);
+                PlayConfig(_animationConfig);
             }
-            else if (this._lastAnimationState == null)
+            else if (_lastAnimationState == null)
             {
-                var defaultAnimation = this._armature.armatureData.defaultAnimation;
+                var defaultAnimation = BelongsTo.ArmatureData.defaultAnimation;
                 if (defaultAnimation != null)
                 {
-                    this._animationConfig.animation = defaultAnimation.name;
-                    this.PlayConfig(this._animationConfig);
+                    _animationConfig.animation = defaultAnimation.name;
+                    PlayConfig(_animationConfig);
                 }
             }
-            else if (!this._lastAnimationState.isPlaying && !this._lastAnimationState.isCompleted)
+            else if (!_lastAnimationState.isPlaying && !_lastAnimationState.isCompleted)
             {
-                this._lastAnimationState.Play();
+                _lastAnimationState.Play();
             }
             else
             {
-                this._animationConfig.animation = this._lastAnimationState.name;
-                this.PlayConfig(this._animationConfig);
+                _animationConfig.animation = _lastAnimationState.name;
+                PlayConfig(_animationConfig);
             }
 
-            return this._lastAnimationState;
+            return _lastAnimationState;
         }
         /// <summary>
         /// - Fade in a specific animation.
@@ -526,15 +521,15 @@ namespace DragonBones
                                     int layer = 0, string group = null,
                                     AnimationFadeOutMode fadeOutMode = AnimationFadeOutMode.SameLayerAndGroup)
         {
-            this._animationConfig.Clear();
-            this._animationConfig.fadeOutMode = fadeOutMode;
-            this._animationConfig.playTimes = playTimes;
-            this._animationConfig.layer = layer;
-            this._animationConfig.fadeInTime = fadeInTime;
-            this._animationConfig.animation = animationName;
-            this._animationConfig.group = group != null ? group : "";
+            _animationConfig.Clear();
+            _animationConfig.fadeOutMode = fadeOutMode;
+            _animationConfig.playTimes = playTimes;
+            _animationConfig.layer = layer;
+            _animationConfig.fadeInTime = fadeInTime;
+            _animationConfig.animation = animationName;
+            _animationConfig.group = group != null ? group : "";
 
-            return this.PlayConfig(this._animationConfig);
+            return PlayConfig(_animationConfig);
         }
         /// <summary>
         /// - Play a specific animation from the specific time.
@@ -547,14 +542,14 @@ namespace DragonBones
         /// <language>en_US</language>
         public AnimationState GotoAndPlayByTime(string animationName, float time = 0.0f, int playTimes = -1)
         {
-            this._animationConfig.Clear();
-            this._animationConfig.resetToPose = true;
-            this._animationConfig.playTimes = playTimes;
-            this._animationConfig.position = time;
-            this._animationConfig.fadeInTime = 0.0f;
-            this._animationConfig.animation = animationName;
+            _animationConfig.Clear();
+            _animationConfig.resetToPose = true;
+            _animationConfig.playTimes = playTimes;
+            _animationConfig.position = time;
+            _animationConfig.fadeInTime = 0.0f;
+            _animationConfig.animation = animationName;
 
-            return this.PlayConfig(this._animationConfig);
+            return PlayConfig(_animationConfig);
         }
         /// <summary>
         /// - Play a specific animation from the specific frame.
@@ -567,19 +562,19 @@ namespace DragonBones
         /// <language>en_US</language>
         public AnimationState GotoAndPlayByFrame(string animationName, uint frame = 0, int playTimes = -1)
         {
-            this._animationConfig.Clear();
-            this._animationConfig.resetToPose = true;
-            this._animationConfig.playTimes = playTimes;
-            this._animationConfig.fadeInTime = 0.0f;
-            this._animationConfig.animation = animationName;
+            _animationConfig.Clear();
+            _animationConfig.resetToPose = true;
+            _animationConfig.playTimes = playTimes;
+            _animationConfig.fadeInTime = 0.0f;
+            _animationConfig.animation = animationName;
 
-            var animationData = this._animations.ContainsKey(animationName) ? this._animations[animationName] : null;
+            var animationData = _animations.ContainsKey(animationName) ? _animations[animationName] : null;
             if (animationData != null)
             {
-                this._animationConfig.position = animationData.duration * frame / animationData.frameCount;
+                _animationConfig.position = animationData.duration * frame / animationData.frameCount;
             }
 
-            return this.PlayConfig(this._animationConfig);
+            return PlayConfig(_animationConfig);
         }
         /// <summary>
         /// - Play a specific animation from the specific progress.
@@ -592,19 +587,19 @@ namespace DragonBones
         /// <language>en_US</language>
         public AnimationState GotoAndPlayByProgress(string animationName, float progress = 0.0f, int playTimes = -1)
         {
-            this._animationConfig.Clear();
-            this._animationConfig.resetToPose = true;
-            this._animationConfig.playTimes = playTimes;
-            this._animationConfig.fadeInTime = 0.0f;
-            this._animationConfig.animation = animationName;
+            _animationConfig.Clear();
+            _animationConfig.resetToPose = true;
+            _animationConfig.playTimes = playTimes;
+            _animationConfig.fadeInTime = 0.0f;
+            _animationConfig.animation = animationName;
 
-            var animationData = this._animations.ContainsKey(animationName) ? this._animations[animationName] : null;
+            var animationData = _animations.ContainsKey(animationName) ? _animations[animationName] : null;
             if (animationData != null)
             {
-                this._animationConfig.position = animationData.duration * (progress > 0.0f ? progress : 0.0f);
+                _animationConfig.position = animationData.duration * (progress > 0.0f ? progress : 0.0f);
             }
 
-            return this.PlayConfig(this._animationConfig);
+            return PlayConfig(_animationConfig);
         }
         /// <summary>
         /// - Stop a specific animation at the specific time.
@@ -616,7 +611,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public AnimationState GotoAndStopByTime(string animationName, float time = 0.0f)
         {
-            var animationState = this.GotoAndPlayByTime(animationName, time, 1);
+            var animationState = GotoAndPlayByTime(animationName, time, 1);
             if (animationState != null)
             {
                 animationState.Stop();
@@ -634,7 +629,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public AnimationState GotoAndStopByFrame(string animationName, uint frame = 0)
         {
-            var animationState = this.GotoAndPlayByFrame(animationName, frame, 1);
+            var animationState = GotoAndPlayByFrame(animationName, frame, 1);
             if (animationState != null)
             {
                 animationState.Stop();
@@ -652,7 +647,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public AnimationState GotoAndStopByProgress(string animationName, float progress = 0.0f)
         {
-            var animationState = this.GotoAndPlayByProgress(animationName, progress, 1);
+            var animationState = GotoAndPlayByProgress(animationName, progress, 1);
             if (animationState != null)
             {
                 animationState.Stop();
@@ -676,10 +671,10 @@ namespace DragonBones
         /// <language>en_US</language>
         public AnimationState GetState(string animationName)
         {
-            var i = this._animationStates.Count;
+            var i = _animationStates.Count;
             while (i-- > 0)
             {
-                var animationState = this._animationStates[i];
+                var animationState = _animationStates[i];
                 if (animationState.name == animationName)
                 {
                     return animationState;
@@ -697,7 +692,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public bool HasAnimation(string animationName)
         {
-            return this._animations.ContainsKey(animationName);
+            return _animations.ContainsKey(animationName);
         }
         /// <summary>
         /// - Get all the animation states.
@@ -706,7 +701,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public List<AnimationState> GetStates()
         {
-            return this._animationStates;
+            return _animationStates;
         }
         /// <summary>
         /// - Check whether there is an animation state is playing
@@ -718,7 +713,7 @@ namespace DragonBones
         {
             get
             {
-                foreach (var animationState in this._animationStates)
+                foreach (var animationState in _animationStates)
                 {
                     if (animationState.isPlaying)
                     {
@@ -739,7 +734,7 @@ namespace DragonBones
         {
             get
             {
-                foreach (var animationState in this._animationStates)
+                foreach (var animationState in _animationStates)
                 {
                     if (!animationState.isCompleted)
                     {
@@ -747,7 +742,7 @@ namespace DragonBones
                     }
                 }
 
-                return this._animationStates.Count > 0;
+                return _animationStates.Count > 0;
             }
         }
         /// <summary>
@@ -758,7 +753,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public string lastAnimationName
         {
-            get { return this._lastAnimationState != null ? this._lastAnimationState.name : ""; }
+            get { return _lastAnimationState != null ? _lastAnimationState.name : ""; }
         }
         /// <summary>
         /// - The name of all animation data
@@ -767,7 +762,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public List<string> animationNames
         {
-            get { return this._animationNames; }
+            get { return _animationNames; }
         }
         /// <summary>
         /// - All animation data.
@@ -776,22 +771,22 @@ namespace DragonBones
         /// <language>en_US</language>
         public Dictionary<string, AnimationData> animations
         {
-            get { return this._animations; }
+            get { return _animations; }
             set
             {
-                if (this._animations == value)
+                if (_animations == value)
                 {
                     return;
                 }
 
-                this._animationNames.Clear();
+                _animationNames.Clear();
 
-                this._animations.Clear();
+                _animations.Clear();
 
                 foreach (var k in value)
                 {
-                    this._animationNames.Add(k.Key);
-                    this._animations[k.Key] = value[k.Key];
+                    _animationNames.Add(k.Key);
+                    _animations[k.Key] = value[k.Key];
                 }
             }
         }
@@ -805,8 +800,8 @@ namespace DragonBones
         {
             get
             {
-                this._animationConfig.Clear();
-                return this._animationConfig;
+                _animationConfig.Clear();
+                return _animationConfig;
             }
         }
         /// <summary>
@@ -817,7 +812,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public AnimationState lastAnimationState
         {
-            get { return this._lastAnimationState; }
+            get { return _lastAnimationState; }
         }
     }
 }
