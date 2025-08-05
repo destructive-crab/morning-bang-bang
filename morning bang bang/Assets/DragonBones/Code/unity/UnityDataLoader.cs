@@ -16,15 +16,15 @@ namespace DragonBones
         /// <returns></returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-        public DragonBonesData LoadData(UnityDragonBonesData data, bool isUGUI = false, float armatureScale = 0.01f, float texScale = 1.0f)
+        public DBProjectData LoadData(UnityDragonBonesData data, bool isUGUI = false, float armatureScale = 0.01f, float texScale = 1.0f)
         {
-            DragonBonesData dragonBonesData = null;
+            DBProjectData dbProjectData = null;
 
             if (data.dragonBonesJSON != null)
             {
-                dragonBonesData = LoadDragonBonesData(data.dragonBonesJSON, data.dataName, armatureScale);
+                dbProjectData = LoadDragonBonesData(data.dragonBonesJSON, data.dataName, armatureScale);
 
-                if (!string.IsNullOrEmpty(data.dataName) && dragonBonesData != null && data.textureAtlas != null)
+                if (!string.IsNullOrEmpty(data.dataName) && dbProjectData != null && data.textureAtlas != null)
                 {
 #if UNITY_EDITOR
                     bool isDirty = false;
@@ -102,7 +102,7 @@ namespace DragonBones
                 }
             }
 
-            return dragonBonesData;
+            return dbProjectData;
         }
 
         /// <summary>
@@ -114,15 +114,15 @@ namespace DragonBones
         /// <returns>DragonBonesData instance</returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-        public DragonBonesData LoadDragonBonesData(string dragonBonesJSONPath, string name = "", float scale = 0.01f)
+        public DBProjectData LoadDragonBonesData(string dragonBonesJSONPath, string name = "", float scale = 0.01f)
         {
             dragonBonesJSONPath = DBUnityFactory.Helper.CheckResourcesPath(dragonBonesJSONPath);
 
             TextAsset dragonBonesJSON = Resources.Load<TextAsset>(dragonBonesJSONPath);
 
-            DragonBonesData dragonBonesData = LoadDragonBonesData(dragonBonesJSON, name);
+            DBProjectData dbProjectData = LoadDragonBonesData(dragonBonesJSON, name);
 
-            return dragonBonesData;
+            return dbProjectData;
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace DragonBones
         /// <returns>DragonBonesData instance</returns>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-        public DragonBonesData LoadDragonBonesData(TextAsset dragonBonesJSON, string name = "", float scale = 0.01f)
+        public DBProjectData LoadDragonBonesData(TextAsset dragonBonesJSON, string name = "", float scale = 0.01f)
         {
             if (dragonBonesJSON == null)
             {
@@ -150,7 +150,7 @@ namespace DragonBones
                 }
             }
 
-            DragonBonesData data = null;
+            DBProjectData data = null;
 
             if (dragonBonesJSON.text == "DBDT")
             {

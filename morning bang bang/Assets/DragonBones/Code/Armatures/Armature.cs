@@ -90,7 +90,7 @@ namespace DragonBones
         ///     armature.cacheFrameRate = 24;
         /// </pre>
         /// </example>
-        /// <see cref="DragonBonesData.frameRate"/>
+        /// <see cref="DBProjectData.frameRate"/>
         /// <see cref="ArmatureData.frameRate"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>

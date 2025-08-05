@@ -9,7 +9,6 @@ namespace DragonBones
     /// <language>en_US</language>
     public class ArmatureData : DBObject
     {
-        /// <private/>
         public ArmatureType type;
 
         /// <summary>
@@ -19,9 +18,7 @@ namespace DragonBones
         /// <language>en_US</language>
 
         public uint frameRate;
-        /// <private/>
         public uint cacheFrameRate;
-        /// <private/>
         public float scale;
         /// <summary>
         /// - The armature name.
@@ -30,7 +27,6 @@ namespace DragonBones
         /// <language>en_US</language>
 
         public string name;
-        /// <private/>
         public readonly Rectangle aabb = new Rectangle();
         /// <summary>
         /// - The names of all the animation data.
@@ -76,7 +72,7 @@ namespace DragonBones
         /// <private/>
         public UserData userData = null; // Initial value.
         /// <private/>
-        public DragonBonesData parent;
+        public DBProjectData parent;
         /// <inheritDoc/>
         protected override void ClearObject()
         {
@@ -148,8 +144,6 @@ namespace DragonBones
             this.parent = null; //
         }
 
-        /// <internal/>
-        /// <private/>
         public void SortBones()
         {
             var total = this.sortedBones.Count;
@@ -201,8 +195,6 @@ namespace DragonBones
             }
         }
 
-        /// <internal/>
-        /// <private/>
         public void CacheFrames(uint frameRate)
         {
             if (this.cacheFrameRate > 0)
@@ -218,8 +210,6 @@ namespace DragonBones
             }
         }
 
-        /// <internal/>
-        /// <private/>
         public int SetCacheFrame(Matrix globalTransformMatrix, DBTransform dbTransform)
         {
             var dataArray = this.parent.cachedFrames;
@@ -241,8 +231,6 @@ namespace DragonBones
             return arrayOffset;
         }
 
-        /// <internal/>
-        /// <private/>
         public void GetCacheFrame(Matrix globalTransformMatrix, DBTransform dbTransform, int arrayOffset)
         {
             var dataArray = this.parent.cachedFrames;
@@ -260,8 +248,6 @@ namespace DragonBones
             dbTransform.y = globalTransformMatrix.ty;
         }
 
-        /// <internal/>
-        /// <private/>
         public void AddBone(BoneData value)
         {
             if (value != null && !string.IsNullOrEmpty(value.name))
@@ -276,8 +262,7 @@ namespace DragonBones
                 this.sortedBones.Add(value);
             }
         }
-        /// <internal/>
-        /// <private/>
+
         public void AddSlot(SlotData value)
         {
             if (value != null && !string.IsNullOrEmpty(value.name))
@@ -292,8 +277,7 @@ namespace DragonBones
                 this.sortedSlots.Add(value);
             }
         }
-        /// <internal/>
-        /// <private/>
+
         public void AddConstraint(ConstraintData value)
         {
             if (value != null && !string.IsNullOrEmpty(value.name))
@@ -307,8 +291,7 @@ namespace DragonBones
                 this.constraints[value.name] = value;
             }
         }
-        /// <internal/>
-        /// <private/>
+
         public void AddSkin(SkinData value)
         {
             if (value != null && !string.IsNullOrEmpty(value.name))
@@ -332,8 +315,7 @@ namespace DragonBones
                 }
             }
         }
-        /// <internal/>
-        /// <private/>
+
         public void AddAnimation(AnimationData value)
         {
             if (value != null && !string.IsNullOrEmpty(value.name))
@@ -353,8 +335,7 @@ namespace DragonBones
                 }
             }
         }
-        /// <internal/>
-        /// <private/>
+
         internal void AddAction(ActionData value, bool isDefault)
         {
             if (isDefault)
@@ -387,7 +368,6 @@ namespace DragonBones
         {
             return (!string.IsNullOrEmpty(slotName) && slots.ContainsKey(slotName)) ? slots[slotName] : null;
         }
-        /// <private/>
         public ConstraintData GetConstraint(string constraintName)
         {
             return this.constraints.ContainsKey(constraintName) ? this.constraints[constraintName] : null;
@@ -403,7 +383,6 @@ namespace DragonBones
             return !string.IsNullOrEmpty(skinName) ? (skins.ContainsKey(skinName) ? skins[skinName] : null) : defaultSkin;
         }
 
-        /// <private/>
         public MeshDisplayData GetMesh(string skinName, string slotName, string meshName)
         {
             var skin = this.GetSkin(skinName);
@@ -481,24 +460,6 @@ namespace DragonBones
             this.DBTransform.Identity();
             this.userData = null;
             this.parent = null;
-        }
-    }
-
-    /// <internal/>
-    /// <private/>
-    public class SurfaceData : BoneData
-    {
-        public float vertexCountX;
-        public float vertexCountY;
-        public readonly List<float> vertices = new List<float>();
-        /// <inheritDoc/>
-        protected override void ClearObject()
-        {
-            base.ClearObject();
-
-            this.vertexCountX = 0;
-            this.vertexCountY = 0;
-            this.vertices.Clear();
         }
     }
 

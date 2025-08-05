@@ -30,7 +30,7 @@ namespace DragonBones
         protected float _duration;
         protected float _timeScale;
         protected float _timeOffset;
-        protected DragonBonesData _dragonBonesData;
+        protected DBProjectData _DBProjectData;
         protected AnimationData _animationData;
         protected TimelineData _timelineData;
         protected Armature _armature;
@@ -60,7 +60,7 @@ namespace DragonBones
             this._duration = 0.0f;
             this._timeScale = 1.0f;
             this._timeOffset = 0.0f;
-            this._dragonBonesData = null; //
+            this._DBProjectData = null; //
             this._animationData = null; //
             this._timelineData = null; //
             this._armature = null; //
@@ -177,16 +177,16 @@ namespace DragonBones
             this._frameRateR = 1.0f / this._frameRate;
             this._position = this._animationState._position;
             this._duration = this._animationState._duration;
-            this._dragonBonesData = this._armature.ArmatureData.parent;
+            this._DBProjectData = this._armature.ArmatureData.parent;
             this._animationData = this._animationState._animationData;
 
             if (this._timelineData != null)
             {
-                this._frameIntArray = this._dragonBonesData.frameIntArray;
-                this._frameFloatArray = this._dragonBonesData.frameFloatArray;
-                this._frameArray = this._dragonBonesData.frameArray;
-                this._timelineArray = this._dragonBonesData.timelineArray;
-                this._frameIndices = this._dragonBonesData.frameIndices;
+                this._frameIntArray = this._DBProjectData.frameIntArray;
+                this._frameFloatArray = this._DBProjectData.frameFloatArray;
+                this._frameArray = this._DBProjectData.frameArray;
+                this._timelineArray = this._DBProjectData.timelineArray;
+                this._frameIndices = this._DBProjectData.frameIndices;
 
                 this._frameCount = this._timelineArray[this._timelineData.offset + (int)BinaryOffset.TimelineKeyFrameCount];
                 this._frameValueOffset = this._timelineArray[this._timelineData.offset + (int)BinaryOffset.TimelineFrameValueOffset];

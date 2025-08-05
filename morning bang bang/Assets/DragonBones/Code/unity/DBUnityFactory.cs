@@ -121,7 +121,7 @@ namespace DragonBones
         {
             UnitySlot slot = DBObject.BorrowObject<UnitySlot>();
             
-            UnityEngineArmatureDisplay armatureDisplay = dataPackage.Display as UnityEngineArmatureDisplay;
+            UnityEngineArmatureDisplay armatureDisplay = armature.Display as UnityEngineArmatureDisplay;
             
             Transform slotTransform = armatureDisplay.transform.Find(slotData.name);
             GameObject slotGameObject = slotTransform == null ? null : slotTransform.gameObject;

@@ -4,10 +4,13 @@ namespace DragonBones
 {
     public class DBDataStorage
     {
-        public bool autoSearch = false;
+        /// <summary>
+        /// - If true, you can provide ""/null project name when build armature, armature data will be searched through all armature data loaded to storage
+        /// </summary>
+        public bool AutoSearch = false;
         
         //cash
-        protected readonly Dictionary<string, DragonBonesData> dragonBonesDataMap = new();
+        protected readonly Dictionary<string, DBProjectData> dragonBonesDataMap = new();
         protected readonly Dictionary<string, List<TextureAtlasData>> textureAtlasDataMap = new();
 
         protected readonly Dictionary<string, object> engineCache = new();
@@ -47,7 +50,6 @@ namespace DragonBones
         /// <param name="unityArmature">UnityArmatureComponent</param>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-
         public TData GetCachedEngineData<TData>(string dataName)
             where TData : class
         {
@@ -82,10 +84,10 @@ namespace DragonBones
         /// <see cref="GetDragonBonesData()"/>
         /// <see cref="AddDragonBonesData()"/>
         /// <see cref="RemoveDragonBonesData()"/>
-        /// <see cref="DragonBonesData"/>
+        /// <see cref="DBProjectData"/>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-        public DragonBonesData ParseAndAddDragonBonesData(object rawData, string name = null, float scale = 1.0f)
+        public DBProjectData ParseAndAddDragonBonesData(object rawData, string name = null, float scale = 1.0f)
         {
             DataParser parser;
             
@@ -98,7 +100,7 @@ namespace DragonBones
                 parser = dataParser;
             }
 
-            DragonBonesData dragonBonesData = parser.ParseDragonBonesData(rawData, scale);
+            DBProjectData dbProjectData = parser.ParseDragonBonesData(rawData, scale);
 
             //idk what that code means lol ;todo
             while (true)
@@ -116,12 +118,12 @@ namespace DragonBones
                 }
             }
 
-            if (dragonBonesData != null)
+            if (dbProjectData != null)
             {
-                AddDragonBonesData(dragonBonesData, name);
+                AddDragonBonesData(dbProjectData, name);
             }
 
-            return dragonBonesData;
+            return dbProjectData;
         }
         /// <summary>
         /// - Parse the raw texture atlas data and the texture atlas object to a TextureAtlasData instance and cache it to the factory.
@@ -146,7 +148,7 @@ namespace DragonBones
 
             return textureAtlasData;
         }
-        /// <private/>
+        
         public void UpdateTextureAtlasData(string name, List<object> textureAtlases)
         {
             var textureAtlasDatas = GetTextureAtlasData(name);
@@ -162,7 +164,6 @@ namespace DragonBones
             }
         }
         
-        /// <private/>
         public TextureData GetTextureData(string textureAtlasName, string textureName)
         {
             if (textureAtlasDataMap.ContainsKey(textureAtlasName))
@@ -177,20 +178,16 @@ namespace DragonBones
                 }
             }
 
-            if (autoSearch)
+            foreach (var values in textureAtlasDataMap.Values)
             {
-                // Will be search all data, if the autoSearch is true.
-                foreach (var values in textureAtlasDataMap.Values)
+                foreach (var textureAtlasData in values)
                 {
-                    foreach (var textureAtlasData in values)
+                    if (textureAtlasData.autoSearch)
                     {
-                        if (textureAtlasData.autoSearch)
+                        var textureData = textureAtlasData.GetTexture(textureName);
+                        if (textureData != null)
                         {
-                            var textureData = textureAtlasData.GetTexture(textureName);
-                            if (textureData != null)
-                            {
-                                return textureData;
-                            }
+                            return textureData;
                         }
                     }
                 }
@@ -206,10 +203,10 @@ namespace DragonBones
         /// <see cref="ParseAndAddDragonBonesData"/>
         /// <see cref="AddDragonBonesData()"/>
         /// <see cref="RemoveDragonBonesData()"/>
-        /// <see cref="DragonBonesData"/>
+        /// <see cref="DBProjectData"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public DragonBonesData GetDragonBonesData(string name)
+        public DBProjectData GetDragonBonesData(string name)
         {
             return dragonBonesDataMap.ContainsKey(name) ? dragonBonesDataMap[name] : null;
         }
@@ -221,10 +218,10 @@ namespace DragonBones
         /// <see cref="ParseAndAddDragonBonesData"/>
         /// <see cref="GetDragonBonesData()"/>
         /// <see cref="RemoveDragonBonesData()"/>
-        /// <see cref="DragonBonesData"/>
+        /// <see cref="DBProjectData"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public void AddDragonBonesData(DragonBonesData data, string name = null)
+        public void AddDragonBonesData(DBProjectData data, string name = null)
         {
             name = !string.IsNullOrEmpty(name) ? name : data.name;
             if (dragonBonesDataMap.ContainsKey(name))
@@ -248,7 +245,7 @@ namespace DragonBones
         /// <see cref="ParseAndAddDragonBonesData"/>
         /// <see cref="GetDragonBonesData()"/>
         /// <see cref="AddDragonBonesData()"/>
-        /// <see cref="DragonBonesData"/>
+        /// <see cref="DBProjectData"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         public virtual void RemoveDragonBonesData(string name, bool disposeData = true)
@@ -338,7 +335,7 @@ namespace DragonBones
         public virtual ArmatureData GetArmatureData(string name, string dragonBonesName = "")
         {
             var dataPackage = new BuildArmaturePackage();
-            if (!FillBuildArmaturePackage(dataPackage, dragonBonesName, name, "", "", null))
+            if (!FillBuildArmaturePackage(dataPackage, dragonBonesName, name, "", ""))
             {
                 return null;
             }
@@ -374,79 +371,79 @@ namespace DragonBones
         }
 
         public bool FillBuildArmaturePackage(BuildArmaturePackage dataPackage,
-                                                string dragonBonesName,
+                                                string dbProjectName,
                                                 string armatureName,
                                                 string skinName,
-                                                string textureAtlasName,
-                                                IEngineArmatureDisplay display)
+                                                string textureAtlasName)
         {
-            DragonBonesData dragonBonesData = null;
+            DBProjectData dbProjectData = null;
             ArmatureData armatureData = null;
 
-            var isAvailableName = !string.IsNullOrEmpty(dragonBonesName);
-            if (isAvailableName)
+            bool isAvailableDBProjectName = !string.IsNullOrEmpty(dbProjectName);
+            
+            //trying to find data by names
+            if (isAvailableDBProjectName)
             {
-                if (dragonBonesDataMap.ContainsKey(dragonBonesName))
+                if (dragonBonesDataMap.TryGetValue(dbProjectName, out dbProjectData))
                 {
-                    dragonBonesData = dragonBonesDataMap[dragonBonesName];
-                    armatureData = dragonBonesData.GetArmature(armatureName);
-                }
-            }
-
-            if (armatureData == null && (!isAvailableName || autoSearch))
-            {
-                // Will be search all data, if do not give a data name or the autoSearch is true.
-                foreach (var key in dragonBonesDataMap.Keys)
-                {
-                    dragonBonesData = dragonBonesDataMap[key];
-                    if (!isAvailableName || dragonBonesData.autoSearch)
+                    if (!dbProjectData.TryGetArmatureData(armatureName, out armatureData))
                     {
-                        armatureData = dragonBonesData.GetArmature(armatureName);
-                        if (armatureData != null)
-                        {
-                            dragonBonesName = key;
-                            break;
-                        }
+                        DBLogger.LogWarning($"No {nameof(ArmatureData)} with name {armatureName} found");
                     }
                 }
+                else
+                {
+                    DBLogger.LogWarning($"No {nameof(DBProjectData)} with name {dbProjectName} found");
+                    return false;
+                }
+            }
+            else 
+            {
+                armatureData = SearchForArmature(armatureName);
+                
+                if (armatureData == null)
+                {
+                    DBLogger.LogWarning($"Auto search failed. No {nameof(ArmatureData)} with name {armatureName} found");
+                }
+                
+                dbProjectData = armatureData.parent;
             }
 
-            if (armatureData != null)
-            {
-                dataPackage.DataName = dragonBonesName;
-                dataPackage.TextureAtlasName = textureAtlasName;
-                dataPackage.DragonBonesData = dragonBonesData;
-                dataPackage.ArmatureData = armatureData;
-                dataPackage.Skin = null;
+            //when data found, we can fill build data package
+            
+            dataPackage.DataName = dbProjectName;
+            dataPackage.TextureAtlasName = textureAtlasName;
+            
+            dataPackage.DBProjectData = dbProjectData;
+            dataPackage.ArmatureData = armatureData;
+            
+            dataPackage.Skin = null;
 
-                if (!string.IsNullOrEmpty(skinName))
-                {
-                    dataPackage.Skin = armatureData.GetSkin(skinName);
-                    if (dataPackage.Skin == null && autoSearch)
-                    {
-                        foreach (var k in dragonBonesDataMap.Keys)
-                        {
-                            var skinDragonBonesData = dragonBonesDataMap[k];
-                            var skinArmatureData = skinDragonBonesData.GetArmature(skinName);
-                            if (skinArmatureData != null)
-                            {
-                                dataPackage.Skin = skinArmatureData.defaultSkin;
-                                break;
-                            }
-                        }
-                    }
-                }
+            if (!string.IsNullOrEmpty(skinName))
+            {
+                dataPackage.Skin = armatureData.GetSkin(skinName);
 
                 if (dataPackage.Skin == null)
                 {
+                    DBLogger.LogWarning($"No {nameof(SkinData)} with name {skinName} found. Default skin will be used");
                     dataPackage.Skin = armatureData.defaultSkin;
                 }
-
-                dataPackage.Display = display;
-                return true;
             }
 
-            return false;
+            return true;
+        }
+
+        private ArmatureData SearchForArmature(string armatureName)
+        {
+            foreach (DBProjectData anotherDBProjectData in dragonBonesDataMap.Values)
+            {
+                if (anotherDBProjectData.TryGetArmatureData(armatureName, out ArmatureData armatureData))
+                {
+                    return armatureData;
+                }
+            }
+
+            return null;
         }
 
         public Dictionary<string, List<TextureAtlasData>> GetAllTextureAtlases()
@@ -454,7 +451,7 @@ namespace DragonBones
             return textureAtlasDataMap;
         }
 
-        public Dictionary<string, DragonBonesData> GetAllDragonBonesData()
+        public Dictionary<string, DBProjectData> GetAllDragonBonesData()
         {
             return dragonBonesDataMap;
         }

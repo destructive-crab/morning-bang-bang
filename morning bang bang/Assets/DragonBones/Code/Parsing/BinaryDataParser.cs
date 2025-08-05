@@ -266,7 +266,7 @@ namespace DragonBones
             this._data.timelineArray = this._timelineArrayBuffer;
         }
 
-        public override DragonBonesData ParseDragonBonesData(object rawObj, float scale = 1)
+        public override DBProjectData ParseDragonBonesData(object rawObj, float scale = 1)
         {
             DBLogger.Assert(rawObj != null && rawObj is byte[], "Data error.");
 

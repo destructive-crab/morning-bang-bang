@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace DragonBones
 {
@@ -9,12 +7,9 @@ namespace DragonBones
         public string DataName = "";
         public string TextureAtlasName = "";
         
-        public DragonBonesData DragonBonesData;
+        public DBProjectData DBProjectData;
         public ArmatureData ArmatureData;
         public SkinData Skin;
-        
-        public IEngineArmatureDisplay Display;
-        public Armature Armature;
     }
     
     /// <summary>
@@ -22,7 +17,7 @@ namespace DragonBones
     /// The factory instance create armatures by parsed and added DragonBonesData instances and TextureAtlasData instances.
     /// Once the data has been parsed, it has been cached in the factory instance and does not need to be parsed again until it is cleared by the factory instance.
     /// </summary>
-    /// <see cref="DragonBonesData"/>
+    /// <see cref="DBProjectData"/>
     /// ,
     /// <see cref="TextureAtlasData"/>
     /// ,
@@ -52,7 +47,7 @@ namespace DragonBones
         ///     armature.clock = factory.clock;
         /// </pre>
         /// </example>
-        /// <see cref="DragonBonesData"/>, <see cref="ArmatureData"/>
+        /// <see cref="DBProjectData"/>, <see cref="ArmatureData"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         public virtual Armature BuildArmature(string armatureName, string dragonBonesName = "", string skinName = null, string textureAtlasName = null, IEngineArmatureDisplay providedDisplay = null)
@@ -73,9 +68,9 @@ namespace DragonBones
             
             BuildArmaturePackage dataPackage = new BuildArmaturePackage();
             
-            if (!DBInitial.Kernel.DataStorage.FillBuildArmaturePackage(dataPackage, dragonBonesName, armatureName, skinName, textureAtlasName, armatureDisplay))
+            if (!DBInitial.Kernel.DataStorage.FillBuildArmaturePackage(dataPackage, dragonBonesName, armatureName, skinName, textureAtlasName))
             {
-                DBLogger.Assert(false, "No armature data: " + armatureName + ", " + (dragonBonesName != "" ? dragonBonesName : ""));
+                DBLogger.LogWarning("No armature data: " + armatureName + ", " + (dragonBonesName != "" ? dragonBonesName : ""));
                 return null;
             }
             
@@ -90,6 +85,7 @@ namespace DragonBones
 
             DBInitial.Kernel.Clock.Add(armature);
             
+            armature.ArmatureReady();
             return armature;
         }
 
@@ -104,20 +100,21 @@ namespace DragonBones
 
         protected void BuildBonesFor(BuildArmaturePackage dataPackage, Armature armature)
         {
-            var bones = dataPackage.ArmatureData.sortedBones;
+            List<BoneData> bones = dataPackage.ArmatureData.sortedBones;
             
             for (int i = 0, l = bones.Count; i < l; ++i)
             {
-                var boneData = bones[i];
-                var bone = DBObject.BorrowObject<Bone>();
+                BoneData boneData = bones[i];
+                Bone bone = DBObject.BorrowObject<Bone>();
+                
                 bone.Init(boneData, armature);
             }
         }
 
         protected void BuildSlotsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
-            var currentSkin = dataPackage.Skin;
-            var defaultSkin = dataPackage.ArmatureData.defaultSkin;
+            SkinData currentSkin = dataPackage.Skin;
+            SkinData defaultSkin = dataPackage.ArmatureData.defaultSkin;
             
             if (currentSkin == null || defaultSkin == null)
             {
@@ -127,7 +124,7 @@ namespace DragonBones
             Dictionary<string, List<DisplayData>> skinSlots = new Dictionary<string, List<DisplayData>>();
             foreach (var key in defaultSkin.displays.Keys)
             {
-                var displays = defaultSkin.GetDisplays(key);
+                List<DisplayData> displays = defaultSkin.GetDisplays(key);
                 skinSlots[key] = displays;
             }
 

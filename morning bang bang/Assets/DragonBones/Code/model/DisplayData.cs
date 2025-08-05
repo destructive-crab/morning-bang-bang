@@ -9,7 +9,7 @@ namespace DragonBones
         public bool isShared;
         public bool inheritDeform;
         public int offset;
-        public DragonBonesData data;
+        public DBProjectData data;
         public WeightData weight; // Initial value.
 
         public void Clear()

@@ -132,7 +132,7 @@ namespace DragonBones
 
         protected int _rawTextureAtlasIndex = 0;
         protected readonly List<BoneData> _rawBones = new List<BoneData>();
-        protected DragonBonesData _data = null; //
+        protected DBProjectData _data = null; //
         protected ArmatureData _armature = null; //
         protected BoneData _bone = null; //
         protected SlotData _slot = null; //
@@ -2067,7 +2067,7 @@ namespace DragonBones
 
             this._defaultColorOffset = -1;
         }
-        public override DragonBonesData ParseDragonBonesData(object rawObj, float scale = 1.0f)
+        public override DBProjectData ParseDragonBonesData(object rawObj, float scale = 1.0f)
         {
             Dictionary<string, object> rawData = rawObj as Dictionary<string, object>;
             DBLogger.Assert(rawData == null, "Data error.");
@@ -2078,7 +2078,7 @@ namespace DragonBones
             if (ObjectDataParser.DATA_VERSIONS.IndexOf(version) >= 0 ||
                 ObjectDataParser.DATA_VERSIONS.IndexOf(compatibleVersion) >= 0)
             {
-                var data = DBObject.BorrowObject<DragonBonesData>();
+                var data = DBObject.BorrowObject<DBProjectData>();
                 data.version = version;
                 data.name = ObjectDataParser._GetString(rawData, ObjectDataParser.NAME, "");
                 data.frameRate = ObjectDataParser._GetNumber(rawData, ObjectDataParser.FRAME_RATE, (uint)24);
@@ -2108,11 +2108,11 @@ namespace DragonBones
 
                     if (rawData.ContainsKey(ObjectDataParser.STAGE))
                     {
-                        data.stage = data.GetArmature(ObjectDataParser._GetString(rawData, ObjectDataParser.STAGE, ""));
+                        data.stage = data.GetArmatureData(ObjectDataParser._GetString(rawData, ObjectDataParser.STAGE, ""));
                     }
-                    else if (data.armatureNames.Count > 0)
+                    else if (data.ArmatureNames.Length > 0)
                     {
-                        data.stage = data.GetArmature(data.armatureNames[0]);
+                        data.stage = data.GetArmatureData(data.ArmatureNames[0]);
                     }
 
                     this._data = null;
