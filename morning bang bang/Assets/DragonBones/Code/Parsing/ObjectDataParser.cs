@@ -145,10 +145,10 @@ namespace DragonBones
         private int _defaultColorOffset = -1;
         private int _prevClockwise = 0;
         private float _prevRotation = 0.0f;
-        private readonly Matrix _helpMatrixA = new Matrix();
-        private readonly Matrix _helpMatrixB = new Matrix();
+        private readonly DBMatrix helpDBMatrixA = new DBMatrix();
+        private readonly DBMatrix helpDBMatrixB = new DBMatrix();
         private readonly DBTransform helpDBTransform = new DBTransform();
-        private readonly ColorTransform _helpColorTransform = new ColorTransform();
+        private readonly DBColor helpDBColor = new DBColor();
         private readonly Point _helpPoint = new Point();
         private readonly List<float> _helpArray = new List<float>();
         private readonly List<short> _intArray = new List<short>();
@@ -630,12 +630,12 @@ namespace DragonBones
 
             if (rawData.ContainsKey(ObjectDataParser.COLOR))
             {
-                slot.color = SlotData.CreateColor();
-                this._ParseColorTransform(rawData[ObjectDataParser.COLOR] as Dictionary<string, object>, slot.color);
+                slot.DBColor = SlotData.CreateColor();
+                this._ParseColorTransform(rawData[ObjectDataParser.COLOR] as Dictionary<string, object>, slot.DBColor);
             }
             else
             {
-                slot.color = SlotData.DEFAULT_COLOR;
+                slot.DBColor = SlotData.DefaultDBColor;
             }
 
             if (rawData.ContainsKey(ObjectDataParser.ACTIONS))
@@ -704,14 +704,14 @@ namespace DragonBones
                 case DisplayType.Image:
                     var imageDisplay = DBObject.BorrowObject<ImageDisplayData>();
                     display = imageDisplay;
-                    imageDisplay.name = name;
+                    imageDisplay.Name = name;
                     imageDisplay.path = path.Length > 0 ? path : name;
                     this._ParsePivot(rawData, imageDisplay);
                     break;
                 case DisplayType.Armature:
-                    var armatureDisplay = DBObject.BorrowObject<ArmatureDisplayData>();
+                    var armatureDisplay = DBObject.BorrowObject<ChildArmatureDisplayData>();
                     display = armatureDisplay;
-                    armatureDisplay.name = name;
+                    armatureDisplay.Name = name;
                     armatureDisplay.path = path.Length > 0 ? path : name;
                     armatureDisplay.inheritAnimation = true;
 
@@ -743,7 +743,7 @@ namespace DragonBones
                     var meshDisplay = DBObject.BorrowObject<MeshDisplayData>();
                     display = meshDisplay;
                     meshDisplay.vertices.inheritDeform = ObjectDataParser._GetBoolean(rawData, DataParser.INHERIT_DEFORM, true);
-                    meshDisplay.name = name;
+                    meshDisplay.Name = name;
                     meshDisplay.path = path.Length > 0 ? path : name;
                     meshDisplay.vertices.data = this._data;
 
@@ -764,7 +764,7 @@ namespace DragonBones
                     {
                         var boundingBoxDisplay = DBObject.BorrowObject<BoundingBoxDisplayData>();
                         display = boundingBoxDisplay;
-                        boundingBoxDisplay.name = name;
+                        boundingBoxDisplay.Name = name;
                         boundingBoxDisplay.path = path.Length > 0 ? path : name;
                         boundingBoxDisplay.boundingBox = boundingBox;
                     }
@@ -803,7 +803,7 @@ namespace DragonBones
             var vertexOffset = this._floatArray.Count;
             var uvOffset = vertexOffset + vertexCount * 2;
             var meshOffset = this._intArray.Count;
-            var meshName = this._skin.name + "_" + this._slot.name + "_" + mesh.name; // Cache pose data.
+            var meshName = this._skin.name + "_" + this._slot.name + "_" + mesh.Name; // Cache pose data.
 
 
             mesh.vertices.offset = meshOffset;
@@ -842,7 +842,7 @@ namespace DragonBones
 
                 weightBoneIndices.ResizeList(weightBoneCount, uint.MinValue);
                 this._intArray.ResizeList(this._intArray.Count + 1 + 1 + weightBoneCount + vertexCount + weight.count, (short)0);
-                this._intArray[weightOffset + (int)BinaryOffset.WeigthFloatOffset] = (short)floatOffset;
+                this._intArray[weightOffset + (int)BinaryOffset.WeightFloatOffset] = (short)floatOffset;
 
                 for (var i = 0; i < weightBoneCount; ++i)
                 {
@@ -851,19 +851,19 @@ namespace DragonBones
                     weight.AddBone(bone);
                     weightBoneIndices[i] = (uint)rawBoneIndex;
 
-                    this._intArray[weightOffset + (int)BinaryOffset.WeigthBoneIndices + i] = (short)this._armature.sortedBones.IndexOf(bone);
+                    this._intArray[weightOffset + (int)BinaryOffset.WeightBoneIndices + i] = (short)this._armature.sortedBones.IndexOf(bone);
                 }
 
                 this._floatArray.ResizeList(this._floatArray.Count + (weightCount * 3), 0.0f);
-                this._helpMatrixA.CopyFromArray(rawSlotPose, 0);
-                for (int i = 0, iW = 0, iB = weightOffset + (int)BinaryOffset.WeigthBoneIndices + weightBoneCount, iV = floatOffset; i < vertexCount; ++i)
+                this.helpDBMatrixA.CopyFromArray(rawSlotPose, 0);
+                for (int i = 0, iW = 0, iB = weightOffset + (int)BinaryOffset.WeightBoneIndices + weightBoneCount, iV = floatOffset; i < vertexCount; ++i)
                 {
                     var iD = i * 2;
                     var vertexBoneCount = this._intArray[iB++] = short.Parse(rawWeights[iW++].ToString()); // uint
 
                     var x = this._floatArray[vertexOffset + iD];
                     var y = this._floatArray[vertexOffset + iD + 1];
-                    this._helpMatrixA.TransformPoint(x, y, this._helpPoint);
+                    this.helpDBMatrixA.TransformPoint(x, y, this._helpPoint);
                     x = this._helpPoint.x;
                     y = this._helpPoint.y;
 
@@ -871,9 +871,9 @@ namespace DragonBones
                     {
                         var rawBoneIndex = (uint)rawWeights[iW++]; // uint
                         var boneIndex = weightBoneIndices.IndexOf(rawBoneIndex);
-                        this._helpMatrixB.CopyFromArray(rawBonePoses, weightBoneIndices.IndexOf(rawBoneIndex) * 7 + 1);
-                        this._helpMatrixB.Invert();
-                        this._helpMatrixB.TransformPoint(x, y, this._helpPoint);
+                        this.helpDBMatrixB.CopyFromArray(rawBonePoses, weightBoneIndices.IndexOf(rawBoneIndex) * 7 + 1);
+                        this.helpDBMatrixB.Invert();
+                        this.helpDBMatrixB.TransformPoint(x, y, this._helpPoint);
                         this._intArray[iB++] = (short)boneIndex;
                         this._floatArray[iV++] = rawWeights[iW++];
                         this._floatArray[iV++] = this._helpPoint.x;
@@ -1704,17 +1704,17 @@ namespace DragonBones
                 foreach (var k in rawColor)
                 {
                     // Detects the presence of color.
-                    this._ParseColorTransform(rawColor, this._helpColorTransform);
+                    this._ParseColorTransform(rawColor, this.helpDBColor);
                     colorOffset = this._intArray.Count;
                     this._intArray.ResizeList(this._intArray.Count + 8);
-                    this._intArray[colorOffset++] = (short)Math.Round(this._helpColorTransform.alphaMultiplier * 100);
-                    this._intArray[colorOffset++] = (short)Math.Round(this._helpColorTransform.redMultiplier * 100);
-                    this._intArray[colorOffset++] = (short)Math.Round(this._helpColorTransform.greenMultiplier * 100);
-                    this._intArray[colorOffset++] = (short)Math.Round(this._helpColorTransform.blueMultiplier * 100);
-                    this._intArray[colorOffset++] = (short)Math.Round((float)this._helpColorTransform.alphaOffset);
-                    this._intArray[colorOffset++] = (short)Math.Round((float)this._helpColorTransform.redOffset);
-                    this._intArray[colorOffset++] = (short)Math.Round((float)this._helpColorTransform.greenOffset);
-                    this._intArray[colorOffset++] = (short)Math.Round((float)this._helpColorTransform.blueOffset);
+                    this._intArray[colorOffset++] = (short)Math.Round(this.helpDBColor.alphaMultiplier * 100);
+                    this._intArray[colorOffset++] = (short)Math.Round(this.helpDBColor.redMultiplier * 100);
+                    this._intArray[colorOffset++] = (short)Math.Round(this.helpDBColor.greenMultiplier * 100);
+                    this._intArray[colorOffset++] = (short)Math.Round(this.helpDBColor.blueMultiplier * 100);
+                    this._intArray[colorOffset++] = (short)Math.Round((float)this.helpDBColor.alphaOffset);
+                    this._intArray[colorOffset++] = (short)Math.Round((float)this.helpDBColor.redOffset);
+                    this._intArray[colorOffset++] = (short)Math.Round((float)this.helpDBColor.greenOffset);
+                    this._intArray[colorOffset++] = (short)Math.Round((float)this.helpDBColor.blueOffset);
                     colorOffset -= 8;
                     break;
                 }
@@ -1753,7 +1753,7 @@ namespace DragonBones
             var rawVertices = rawData.ContainsKey(ObjectDataParser.VERTICES) ? (rawData[ObjectDataParser.VERTICES] as List<object>).ConvertAll<float>(Convert.ToSingle) : null;
             var offset = ObjectDataParser._GetNumber(rawData, ObjectDataParser.OFFSET, 0); // uint
             var vertexCount = this._intArray[this._mesh.vertices.offset + (int)BinaryOffset.MeshVertexCount];
-            var meshName = this._mesh.parent.name + "_" + this._slot.name + "_" + this._mesh.name;
+            var meshName = this._mesh.parent.name + "_" + this._slot.name + "_" + this._mesh.Name;
             var weight = this._mesh.vertices.weight;
 
             var x = 0.0f;
@@ -1764,9 +1764,9 @@ namespace DragonBones
             if (weight != null)
             {
                 var rawSlotPose = this._weightSlotPose[meshName];
-                this._helpMatrixA.CopyFromArray(rawSlotPose, 0);
+                this.helpDBMatrixA.CopyFromArray(rawSlotPose, 0);
                 this._frameFloatArray.ResizeList(this._frameFloatArray.Count + (weight.count * 2));
-                iB = weight.offset + (int)BinaryOffset.WeigthBoneIndices + weight.bones.Count;
+                iB = weight.offset + (int)BinaryOffset.WeightBoneIndices + weight.bones.Count;
             }
             else
             {
@@ -1807,16 +1807,16 @@ namespace DragonBones
                     var rawBonePoses = this._weightBonePoses[meshName];
                     var vertexBoneCount = this._intArray[iB++];
 
-                    this._helpMatrixA.TransformPoint(x, y, this._helpPoint, true);
+                    this.helpDBMatrixA.TransformPoint(x, y, this._helpPoint, true);
                     x = this._helpPoint.x;
                     y = this._helpPoint.y;
 
                     for (var j = 0; j < vertexBoneCount; ++j)
                     {
                         var boneIndex = this._intArray[iB++];
-                        this._helpMatrixB.CopyFromArray(rawBonePoses, boneIndex * 7 + 1);
-                        this._helpMatrixB.Invert();
-                        this._helpMatrixB.TransformPoint(x, y, this._helpPoint, true);
+                        this.helpDBMatrixB.CopyFromArray(rawBonePoses, boneIndex * 7 + 1);
+                        this.helpDBMatrixB.Invert();
+                        this.helpDBMatrixB.TransformPoint(x, y, this._helpPoint, true);
 
                         this._frameFloatArray[frameFloatOffset + iV++] = this._helpPoint.x;
                         this._frameFloatArray[frameFloatOffset + iV++] = this._helpPoint.y;
@@ -1985,16 +1985,16 @@ namespace DragonBones
             dbTransform.scaleY = ObjectDataParser._GetNumber(rawData, ObjectDataParser.SCALE_Y, 1.0f);
         }
 
-        protected void _ParseColorTransform(Dictionary<string, object> rawData, ColorTransform color)
+        protected void _ParseColorTransform(Dictionary<string, object> rawData, DBColor dbColor)
         {
-            color.alphaMultiplier = ObjectDataParser._GetNumber(rawData, ObjectDataParser.ALPHA_MULTIPLIER, 100) * 0.01f;
-            color.redMultiplier = ObjectDataParser._GetNumber(rawData, ObjectDataParser.RED_MULTIPLIER, 100) * 0.01f;
-            color.greenMultiplier = ObjectDataParser._GetNumber(rawData, ObjectDataParser.GREEN_MULTIPLIER, 100) * 0.01f;
-            color.blueMultiplier = ObjectDataParser._GetNumber(rawData, ObjectDataParser.BLUE_MULTIPLIER, 100) * 0.01f;
-            color.alphaOffset = ObjectDataParser._GetNumber(rawData, ObjectDataParser.ALPHA_OFFSET, 0);
-            color.redOffset = ObjectDataParser._GetNumber(rawData, ObjectDataParser.RED_OFFSET, 0);
-            color.greenOffset = ObjectDataParser._GetNumber(rawData, ObjectDataParser.GREEN_OFFSET, 0);
-            color.blueOffset = ObjectDataParser._GetNumber(rawData, ObjectDataParser.BLUE_OFFSET, 0);
+            dbColor.alphaMultiplier = ObjectDataParser._GetNumber(rawData, ObjectDataParser.ALPHA_MULTIPLIER, 100) * 0.01f;
+            dbColor.redMultiplier = ObjectDataParser._GetNumber(rawData, ObjectDataParser.RED_MULTIPLIER, 100) * 0.01f;
+            dbColor.greenMultiplier = ObjectDataParser._GetNumber(rawData, ObjectDataParser.GREEN_MULTIPLIER, 100) * 0.01f;
+            dbColor.blueMultiplier = ObjectDataParser._GetNumber(rawData, ObjectDataParser.BLUE_MULTIPLIER, 100) * 0.01f;
+            dbColor.alphaOffset = ObjectDataParser._GetNumber(rawData, ObjectDataParser.ALPHA_OFFSET, 0);
+            dbColor.redOffset = ObjectDataParser._GetNumber(rawData, ObjectDataParser.RED_OFFSET, 0);
+            dbColor.greenOffset = ObjectDataParser._GetNumber(rawData, ObjectDataParser.GREEN_OFFSET, 0);
+            dbColor.blueOffset = ObjectDataParser._GetNumber(rawData, ObjectDataParser.BLUE_OFFSET, 0);
         }
 
         protected virtual void _ParseArray(Dictionary<string, object> rawData)

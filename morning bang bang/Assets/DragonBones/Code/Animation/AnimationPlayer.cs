@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DragonBones.ChildArmatures;
 
 namespace DragonBones
 {
@@ -26,13 +27,12 @@ namespace DragonBones
         private readonly List<string> _animationNames = new List<string>();
         private readonly List<AnimationState> _animationStates = new List<AnimationState>();
         private readonly Dictionary<string, AnimationData> _animations = new Dictionary<string, AnimationData>();
-        public readonly Armature BelongsTo;
+        public readonly Armature Armature;
         private AnimationConfig _animationConfig = null; // Initial value.
-        private AnimationState _lastAnimationState;
 
-        public AnimationPlayer(Armature belongsTo)
+        public AnimationPlayer(Armature armature)
         {
-            BelongsTo = belongsTo;
+            Armature = armature;
         }
 
         public void Clear()
@@ -57,7 +57,7 @@ namespace DragonBones
             _animationStates.Clear();
             _animations.Clear();
             _animationConfig = null; //
-            _lastAnimationState = null;
+            lastAnimationState = null;
         }
 
         internal void Init(Dictionary<string, AnimationData> armatureDataAnimations)
@@ -74,10 +74,10 @@ namespace DragonBones
                 passedTime = -passedTime;
             }
 
-            if (BelongsTo.inheritAnimation && BelongsTo.Parent != null)
+            if (Armature.inheritAnimation && Armature is ChildArmature childArmature)
             {
                 // Inherit parent animation timeScale.
-                _inheritTimeScale = BelongsTo.Parent.Armature.AnimationPlayer._inheritTimeScale * timeScale;
+                _inheritTimeScale = childArmature.Parent.Armature.AnimationPlayer._inheritTimeScale * timeScale;
             }
             else
             {
@@ -97,41 +97,12 @@ namespace DragonBones
                 {
                     DBInitial.Kernel.BufferObject(animationState);
                     _animationStates.Clear();
-                    _lastAnimationState = null;
+                    lastAnimationState = null;
                 }
                 else
                 {
-                    var animationData = animationState._animationData;
+                    var animationData = animationState.Animation;
                     var cacheFrameRate = animationData.cacheFrameRate;
-
-                    if (_animationDirty && cacheFrameRate > 0.0f)
-                    {
-                        // Update cachedFrameIndices.
-                        _animationDirty = false;
-                        foreach (var bone in BelongsTo.Structure.Bones)
-                        {
-                            bone._cachedFrameIndices = animationData.GetBoneCachedFrameIndices(bone.name);
-                        }
-
-                        foreach (var slot in BelongsTo.Structure.Slots)
-                        {
-                            var rawDisplayDatas = slot.AllDisplaysData;
-                            if (rawDisplayDatas != null && rawDisplayDatas.Count > 0)
-                            {
-                                var rawDsplayData = rawDisplayDatas[0];
-                                if (rawDsplayData != null)
-                                {
-                                    if (rawDsplayData.parent == BelongsTo.ArmatureData.defaultSkin)
-                                    {
-                                        slot._cachedFrameIndices = animationData.GetSlotCachedFrameIndices(slot.name);
-                                        continue;
-                                    }
-                                }
-                            }
-
-                            slot._cachedFrameIndices = null;
-                        }
-                    }
 
                     animationState.AdvanceTime(passedTime, cacheFrameRate);
                 }
@@ -146,10 +117,10 @@ namespace DragonBones
                         r++;
                         DBInitial.Kernel.BufferObject(animationState);
                         _animationDirty = true;
-                        if (_lastAnimationState == animationState)
+                        if (lastAnimationState == animationState)
                         {
                             // Update last animation state.
-                            _lastAnimationState = null;
+                            lastAnimationState = null;
                         }
                     }
                     else
@@ -166,18 +137,12 @@ namespace DragonBones
                     {
                         // Modify animation states size.
                         _animationStates.ResizeList(_animationStates.Count - r);
-                        if (_lastAnimationState == null && _animationStates.Count > 0)
+                        if (lastAnimationState == null && _animationStates.Count > 0)
                         {
-                            _lastAnimationState = _animationStates[_animationStates.Count - 1];
+                            lastAnimationState = _animationStates[_animationStates.Count - 1];
                         }
                     }
                 }
-
-                BelongsTo._cacheFrameIndex = -1;
-            }
-            else
-            {
-                BelongsTo._cacheFrameIndex = -1;
             }
         }
 
@@ -263,7 +228,7 @@ namespace DragonBones
             _animationDirty = false;
             _animationConfig.Clear();
             _animationStates.Clear();
-            _lastAnimationState = null;
+            lastAnimationState = null;
         }
         /// <summary>
         /// - Pause a specific animation state.
@@ -309,8 +274,8 @@ namespace DragonBones
             {
                 DBLogger.Assert(false,
                     "Non-existent animation.\n" +
-                    "DragonBones name: " + BelongsTo.ArmatureData.parent.name +
-                    "Armature name: " + BelongsTo.Name +
+                    "DragonBones name: " + Armature.ArmatureData.parent.name +
+                    "Armature name: " + Armature.Name +
                     "Animation name: " + animationName
                 );
 
@@ -323,7 +288,7 @@ namespace DragonBones
             {
                 foreach (var aniState in _animationStates)
                 {
-                    if (aniState._animationData == animationData)
+                    if (aniState.Animation == animationData)
                     {
                         return aniState;
                     }
@@ -393,9 +358,8 @@ namespace DragonBones
             _FadeOut(animationConfig);
 
             var animationState = DBObject.BorrowObject<AnimationState>();
-            animationState.Init(BelongsTo, animationData, animationConfig);
+            animationState.Init(Armature, animationData, animationConfig);
             _animationDirty = true;
-            BelongsTo._cacheFrameIndex = -1;
 
             if (_animationStates.Count > 0)
             {
@@ -427,9 +391,10 @@ namespace DragonBones
             }
 
             // Child armature play same name animation.
-            foreach (var slot in BelongsTo.Structure.Slots)
+            foreach (var slot in Armature.Structure.Slots)
             {
-                var childArmature = slot.ChildArmature;
+                Armature childArmature = slot.Displays.ChildArmatureSlotDisplay?.ArmatureDisplay.Armature;
+                
                 if (childArmature != null &&
                     childArmature.inheritAnimation &&
                     childArmature.AnimationPlayer.HasAnimation(animationName) &&
@@ -444,11 +409,11 @@ namespace DragonBones
                 if (animationConfig.fadeInTime <= 0.0f)
                 {
                     // Blend animation state, update armature.
-                    BelongsTo.AdvanceTime(0.0f);
+                    Armature.AdvanceTime(0.0f);
                 }
             }
 
-            _lastAnimationState = animationState;
+            lastAnimationState = animationState;
 
             return animationState;
         }
@@ -478,26 +443,26 @@ namespace DragonBones
             {
                 PlayConfig(_animationConfig);
             }
-            else if (_lastAnimationState == null)
+            else if (lastAnimationState == null)
             {
-                var defaultAnimation = BelongsTo.ArmatureData.defaultAnimation;
+                var defaultAnimation = Armature.ArmatureData.defaultAnimation;
                 if (defaultAnimation != null)
                 {
                     _animationConfig.animation = defaultAnimation.name;
                     PlayConfig(_animationConfig);
                 }
             }
-            else if (!_lastAnimationState.isPlaying && !_lastAnimationState.isCompleted)
+            else if (!lastAnimationState.isPlaying && !lastAnimationState.isCompleted)
             {
-                _lastAnimationState.Play();
+                lastAnimationState.Play();
             }
             else
             {
-                _animationConfig.animation = _lastAnimationState.name;
+                _animationConfig.animation = lastAnimationState.name;
                 PlayConfig(_animationConfig);
             }
 
-            return _lastAnimationState;
+            return lastAnimationState;
         }
         /// <summary>
         /// - Fade in a specific animation.
@@ -754,7 +719,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public string lastAnimationName
         {
-            get { return _lastAnimationState != null ? _lastAnimationState.name : ""; }
+            get { return lastAnimationState != null ? lastAnimationState.name : ""; }
         }
         /// <summary>
         /// - The name of all animation data
@@ -811,9 +776,8 @@ namespace DragonBones
         /// <see cref="DBKernel.AnimationState"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public AnimationState lastAnimationState
-        {
-            get { return _lastAnimationState; }
-        }
+        public AnimationState lastAnimationState { get; private set; }
+
+        public AnimationState CurrentState => lastAnimationState;
     }
 }

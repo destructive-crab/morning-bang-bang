@@ -31,12 +31,12 @@ namespace DragonBones
 
         private static int CompareSlots(Slot a, Slot b)
         {
-            if(a._zOrder > b._zOrder)
+            if(a.ZOrder.Value > b.ZOrder.Value)
             {
                 return 1;
             }
 
-            if(a._zOrder < b._zOrder)
+            if(a.ZOrder.Value < b.ZOrder.Value)
             {
                 return -1;
             }
@@ -161,13 +161,13 @@ namespace DragonBones
                 slot._verticeOffset = newVerticeIndex;
                 
                 CombineInstance combineInstance = new CombineInstance();
-                slot._meshBuffer.InitMesh();
-                combineInstance.mesh = slot._meshBuffer.sharedMesh;
+                slot.meshBuffer.InitMesh();
+                combineInstance.mesh = slot.meshBuffer.sharedMesh;
 
                 combines[i] = combineInstance;
                 
                 var zspace = (slot.Armature.Display as UnityEngineArmatureDisplay).zSpace;
-                for (int j = 0; j < slot._meshBuffer.vertexCount; j++)
+                for (int j = 0; j < slot.meshBuffer.vertexCount; j++)
                 {
                     index = oldVerticeOffset + j;
                     newUVs[newVerticeIndex] = this.uvBuffers[index];

@@ -137,16 +137,16 @@ namespace DragonBones
         }
 
         /// <private/>
-        public DBTransform FromMatrix(Matrix matrix)
+        public DBTransform FromMatrix(DBMatrix dbMatrix)
         {
             var backupScaleX = this.scaleX;
             var backupScaleY = this.scaleY;
 
-            this.x = matrix.tx;
-            this.y = matrix.ty;
+            this.x = dbMatrix.tx;
+            this.y = dbMatrix.ty;
 
-            var skewX = (float)Math.Atan(-matrix.c / matrix.d);
-            this.rotation = (float)Math.Atan(matrix.b / matrix.a);
+            var skewX = (float)Math.Atan(-dbMatrix.c / dbMatrix.d);
+            this.rotation = (float)Math.Atan(dbMatrix.b / dbMatrix.a);
 
             if(float.IsNaN(skewX))
             {
@@ -158,8 +158,8 @@ namespace DragonBones
                 this.rotation = 0.0f; 
             }
 
-            this.scaleX = (float)((this.rotation > -PI_Q && this.rotation < PI_Q) ? matrix.a / Math.Cos(this.rotation) : matrix.b / Math.Sin(this.rotation));
-            this.scaleY = (float)((skewX > -PI_Q && skewX < PI_Q) ? matrix.d / Math.Cos(skewX) : -matrix.c / Math.Sin(skewX));
+            this.scaleX = (float)((this.rotation > -PI_Q && this.rotation < PI_Q) ? dbMatrix.a / Math.Cos(this.rotation) : dbMatrix.b / Math.Sin(this.rotation));
+            this.scaleY = (float)((skewX > -PI_Q && skewX < PI_Q) ? dbMatrix.d / Math.Cos(skewX) : -dbMatrix.c / Math.Sin(skewX));
 
             if (backupScaleX >= 0.0f && this.scaleX < 0.0f)
             {
@@ -179,44 +179,44 @@ namespace DragonBones
         }
 
         /// <private/>
-        public DBTransform ToMatrix(Matrix matrix)
+        public DBTransform ToMatrix(DBMatrix dbMatrix)
         {
             if(this.rotation == 0.0f)
             {
-                matrix.a = 1.0f;
-                matrix.b = 0.0f;
+                dbMatrix.a = 1.0f;
+                dbMatrix.b = 0.0f;
             }
             else
             {
-                matrix.a = (float)Math.Cos(this.rotation);
-                matrix.b = (float)Math.Sin(this.rotation);
+                dbMatrix.a = (float)Math.Cos(this.rotation);
+                dbMatrix.b = (float)Math.Sin(this.rotation);
             }
 
             if(this.skew == 0.0f)
             {
-                matrix.c = -matrix.b;
-                matrix.d = matrix.a;
+                dbMatrix.c = -dbMatrix.b;
+                dbMatrix.d = dbMatrix.a;
             }
             else
             {
-                matrix.c = -(float)Math.Sin(this.skew + this.rotation);
-                matrix.d = (float)Math.Cos(this.skew + this.rotation);
+                dbMatrix.c = -(float)Math.Sin(this.skew + this.rotation);
+                dbMatrix.d = (float)Math.Cos(this.skew + this.rotation);
             }
 
             if(this.scaleX != 1.0f)
             {
-                matrix.a *= this.scaleX;
-                matrix.b *= this.scaleX;
+                dbMatrix.a *= this.scaleX;
+                dbMatrix.b *= this.scaleX;
             }
 
             if(this.scaleY != 1.0f)
             {
-                matrix.c *= this.scaleY;
-                matrix.d *= this.scaleY;
+                dbMatrix.c *= this.scaleY;
+                dbMatrix.d *= this.scaleY;
             }
 
-            matrix.tx = this.x;
-            matrix.ty = this.y;
+            dbMatrix.tx = this.x;
+            dbMatrix.ty = this.y;
 
             return this;
         }

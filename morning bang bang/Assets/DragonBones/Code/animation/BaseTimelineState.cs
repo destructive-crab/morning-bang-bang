@@ -178,7 +178,7 @@ namespace DragonBones
             this._position = this._animationState._position;
             this._duration = this._animationState._duration;
             this._DBProjectData = this._armature.ArmatureData.parent;
-            this._animationData = this._animationState._animationData;
+            this._animationData = this._animationState.Animation;
 
             if (this._timelineData != null)
             {

@@ -1,68 +1,70 @@
 using System.Collections.Generic;
 namespace DragonBones
 {
-    /// <internal/>
     public class DeformVertices : DBObject
     {
         public bool verticesDirty;
+        
         public readonly List<float> vertices = new List<float>();
         public readonly List<Bone> bones = new List<Bone>();
+        
         public VerticesData verticesData;
 
         protected override void ClearObject()
         {
-            this.verticesDirty = false;
-            this.vertices.Clear();
-            this.bones.Clear();
-            this.verticesData = null;
+            verticesDirty = false;
+            vertices.Clear();
+            bones.Clear();
+            verticesData = null;
         }
 
-        public void init(VerticesData verticesDataValue, Armature armature)
+        public void Init(VerticesData verticesDataValue, Armature armature)
         {
-            this.verticesData = verticesDataValue;
+            verticesData = verticesDataValue;
 
-            if (this.verticesData != null)
+            if (verticesData != null)
             {
-                var vertexCount = 0;
-                if (this.verticesData.weight != null)
+                int vertexCount = 0;
+                
+                if (verticesData.weight != null)
                 {
-                    vertexCount = this.verticesData.weight.count * 2;
+                    vertexCount = verticesData.weight.count * 2;
                 }
                 else
                 {
-                    vertexCount = (int)this.verticesData.data.intArray[this.verticesData.offset + (int)BinaryOffset.MeshVertexCount] * 2;
+                    vertexCount = verticesData.data.intArray[verticesData.offset + (int)BinaryOffset.MeshVertexCount] * 2;
                 }
 
-                this.verticesDirty = true;
-                this.vertices.ResizeList(vertexCount);
-                this.bones.Clear();
-                //
-                for (int i = 0, l = this.vertices.Count; i < l; ++i)
+                verticesDirty = true;
+                vertices.ResizeList(vertexCount);
+                bones.Clear();
+                
+                for (int i = 0, l = vertices.Count; i < l; ++i)
                 {
-                    this.vertices[i] = 0.0f;
+                    vertices[i] = 0.0f;
                 }
 
-                if (this.verticesData.weight != null)
+                if (verticesData.weight != null)
                 {
-                    for (int i = 0, l = this.verticesData.weight.bones.Count; i < l; ++i)
+                    for (int i = 0, l = verticesData.weight.bones.Count; i < l; ++i)
                     {
-                        var bone = armature.Structure.GetBone(this.verticesData.weight.bones[i].name);
-                        this.bones.Add(bone);
+                        Bone bone = armature.Structure.GetBone(verticesData.weight.bones[i].name);
+                        bones.Add(bone);
                     }
                 }
             }
             else
             {
-                this.verticesDirty = false;
-                this.vertices.Clear();
-                this.bones.Clear();
-                this.verticesData = null;
+                verticesDirty = false;
+                vertices.Clear();
+                bones.Clear();
+                verticesData = null;
             }
         }
 
-        public bool isBonesUpdate()
+        public bool AreBonesDirty()
         {
-            foreach (var bone in this.bones)
+            foreach (var bone in bones)
             {
                 if (bone != null && bone._childrenTransformDirty)
                 {

@@ -430,6 +430,10 @@ namespace DragonBones
                 }
             }
 
+            if (dataPackage.Skin == null)
+            {
+                dataPackage.Skin = armatureData.defaultSkin;
+            }
             return true;
         }
 

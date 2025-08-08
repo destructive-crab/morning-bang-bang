@@ -6,7 +6,7 @@ namespace DragonBones
     /// <private/>
     internal abstract class Constraint : DBObject
     {
-        protected static readonly Matrix _helpMatrix = new Matrix();
+        protected static readonly DBMatrix HelpDBMatrix = new DBMatrix();
         protected static readonly DBTransform HelpDBTransform = new DBTransform();
         protected static readonly Point _helpPoint = new Point();
 
@@ -76,7 +76,7 @@ namespace DragonBones
         {
             var ikGlobal = this._target.global;
             var global = this._root.global;
-            var globalTransformMatrix = this._root.globalTransformMatrix;
+            var globalTransformMatrix = this._root.GlobalTransformDBMatrix;
 
             var radian = (float)Math.Atan2(ikGlobal.y - global.y, ikGlobal.x - global.x);
             if (global.scaleX < 0.0f)
@@ -95,7 +95,7 @@ namespace DragonBones
             var ikGlobal = this._target.global;
             var parentGlobal = parent.global;
             var global = this._bone.global;
-            var globalTransformMatrix = this._bone.globalTransformMatrix;
+            var globalTransformMatrix = this._bone.GlobalTransformDBMatrix;
 
             var x = globalTransformMatrix.a * boneLength;
             var y = globalTransformMatrix.b * boneLength;
@@ -141,7 +141,7 @@ namespace DragonBones
                 var parentParent = parent.parent;
                 if (parentParent != null)
                 {
-                    var parentParentMatrix = parentParent.globalTransformMatrix;
+                    var parentParentMatrix = parentParent.GlobalTransformDBMatrix;
                     isPPR = parentParentMatrix.a * parentParentMatrix.d - parentParentMatrix.b * parentParentMatrix.c < 0.0f;
                 }
 
@@ -161,7 +161,7 @@ namespace DragonBones
 
             var dR = DBTransform.NormalizeRadian(radianA - rawRadianA);
             parentGlobal.rotation = rawParentRadian + dR * this._weight;
-            parentGlobal.ToMatrix(parent.globalTransformMatrix);
+            parentGlobal.ToMatrix(parent.GlobalTransformDBMatrix);
             //
             var currentRadianA = rawRadianA + dR * this._weight;
             global.x = parentGlobal.x + (float)Math.Cos(currentRadianA) * lP;

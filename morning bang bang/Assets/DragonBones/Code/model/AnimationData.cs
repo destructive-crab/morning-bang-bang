@@ -71,15 +71,11 @@ namespace DragonBones
         /// <private/>
         public readonly Dictionary<string, List<TimelineData>> constraintTimelines = new Dictionary<string, List<TimelineData>>();
         /// <private/>
-        public readonly Dictionary<string, List<int>> boneCachedFrameIndices = new Dictionary<string, List<int>>();
-        /// <private/>
-        public readonly Dictionary<string, List<int>> slotCachedFrameIndices = new Dictionary<string, List<int>>();
-        /// <private/>
         public TimelineData actionTimeline = null; // Initial value.
         /// <private/>
         public TimelineData zOrderTimeline = null; // Initial value.
         /// <private/>
-        public ArmatureData parent;
+        public ArmatureData armatureData;
 
         public AnimationData()
         {
@@ -136,55 +132,13 @@ namespace DragonBones
             this.boneTimelines.Clear();
             this.slotTimelines.Clear();
             this.constraintTimelines.Clear();
-            this.boneCachedFrameIndices.Clear();
-            this.slotCachedFrameIndices.Clear();
             this.cachedFrames.Clear();
 
             this.actionTimeline = null;
             this.zOrderTimeline = null;
-            this.parent = null;
+            this.armatureData = null;
         }
 
-        /// <internal/>
-        /// <private/>
-        public void CacheFrames(float frameRate)
-        {
-            if (this.cacheFrameRate > 0.0f)
-            {
-                // TODO clear cache.
-                return;
-            }
-
-            this.cacheFrameRate = Math.Max((float)Math.Ceiling(frameRate * scale), 1.0f);
-            var cacheFrameCount = (int)Math.Ceiling(this.cacheFrameRate * duration) + 1; // Cache one more frame.
-
-            cachedFrames.ResizeList(0, false);
-            cachedFrames.ResizeList(cacheFrameCount, false);
-
-            foreach (var bone in this.parent.sortedBones)
-            {
-                var indices = new List<int>(cacheFrameCount);
-                for (int i = 0, l = indices.Capacity; i < l; ++i)
-                {
-                    indices.Add(-1);
-                }
-
-                this.boneCachedFrameIndices[bone.name] = indices;
-            }
-
-            foreach (var slot in this.parent.sortedSlots)
-            {
-                var indices = new List<int>(cacheFrameCount);
-                for (int i = 0, l = indices.Capacity; i < l; ++i)
-                {
-                    indices.Add(-1);
-                }
-
-                this.slotCachedFrameIndices[slot.name] = indices;
-            }
-        }
-
-        /// <private/>
         public void AddBoneTimeline(BoneData bone, TimelineData tiemline)
         {
             if (bone == null || tiemline == null)
@@ -258,17 +212,6 @@ namespace DragonBones
         public List<TimelineData> GetConstraintTimelines(string timelineName)
         {
             return constraintTimelines.ContainsKey(timelineName) ? constraintTimelines[timelineName] : null;
-        }
-        /// <private/>
-        public List<int> GetBoneCachedFrameIndices(string boneName)
-        {
-            return this.boneCachedFrameIndices.ContainsKey(boneName) ? this.boneCachedFrameIndices[boneName] : null;
-        }
-
-        /// <private/>
-        public List<int> GetSlotCachedFrameIndices(string slotName)
-        {
-            return this.slotCachedFrameIndices.ContainsKey(slotName) ? this.slotCachedFrameIndices[slotName] : null;
         }
     }
 

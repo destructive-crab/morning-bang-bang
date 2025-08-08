@@ -122,17 +122,17 @@ namespace DragonBones
             //
             foreach (UnitySlot slot in Armature.Structure.Slots)
             {
-                var display = slot.RenderDisplay;
+                var display = slot.UnityDisplay;
                 if (display == null)
                 {
                     continue;
                 }
 
-                slot.UpdateZPosition(new Vector3(display.transform.localPosition.x, display.transform.localPosition.y, -slot._zOrder * (_zSpace + 0.001f)));
+                slot.UpdateZPosition(new Vector3(display.transform.localPosition.x, display.transform.localPosition.y, -slot.ZOrder.Value * (_zSpace + 0.001f)));
 
-                if (slot.ChildArmature != null)
+                if (slot.IsDisplayingChildArmature())
                 {
-                    (slot.ChildArmature.Display as UnityEngineArmatureDisplay).UpdateSlotsSorting();
+                    (slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay as UnityEngineArmatureDisplay).UpdateSlotsSorting();
                 }
 
 #if UNITY_EDITOR
@@ -151,7 +151,7 @@ namespace DragonBones
 
         public bool isUGUI = false;
 
-        internal readonly ColorTransform _colorTransform = new ColorTransform();
+        internal readonly DBColor _DBColor = new DBColor();
 
         public string animationName = null;
 
@@ -212,7 +212,7 @@ namespace DragonBones
             isUGUI = false;
 
             Armature = null;
-            _colorTransform.Identity();
+            _DBColor.Identity();
             _playTimes = 0;
             _timeScale = 1.0f;
             _zSpace = 0.0f;
@@ -237,16 +237,16 @@ namespace DragonBones
             }
         }
 
-        public ColorTransform color
+        public DBColor DBColor
         {
-            get { return _colorTransform; }
+            get { return _DBColor; }
             set
             {
-                _colorTransform.CopyFrom(value);
+                _DBColor.CopyFrom(value);
 
                 foreach (var slot in Armature.Structure.Slots)
                 {
-                    slot._colorDirty = true;
+                    slot.Color.MarkAsDirty();
                 }
             }
         }
@@ -371,9 +371,9 @@ namespace DragonBones
             var slots = Armature.Structure.Slots;
             foreach (var slot in slots)
             {
-                if (slot.ChildArmature != null)
+                if (slot.IsDisplayingChildArmature())
                 {
-                    (slot.ChildArmature.Display as UnityEngineArmatureDisplay).OpenCombineMeshs();
+                    (slot.Displays.ChildArmatureSlotDisplay as UnityEngineArmatureDisplay).OpenCombineMeshs();
                 }
             }
         }
@@ -397,9 +397,9 @@ namespace DragonBones
             var slots = Armature.Structure.Slots;
             foreach (var slot in slots)
             {
-                if (slot.ChildArmature != null)
+                if (slot.IsDisplayingChildArmature())
                 {
-                    (slot.ChildArmature.Display as UnityEngineArmatureDisplay).CloseCombineMeshs();
+                    (slot.Displays.ChildArmatureSlotDisplay as UnityEngineArmatureDisplay).CloseCombineMeshs();
                 }
             }
         }

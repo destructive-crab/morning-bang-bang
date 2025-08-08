@@ -8,7 +8,7 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public class Matrix
+    public class DBMatrix
     {
         /// <summary>
         /// - The value that affects the positioning of pixels along the x axis when scaling or rotating an image.
@@ -58,7 +58,7 @@ namespace DragonBones
         public float ty = 0.0f;
 
         /// <private/>
-        public Matrix()
+        public DBMatrix()
         {
         }
         public override string ToString()
@@ -66,7 +66,7 @@ namespace DragonBones
             return "[object DragonBones.Matrix] a:" + a + " b:" + b + " c:" + c + " d:" + d + " tx:" + tx + " ty:" + ty;
         }
         /// <private/>
-        public Matrix CopyFrom(Matrix value)
+        public DBMatrix CopyFrom(DBMatrix value)
         {
             this.a = value.a;
             this.b = value.b;
@@ -79,7 +79,7 @@ namespace DragonBones
         }
 
         /// <private/>
-        public Matrix CopyFromArray(List<float> value, int offset = 0)
+        public DBMatrix CopyFromArray(List<float> value, int offset = 0)
         {
             this.a = value[offset];
             this.b = value[offset + 1];
@@ -97,7 +97,7 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public Matrix Identity()
+    public DBMatrix Identity()
         {
             this.a = this.d = 1.0f;
             this.b = this.c = 0.0f;
@@ -112,7 +112,7 @@ namespace DragonBones
         /// <param name="value">- The matrix that needs to be multiplied.</param>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public Matrix Concat(Matrix value)
+        public DBMatrix Concat(DBMatrix value)
         {
             var aA = this.a * value.a;
             var bA = 0.0f;
@@ -147,7 +147,7 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public Matrix Invert()
+        public DBMatrix Invert()
         {
             var aA = this.a;
             var bA = this.b;

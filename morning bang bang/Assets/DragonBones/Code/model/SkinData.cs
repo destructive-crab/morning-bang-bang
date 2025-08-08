@@ -18,14 +18,14 @@ namespace DragonBones
 
         public string name;
         /// <private/>
-        public readonly Dictionary<string, List<DisplayData>> displays = new();
+        public readonly Dictionary<string, List<DisplayData>> slotsAndTheirDisplays = new();
         /// <private/>
         public ArmatureData parent;
 
         /// <inheritDoc/>
         protected override void ClearObject()
         {
-            foreach (var list in this.displays.Values)
+            foreach (var list in this.slotsAndTheirDisplays.Values)
             {
                 foreach (var display in list)
                 {
@@ -34,7 +34,7 @@ namespace DragonBones
             }
 
             this.name = "";
-            this.displays.Clear();
+            this.slotsAndTheirDisplays.Clear();
             this.parent = null;
         }
 
@@ -42,11 +42,11 @@ namespace DragonBones
         /// <private/>
         public void AddDisplay(string slotName, DisplayData value)
         {
-            if (!string.IsNullOrEmpty(slotName) && value != null && !string.IsNullOrEmpty(value.name))
+            if (!string.IsNullOrEmpty(slotName) && value != null && !string.IsNullOrEmpty(value.Name))
             {
-                if (!this.displays.ContainsKey(slotName))
+                if (!this.slotsAndTheirDisplays.ContainsKey(slotName))
                 {
-                    this.displays[slotName] = new List<DisplayData>();
+                    this.slotsAndTheirDisplays[slotName] = new List<DisplayData>();
                 }
 
                 if (value != null)
@@ -54,11 +54,10 @@ namespace DragonBones
                     value.parent = this;
                 }
 
-                var slotDisplays = this.displays[slotName]; // TODO clear prev
+                var slotDisplays = this.slotsAndTheirDisplays[slotName]; // TODO clear prev
                 slotDisplays.Add(value);
             }
         }
-        /// <private/>
         public DisplayData GetDisplay(string slotName, string displayName)
         {
             List<DisplayData> slotDisplays = this.GetDisplays(slotName);
@@ -67,7 +66,7 @@ namespace DragonBones
             {
                 foreach (var display in slotDisplays)
                 {
-                    if (display != null && display.name == displayName)
+                    if (display != null && display.Name == displayName)
                     {
                         return display;
                     }
@@ -79,12 +78,12 @@ namespace DragonBones
         /// <private/>
         public List<DisplayData> GetDisplays(string slotName)
         {
-            if (string.IsNullOrEmpty(slotName) || !this.displays.ContainsKey(slotName))
+            if (string.IsNullOrEmpty(slotName) || !this.slotsAndTheirDisplays.ContainsKey(slotName))
             {
                 return null;
             }
 
-            return this.displays[slotName];
+            return this.slotsAndTheirDisplays[slotName];
         }
 
     }

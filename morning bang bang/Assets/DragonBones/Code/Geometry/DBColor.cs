@@ -2,7 +2,7 @@ namespace DragonBones
 {
     /// <internal/>
     /// <private/>
-    public class ColorTransform
+    public class DBColor
     {
         public float alphaMultiplier = 1.0f;
         public float redMultiplier = 1.0f;
@@ -13,11 +13,11 @@ namespace DragonBones
         public int greenOffset = 0;
         public int blueOffset = 0;
 
-        public ColorTransform()
+        public DBColor()
         {
         }
 
-        public void CopyFrom(ColorTransform value)
+        public void CopyFrom(DBColor value)
         {
             this.alphaMultiplier = value.alphaMultiplier;
             this.redMultiplier = value.redMultiplier;

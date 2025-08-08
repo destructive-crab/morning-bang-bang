@@ -11,6 +11,7 @@ namespace DragonBones
         void DBInit(Armature armature);
         void DBClear(bool disposeDisplay = false);
         void DBUpdate();
+        
         /// <summary>
         /// - Dispose the instance and the Armature instance. (The Armature instance will return to the object pool)
         /// </summary>

@@ -33,19 +33,18 @@ namespace DragonBones
             this.weight = value.weight;
         }
     }
-    /// <internal/>
-    /// <private/>
+
     public abstract class DisplayData : DBObject
     {
         public DisplayType type;
-        public string name;
+        public string Name;
         public string path;
         public SkinData parent;
         public readonly DBTransform DBTransform = new DBTransform();
 
         protected override void ClearObject()
         {
-            this.name = "";
+            this.Name = "";
             this.path = "";
             this.DBTransform.Identity();
             this.parent = null; //
@@ -69,9 +68,7 @@ namespace DragonBones
         }
     }
 
-    /// <internal/>
-    /// <private/>
-    public class ArmatureDisplayData : DisplayData
+    public class ChildArmatureDisplayData : DisplayData
     {
         public bool inheritAnimation;
         public readonly List<ActionData> actions = new List<ActionData>();
@@ -92,7 +89,6 @@ namespace DragonBones
             this.armature = null;
         }
 
-        /// <private/>
         internal void AddAction(ActionData value)
         {
             this.actions.Add(value);

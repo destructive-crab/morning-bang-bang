@@ -195,34 +195,19 @@ namespace DragonBones
             }
         }
 
-        public void CacheFrames(uint frameRate)
-        {
-            if (this.cacheFrameRate > 0)
-            {
-                // TODO clear cache.
-                return;
-            }
-
-            this.cacheFrameRate = frameRate;
-            foreach (var k in this.animations.Keys)
-            {
-                this.animations[k].CacheFrames(this.cacheFrameRate);
-            }
-        }
-
-        public int SetCacheFrame(Matrix globalTransformMatrix, DBTransform dbTransform)
+        public int SetCacheFrame(DBMatrix globalTransformDBMatrix, DBTransform dbTransform)
         {
             var dataArray = this.parent.cachedFrames;
             var arrayOffset = dataArray.Count;
 
             dataArray.ResizeList(arrayOffset + 10, 0.0f);
 
-            dataArray[arrayOffset] = globalTransformMatrix.a;
-            dataArray[arrayOffset + 1] = globalTransformMatrix.b;
-            dataArray[arrayOffset + 2] = globalTransformMatrix.c;
-            dataArray[arrayOffset + 3] = globalTransformMatrix.d;
-            dataArray[arrayOffset + 4] = globalTransformMatrix.tx;
-            dataArray[arrayOffset + 5] = globalTransformMatrix.ty;
+            dataArray[arrayOffset] = globalTransformDBMatrix.a;
+            dataArray[arrayOffset + 1] = globalTransformDBMatrix.b;
+            dataArray[arrayOffset + 2] = globalTransformDBMatrix.c;
+            dataArray[arrayOffset + 3] = globalTransformDBMatrix.d;
+            dataArray[arrayOffset + 4] = globalTransformDBMatrix.tx;
+            dataArray[arrayOffset + 5] = globalTransformDBMatrix.ty;
             dataArray[arrayOffset + 6] = dbTransform.rotation;
             dataArray[arrayOffset + 7] = dbTransform.skew;
             dataArray[arrayOffset + 8] = dbTransform.scaleX;
@@ -231,21 +216,21 @@ namespace DragonBones
             return arrayOffset;
         }
 
-        public void GetCacheFrame(Matrix globalTransformMatrix, DBTransform dbTransform, int arrayOffset)
+        public void GetCacheFrame(DBMatrix globalTransformDBMatrix, DBTransform dbTransform, int arrayOffset)
         {
             var dataArray = this.parent.cachedFrames;
-            globalTransformMatrix.a = dataArray[arrayOffset];
-            globalTransformMatrix.b = dataArray[arrayOffset + 1];
-            globalTransformMatrix.c = dataArray[arrayOffset + 2];
-            globalTransformMatrix.d = dataArray[arrayOffset + 3];
-            globalTransformMatrix.tx = dataArray[arrayOffset + 4];
-            globalTransformMatrix.ty = dataArray[arrayOffset + 5];
+            globalTransformDBMatrix.a = dataArray[arrayOffset];
+            globalTransformDBMatrix.b = dataArray[arrayOffset + 1];
+            globalTransformDBMatrix.c = dataArray[arrayOffset + 2];
+            globalTransformDBMatrix.d = dataArray[arrayOffset + 3];
+            globalTransformDBMatrix.tx = dataArray[arrayOffset + 4];
+            globalTransformDBMatrix.ty = dataArray[arrayOffset + 5];
             dbTransform.rotation = dataArray[arrayOffset + 6];
             dbTransform.skew = dataArray[arrayOffset + 7];
             dbTransform.scaleX = dataArray[arrayOffset + 8];
             dbTransform.scaleY = dataArray[arrayOffset + 9];
-            dbTransform.x = globalTransformMatrix.tx;
-            dbTransform.y = globalTransformMatrix.ty;
+            dbTransform.x = globalTransformDBMatrix.tx;
+            dbTransform.y = globalTransformDBMatrix.ty;
         }
 
         public void AddBone(BoneData value)
@@ -326,7 +311,7 @@ namespace DragonBones
                     this.animations[value.name].ReturnToPool();
                 }
 
-                value.parent = this;
+                value.armatureData = this;
                 this.animations[value.name] = value;
                 this.animationNames.Add(value.name);
                 if (this.defaultAnimation == null)
@@ -472,13 +457,13 @@ namespace DragonBones
     {
         /// <internal/>
         /// <private/>
-        public static readonly ColorTransform DEFAULT_COLOR = new ColorTransform();
+        public static readonly DBColor DefaultDBColor = new DBColor();
 
         /// <internal/>
         /// <private/>
-        public static ColorTransform CreateColor()
+        public static DBColor CreateColor()
         {
-            return new ColorTransform();
+            return new DBColor();
         }
 
         /// <private/>
@@ -494,7 +479,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public string name;
         /// <private/>
-        public ColorTransform color = null; // Initial value.
+        public DBColor DBColor = null; // Initial value.
         /// <private/>
         public UserData userData = null; // Initial value.
         /// <summary>
@@ -515,7 +500,7 @@ namespace DragonBones
             this.displayIndex = 0;
             this.zOrder = 0;
             this.name = "";
-            this.color = null; //
+            this.DBColor = null; //
             this.userData = null;
             this.parent = null; //
         }

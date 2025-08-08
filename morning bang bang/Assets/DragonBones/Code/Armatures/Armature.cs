@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DragonBones
 {
@@ -77,45 +78,6 @@ namespace DragonBones
             }
         }
         
-        internal int _cacheFrameIndex;
-        /// <summary>
-        /// - The animation cache frame rate, which turns on the animation cache when the set value is greater than 0.
-        /// There is a certain amount of memory overhead to improve performance by caching animation data in memory.
-        /// The frame rate should not be set too high, usually with the frame rate of the animation is similar and lower than the program running frame rate.
-        /// When the animation cache is turned on, some features will fail, such as the offset property of bone.
-        /// </summary>
-        /// <example>
-        /// TypeScript style, for reference only.
-        /// <pre>
-        ///     armature.cacheFrameRate = 24;
-        /// </pre>
-        /// </example>
-        /// <see cref="DBProjectData.frameRate"/>
-        /// <see cref="ArmatureData.frameRate"/>
-        /// <version>DragonBones 4.5</version>
-        /// <language>en_US</language>
-        public uint cacheFrameRate
-        {
-            get { return ArmatureData.cacheFrameRate; }
-            set
-            {
-                if (ArmatureData.cacheFrameRate != value)
-                {
-                    ArmatureData.CacheFrames(value);
-
-                    // Set child armature frameRate.
-                    foreach (var slot in Structure.Slots)
-                    {
-                        var childArmature = slot.ChildArmature;
-                        if (childArmature != null)
-                        {
-                            childArmature.cacheFrameRate = value;
-                        }
-                    }
-                }
-            }
-        }
-
         internal TextureAtlasData _replaceTextureAtlasData = null; // Initial value.
         private object _replacedTexture;
         /// <summary>
@@ -146,7 +108,7 @@ namespace DragonBones
                 foreach (var slot in Structure.Slots)
                 {
                     slot.InvalidUpdate();
-                    slot.Update(-1);
+                    slot.ProcessDirtyDisplay();
                 }
             }
         }
@@ -167,7 +129,7 @@ namespace DragonBones
                 // Update childArmature clock.
                 foreach (Slot slot in Structure.Slots)
                 {
-                    Armature childArmature = slot.ChildArmature;
+                    Armature childArmature = slot.Displays.ChildArmatureSlotDisplay?.ArmatureDisplay.Armature;
                     
                     if (childArmature != null)
                     {
@@ -176,14 +138,6 @@ namespace DragonBones
                 }
             }
         }
-        
-        /// <summary>
-        /// - Get the parent slot which the armature belongs to.
-        /// </summary>
-        /// <see cref="Slot"/>
-        /// <version>DragonBones 4.5</version>
-        /// <language>en_US</language>
-        public Slot Parent { get; internal set; }
         
         private bool lockArmatureUpdate;
         private readonly List<EventObject> actions = new();
@@ -249,7 +203,6 @@ namespace DragonBones
             lockArmatureUpdate = false;
             _flipX = false;
             _flipY = false;
-            _cacheFrameIndex = -1;
 
             Structure.Dispose();
             AnimationPlayer.Clear();
@@ -259,11 +212,12 @@ namespace DragonBones
             _replaceTextureAtlasData = null;
             _replacedTexture = null;
             _clock = null;
-            Parent = null;
         }
 
         public void AdvanceTime(float passedTime)
         {
+            DBLogger.LogMessage(Structure.Slots.Length + " " + Structure.Bones.Length);
+            
             //
             if (lockArmatureUpdate) return;
             //
@@ -281,14 +235,12 @@ namespace DragonBones
                 return;
             }
             
-            int prevCacheFrameIndex = _cacheFrameIndex;
-
             // Update animation.
             AnimationPlayer.AdvanceTime(passedTime);
             
             if(Structure.SlotsDirty) Structure.SortSlotsListByZOrder();
             
-            UpdateBonesAndSlots(_cacheFrameIndex, prevCacheFrameIndex);
+            UpdateBonesAndSlots();
             ProcessActions();
 
             Display.DBUpdate();
@@ -342,24 +294,25 @@ namespace DragonBones
         }
 
 
-        private void UpdateBonesAndSlots(int cacheFrameIndex, int prevCacheFrameIndex)
+        private void UpdateBonesAndSlots()
         {
-            if (cacheFrameIndex < 0 || cacheFrameIndex != prevCacheFrameIndex)
+            foreach (Bone bone in Structure.Bones)
             {
-                int currentIndex;
-                int indexGoal;
+                bone.Update(-1, null);
+            }
 
-                for (currentIndex = 0, indexGoal = Structure.Bones.Length; currentIndex < indexGoal; ++currentIndex)
+            foreach (Slot slot in Structure.Slots)
+            {
+                slot.ProcessDirtyDisplay();
+                if (CachingEnabled)
                 {
-                    Structure.Bones[currentIndex].Update(cacheFrameIndex);
+                    slot.UpdateCache(AnimationPlayer.CurrentState.Animation, DBInitial.Kernel.Cacher, AnimationPlayer.CurrentState.CurrentCacheFrameIndex);
                 }
-
-                for (currentIndex = 0, indexGoal = Structure.Slots.Length; currentIndex < indexGoal; ++currentIndex)
-                {
-                    Structure.Slots[currentIndex].Update(cacheFrameIndex);
-                }
+                slot.ProcessDirtyData();
             }
         }
+
+        public bool CachingEnabled { get; set; } = false;
 
         private void ProcessActions()
         {
@@ -375,10 +328,9 @@ namespace DragonBones
                         {
                             if (action.slot != null)
                             {
-                                Armature childArmature = action.slot.ChildArmature;
-                                if (childArmature != null)
+                                if (action.slot.IsDisplayingChildArmature())
                                 {
-                                    childArmature.AnimationPlayer.FadeIn(actionData.name);
+                                    action.slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay.AnimationPlayer.FadeIn(actionData.name);
                                 }
                             }
                             else if (action.bone != null)
@@ -387,11 +339,11 @@ namespace DragonBones
                                 {
                                     if (slot.Parent == action.bone)
                                     {
-                                        Armature childArmature = slot.ChildArmature;
-                                        if (childArmature != null)
+                                        if (slot.IsDisplayingChildArmature())
                                         {
-                                            childArmature.AnimationPlayer.FadeIn(actionData.name);
+                                            slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay.AnimationPlayer.FadeIn(actionData.name);
                                         }
+
                                     }
                                 }
                             }

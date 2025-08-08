@@ -23,7 +23,12 @@ namespace MothDIed.Core.GameObjects.Pool
         public GameObjectPool(Config<TObject> poolConfiguration)
         {
             PoolConfiguration = poolConfiguration;
-            CurrentSize = PoolConfiguration.Size;
+            RefreshSize();
+        }
+
+        private void RefreshSize()
+        {
+            if(CurrentSize < PoolConfiguration.Size) CurrentSize = PoolConfiguration.Size;
         }
 
         public GameObjectPool(TObject prefab) : this(new Config<TObject>(prefab)) { }
@@ -37,6 +42,7 @@ namespace MothDIed.Core.GameObjects.Pool
         {
             if (IsPoolReady) return this;
             
+            RefreshSize();
             Root = new GameObject().AddComponent<PoolInstanceRoot>();
             Root.Setup(PoolConfiguration.Name);
             
@@ -54,6 +60,7 @@ namespace MothDIed.Core.GameObjects.Pool
         
         public async UniTask<GameObjectPool<TObject>> WarmAsync()
         {
+            RefreshSize();
             if (IsPoolReady) return this;
             
             Root = new GameObject().AddComponent<PoolInstanceRoot>();
@@ -163,6 +170,8 @@ namespace MothDIed.Core.GameObjects.Pool
 
         public bool IsConfigurationValid()
         {
+            RefreshSize();
+            
 #if UNITY_EDITOR
             if (PoolConfiguration.Fabric == null)
             {

@@ -45,7 +45,7 @@ namespace DragonBones
             var rotation = 0.0f;
             var global = this.global;
             var inherit = parent != null;
-            var globalTransformMatrix = this.globalTransformMatrix;
+            var globalTransformMatrix = this.GlobalTransformDBMatrix;
 
             if (this.offsetMode == OffsetMode.Additive)
             {
@@ -84,7 +84,7 @@ namespace DragonBones
 
             if (inherit)
             {
-                var parentMatrix = parent.globalTransformMatrix;
+                var parentMatrix = parent.GlobalTransformDBMatrix;
                 if (boneData.inheritScale)
                 {
                     if (!boneData.inheritRotation)
@@ -266,7 +266,7 @@ namespace DragonBones
         }
         /// <internal/>
         /// <private/>
-        internal void Update(int cacheFrameIndex)
+        internal void Update(int cacheFrameIndex, AnimationData currentStateAnimationData)
         {
             this._blendState.dirty = false;
 
@@ -355,14 +355,14 @@ namespace DragonBones
                         this._UpdateGlobalTransformMatrix(isCache);
                     }
 
-                    if (isCache && this._cachedFrameIndices != null)
+                    if (isCache)
                     {
-                        this._cachedFrameIndex = this._cachedFrameIndices[cacheFrameIndex] = this.Armature.ArmatureData.SetCacheFrame(this.globalTransformMatrix, this.global);
+                        DBInitial.Kernel.Cacher.SetCacheFrame(currentStateAnimationData, name, cacheFrameIndex, GlobalTransformDBMatrix, global);
                     }
                 }
                 else
                 {
-                    this.Armature.ArmatureData.GetCacheFrame(this.globalTransformMatrix, this.global, this._cachedFrameIndex);
+                    DBInitial.Kernel.Cacher.GetCacheFrame(currentStateAnimationData, name, cacheFrameIndex, GlobalTransformDBMatrix, global);
                 }
             }
             else if (this._childrenTransformDirty)
@@ -462,7 +462,7 @@ namespace DragonBones
                 {
                     if (slot.Parent == this)
                     {
-                        slot._UpdateVisible();
+                        slot.Visible.Set(value);
                     }
                 }
             }

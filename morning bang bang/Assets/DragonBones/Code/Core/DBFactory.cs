@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DragonBones
 {
@@ -17,19 +18,12 @@ namespace DragonBones
     /// The factory instance create armatures by parsed and added DragonBonesData instances and TextureAtlasData instances.
     /// Once the data has been parsed, it has been cached in the factory instance and does not need to be parsed again until it is cleared by the factory instance.
     /// </summary>
-    /// <see cref="DBProjectData"/>
-    /// ,
-    /// <see cref="TextureAtlasData"/>
-    /// ,
-    /// <see cref="ArmatureData"/>
-    /// ,
-    /// <see cref="Armature"/>
+    /// <see cref="DBProjectData"/>, <see cref="TextureAtlasData"/>, <see cref="ArmatureData"/>, <see cref="Armature"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
     public abstract class DBFactory
     {
         protected static bool IsSupportMesh() => true;
-
         public abstract void Clear(bool disposeData = true);
 
         /// <summary>
@@ -76,6 +70,7 @@ namespace DragonBones
             
             armature.Initialize(dataPackage.ArmatureData, armatureDisplay);
             
+            DBLogger.LogMessage("building " + armatureName);
             BuildBonesFor(dataPackage, armature);
             BuildSlotsFor(dataPackage, armature);
             BuildConstraintsFor(dataPackage, armature);
@@ -113,61 +108,36 @@ namespace DragonBones
 
         protected void BuildSlotsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
+            DBLogger.LogMessage("building slots");
             SkinData currentSkin = dataPackage.Skin;
             SkinData defaultSkin = dataPackage.ArmatureData.defaultSkin;
             
-            if (currentSkin == null || defaultSkin == null)
-            {
-                return;
-            }
+            if (currentSkin == null || defaultSkin == null) { return; }
 
             Dictionary<string, List<DisplayData>> skinSlots = new Dictionary<string, List<DisplayData>>();
-            foreach (var key in defaultSkin.displays.Keys)
-            {
-                List<DisplayData> displays = defaultSkin.GetDisplays(key);
-                skinSlots[key] = displays;
-            }
+            
+            //strange dictionary creation method
+            foreach (var key in defaultSkin.slotsAndTheirDisplays.Keys) { skinSlots.Add(key, defaultSkin.GetDisplays(key)); }
 
             if (currentSkin != defaultSkin)
             {
-                foreach (var k in currentSkin.displays.Keys)
+                foreach (var k in currentSkin.slotsAndTheirDisplays.Keys)
                 {
-                    var displays = currentSkin.GetDisplays(k);
+                    List<DisplayData> displays = currentSkin.GetDisplays(k);
                     skinSlots[k] = displays;
                 }
             }
 
-            foreach (var slotData in dataPackage.ArmatureData.sortedSlots)
+            DBLogger.LogMessage(dataPackage.ArmatureData.sortedBones.Count);
+            foreach (SlotData slotData in dataPackage.ArmatureData.sortedSlots)
             {
                 List<DisplayData> displayDatas = skinSlots.ContainsKey(slotData.name) ? skinSlots[slotData.name] : null;
-                Slot slot = BuildSlot(dataPackage, slotData, armature);
-                slot.AllDisplaysData = displayDatas;
-
-                if (displayDatas != null)
-                {
-                    var displayList = new List<object>();
-                    for (int i = 0, l = displayDatas.Count; i < l; ++i)
-                    {
-                        var displayData = displayDatas[i];
-
-                        if (displayData != null)
-                        {
-                            displayList.Add(GetSlotDisplay(dataPackage, displayData, null, slot));
-                        }
-                        else
-                        {
-                            displayList.Add(null);
-                        }
-                    }
-
-                    slot._SetDisplayList(displayList);
-                }
-
-                slot._SetDisplayIndex(slotData.displayIndex, true);
+                BuildSlot(dataPackage, slotData, displayDatas, armature);
             }
         }
 
-        protected abstract Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, Armature armature);
+        protected abstract Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData,
+            List<DisplayData> displayDatas, Armature armature);
 
         protected void BuildConstraintsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
@@ -191,7 +161,7 @@ namespace DragonBones
             {
                 case DisplayType.Image:
                     {
-                        var imageDisplayData = displayData as ImageDisplayData;
+                        ImageDisplayData imageDisplayData = displayData as ImageDisplayData;
                         
                         if (imageDisplayData.texture == null)
                         {
@@ -204,11 +174,11 @@ namespace DragonBones
 
                         if (rawDisplayData != null && rawDisplayData.type == DisplayType.Mesh && IsSupportMesh())
                         {
-                            display = slot.MeshDisplay;
+                            display = slot.Displays.MeshDisplay;
                         }
                         else
                         {
-                            display = slot.RawDisplay;
+                            display = slot.Displays.MeshDisplay;
                         }
                     }
                     break;
@@ -226,24 +196,24 @@ namespace DragonBones
 
                         if (IsSupportMesh())
                         {
-                            display = slot.MeshDisplay;
+                            display = slot.Displays.MeshDisplay;
                         }
                         else
                         {
-                            display = slot.RawDisplay;
+                            display = slot.Displays.MeshDisplay;
                         }
                     } break;
                 case DisplayType.Armature:
                 {
-                    ArmatureDisplayData armatureDisplayData = displayData as ArmatureDisplayData;
+                    ChildArmatureDisplayData childArmatureDisplayData = displayData as ChildArmatureDisplayData;
                     Armature childArmature = BuildChildArmature(dataPackage, slot, displayData);
                     
                     if (childArmature != null)
                     {
-                        childArmature.inheritAnimation = armatureDisplayData.inheritAnimation;
+                        childArmature.inheritAnimation = childArmatureDisplayData.inheritAnimation;
                         if (!childArmature.inheritAnimation)
                         {
-                            var actions = armatureDisplayData.actions.Count > 0 ? armatureDisplayData.actions : childArmature.ArmatureData.defaultActions;
+                            var actions = childArmatureDisplayData.actions.Count > 0 ? childArmatureDisplayData.actions : childArmature.ArmatureData.defaultActions;
                             if (actions.Count > 0)
                             {
                                 foreach (var action in actions)
@@ -260,10 +230,10 @@ namespace DragonBones
                             }
                         }
 
-                        armatureDisplayData.armature = childArmature.ArmatureData; 
+                        childArmatureDisplayData.armature = childArmature.ArmatureData; 
                     }
 
-                    display = childArmature;
+                    display = childArmature.Display;
                 } break;
                 case DisplayType.BoundingBox:
                     break;
@@ -275,7 +245,7 @@ namespace DragonBones
 
         public virtual void ReplaceDisplay(Slot slot, DisplayData displayData, int displayIndex = -1)
         {
-            if (displayIndex < 0)
+            /*if (displayIndex < 0)
             {
                 displayIndex = slot.DisplayIndex;
             }
@@ -319,7 +289,7 @@ namespace DragonBones
                 displayList[displayIndex] = null;
             }
 
-            slot.DisplayList = displayList;
+            slot.DisplayList = displayList;*/
         }
         
         /// <summary>
@@ -363,7 +333,6 @@ namespace DragonBones
 
             return true;
         }
-        /// <private/>
         public bool ReplaceSlotDisplayList(string dragonBonesName, string armatureName, string slotName, Slot slot)
         {
             var armatureData = DBInitial.Kernel.DataStorage.GetArmatureData(armatureName, dragonBonesName);
@@ -379,7 +348,6 @@ namespace DragonBones
             }
 
             var displayIndex = 0;
-            // for (const displayData of displays) 
             for (int i = 0, l = displays.Count; i < l; ++i)
             {
                 var displayData = displays[i];
@@ -416,33 +384,34 @@ namespace DragonBones
 
             foreach (var slot in armature.Structure.Slots)
             {
-                if (exclude != null && exclude.Contains(slot.name))
+                if (exclude != null && exclude.Contains(slot.Name))
                 {
                     continue;
                 }
 
-                var displays = skin.GetDisplays(slot.name);
+                var displays = skin.GetDisplays(slot.Name);
                 if (displays == null)
                 {
                     if (defaultSkin != null && skin != defaultSkin)
                     {
-                        displays = defaultSkin.GetDisplays(slot.name);
+                        displays = defaultSkin.GetDisplays(slot.Name);
                     }
 
                     if (displays == null)
                     {
                         if (isOverride)
                         {
-                            slot.AllDisplaysData = null;
-                            slot.DisplayList.Clear(); //
+                            slot.Displays.Clear();
                         }
 
                         continue;
                     }
                 }
-                var displayCount = displays.Count;
-                var displayList = slot.DisplayList; // Copy.
+                
+                /*int displayCount = displays.Count;
+                List<object> displayList = slot.Displays.All; // Copy.
                 displayList.ResizeList(displayCount); // Modify displayList length.
+                
                 for (int i = 0, l = displayCount; i < l; ++i)
                 {
                     var displayData = displays[i];
@@ -458,7 +427,7 @@ namespace DragonBones
 
                 success = true;
                 slot.AllDisplaysData = displays;
-                slot.DisplayList = displayList;
+                slot.DisplayList = displayList;*/
             }
 
             return success;
@@ -467,7 +436,7 @@ namespace DragonBones
         /// - Replaces the existing animation data for a specific armature with the animation data for the specific armature data.
         /// This enables you to make a armature template so that other armature without animations can share it's animations.
         /// </summary>
-        /// <param name="armature">- The armtaure.</param>
+        /// <param name="armature">- The armature.</param>
         /// <param name="armatureData">- The armature data.</param>
         /// <param name="isOverride">- Whether to completely overwrite the original animation. (Default: false)</param>
         /// <example>
@@ -480,8 +449,8 @@ namespace DragonBones
         ///     }
         /// </pre>
         /// </example>
-        /// <see cref="DBKernel.Armature"/>
-        /// <see cref="DBKernel.ArmatureData"/>
+        /// <see cref="Armature"/>
+        /// <see cref="ArmatureData"/>
         /// <version>DragonBones 5.6</version>
         /// <language>en_US</language>
         public bool ReplaceAnimation(Armature armature,
@@ -501,7 +470,7 @@ namespace DragonBones
             }
             else
             {
-                var rawAnimations = armature.AnimationPlayer.Animations;
+                Dictionary<string, AnimationData> rawAnimations = armature.AnimationPlayer.Animations;
                 Dictionary<string, AnimationData> animations = new Dictionary<string, AnimationData>();
 
                 foreach (var k in rawAnimations.Keys)
@@ -517,25 +486,24 @@ namespace DragonBones
                 armature.AnimationPlayer.Animations = animations;
             }
 
-            foreach (var slot in armature.Structure.Slots)
+            foreach (Slot slot in armature.Structure.Slots)
             {
-                var index = 0;
-                foreach (var display in slot.DisplayList)
+                int index = 0;
+                
+                foreach (IEngineChildArmatureSlotDisplay display in slot.Displays.GetChildArmaturesDisplays)
                 {
-                    if (display is Armature)
+                    var displayDatas = skinData.GetDisplays(slot.Name);
+                    if (displayDatas != null && index < displayDatas.Count)
                     {
-                        var displayDatas = skinData.GetDisplays(slot.name);
-                        if (displayDatas != null && index < displayDatas.Count)
-                        {
-                            var displayData = displayDatas[index];
-                            if (displayData != null && displayData.type == DisplayType.Armature)
-                            {
-                                var childArmatureData = DBInitial.Kernel.DataStorage.GetArmatureData(displayData.path, displayData.parent.parent.parent.name);
+                        var displayData = displayDatas[index];
 
-                                if (childArmatureData != null)
-                                {
-                                    ReplaceAnimation(display as Armature, childArmatureData, isOverride);
-                                }
+                        if (displayData != null && displayData.type == DisplayType.Armature)
+                        {
+                            var childArmatureData = DBInitial.Kernel.DataStorage.GetArmatureData(displayData.path, displayData.parent.parent.parent.name);
+
+                            if (childArmatureData != null)
+                            {
+                                ReplaceAnimation(display.ArmatureDisplay.Armature, childArmatureData, isOverride);
                             }
                         }
                     }

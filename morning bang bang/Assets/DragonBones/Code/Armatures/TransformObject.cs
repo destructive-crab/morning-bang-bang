@@ -8,7 +8,7 @@ namespace DragonBones
     /// <language>en_US</language>
     public abstract class TransformObject : DBObject
     {
-        protected static readonly Matrix _helpMatrix  = new Matrix();
+        protected static readonly DBMatrix HelpDBMatrix  = new DBMatrix();
         protected static readonly DBTransform HelpDBTransform  = new DBTransform();
         protected static readonly Point _helpPoint = new Point();
         
@@ -17,7 +17,7 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public readonly Matrix globalTransformMatrix = new Matrix();
+        public readonly DBMatrix GlobalTransformDBMatrix = new DBMatrix();
         
         /// <summary>
         /// - A transform relative to the armature coordinate system.
@@ -41,7 +41,7 @@ namespace DragonBones
 
         protected override void ClearObject()
         {
-            this.globalTransformMatrix.Identity();
+            this.GlobalTransformDBMatrix.Identity();
             this.global.Identity();
             this.offset.Identity();
             this.origin = null; 
@@ -70,7 +70,7 @@ namespace DragonBones
             if (this._globalDirty)
             {
                 this._globalDirty = false;
-                this.global.FromMatrix(this.globalTransformMatrix);
+                this.global.FromMatrix(this.GlobalTransformDBMatrix);
             }
         }
         

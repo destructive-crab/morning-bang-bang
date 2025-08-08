@@ -17,8 +17,11 @@ namespace DragonBones
         
         private readonly List<Bone> bones = new();
         private readonly List<Slot> slots = new();
-        private readonly List<Constraint> constraints = new List<Constraint>();
+        private readonly List<Constraint> constraints = new();
 
+        private readonly List<Armature> childArmatures = new();
+        private readonly List<Armature> currentChildArmatures = new();
+        
         public bool SlotsDirty { get; private set; }
         private bool SlotsZOrderDirty;
         public void MarkSlotsAsDirty() => SlotsDirty = true;
@@ -48,11 +51,11 @@ namespace DragonBones
             
             int CompareSlots(Slot a, Slot b)
             {
-                if (a._zOrder > b._zOrder)
+                if (a.ZOrder.Value > b.ZOrder.Value)
                 {
                     return 1;
                 }
-                else if (a._zOrder < b._zOrder)
+                else if (a.ZOrder.Value < b.ZOrder.Value)
                 {
                     return -1;
                 }
@@ -70,7 +73,7 @@ namespace DragonBones
             {
                 for (int i = 0, l = slotDatas.Count; i < l; ++i)
                 {
-                    var slotIndex = isOriginal ? i : slotIndices[offset + i];
+                    int slotIndex = isOriginal ? i : slotIndices[offset + i];
                     if (slotIndex < 0 || slotIndex >= l)
                     {
                         continue;
@@ -78,6 +81,7 @@ namespace DragonBones
 
                     SlotData slotData = slotDatas[slotIndex];
                     Slot slot = GetSlot(slotData.name);
+                    
                     slot?.SetZOrder(i);
                 }
 
@@ -97,6 +101,7 @@ namespace DragonBones
         /// <param name="y">- The vertical coordinate of the point.</param>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
+        /*
         public Slot GetSlotWithPoint(float x, float y)
         {
             foreach (var slot in Slots)
@@ -109,6 +114,7 @@ namespace DragonBones
 
             return null;
         }
+        */
         
         /// <summary>
         /// - Check whether a specific segment intersects a custom bounding box for a slot in the armature.
@@ -125,7 +131,7 @@ namespace DragonBones
         /// <returns>The slot of the first custom bounding box where the segment intersects from the start point to the end point.</returns>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
-        public Slot IntersectsSegment(float xA, float yA, float xB, float yB,
+        /*public Slot IntersectsSegment(float xA, float yA, float xB, float yB,
                                        Point intersectionPointA = null,
                                        Point intersectionPointB = null,
                                        Point normalRadians = null)
@@ -224,7 +230,7 @@ namespace DragonBones
             }
 
             return intSlotA;
-        }
+        }*/
         #endregion
         
         #region GetSet API 
@@ -241,6 +247,12 @@ namespace DragonBones
             if (!slots.Contains(value))
             {
                 slots.Add(value);
+
+                if (value.Displays.CurrentEngineDisplay is IEngineChildArmatureSlotDisplay childArmatureSlotDisplay)
+                {
+                    childArmatures.Add(childArmatureSlotDisplay.ArmatureDisplay.Armature);
+                }
+                
                 SlotsDirty = true;
             }
         }
@@ -266,9 +278,9 @@ namespace DragonBones
             return null;
         }
 
-        public Bone GetBoneByDisplay(object display)
+        public Bone GetBoneByDisplay(string displayName)
         {
-            var slot = GetSlotByDisplay(display);
+            var slot = GetSlotByDisplay(displayName);
 
             return slot != null ? slot.Parent : null;
         }
@@ -277,7 +289,7 @@ namespace DragonBones
         {
             foreach (var slot in slots)
             {
-                if (slot.name == name)
+                if (slot.Name == name)
                 {
                     return slot;
                 }
@@ -286,13 +298,13 @@ namespace DragonBones
             return null;
         }
 
-        public Slot GetSlotByDisplay(object display)
+        public Slot GetSlotByDisplay(string displayName)
         {
-            if (display != null)
+            if (displayName != null)
             {
                 foreach (var slot in slots)
                 {
-                    if (slot.Display == display)
+                    if (slot.Displays.CurrentDisplayData.Name == displayName)
                     {
                         return slot;
                     }

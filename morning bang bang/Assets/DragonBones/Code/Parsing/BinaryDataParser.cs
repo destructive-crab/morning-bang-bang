@@ -80,16 +80,16 @@ namespace DragonBones
             {
                 var weight = DBObject.BorrowObject<WeightData>();
                 var vertexCount = this._intArrayBuffer[vertices.offset + (int)BinaryOffset.MeshVertexCount];
-                var boneCount = this._intArrayBuffer[weightOffset + (int)BinaryOffset.WeigthBoneCount];
+                var boneCount = this._intArrayBuffer[weightOffset + (int)BinaryOffset.WeightBoneCount];
                 weight.offset = weightOffset;
 
                 for (int i = 0; i < boneCount; ++i)
                 {
-                    var boneIndex = this._intArrayBuffer[weightOffset + (int)BinaryOffset.WeigthBoneIndices + i];
+                    var boneIndex = this._intArrayBuffer[weightOffset + (int)BinaryOffset.WeightBoneIndices + i];
                     weight.AddBone(this._rawBones[boneIndex]);
                 }
 
-                var boneIndicesOffset = weightOffset + (short)BinaryOffset.WeigthBoneIndices + boneCount;
+                var boneIndicesOffset = weightOffset + (short)BinaryOffset.WeightBoneIndices + boneCount;
                 var weightCount = 0;
                 for (int i = 0, l = vertexCount; i < l; ++i)
                 {

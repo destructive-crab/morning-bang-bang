@@ -69,7 +69,7 @@ namespace DragonBones
                                 {
                                     textureAtlasData.imagePath = AssetDatabase.GetAssetPath(textureAtlas.texture);
                                     textureAtlasData.imagePath = textureAtlasData.imagePath.Substring(0, textureAtlasData.imagePath.Length - 4);
-                                    DBUnityFactory.RefreshTextureAtlas(textureAtlasData, isUGUI, true);
+                                    DBUnityFactory.RefreshTextureAtlas(textureAtlasData, isUGUI);
                                     if (isUGUI)
                                     {
                                         textureAtlas.uiMaterial = textureAtlasData.uiTexture;
@@ -227,22 +227,6 @@ namespace DragonBones
             {
                 textureAtlasData.uiTexture = textureAtlas.uiMaterial;
                 textureAtlasData.texture = textureAtlas.material;
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                {
-                    textureAtlasData.imagePath = AssetDatabase.GetAssetPath(textureAtlas.texture);
-                    textureAtlasData.imagePath = textureAtlasData.imagePath.Substring(0, textureAtlasData.imagePath.Length - 4);
-                    DBUnityFactory.RefreshTextureAtlas(textureAtlasData, isUGUI, true);
-                    if (isUGUI)
-                    {
-                        textureAtlas.uiMaterial = textureAtlasData.uiTexture;
-                    }
-                    else
-                    {
-                        textureAtlas.material = textureAtlasData.texture;
-                    }
-                }
-#endif
             }
 
             return textureAtlasData;
