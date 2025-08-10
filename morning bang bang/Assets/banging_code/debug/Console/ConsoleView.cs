@@ -19,7 +19,7 @@ namespace banging_code.debug.Console
 
         private ConsoleInput input;
 
-        private void Start()
+        private void Awake()
         {
             output = new ConsoleOutput(outputText);
             input = new ConsoleInput(inputField);
@@ -68,6 +68,7 @@ namespace banging_code.debug.Console
         {
             uiRoot.gameObject.SetActive(true);
             input.Enable();
+            output.Refresh(Game.GetDebugger().Console.OutputHistory);
 
             CurrentState = State.Focused;
         }

@@ -5,6 +5,10 @@ namespace banging_code.debug
     public static class LGR
     {
         private static BangDebugger debugger;
+
+        private const string ECHO = "echo";
+        private const string ECHO_ERROR = "echo_error";
+        private const string ECHO_WARNING = "echo_warning";
         
         //means push message
         public static void PM(string message)
@@ -13,16 +17,7 @@ namespace banging_code.debug
             UnityEngine.Debug.Log(message);
             return;
 #endif
-            if (LGR.debugger == null && Game.TryGetDebugger(out BangDebugger debugger))
-            {
-                LGR.debugger = debugger;
-            }
-            else
-            {
-                return;
-            }
-            
-            debugger.Console.InvokeCommand(true, "echo", message);
+            TryPrintInConsole(message, ECHO);
         }
 
         public static void PERR(string error)
@@ -31,33 +26,16 @@ namespace banging_code.debug
             UnityEngine.Debug.LogError(error);
             return;
 #endif
-            if (LGR.debugger == null && Game.TryGetDebugger(out BangDebugger debugger))
-            {
-                LGR.debugger = debugger;
-            }
-            else
-            {
-                return;
-            }
-
-            debugger.Console.InvokeCommand(true, "echo_error", error);
+            TryPrintInConsole(error, ECHO_ERROR);
         }
+
         public static void PW(string warning)
         {
 #if UNITY_EDITOR
             UnityEngine.Debug.LogWarning(warning);
             return;
 #endif
-            if (LGR.debugger == null && Game.TryGetDebugger(out BangDebugger debugger))
-            {
-                LGR.debugger = debugger;
-            }
-            else
-            {
-                return;
-            }
-
-            debugger.Console.InvokeCommand(true, "echo_warning", warning);
+            TryPrintInConsole(warning, ECHO_WARNING);
         }
 
         public static void AM(bool condition,  string message)
@@ -68,16 +46,21 @@ namespace banging_code.debug
             UnityEngine.Debug.Log(message);
             return;
 #endif
+            TryPrintInConsole(message, ECHO);
+        }
+
+        private static void TryPrintInConsole(string message, string command)
+        {
             if (LGR.debugger == null && Game.TryGetDebugger(out BangDebugger debugger))
             {
                 LGR.debugger = debugger;
             }
-            else
+            else if(LGR.debugger == null)
             {
                 return;
             }
-            
-            debugger.Console.InvokeCommand(true, "echo", message);
+
+            LGR.debugger.Console.InvokeCommand(true, command, message);
         }
     }
 }

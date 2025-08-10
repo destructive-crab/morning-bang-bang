@@ -10,12 +10,16 @@ using UnityEngine;
 
 public class BangingConsole 
 {
+    //commands
     private readonly Dictionary<string, ConsoleCommand> commands = new();
     public ConsoleCommand[] CommandList => commands.Values.ToArray();
-
     public readonly ConsoleCommandsContainer Container = new();
     
+    //output
+    private readonly List<string> outputHistory = new();
+    
     public ConsoleView View { get; private set; }
+    public string[] OutputHistory => outputHistory.ToArray();
 
     public void Setup()
     {
@@ -69,6 +73,8 @@ public class BangingConsole
         {
             View.PushNewMessage(output);
         }
+        
+        outputHistory.Add(output);
 
         return output;
     }

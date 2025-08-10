@@ -30,7 +30,7 @@ namespace MothDIed
         //debug
         public static BangDebugger GetDebugger()
         {
-            if (Awake && AllowDebug)
+            if (debugger.Awake && AllowDebug)
             {
                 return debugger;
             }
@@ -41,7 +41,7 @@ namespace MothDIed
         public static bool TryGetDebugger(out BangDebugger debugger)
         {
             debugger = Game.debugger;
-            return Awake && AllowDebug;
+            return debugger.Awake && AllowDebug;
         }
 
         public static bool AllowDebug { get; private set; }
@@ -66,9 +66,17 @@ namespace MothDIed
                 debugger = new BangDebugger(args.DebuggerConfig); 
                 await debugger.SetupDebugger();
             }
-            
-            await DBInitial.InitializeDragonBones();
-            
+
+            try
+            {
+                await DBInitial.InitializeDragonBones();
+            }
+            catch (Exception dragonBonesException)
+            {
+                LGR.PERR(dragonBonesException.ToString());
+            }
+
+            LGR.PM("AAA");
             AudioSystem.Setup(args.AudioSystemConfig);
             
             IsBootstrapping = false;

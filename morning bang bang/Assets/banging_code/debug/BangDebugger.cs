@@ -13,6 +13,8 @@ namespace banging_code.debug
             public static bool ShowPaths = false;
         }
         
+        public bool Awake { get; private set; }
+        
         private readonly DebuggerConfig debuggerConfig;
         
         public BangingConsole Console { get; private set; }
@@ -51,6 +53,7 @@ namespace banging_code.debug
             await Console.CreatePersistentConsoleView();
             
             InputService.EnableDebugInputs();
+            Awake = true;
         }
     }
 }
