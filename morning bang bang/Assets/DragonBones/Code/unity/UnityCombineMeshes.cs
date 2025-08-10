@@ -104,7 +104,7 @@ namespace DragonBones
                 meshBuffer.CombineMeshes(combineSlot.combines.ToArray());
                 meshBuffer.VertexDirty = true;
                 //
-                proxySlot.UnityDisplay.MeshFilter.sharedMesh = meshBuffer.sharedMesh;
+                proxySlot.CurrentAsMeshDisplay.MeshFilter.sharedMesh = meshBuffer.sharedMesh;
 
                 meshBuffers[i] = meshBuffer;
 
@@ -121,12 +121,12 @@ namespace DragonBones
                     slot.CombineMeshComponent = this;
                     slot.meshBuffer.enabled = false;
 
-                    if (slot.UnityDisplay != null)
+                    if (slot.UnityCurrentDisplay != null)
                     {
-                        slot.UnityDisplay.Disable();
-                        slot.UnityDisplay.hideFlags = HideFlags.HideInHierarchy;
+                        slot.UnityCurrentDisplay.Disable();
+                        slot.UnityCurrentDisplay.hideFlags = HideFlags.HideInHierarchy;
 
-                        var transform = slot.UnityDisplay.transform;
+                        var transform = slot.UnityCurrentDisplay.transform;
 
                         transform.localPosition = new Vector3(0.0f, 0.0f, transform.localPosition.z);
                         transform.localEulerAngles = Vector3.zero;
@@ -152,10 +152,10 @@ namespace DragonBones
                     _subSlotCount++;
                 }
 
-                if (proxySlot.UnityDisplay != null)
+                if (proxySlot.UnityCurrentDisplay != null)
                 {
-                    proxySlot.UnityDisplay.Enable();
-                    proxySlot.UnityDisplay.hideFlags = HideFlags.None;
+                    proxySlot.UnityCurrentDisplay.Enable();
+                    proxySlot.UnityCurrentDisplay.hideFlags = HideFlags.None;
                 }
             }
         }
@@ -225,7 +225,7 @@ namespace DragonBones
 
                 slot.CancelCombineMesh();
 
-                slotDisplay = slot.UnityDisplay.gameObject;
+                slotDisplay = slot.UnityCurrentDisplay.gameObject;
 
                 if (slotMeshProxy != null)
                 {
@@ -281,7 +281,7 @@ namespace DragonBones
                     CombineInstance com = new CombineInstance();
                     com.mesh = slot.meshBuffer.sharedMesh;
 
-                    com.transform = slotMeshProxy.UnityDisplay.transform.worldToLocalMatrix * slotDisplay.transform.localToWorldMatrix;
+                    com.transform = slotMeshProxy.UnityCurrentDisplay.transform.worldToLocalMatrix * slotDisplay.transform.localToWorldMatrix;
 
                     combineSlots[combineSlots.Count - 1].combines.Add(com);
                     combineSlots[combineSlots.Count - 1].slots.Add(slot);

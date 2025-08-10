@@ -1753,7 +1753,7 @@ namespace DragonBones
             var rawVertices = rawData.ContainsKey(ObjectDataParser.VERTICES) ? (rawData[ObjectDataParser.VERTICES] as List<object>).ConvertAll<float>(Convert.ToSingle) : null;
             var offset = ObjectDataParser._GetNumber(rawData, ObjectDataParser.OFFSET, 0); // uint
             var vertexCount = this._intArray[this._mesh.vertices.offset + (int)BinaryOffset.MeshVertexCount];
-            var meshName = this._mesh.parent.name + "_" + this._slot.name + "_" + this._mesh.Name;
+            var meshName = this._mesh.BelongsToSkin.name + "_" + this._slot.name + "_" + this._mesh.Name;
             var weight = this._mesh.vertices.weight;
 
             var x = 0.0f;

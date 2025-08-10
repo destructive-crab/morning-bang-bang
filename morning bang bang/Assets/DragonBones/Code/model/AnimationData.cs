@@ -83,13 +83,13 @@ namespace DragonBones
         }
 
         /// <inheritDoc/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             foreach (var pair in boneTimelines)
             {
                 for (int i = 0; i < pair.Value.Count; ++i)
                 {
-                    pair.Value[i].ReturnToPool();
+                    pair.Value[i].ReleaseThis();
                 }
             }
 
@@ -97,7 +97,7 @@ namespace DragonBones
             {
                 for (int i = 0; i < pair.Value.Count; ++i)
                 {
-                    pair.Value[i].ReturnToPool();
+                    pair.Value[i].ReleaseThis();
                 }
             }
 
@@ -105,18 +105,18 @@ namespace DragonBones
             {
                 for (int i = 0; i < pair.Value.Count; ++i)
                 {
-                    pair.Value[i].ReturnToPool();
+                    pair.Value[i].ReleaseThis();
                 }
             }
 
             if (this.actionTimeline != null)
             {
-                this.actionTimeline.ReturnToPool();
+                this.actionTimeline.ReleaseThis();
             }
 
             if (this.zOrderTimeline != null)
             {
-                this.zOrderTimeline.ReturnToPool();
+                this.zOrderTimeline.ReleaseThis();
             }
 
             this.frameIntOffset = 0;
@@ -223,7 +223,7 @@ namespace DragonBones
         public uint offset; // TimelineArray.
         public int frameIndicesOffset; // FrameIndices.
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this.type = TimelineType.BoneAll;
             this.offset = 0;

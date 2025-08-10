@@ -43,7 +43,7 @@ namespace DragonBones
         protected ushort[] _timelineArray;
         protected List<uint> _frameIndices;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this.playState = -1;
             this.currentPlayTimes = -1;
@@ -290,9 +290,9 @@ namespace DragonBones
         protected float _tweenProgress;
         protected float _tweenEasing;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             this._tweenType = TweenType.None;
             this._curveCount = 0;
@@ -374,9 +374,9 @@ namespace DragonBones
         public Bone bone;
         public BonePose bonePose;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             this.bone = null; //
             this.bonePose = null; //
@@ -428,9 +428,9 @@ namespace DragonBones
     {
         public Slot slot;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             this.slot = null; //
         }
@@ -442,9 +442,9 @@ namespace DragonBones
     {
         public Constraint constraint;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             this.constraint = null; //
         }

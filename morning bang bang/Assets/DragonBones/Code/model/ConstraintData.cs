@@ -10,7 +10,7 @@ namespace DragonBones
         public BoneData root;
         public BoneData bone = null;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this.order = 0;
             this.name = string.Empty;
@@ -27,9 +27,9 @@ namespace DragonBones
         public bool bendPositive;
         public float weight;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             this.scaleEnabled = false;
             this.bendPositive = false;

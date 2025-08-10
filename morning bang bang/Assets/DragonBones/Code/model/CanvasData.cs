@@ -11,7 +11,7 @@ namespace DragonBones
         public float width;
         public float height;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this.hasBackground = false;
             this.color = 0x000000;

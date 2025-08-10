@@ -39,12 +39,12 @@ namespace DragonBones
         {
             foreach (var animationState in _animationStates)
             {
-                animationState.ReturnToPool();
+                animationState.ReleaseThis();
             }
 
             if (_animationConfig != null)
             {
-                _animationConfig.ReturnToPool();
+                _animationConfig.ReleaseThis();
             }
 
             timeScale = 1.0f;
@@ -222,7 +222,7 @@ namespace DragonBones
         {
             foreach (var animationState in _animationStates)
             {
-                animationState.ReturnToPool();
+                animationState.ReleaseThis();
             }
 
             _animationDirty = false;

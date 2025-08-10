@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace DragonBones
 {
     public abstract class Slot : TransformObject
@@ -30,18 +32,21 @@ namespace DragonBones
             Displays = new SlotDisplaysManager(this);
         }
 
-        public void Init(SlotData data, Armature armature)
+        public void StartSlotBuilding(SlotData data, Armature armature)
         {
             SlotData = data;
             
-            ZOrder.Set(data.zOrder);
-            BlendMode.Set(data.blendMode);
-            Color.GetAndChange().CopyFrom(data.DBColor);
-            
             Armature = armature;
             Parent = Armature.Structure.GetBone(data.parent.name);
-            Armature.Structure.AddSlot(this);
+        }
+
+        public void EndSlotBuilding()
+        {
+            ZOrder.Set(SlotData.zOrder);
+            BlendMode.Set(SlotData.blendMode);
+            Color.GetAndChange().CopyFrom(SlotData.DBColor);
             
+            Armature.Structure.AddSlot(this);
             RefreshData();
         }
         
@@ -51,6 +56,7 @@ namespace DragonBones
             if (Displays.DisplayDirty)
             {
                 Displays.DisplayDirty = false;
+                RefreshData();
                 UpdateDisplay();
                 if (TransformDirty) UpdateLocalMatrix();
             }
@@ -161,7 +167,6 @@ namespace DragonBones
                 {
                     case ImageDisplayData imageDisplayData:
                         TextureData = imageDisplayData.texture;
-                        DBLogger.LogMessage($"IMAGE DISPLAY DATA FOUND: {imageDisplayData.texture.name}");
                         break;
                     case MeshDisplayData meshDisplayData:
                         currentVerticesData = meshDisplayData.vertices;

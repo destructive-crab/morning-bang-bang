@@ -5,7 +5,7 @@ using MothDIed.Scenes;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace MothDIed.Core.GameObjects.Pool
+namespace MothDIed.Pool
 {
     public class PoolFabric : IFabric
     {

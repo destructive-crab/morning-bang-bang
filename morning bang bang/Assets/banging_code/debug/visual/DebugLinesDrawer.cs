@@ -1,5 +1,5 @@
 using Cysharp.Threading.Tasks;
-using MothDIed.Core.GameObjects.Pool;
+using MothDIed.Pool;
 using UnityEngine;
 
 namespace banging_code.debug
@@ -27,7 +27,7 @@ namespace banging_code.debug
 
         public LineRenderer Draw(string name, Color color, float thickness, Vector3[] positions)
         {
-            var newLine = linesPool.Get();
+            var newLine = linesPool.Pick();
 
             newLine.name = name;
             newLine.sortingOrder = 10;

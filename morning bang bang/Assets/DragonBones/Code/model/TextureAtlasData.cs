@@ -37,11 +37,11 @@ namespace DragonBones
         {
         }
         /// <inheritDoc/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             foreach (var value in this.textures.Values)
             {
-                value.ReturnToPool();
+                value.ReleaseThis();
             }
 
             this.autoSearch = false;
@@ -64,7 +64,7 @@ namespace DragonBones
 
             foreach (var texture in this.textures.Values)
             {
-                texture.ReturnToPool();
+                texture.ReleaseThis();
             }
 
             this.textures.Clear();
@@ -88,7 +88,7 @@ namespace DragonBones
                 if (this.textures.ContainsKey(value.name))
                 {
                     DBLogger.Assert(false, "Same texture: " + value.name);
-                    this.textures[value.name].ReturnToPool();
+                    this.textures[value.name].ReleaseThis();
                 }
 
                 value.parent = this;
@@ -117,7 +117,7 @@ namespace DragonBones
         public TextureAtlasData parent;
         public Rectangle frame = null; // Initial value.
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this.rotated = false;
             this.name = "";

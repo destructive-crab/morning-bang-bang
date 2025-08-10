@@ -39,7 +39,7 @@ namespace banging_code.player_logic
             DBInitial.UnityDataLoader.LoadDragonBonesData("animations/rat_gun_ske");
             DBInitial.UnityDataLoader.LoadTextureAtlasData("animations/rat_gun_tex");
 
-            side = DBInitial.UnityFactory.CreateNewArmature("rat_gun_side", "rat_gun");
+            side = DBInitial.UnityFactory.UnityCreateArmature("rat_gun_side", "rat_gun");
             engineArmatureAPI = side;
 //            up = DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_up", "rat_gun");
 //            down = DBInitial.UnityFactory.BuildArmatureComponent("rat_gun_down", "rat_gun");
@@ -62,7 +62,7 @@ namespace banging_code.player_logic
 //                up.gameObject.SetActive(false);
 //                side.AnimationPlayer.Play(currentAnimation);
 //                engineArmatureAPI = side; 
-                DBInitial.UnityFactory.CreateNewArmature("rat_gun_side", "rat_gun", side);
+                DBInitial.UnityFactory.UnityCreateArmature("rat_gun_side", "rat_gun", side);
             }
             else if (playerRoot.Direction == GameDirection.Top && engineArmatureAPI.Armature.Name != "rat_gun_up")
             {
@@ -71,7 +71,7 @@ namespace banging_code.player_logic
  //               side.gameObject.SetActive(false);
  //               up.AnimationPlayer.Play(currentAnimation);
  //               engineArmatureAPI = up;
-                DBInitial.UnityFactory.CreateNewArmature("rat_gun_up", "rat_gun",side);
+                DBInitial.UnityFactory.UnityCreateArmature("rat_gun_up", "rat_gun",side);
             }
             else if (playerRoot.Direction == GameDirection.Bottom && engineArmatureAPI.Armature.Name != "rat_gun_down")
             {
@@ -80,7 +80,7 @@ namespace banging_code.player_logic
   //              up.gameObject.SetActive(false);
   //              down.AnimationPlayer.Play(currentAnimation);
   //              engineArmatureAPI = down; 
-                DBInitial.UnityFactory.CreateNewArmature("rat_gun_down", "rat_gun", side);
+                DBInitial.UnityFactory.UnityCreateArmature("rat_gun_down", "rat_gun", side);
             }
         }
         

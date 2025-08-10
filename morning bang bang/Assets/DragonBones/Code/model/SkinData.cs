@@ -15,52 +15,46 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-
         public string name;
-        /// <private/>
+        
         public readonly Dictionary<string, List<DisplayData>> slotsAndTheirDisplays = new();
-        /// <private/>
-        public ArmatureData parent;
+        public ArmatureData BelongsToArmature;
 
-        /// <inheritDoc/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            foreach (var list in this.slotsAndTheirDisplays.Values)
+            foreach (var list in slotsAndTheirDisplays.Values)
             {
                 foreach (var display in list)
                 {
-                    display.ReturnToPool();
+                    display.ReleaseThis();
                 }
             }
 
-            this.name = "";
-            this.slotsAndTheirDisplays.Clear();
-            this.parent = null;
+            name = "";
+            slotsAndTheirDisplays.Clear();
+            BelongsToArmature = null;
         }
 
-        /// <internal/>
-        /// <private/>
         public void AddDisplay(string slotName, DisplayData value)
         {
             if (!string.IsNullOrEmpty(slotName) && value != null && !string.IsNullOrEmpty(value.Name))
             {
-                if (!this.slotsAndTheirDisplays.ContainsKey(slotName))
+                if (!slotsAndTheirDisplays.ContainsKey(slotName))
                 {
-                    this.slotsAndTheirDisplays[slotName] = new List<DisplayData>();
+                    slotsAndTheirDisplays[slotName] = new List<DisplayData>();
                 }
 
                 if (value != null)
                 {
-                    value.parent = this;
+                    value.BelongsToSkin = this;
                 }
 
-                var slotDisplays = this.slotsAndTheirDisplays[slotName]; // TODO clear prev
-                slotDisplays.Add(value);
+                slotsAndTheirDisplays[slotName].Add(value); 
             }
         }
         public DisplayData GetDisplay(string slotName, string displayName)
         {
-            List<DisplayData> slotDisplays = this.GetDisplays(slotName);
+            List<DisplayData> slotDisplays = GetDisplays(slotName);
             
             if (slotDisplays != null)
             {
@@ -78,12 +72,12 @@ namespace DragonBones
         /// <private/>
         public List<DisplayData> GetDisplays(string slotName)
         {
-            if (string.IsNullOrEmpty(slotName) || !this.slotsAndTheirDisplays.ContainsKey(slotName))
+            if (string.IsNullOrEmpty(slotName) || !slotsAndTheirDisplays.ContainsKey(slotName))
             {
                 return null;
             }
 
-            return this.slotsAndTheirDisplays[slotName];
+            return slotsAndTheirDisplays[slotName];
         }
 
     }

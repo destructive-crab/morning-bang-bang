@@ -1,7 +1,15 @@
+using UnityEngine;
+
 namespace DragonBones
 {
-    public class UnityEngineChildArmatureSlotDisplay : UnityEngineSlotDisplay, IEngineChildArmatureSlotDisplay
+    [RequireComponent(typeof(UnityEngineArmatureDisplay))]
+    public sealed class UnityEngineChildArmatureSlotDisplay : UnityEngineSlotDisplay, IEngineChildArmatureSlotDisplay
     {
-        public IEngineArmatureDisplay ArmatureDisplay { get; } //TODO: initialize armature display
+        public IEngineArmatureDisplay ArmatureDisplay { get; private set; }
+
+        private void Awake()
+        {
+            ArmatureDisplay = GetComponent<UnityEngineArmatureDisplay>();
+        }
     }
 }

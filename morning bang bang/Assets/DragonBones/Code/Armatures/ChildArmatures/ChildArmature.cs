@@ -10,9 +10,9 @@ namespace DragonBones.ChildArmatures
         /// <language>en_US</language>
         public Slot Parent { get; internal set; }
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             Parent = null;
         }

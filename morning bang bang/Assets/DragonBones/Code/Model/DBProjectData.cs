@@ -57,16 +57,16 @@ namespace DragonBones
         
         internal UserData userData = null; // Initial value.
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             foreach (var k in armatures.Keys)
             {
-                armatures[k].ReturnToPool();
+                armatures[k].ReleaseThis();
             }
 
             if (userData != null)
             {
-                userData.ReturnToPool();
+                userData.ReleaseThis();
             }
 
             frameRate = 0;
@@ -91,8 +91,7 @@ namespace DragonBones
         {
             if (armatures.ContainsKey(value.name))
             {
-                DBLogger.Assert(false, "Same armature: " + value.name);
-                armatures[value.name].ReturnToPool();
+                armatures[value.name].ReleaseThis();
             }
 
             value.parent = this;

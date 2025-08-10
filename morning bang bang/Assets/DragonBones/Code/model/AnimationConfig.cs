@@ -138,7 +138,7 @@ namespace DragonBones
         public readonly List<string> boneMask = new List<string>();
 
         /// <private/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this.pauseFadeOut = true;
             this.fadeOutMode = AnimationFadeOutMode.All;
@@ -168,7 +168,7 @@ namespace DragonBones
         /// <private/>
         public void Clear()
         {
-            this.ClearObject();
+            this.OnReleased();
         }
 
         /// <private/>

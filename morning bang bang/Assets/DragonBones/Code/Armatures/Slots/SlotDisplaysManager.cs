@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace DragonBones
 {
@@ -36,11 +37,16 @@ namespace DragonBones
         {
             if (data is ChildArmatureDisplayData childArmatureData && !childArmatures.Contains(data))
             {
+                DBLogger.BLog.AddEntry("Add Child Armature Display", data.Name);
                 childArmatures.Add(childArmatureData);
             }
             
-            if(!displays.ContainsKey(data.Name)) displays.Add(data.Name, data);
-            
+            if(!displays.ContainsKey(data.Name))
+            {
+                DBLogger.BLog.AddEntry("Add Display", data.Name);
+                displays.Add(data.Name, data);
+            }
+
             return true;
         }
 
@@ -51,6 +57,8 @@ namespace DragonBones
             {
                 AddDisplay(displayData);
             }
+            
+            DBLogger.BLog.AddEntry("Slot Displays Manager: Displays Array Set",  data.ToString(), $"count: {data.Length}");
             BelongsTo.RefreshData();
         }
 
@@ -93,7 +101,8 @@ namespace DragonBones
                 BelongsTo.RefreshData();
                 return true;
             }
-            
+
+            DisplayDirty = true;
             return false;
         }
 
@@ -103,11 +112,13 @@ namespace DragonBones
 
         public void InitMeshDisplay(IEngineSlotDisplay display)
         {
+            DBLogger.BLog.AddEntry("SlotDisplaysManager Init Mesh Display", display.Data.Name);
             MeshDisplay = display;
         }
 
         public void AddChildArmatureDisplay(IEngineChildArmatureSlotDisplay childArmatureSlotDisplay)
         {
+            DBLogger.BLog.AddEntry("Slot Displays Manager: Add Child Armature Display", childArmatureSlotDisplay.ChildArmatureDisplayData.Name);
             childArmatureDisplays.Add(childArmatureSlotDisplay.Data.Name, childArmatureSlotDisplay);
         }
 
@@ -123,6 +134,12 @@ namespace DragonBones
 
         public bool SwapDisplaysByIndex(int index)
         {
+            if (index == -1)
+            {
+                CurrentEngineDisplay.Disable();
+                return true;
+            }
+            
             return SwapCurrentDisplay(DisplayIndexToName(index));
         }
 

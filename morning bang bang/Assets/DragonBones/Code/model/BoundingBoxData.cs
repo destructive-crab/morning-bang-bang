@@ -27,7 +27,7 @@ namespace DragonBones
         public float height;
 
         /// <private/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this.color = 0x000000;
             this.width = 0.0f;
@@ -277,9 +277,9 @@ namespace DragonBones
         }
         /// <inheritDoc/>
         /// <private/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             this.type = BoundingBoxType.Rectangle;
         }
@@ -447,9 +447,9 @@ namespace DragonBones
         }
         /// <inheritDoc/>
         /// <private/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             this.type = BoundingBoxType.Ellipse;
         }
@@ -675,9 +675,9 @@ namespace DragonBones
 
         /// <inheritDoc/>
         /// <private/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             this.type = BoundingBoxType.Polygon;
             this.x = 0.0f;

@@ -74,51 +74,51 @@ namespace DragonBones
         /// <private/>
         public DBProjectData parent;
         /// <inheritDoc/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             foreach (var action in this.defaultActions)
             {
-                action.ReturnToPool();
+                action.ReleaseThis();
             }
 
             foreach (var action in this.actions)
             {
-                action.ReturnToPool();
+                action.ReleaseThis();
             }
 
             foreach (var k in this.bones.Keys)
             {
-                this.bones[k].ReturnToPool();
+                this.bones[k].ReleaseThis();
             }
 
             foreach (var k in this.slots.Keys)
             {
-                this.slots[k].ReturnToPool();
+                this.slots[k].ReleaseThis();
             }
 
             foreach (var k in this.constraints.Keys)
             {
-                this.constraints[k].ReturnToPool();
+                this.constraints[k].ReleaseThis();
             }
 
             foreach (var k in this.skins.Keys)
             {
-                this.skins[k].ReturnToPool();
+                this.skins[k].ReleaseThis();
             }
 
             foreach (var k in this.animations.Keys)
             {
-                this.animations[k].ReturnToPool();
+                this.animations[k].ReleaseThis();
             }
 
             if (this.canvas != null)
             {
-                this.canvas.ReturnToPool();
+                this.canvas.ReleaseThis();
             }
 
             if (this.userData != null)
             {
-                this.userData.ReturnToPool();
+                this.userData.ReleaseThis();
             }
 
             this.type = ArmatureType.Armature;
@@ -240,7 +240,7 @@ namespace DragonBones
                 if (this.bones.ContainsKey(value.name))
                 {
                     DBLogger.Assert(false, "Same bone: " + value.name);
-                    this.bones[value.name].ReturnToPool();
+                    this.bones[value.name].ReleaseThis();
                 }
 
                 this.bones[value.name] = value;
@@ -255,7 +255,7 @@ namespace DragonBones
                 if (this.slots.ContainsKey(value.name))
                 {
                     DBLogger.Assert(false, "Same slot: " + value.name);
-                    this.slots[value.name].ReturnToPool();
+                    this.slots[value.name].ReleaseThis();
                 }
 
                 this.slots[value.name] = value;
@@ -270,7 +270,7 @@ namespace DragonBones
                 if (this.constraints.ContainsKey(value.name))
                 {
                     DBLogger.Assert(false, "Same constraint: " + value.name);
-                    this.slots[value.name].ReturnToPool();
+                    this.slots[value.name].ReleaseThis();
                 }
 
                 this.constraints[value.name] = value;
@@ -284,10 +284,10 @@ namespace DragonBones
                 if (this.skins.ContainsKey(value.name))
                 {
                     DBLogger.Assert(false, "Same slot: " + value.name);
-                    this.skins[value.name].ReturnToPool();
+                    this.skins[value.name].ReleaseThis();
                 }
 
-                value.parent = this;
+                value.BelongsToArmature = this;
                 this.skins[value.name] = value;
                 if (this.defaultSkin == null)
                 {
@@ -308,7 +308,7 @@ namespace DragonBones
                 if (this.animations.ContainsKey(value.name))
                 {
                     DBLogger.Assert(false, "Same animation: " + value.name);
-                    this.animations[value.name].ReturnToPool();
+                    this.animations[value.name].ReleaseThis();
                 }
 
                 value.armatureData = this;
@@ -429,11 +429,11 @@ namespace DragonBones
         public BoneData parent = null;
 
         /// <inheritDoc/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             if (this.userData != null)
             {
-                this.userData.ReturnToPool();
+                this.userData.ReleaseThis();
             }
 
             this.inheritTranslation = false;
@@ -489,11 +489,11 @@ namespace DragonBones
         /// <language>en_US</language>
         public BoneData parent;
         /// <inheritDoc/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             if (this.userData != null)
             {
-                this.userData.ReturnToPool();
+                this.userData.ReleaseThis();
             }
 
             this.blendMode = BlendMode.Normal;

@@ -29,7 +29,7 @@ namespace DragonBones
         internal Bone _root;
         internal Bone _bone;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this._armature = null;
             this._target = null; //
@@ -62,9 +62,9 @@ namespace DragonBones
         /// <internal/>
         internal float _weight;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             this._scaleEnabled = false;
             this._bendPositive = false;

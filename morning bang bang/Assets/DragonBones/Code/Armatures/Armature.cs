@@ -99,7 +99,7 @@ namespace DragonBones
 
                 if (_replaceTextureAtlasData != null)
                 {
-                    _replaceTextureAtlasData.ReturnToPool();
+                    _replaceTextureAtlasData.ReleaseThis();
                     _replaceTextureAtlasData = null;
                 }
 
@@ -186,7 +186,7 @@ namespace DragonBones
             }
         }
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             if (_clock != null)
             {
@@ -195,7 +195,7 @@ namespace DragonBones
             }
 
             Display?.DBClear();
-            _replaceTextureAtlasData?.ReturnToPool();
+            _replaceTextureAtlasData?.ReleaseThis();
 
             inheritAnimation = true;
             userData = null;
@@ -216,8 +216,6 @@ namespace DragonBones
 
         public void AdvanceTime(float passedTime)
         {
-            DBLogger.LogMessage(Structure.Slots.Length + " " + Structure.Bones.Length);
-            
             //
             if (lockArmatureUpdate) return;
             //
@@ -354,7 +352,7 @@ namespace DragonBones
                         }
                     }
 
-                    action.ReturnToPool();
+                    action.ReleaseThis();
                 }
 
                 actions.Clear();

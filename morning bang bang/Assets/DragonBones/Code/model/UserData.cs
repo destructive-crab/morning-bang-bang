@@ -29,7 +29,7 @@ namespace DragonBones
         public readonly List<string> strings = new List<string>();
 
         /// <inheritDoc/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this.ints.Clear();
             this.floats.Clear();
@@ -95,11 +95,11 @@ namespace DragonBones
         public SlotData slot;
         public UserData data;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             if (this.data != null)
             {
-                this.data.ReturnToPool();
+                this.data.ReleaseThis();
             }
 
             this.type = ActionType.Play;

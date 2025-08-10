@@ -146,37 +146,37 @@ namespace DragonBones
 
         public int CurrentCacheFrameIndex { get; private set; }
         private int previousCacheFrameIndex;
-        
-        protected override void ClearObject()
+
+        public override void OnReleased()
         {
             foreach (var timeline in this._boneTimelines)
             {
-                timeline.ReturnToPool();
+                timeline.ReleaseThis();
             }
 
             foreach (var timeline in this._slotTimelines)
             {
-                timeline.ReturnToPool();
+                timeline.ReleaseThis();
             }
 
             foreach (var timeline in this._constraintTimelines)
             {
-                timeline.ReturnToPool();
+                timeline.ReleaseThis();
             }
 
             foreach (var bonePose in this._bonePoses.Values)
             {
-                bonePose.ReturnToPool();
+                bonePose.ReleaseThis();
             }
 
             if (this._actionTimeline != null)
             {
-                this._actionTimeline.ReturnToPool();
+                this._actionTimeline.ReleaseThis();
             }
 
             if (this._zOrderTimeline != null)
             {
-                this._zOrderTimeline.ReturnToPool();
+                this._zOrderTimeline.ReleaseThis();
             }
 
             this.actionEnabled = false;
@@ -356,7 +356,7 @@ namespace DragonBones
                     foreach (var timeline in timelines)
                     {
                         this._boneTimelines.Remove(timeline);
-                        timeline.ReturnToPool();
+                        timeline.ReleaseThis();
                     }
                 }
             }
@@ -485,7 +485,7 @@ namespace DragonBones
                     foreach (var timeline in timelines)
                     {
                         this._slotTimelines.Remove(timeline);
-                        timeline.ReturnToPool();
+                        timeline.ReleaseThis();
                     }
                 }
             }
@@ -821,7 +821,7 @@ namespace DragonBones
                                 this._constraintTimelines.Remove(timeline as ConstraintTimelineState);
                             }
 
-                            timeline.ReturnToPool();
+                            timeline.ReleaseThis();
                         }
 
                         this._poseTimelines.Clear();
@@ -1146,7 +1146,7 @@ namespace DragonBones
         public readonly DBTransform delta = new DBTransform();
         public readonly DBTransform result = new DBTransform();
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this.current.Identity();
             this.delta.Identity();

@@ -113,7 +113,7 @@ namespace DragonBones
                 }
                 else
                 {
-                    textureAtlasData.ReturnToPool();
+                    textureAtlasData.ReleaseThis();
                     break;
                 }
             }

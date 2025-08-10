@@ -39,7 +39,7 @@ namespace DragonBones
         public object userData;
         protected bool _globalDirty;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this.GlobalTransformDBMatrix.Identity();
             this.global.Identity();

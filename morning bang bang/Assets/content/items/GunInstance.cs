@@ -47,9 +47,9 @@ namespace banging_code.items
 
         private async void SpawnBullet()
         {
-            Game.RunSystem.Data.Level.PlayerInstance.GetComponentInChildren<Animator>().Play("rat_side_gun_shoot");
-            await UniTask.WaitForSeconds(20 / 60);
-            var bullet = Game.SceneSwitcher.CurrentScene.Fabric.Instantiate(bulletPrefab, firePoint.position);
+      //      Game.RunSystem.Data.Level.PlayerInstance.GetComponentInChildren<Animator>().Play("rat_side_gun_shoot");
+   //         await UniTask.WaitForSeconds(20 / 60);
+//            var bullet = Game.SceneSwitcher.CurrentScene.Fabric.Instantiate(bulletPrefab, firePoint.position);
 //            bullet.AddForce(UTLS.DirectionToVector(Game.RunSystem.Data.Level.PlayerInstance.Direction), 2);
             
         }

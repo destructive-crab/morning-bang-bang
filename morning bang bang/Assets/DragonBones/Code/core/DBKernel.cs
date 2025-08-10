@@ -71,7 +71,7 @@ namespace DragonBones
                 for (int i = 0; i < objectsToDispose.Count; ++i)
                 {
                     var obj = objectsToDispose[i];
-                    obj.ReturnToPool();
+                    obj.ReleaseThis();
                 }
 
                 objectsToDispose.Clear();

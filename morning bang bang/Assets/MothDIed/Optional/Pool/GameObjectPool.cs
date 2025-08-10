@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 using MothDIed.Scenes;
 using UnityEngine;
 
-namespace MothDIed.Core.GameObjects.Pool
+namespace MothDIed.Pool
 {
     public class GameObjectPool<TObject> : IDisposable
         where TObject : Component
@@ -77,7 +77,7 @@ namespace MothDIed.Core.GameObjects.Pool
             return this;
         }
         
-        public TObject Get()
+        public TObject Pick()
         {
             if (IsPoolReady && Available.Count == 0 && !TryExpandPoolAndPopulate()) return null;
 
@@ -85,6 +85,8 @@ namespace MothDIed.Core.GameObjects.Pool
             Available.RemoveAt(0);
             CurrentlyInUse.Add(instance);
             instance.gameObject.SetActive(true);
+            
+            if(instance is IPoolable poolable) poolable.OnPicked();
 
             return instance;
         }
@@ -93,10 +95,12 @@ namespace MothDIed.Core.GameObjects.Pool
         {
             if (IsPoolReady && !CurrentlyInUse.Contains(instance)) return false;
             
+            if(instance is IPoolable poolable) poolable.OnReleased(); 
+            
             CurrentlyInUse.Remove(instance);
             Available.Add(instance);
             instance.gameObject.SetActive(false);
-
+            
             return true;
         }
 
@@ -120,8 +124,7 @@ namespace MothDIed.Core.GameObjects.Pool
             {
                 TObject newInstance = PoolConfiguration.Fabric.Instantiate(instantiateFrom, Vector3.zero,  Root.transform);
                 
-                newInstance.gameObject.SetActive(false);
-                Available.Add(newInstance);
+                ProcessPopulatedGameObject(newInstance);
             }
 
             return true;
@@ -136,9 +139,8 @@ namespace MothDIed.Core.GameObjects.Pool
             while (TotalCount < CurrentSize)
             {
                 TObject newInstance = await PoolConfiguration.Fabric.InstantiateAsync(instantiateFrom, Vector3.zero,  Root.transform);
-                
-                newInstance.gameObject.SetActive(false);
-                Available.Add(newInstance);
+
+                ProcessPopulatedGameObject(newInstance);
             }
 
             return true;
@@ -166,6 +168,17 @@ namespace MothDIed.Core.GameObjects.Pool
             }
 
             return instantiateFrom;
+        }
+
+        private void ProcessPopulatedGameObject(TObject newInstance)
+        {
+            newInstance.gameObject.SetActive(false);
+            Available.Add(newInstance);
+
+            if (newInstance is IPoolableGameObject<TObject> poolableGameObject)
+            {
+                poolableGameObject.OnPopulated(this);
+            }
         }
 
         public bool IsConfigurationValid()

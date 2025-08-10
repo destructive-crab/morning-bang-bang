@@ -5,8 +5,6 @@ namespace DragonBones
         Slot Parent { get; }
         DisplayData Data { get; }
 
-        void Init(DisplayData data);
-        
         void Enable();
         void Disable();
     }

@@ -628,9 +628,9 @@ namespace DragonBones
         private readonly int[] _delta = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
         private readonly float[] _result = new float[] { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             _dirty = false;
         }
@@ -801,10 +801,10 @@ namespace DragonBones
         private readonly List<float> _current = new List<float>();
         private readonly List<float> _delta = new List<float>();
         private readonly List<float> _result = new List<float>();
-        
-        protected override void ClearObject()
+
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             vertexOffset = 0;
 
@@ -1012,9 +1012,9 @@ namespace DragonBones
         private float _current;
         private float _delta;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             _current = 0.0f;
             _delta = 0.0f;

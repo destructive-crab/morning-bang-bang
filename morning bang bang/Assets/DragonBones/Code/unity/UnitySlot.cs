@@ -24,21 +24,21 @@ namespace DragonBones
         public void Enable()
         {
             IsEnabled = true;
-            UnityDisplay?.Enable();
+            UnityCurrentDisplay?.Enable();
         }
 
         public void Disable()
         {
             IsEnabled = false;
-            UnityDisplay?.Disable();
+            UnityCurrentDisplay?.Disable();
         }
 
         private bool _skewed;
         private BlendMode _currentBlendMode;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             meshBuffer?.Dispose();
 
@@ -70,10 +70,10 @@ namespace DragonBones
             {
                 zOrderPosition.z = -ZOrder.Value * (ArmatureDisplay._zSpace + Z_OFFSET);
 
-                if (UnityDisplay != null)
+                if (UnityCurrentDisplay != null)
                 {
-                    UnityDisplay.transform.localPosition = zOrderPosition;
-                    UnityDisplay.transform.SetSiblingIndex(ZOrder.Value);
+                    UnityCurrentDisplay.transform.localPosition = zOrderPosition;
+                    UnityCurrentDisplay.transform.SetSiblingIndex(ZOrder.Value);
 
                     if (ArmatureDisplay.isUGUI)
                     {
@@ -82,14 +82,14 @@ namespace DragonBones
 
                     if (!IsChildArmature())
                     {
-                        UnityDisplay.MeshRenderer.sortingLayerName = LayerMask.LayerToName(ArmatureDisplay.gameObject.layer);
+                        CurrentAsMeshDisplay.MeshRenderer.sortingLayerName = LayerMask.LayerToName(ArmatureDisplay.gameObject.layer);
                         if (ArmatureDisplay.sortingMode == SortingMode.SortByOrder)
                         {
-                            UnityDisplay.MeshRenderer.sortingOrder = ZOrder.Value * UnityEngineArmatureDisplay.ORDER_SPACE;
+                            CurrentAsMeshDisplay.MeshRenderer.sortingOrder = ZOrder.Value * UnityEngineArmatureDisplay.ORDER_SPACE;
                         }
                         else
                         {
-                            UnityDisplay.MeshRenderer.sortingOrder = ArmatureDisplay._sortingOrder;
+                            CurrentAsMeshDisplay.MeshRenderer.sortingOrder = ArmatureDisplay._sortingOrder;
                         }
                     }
                     else
@@ -122,9 +122,9 @@ namespace DragonBones
             if (IsCombineMesh)
             {
                 IsCombineMesh = false;
-                if (UnityDisplay.MeshFilter != null)
+                if (CurrentAsMeshDisplay.MeshFilter != null)
                 {
-                    UnityDisplay.MeshFilter.sharedMesh = meshBuffer.sharedMesh;
+                    CurrentAsMeshDisplay.MeshFilter.sharedMesh = meshBuffer.sharedMesh;
                     var isSkinnedMesh = DeformVertices != null && DeformVertices.verticesData != null && DeformVertices.verticesData.weight != null;
                     if (!isSkinnedMesh)
                     {
@@ -149,11 +149,11 @@ namespace DragonBones
                 meshBuffer.enabled = true;
             }
 
-            if (UnityDisplay != null)
+            if (UnityCurrentDisplay != null)
             {
                 if (IsChildArmature())
                 {
-                    UnityDisplay.Enable();
+                    UnityCurrentDisplay.Enable();
                 }
             }
 
@@ -193,21 +193,17 @@ namespace DragonBones
 
         protected override void EngineUpdateFrame()
         {
-            DBLogger.LogMessage("UPDATE FRAME");
             VerticesData currentVerticesData = (DeformVertices != null && !IsChildArmature()) ? DeformVertices.verticesData : null;
             UnityTextureData currentTextureData = TextureData as UnityTextureData;
 
             meshBuffer.Clear();
             Disable();
             
-            DBLogger.LogMessage("UNIDIS: " + UnityDisplay + " CURRTEXDATA: " + currentTextureData);
-            if (UnityDisplay != null && currentTextureData != null)
+            if (UnityCurrentDisplay != null && currentTextureData != null)
             {
-                DBLogger.LogMessage("UNITY DISPLAUY NOT NUT");
                 var currentTextureAtlas = ArmatureDisplay.isUGUI ? currentTextureAtlasData.uiTexture : currentTextureAtlasData.texture;
                 if (currentTextureAtlas != null)
                 {
-                    DBLogger.LogMessage("TEXTURE ATLAS NOT NULL");
                     Enable();
                     //
                     var textureAtlasWidth = currentTextureAtlasData.width > 0.0f ? (int)currentTextureAtlasData.width : currentTextureAtlas.mainTexture.width;
@@ -221,7 +217,6 @@ namespace DragonBones
 
                     if (currentVerticesData != null)
                     {
-                        DBLogger.LogMessage("CURRENT VERTICES DATA NOT NULL");
                         var data = currentVerticesData.data;
                         var meshOffset = currentVerticesData.offset;
                         var intArray = data.intArray;
@@ -242,7 +237,6 @@ namespace DragonBones
 
                         if (meshBuffer.rawVertextBuffers == null || meshBuffer.rawVertextBuffers.Length != vertexCount)
                         {
-                            DBLogger.LogMessage("CREATE");
                             meshBuffer.rawVertextBuffers = new Vector3[vertexCount];
                             meshBuffer.vertexBuffers = new Vector3[vertexCount];
                         }
@@ -276,7 +270,6 @@ namespace DragonBones
                     {
                         if (meshBuffer.rawVertextBuffers == null || meshBuffer.rawVertextBuffers.Length != 4)
                         {
-                            DBLogger.LogMessage("CREATE");
                             meshBuffer.rawVertextBuffers = new Vector3[4];
                             meshBuffer.vertexBuffers = new Vector3[4];
                         }
@@ -347,8 +340,8 @@ namespace DragonBones
                     }
 
 
-                    UnityDisplay.MeshFilter.sharedMesh = meshBuffer.sharedMesh;
-                    UnityDisplay.MeshRenderer.sharedMaterial = currentTextureAtlas;
+                    CurrentAsMeshDisplay.MeshFilter.sharedMesh = meshBuffer.sharedMesh;
+                    CurrentAsMeshDisplay.MeshRenderer.sharedMaterial = currentTextureAtlas;
 
                     meshBuffer.name = currentTextureAtlas.name;
                     meshBuffer.InitMesh();
@@ -362,14 +355,14 @@ namespace DragonBones
                 }
             }
 
-            UnityDisplay.MeshFilter.sharedMesh = null;
-            UnityDisplay.MeshRenderer.sharedMaterial = null;
+            CurrentAsMeshDisplay.MeshFilter.sharedMesh = null;
+            CurrentAsMeshDisplay.MeshRenderer.sharedMaterial = null;
 
             _helpVector3.x = 0.0f;
             _helpVector3.y = 0.0f;
-            _helpVector3.z = UnityDisplay.transform.localPosition.z;
+            _helpVector3.z = UnityCurrentDisplay.transform.localPosition.z;
 
-            UnityDisplay.transform.localPosition = _helpVector3;
+            UnityCurrentDisplay.transform.localPosition = _helpVector3;
 
             if (IsCombineMesh)
             {
@@ -379,7 +372,7 @@ namespace DragonBones
 
         protected void IdentityTransform()
         {
-            Transform transform = UnityDisplay.transform;
+            Transform transform = UnityCurrentDisplay.transform;
 
             transform.localPosition = new Vector3(0.0f, 0.0f, transform.localPosition.z);
             transform.localEulerAngles = Vector3.zero;
@@ -388,7 +381,7 @@ namespace DragonBones
 
         private bool IsChildArmature()
         {
-            return UnityDisplay is UnityEngineChildArmatureSlotDisplay;
+            return UnityCurrentDisplay is UnityEngineChildArmatureSlotDisplay;
         }
 
         public Mesh mesh
@@ -406,7 +399,7 @@ namespace DragonBones
 
         public MeshRenderer meshRenderer
         {
-            get { return UnityDisplay.MeshRenderer; }
+            get { return CurrentAsMeshDisplay.MeshRenderer; }
         }
 
         public UnityTextureAtlasData currentTextureAtlasData
@@ -422,16 +415,22 @@ namespace DragonBones
             }
         }
 
-        public UnityEngineSlotDisplay UnityDisplay { get; private set; }
+        public UnityEngineSlotDisplay UnityCurrentDisplay => Displays.CurrentEngineDisplay as UnityEngineSlotDisplay;
+        
+        public UnityEngineMeshSlotDisplay CurrentAsMeshDisplay => UnityCurrentDisplay as UnityEngineMeshSlotDisplay;
+        
+        public UnityEngineChildArmatureSlotDisplay CurrentAsChildArmatureDisplay => UnityCurrentDisplay as UnityEngineChildArmatureSlotDisplay;
+        
         public UnityEngineArmatureDisplay ArmatureDisplay { get; private set; }
 
-        public void Init(UnityEngineSlotDisplay unitySlotRoot, UnityEngineArmatureDisplay unityArmatureDisplay)
+        public void StarUnitySlotBuilding(UnityEngineArmatureDisplay unityArmatureDisplay)
         {
-            UnityDisplay = unitySlotRoot;
             ArmatureDisplay = unityArmatureDisplay;
-           
+        }
+
+        public void EndUnitySlotBuilding()
+        {
             EngineUpdateDisplay();
-            DBLogger.LogMessage(unitySlotRoot.name);
         }
 
         protected override void EngineUpdateDisplay()
@@ -448,7 +447,7 @@ namespace DragonBones
 
         protected override void EngineUpdateZOrder()
         {
-            UpdateZPosition(UnityDisplay.transform.localPosition);
+            UpdateZPosition(UnityCurrentDisplay.transform.localPosition);
 
             if (IsChildArmature() || !IsEnabled)
             {
@@ -597,7 +596,7 @@ namespace DragonBones
 
         protected override void EngineUpdateVisibility()
         {
-            UnityDisplay.SetEnabled(Parent.visible);
+            UnityCurrentDisplay.SetEnabled(false);
 
             if (IsCombineMesh && !Parent.visible)
             {
@@ -642,7 +641,7 @@ namespace DragonBones
             else
             {
                 //Set all childArmature color dirty
-                ((UnityEngineArmatureDisplay)Displays.ChildArmatureSlotDisplay).DBColor = Color.Value;
+                ((UnityEngineArmatureDisplay)Displays.ChildArmatureSlotDisplay.ArmatureDisplay).DBColor = Color.Value;
             }
         }
 
@@ -655,7 +654,7 @@ namespace DragonBones
 
             if (!IsChildArmature())
             {
-                UnityDisplay.MeshRenderer.sharedMaterial = (TextureData as UnityTextureData).GetMaterial(BlendMode.Value);
+                CurrentAsMeshDisplay.MeshRenderer.sharedMaterial = (TextureData as UnityTextureData).GetMaterial(BlendMode.Value);
             }
             else
             {
@@ -712,7 +711,7 @@ namespace DragonBones
                 //localPosition
                 bool flipX = Armature.flipX;
                 bool flipY = Armature.flipY;
-                Transform transform = UnityDisplay.transform;
+                Transform transform = UnityCurrentDisplay.transform;
 
                 _helpVector3.x = global.x;
                 _helpVector3.y = global.y;
@@ -766,7 +765,7 @@ namespace DragonBones
                 transform.localEulerAngles = _helpVector3;
 
                 //Modify mesh skew. // TODO child armature skew.
-                if (UnityDisplay is not UnityEngineChildArmatureSlotDisplay && meshBuffer.sharedMesh != null)
+                if (UnityCurrentDisplay is not UnityEngineChildArmatureSlotDisplay && meshBuffer.sharedMesh != null)
                 {
                     var skew = global.skew;
                     var dSkew = skew;
@@ -823,7 +822,7 @@ namespace DragonBones
                 transform.localScale = _helpVector3;
             }
 
-            if (UnityDisplay is UnityEngineChildArmatureSlotDisplay childArmatureSlot)
+            if (UnityCurrentDisplay is UnityEngineChildArmatureSlotDisplay childArmatureSlot)
             {
                 childArmatureSlot.ArmatureDisplay.Armature.flipX = Armature.flipX;
                 childArmatureSlot.ArmatureDisplay.Armature.flipY = Armature.flipY;

@@ -151,8 +151,7 @@ namespace DragonBones
         public ActionData actionData;
         public UserData data;
 
-        /// <private/>
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             this.time = 0.0f;
             this.type = string.Empty;

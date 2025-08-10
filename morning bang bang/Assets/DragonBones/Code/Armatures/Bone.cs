@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DragonBones
 {
@@ -16,70 +17,70 @@ namespace DragonBones
         internal BoneData _boneData;
         protected Bone _parent;
         internal List<int> _cachedFrameIndices = new List<int>();
-        
-        protected override void ClearObject()
+
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
-            this.offsetMode = OffsetMode.Additive;
-            this.animationPose.Identity();
+            offsetMode = OffsetMode.Additive;
+            animationPose.Identity();
 
-            this._transformDirty = false;
-            this._childrenTransformDirty = false;
-            this._localDirty = true;
-            this._hasConstraint = false;
-            this._visible = true;
-            this._cachedFrameIndex = -1;
-            this._blendState.Clear();
-            this._boneData = null; //
-            this._parent = null;
-            this._cachedFrameIndices = null;
+            _transformDirty = false;
+            _childrenTransformDirty = false;
+            _localDirty = true;
+            _hasConstraint = false;
+            _visible = true;
+            _cachedFrameIndex = -1;
+            _blendState.Clear();
+            _boneData = null; //
+            _parent = null;
+            _cachedFrameIndices = null;
         }
         /// <private/>
         private void _UpdateGlobalTransformMatrix(bool isCache)
         {
-            var boneData = this._boneData;
-            var parent = this._parent;
-            var flipX = this.Armature.flipX;
-            var flipY = this.Armature.flipY == DBKernel.IsNegativeYDown;
+            var boneData = _boneData;
+            var parent = _parent;
+            var flipX = Armature.flipX;
+            var flipY = Armature.flipY == DBKernel.IsNegativeYDown;
             var rotation = 0.0f;
             var global = this.global;
             var inherit = parent != null;
-            var globalTransformMatrix = this.GlobalTransformDBMatrix;
+            var globalTransformMatrix = GlobalTransformDBMatrix;
 
-            if (this.offsetMode == OffsetMode.Additive)
+            if (offsetMode == OffsetMode.Additive)
             {
-                if (this.origin != null)
+                if (origin != null)
                 {
                     //global.CopyFrom(this.origin).Add(this.offset).Add(this.animationPose);
-                    global.x = this.origin.x + this.offset.x + this.animationPose.x;
-                    global.y = this.origin.y + this.offset.y + this.animationPose.y;
-                    global.skew = this.origin.skew + this.offset.skew + this.animationPose.skew;
-                    global.rotation = this.origin.rotation + this.offset.rotation + this.animationPose.rotation;
-                    global.scaleX = this.origin.scaleX * this.offset.scaleX * this.animationPose.scaleX;
-                    global.scaleY = this.origin.scaleY * this.offset.scaleY * this.animationPose.scaleY;
+                    global.x = origin.x + offset.x + animationPose.x;
+                    global.y = origin.y + offset.y + animationPose.y;
+                    global.skew = origin.skew + offset.skew + animationPose.skew;
+                    global.rotation = origin.rotation + offset.rotation + animationPose.rotation;
+                    global.scaleX = origin.scaleX * offset.scaleX * animationPose.scaleX;
+                    global.scaleY = origin.scaleY * offset.scaleY * animationPose.scaleY;
                 }
                 else
                 {
-                    global.CopyFrom(this.offset).Add(this.animationPose);
+                    global.CopyFrom(offset).Add(animationPose);
                 }
 
             }
-            else if (this.offsetMode == OffsetMode.None)
+            else if (offsetMode == OffsetMode.None)
             {
-                if (this.origin != null)
+                if (origin != null)
                 {
-                    global.CopyFrom(this.origin).Add(this.animationPose);
+                    global.CopyFrom(origin).Add(animationPose);
                 }
                 else
                 {
-                    global.CopyFrom(this.animationPose);
+                    global.CopyFrom(animationPose);
                 }
             }
             else
             {
                 inherit = false;
-                global.CopyFrom(this.offset);
+                global.CopyFrom(offset);
             }
 
             if (inherit)
@@ -114,7 +115,7 @@ namespace DragonBones
                     global.ToMatrix(globalTransformMatrix);
                     globalTransformMatrix.Concat(parentMatrix);
 
-                    if (this._boneData.inheritTranslation)
+                    if (_boneData.inheritTranslation)
                     {
                         global.x = globalTransformMatrix.tx;
                         global.y = globalTransformMatrix.ty;
@@ -131,7 +132,7 @@ namespace DragonBones
                     }
                     else
                     {
-                        this._globalDirty = true;
+                        _globalDirty = true;
                     }
                 }
                 else
@@ -248,49 +249,59 @@ namespace DragonBones
         /// <private/>
         internal void Init(BoneData boneData, Armature armatureValue)
         {
-            if (this._boneData != null)
+            _boneData = boneData; 
+            if (_boneData == null)
             {
+                DBLogger.BLog.AddEntry("Bone Data Null", "Bone Init Aborted");
                 return;
             }
 
-            this._boneData = boneData;
-            this.Armature = armatureValue;
+            Armature = armatureValue;
 
-            if (this._boneData.parent != null)
-            {
-                this._parent = this.Armature.Structure.GetBone(this._boneData.parent.name);
-            }
+            SetParentBone();
 
-            this.origin = this._boneData.DBTransform;
-            this.Armature.Structure.AddBone(this);
+            origin = _boneData.DBTransform;
+            DBLogger.BLog.AddEntry("Trying To Add Bone To Structure", boneData.name);
+            Armature.Structure.AddBone(this);
         }
+
+        private void SetParentBone()
+        {
+            if (_boneData.parent != null)
+            {
+                DBInitial.Kernel.Factory.CurLog().AddEntry("Set Parent Bone", name, $"{_boneData.parent.name}");
+                _parent = Armature.Structure.GetBone(_boneData.parent.name);
+            }
+            DBLogger.BLog.AddEntry("Trying To Set Parent Bone", boneData.name, "No Parent Bone Found");
+        }
+
         /// <internal/>
         /// <private/>
         internal void Update(int cacheFrameIndex, AnimationData currentStateAnimationData)
         {
-            this._blendState.dirty = false;
+            _blendState.dirty = false;
 
-            if (cacheFrameIndex >= 0 && this._cachedFrameIndices != null)
+            if (cacheFrameIndex >= 0 && _cachedFrameIndices != null)
             {
-                var cachedFrameIndex = this._cachedFrameIndices[cacheFrameIndex];
+                var cachedFrameIndex = _cachedFrameIndices[cacheFrameIndex];
 
-                if (cachedFrameIndex >= 0 && this._cachedFrameIndex == cachedFrameIndex)
+                if (cachedFrameIndex >= 0 && _cachedFrameIndex == cachedFrameIndex)
                 {
                     // Same cache.
-                    this._transformDirty = false;
+                    _transformDirty = false;
                 }
                 else if (cachedFrameIndex >= 0)
                 {
                     // Has been Cached.
-                    this._transformDirty = true;
-                    this._cachedFrameIndex = cachedFrameIndex;
+                    _transformDirty = true;
+                    _cachedFrameIndex = cachedFrameIndex;
                 }
                 else
                 {
-                    if (this._hasConstraint)
+                    if (_hasConstraint)
                     {
                         // Update constraints.
-                        foreach (var constraint in this.Armature.Structure.Constraints)
+                        foreach (var constraint in Armature.Structure.Constraints)
                         {
                             if (constraint._root == this)
                             {
@@ -299,32 +310,32 @@ namespace DragonBones
                         }
                     }
 
-                    if (this._transformDirty || (this._parent != null && this._parent._childrenTransformDirty))
+                    if (_transformDirty || (_parent != null && _parent._childrenTransformDirty))
                     {
                         // Dirty.
-                        this._transformDirty = true;
-                        this._cachedFrameIndex = -1;
+                        _transformDirty = true;
+                        _cachedFrameIndex = -1;
                     }
-                    else if (this._cachedFrameIndex >= 0)
+                    else if (_cachedFrameIndex >= 0)
                     {
                         // Same cache, but not set index yet.
-                        this._transformDirty = false;
-                        this._cachedFrameIndices[cacheFrameIndex] = this._cachedFrameIndex;
+                        _transformDirty = false;
+                        _cachedFrameIndices[cacheFrameIndex] = _cachedFrameIndex;
                     }
                     else
                     {
                         // Dirty.
-                        this._transformDirty = true;
-                        this._cachedFrameIndex = -1;
+                        _transformDirty = true;
+                        _cachedFrameIndex = -1;
                     }
                 }
             }
             else
             {
-                if (this._hasConstraint)
+                if (_hasConstraint)
                 {
                     // Update constraints.
-                    foreach (var constraint in this.Armature.Structure.Constraints)
+                    foreach (var constraint in Armature.Structure.Constraints)
                     {
                         if (constraint._root == this)
                         {
@@ -333,59 +344,47 @@ namespace DragonBones
                     }
                 }
 
-                if (this._transformDirty || (this._parent != null && this._parent._childrenTransformDirty))
+                if (_transformDirty || (_parent != null && _parent._childrenTransformDirty))
                 {
                     // Dirty.
                     cacheFrameIndex = -1;
-                    this._transformDirty = true;
-                    this._cachedFrameIndex = -1;
+                    _transformDirty = true;
+                    _cachedFrameIndex = -1;
                 }
             }
 
-            if (this._transformDirty)
+            if (_transformDirty)
             {
-                this._transformDirty = false;
-                this._childrenTransformDirty = true;
+                _transformDirty = false;
+                _childrenTransformDirty = true;
 
-                if (this._cachedFrameIndex < 0)
+                var isCache = false;
+                if (_localDirty)
                 {
-                    var isCache = cacheFrameIndex >= 0;
-                    if (this._localDirty)
-                    {
-                        this._UpdateGlobalTransformMatrix(isCache);
-                    }
-
-                    if (isCache)
-                    {
-                        DBInitial.Kernel.Cacher.SetCacheFrame(currentStateAnimationData, name, cacheFrameIndex, GlobalTransformDBMatrix, global);
-                    }
-                }
-                else
-                {
-                    DBInitial.Kernel.Cacher.GetCacheFrame(currentStateAnimationData, name, cacheFrameIndex, GlobalTransformDBMatrix, global);
+                    _UpdateGlobalTransformMatrix(isCache);
                 }
             }
-            else if (this._childrenTransformDirty)
+            else if (_childrenTransformDirty)
             {
-                this._childrenTransformDirty = false;
+                _childrenTransformDirty = false;
             }
 
-            this._localDirty = true;
+            _localDirty = true;
         }
         /// <internal/>
         /// <private/>
         internal void UpdateByConstraint()
         {
-            if (this._localDirty)
+            if (_localDirty)
             {
-                this._localDirty = false;
+                _localDirty = false;
 
-                if (this._transformDirty || (this._parent != null && this._parent._childrenTransformDirty))
+                if (_transformDirty || (_parent != null && _parent._childrenTransformDirty))
                 {
-                    this._UpdateGlobalTransformMatrix(true);
+                    _UpdateGlobalTransformMatrix(true);
                 }
 
-                this._transformDirty = true;
+                _transformDirty = true;
             }
         }
         /// <summary>
@@ -405,7 +404,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public void InvalidUpdate()
         {
-            this._transformDirty = true;
+            _transformDirty = true;
         }
         /// <summary>
         /// - Check whether the bone contains a specific bone or slot.
@@ -436,7 +435,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public BoneData boneData
         {
-            get { return this._boneData; }
+            get { return _boneData; }
         }
 
         /// <summary>
@@ -448,17 +447,17 @@ namespace DragonBones
         /// <language>en_US</language>
         public bool visible
         {
-            get { return this._visible; }
+            get { return _visible; }
             set
             {
-                if (this._visible == value)
+                if (_visible == value)
                 {
                     return;
                 }
 
-                this._visible = value;
+                _visible = value;
 
-                foreach (var slot in this.Armature.Structure.Slots)
+                foreach (var slot in Armature.Structure.Slots)
                 {
                     if (slot.Parent == this)
                     {
@@ -475,7 +474,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public string name
         {
-            get { return this._boneData.name; }
+            get { return _boneData.name; }
         }
 
         /// <summary>
@@ -485,7 +484,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public Bone parent
         {
-            get { return this._parent; }
+            get { return _parent; }
         }
     }
 }

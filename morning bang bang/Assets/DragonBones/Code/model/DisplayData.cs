@@ -14,23 +14,23 @@ namespace DragonBones
 
         public void Clear()
         {
-            if (!this.isShared && this.weight != null)
+            if (!isShared && weight != null)
             {
-                this.weight.ReturnToPool();
+                weight.ReleaseThis();
             }
 
-            this.isShared = false;
-            this.inheritDeform = false;
-            this.offset = 0;
-            this.data = null;
-            this.weight = null;
+            isShared = false;
+            inheritDeform = false;
+            offset = 0;
+            data = null;
+            weight = null;
         }
 
         public void ShareFrom(VerticesData value)
         {
-            this.isShared = true;
-            this.offset = value.offset;
-            this.weight = value.weight;
+            isShared = true;
+            offset = value.offset;
+            weight = value.weight;
         }
     }
 
@@ -39,15 +39,15 @@ namespace DragonBones
         public DisplayType type;
         public string Name;
         public string path;
-        public SkinData parent;
+        public SkinData BelongsToSkin;
         public readonly DBTransform DBTransform = new DBTransform();
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            this.Name = "";
-            this.path = "";
-            this.DBTransform.Identity();
-            this.parent = null; //
+            Name = "";
+            path = "";
+            DBTransform.Identity();
+            BelongsToSkin = null; 
         }
     }
 
@@ -58,13 +58,13 @@ namespace DragonBones
         public readonly Point pivot = new Point();
         public TextureData texture = null;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
-            this.type = DisplayType.Image;
-            this.pivot.Clear();
-            this.texture = null;
+            type = DisplayType.Image;
+            pivot.Clear();
+            texture = null;
         }
     }
 
@@ -74,24 +74,24 @@ namespace DragonBones
         public readonly List<ActionData> actions = new List<ActionData>();
         public ArmatureData armature = null;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
-            foreach (var action in this.actions)
+            foreach (var action in actions)
             {
-                action.ReturnToPool();
+                action.ReleaseThis();
             }
 
-            this.type = DisplayType.Armature;
-            this.inheritAnimation = false;
-            this.actions.Clear();
-            this.armature = null;
+            type = DisplayType.Armature;
+            inheritAnimation = false;
+            actions.Clear();
+            armature = null;
         }
 
         internal void AddAction(ActionData value)
         {
-            this.actions.Add(value);
+            actions.Add(value);
         }
     }
 
@@ -102,13 +102,13 @@ namespace DragonBones
         public readonly VerticesData vertices = new VerticesData();
         public TextureData texture;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
-            this.type = DisplayType.Mesh;
-            this.vertices.Clear();
-            this.texture = null;
+            type = DisplayType.Mesh;
+            vertices.Clear();
+            texture = null;
         }
     }
 
@@ -118,17 +118,17 @@ namespace DragonBones
     {
         public BoundingBoxData boundingBox = null; // Initial value.
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
-            if (this.boundingBox != null)
+            if (boundingBox != null)
             {
-                this.boundingBox.ReturnToPool();
+                boundingBox.ReleaseThis();
             }
 
-            this.type = DisplayType.BoundingBox;
-            this.boundingBox = null;
+            type = DisplayType.BoundingBox;
+            boundingBox = null;
         }
     }
     
@@ -141,15 +141,15 @@ namespace DragonBones
         public readonly VerticesData vertices = new VerticesData();
         public readonly List<float> curveLengths = new List<float>();
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
-            this.type = DisplayType.Path;
-            this.closed = false;
-            this.constantSpeed = false;
-            this.vertices.Clear();
-            this.curveLengths.Clear();
+            type = DisplayType.Path;
+            closed = false;
+            constantSpeed = false;
+            vertices.Clear();
+            curveLengths.Clear();
         }
     }
 
@@ -161,16 +161,16 @@ namespace DragonBones
         public int offset; // IntArray.
         public readonly List<BoneData> bones = new List<BoneData>();
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            this.count = 0;
-            this.offset = 0;
-            this.bones.Clear();
+            count = 0;
+            offset = 0;
+            bones.Clear();
         }
 
         internal void AddBone(BoneData value)
         {
-            this.bones.Add(value);
+            bones.Add(value);
         }
     }
 }

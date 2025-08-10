@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
+using DragonBones.Code.Debug;
 
 namespace DragonBones
 {
@@ -26,6 +27,8 @@ namespace DragonBones
         protected static bool IsSupportMesh() => true;
         public abstract void Clear(bool disposeData = true);
 
+        public ArmatureBuildLog CurLog() => DBLogger.BLog;
+        
         /// <summary>
         /// - Create a armature from cached DragonBonesData instances and TextureAtlasData instances.
         /// Note that when the created armature that is no longer in use, you need to explicitly dispose {@link #dragonBones.Armature#dispose()}.
@@ -46,6 +49,8 @@ namespace DragonBones
         /// <language>en_US</language>
         public virtual Armature BuildArmature(string armatureName, string dragonBonesName = "", string skinName = null, string textureAtlasName = null, IEngineArmatureDisplay providedDisplay = null)
         {
+            DBLogger.StartNewArmatureBuildLog(armatureName);
+            
             Armature armature = GetEmptyArmature();
             IEngineArmatureDisplay armatureDisplay = null;
 
@@ -55,7 +60,8 @@ namespace DragonBones
             }
             else
             {
-                providedDisplay.Armature?.ReturnToPool();
+                CurLog().AddEntry("Reuse", "Provided Display", providedDisplay.ToString());
+                providedDisplay.Armature?.ReleaseThis();
                 providedDisplay.DBClear(false);
                 armatureDisplay = providedDisplay;
             }
@@ -68,9 +74,9 @@ namespace DragonBones
                 return null;
             }
             
+            CurLog().AddEntry("Initialize", "Armature", $"data: {dataPackage.ArmatureData.name}; display: {armatureDisplay.ToString()}");
             armature.Initialize(dataPackage.ArmatureData, armatureDisplay);
             
-            DBLogger.LogMessage("building " + armatureName);
             BuildBonesFor(dataPackage, armature);
             BuildSlotsFor(dataPackage, armature);
             BuildConstraintsFor(dataPackage, armature);
@@ -81,13 +87,13 @@ namespace DragonBones
             DBInitial.Kernel.Clock.Add(armature);
             
             armature.ArmatureReady();
+            DBLogger.FinishArmatureBuildLog();
+            DBLogger.PrintBuildLog(armatureName);
             return armature;
         }
 
-        protected virtual Armature BuildChildArmature(BuildArmaturePackage dataPackage, Slot slot, DisplayData displayData)
-        {
-            return BuildArmature(displayData.path, dataPackage != null ? dataPackage.DataName : "", "", dataPackage != null ? dataPackage.TextureAtlasName : "");
-        }
+        protected abstract IEngineChildArmatureSlotDisplay BuildChildArmatureDisplay(BuildArmaturePackage dataPackage,
+            Slot forSlot, ChildArmatureDisplayData childArmatureData);
 
         protected abstract IEngineArmatureDisplay GetNewArmatureDisplayFor(Armature armature);
 
@@ -95,24 +101,31 @@ namespace DragonBones
 
         protected void BuildBonesFor(BuildArmaturePackage dataPackage, Armature armature)
         {
+            CurLog().StartSection($"Building Bones For {armature.Name}");
             List<BoneData> bones = dataPackage.ArmatureData.sortedBones;
             
             for (int i = 0, l = bones.Count; i < l; ++i)
             {
                 BoneData boneData = bones[i];
+                DBLogger.BLog.StartSection($"Bone Building {boneData.name}");
                 Bone bone = DBObject.BorrowObject<Bone>();
+                CurLog().AddEntry("Borrow", "Bone");
                 
+                CurLog().AddEntry("Init", "Bone", $"data: {boneData.name}; armature: {armature.Name}");
                 bone.Init(boneData, armature);
+                DBLogger.BLog.EndSection();
             }
+            CurLog().EndSection();
         }
 
         protected void BuildSlotsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
-            DBLogger.LogMessage("building slots");
+            DBLogger.BLog.StartSection($"Building Slots For {armature.Name}");
+            
             SkinData currentSkin = dataPackage.Skin;
             SkinData defaultSkin = dataPackage.ArmatureData.defaultSkin;
             
-            if (currentSkin == null || defaultSkin == null) { return; }
+            if (currentSkin == null || defaultSkin == null) {DBLogger.BLog.AddEntry("Build Slots Failed", armature.Name, "no skin found"); return; }
 
             Dictionary<string, List<DisplayData>> skinSlots = new Dictionary<string, List<DisplayData>>();
             
@@ -128,12 +141,13 @@ namespace DragonBones
                 }
             }
 
-            DBLogger.LogMessage(dataPackage.ArmatureData.sortedBones.Count);
             foreach (SlotData slotData in dataPackage.ArmatureData.sortedSlots)
             {
                 List<DisplayData> displayDatas = skinSlots.ContainsKey(slotData.name) ? skinSlots[slotData.name] : null;
                 BuildSlot(dataPackage, slotData, displayDatas, armature);
             }
+            
+            DBLogger.BLog.EndSection();
         }
 
         protected abstract Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData,
@@ -141,6 +155,7 @@ namespace DragonBones
 
         protected void BuildConstraintsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
+            DBLogger.BLog.StartSection($"Build Constraints For {armature.Name}");
             var constraints = dataPackage.ArmatureData.constraints;
             foreach (var constraintData in constraints.Values)
             {
@@ -149,11 +164,12 @@ namespace DragonBones
                 constraint.Init(constraintData, armature);
                 armature.Structure.AddConstraint(constraint);
             }
+            DBLogger.BLog.EndSection();
         }
 
-        protected object GetSlotDisplay(BuildArmaturePackage dataPackage, DisplayData displayData, DisplayData rawDisplayData, Slot slot)
+        protected object BuildSlotDisplay(BuildArmaturePackage dataPackage, DisplayData displayData, Slot slot)
         {
-            var dataName = dataPackage != null ? dataPackage.DataName : displayData.parent.parent.parent.name;
+            string dataName = dataPackage != null ? dataPackage.DataName : displayData.BelongsToSkin.BelongsToArmature.parent.name;
             
             object display = null;
             
@@ -170,15 +186,6 @@ namespace DragonBones
                         else if (dataPackage != null && !string.IsNullOrEmpty(dataPackage.TextureAtlasName))
                         {
                             imageDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.TextureAtlasName, displayData.path);
-                        }
-
-                        if (rawDisplayData != null && rawDisplayData.type == DisplayType.Mesh && IsSupportMesh())
-                        {
-                            display = slot.Displays.MeshDisplay;
-                        }
-                        else
-                        {
-                            display = slot.Displays.MeshDisplay;
                         }
                     }
                     break;
@@ -206,14 +213,14 @@ namespace DragonBones
                 case DisplayType.Armature:
                 {
                     ChildArmatureDisplayData childArmatureDisplayData = displayData as ChildArmatureDisplayData;
-                    Armature childArmature = BuildChildArmature(dataPackage, slot, displayData);
+                    Armature childArmature = BuildChildArmatureDisplay(dataPackage, slot, childArmatureDisplayData).ArmatureDisplay.Armature;
                     
                     if (childArmature != null)
                     {
                         childArmature.inheritAnimation = childArmatureDisplayData.inheritAnimation;
                         if (!childArmature.inheritAnimation)
                         {
-                            var actions = childArmatureDisplayData.actions.Count > 0 ? childArmatureDisplayData.actions : childArmature.ArmatureData.defaultActions;
+                            List<ActionData> actions = childArmatureDisplayData.actions.Count > 0 ? childArmatureDisplayData.actions : childArmature.ArmatureData.defaultActions;
                             if (actions.Count > 0)
                             {
                                 foreach (var action in actions)
@@ -241,7 +248,11 @@ namespace DragonBones
 
             return display;
         }
-        protected virtual Armature GetEmptyArmature() => DBObject.BorrowObject<Armature>();
+        protected virtual Armature GetEmptyArmature()
+        {
+            CurLog().AddEntry("Borrow", "New Armature");
+            return DBObject.BorrowObject<Armature>();
+        }
 
         public virtual void ReplaceDisplay(Slot slot, DisplayData displayData, int displayIndex = -1)
         {
@@ -380,7 +391,7 @@ namespace DragonBones
         public bool ReplaceSkin(Armature armature, SkinData skin, bool isOverride = false, List<string> exclude = null)
         {
             var success = false;
-            var defaultSkin = skin.parent.defaultSkin;
+            var defaultSkin = skin.BelongsToArmature.defaultSkin;
 
             foreach (var slot in armature.Structure.Slots)
             {
@@ -499,7 +510,7 @@ namespace DragonBones
 
                         if (displayData != null && displayData.type == DisplayType.Armature)
                         {
-                            var childArmatureData = DBInitial.Kernel.DataStorage.GetArmatureData(displayData.path, displayData.parent.parent.parent.name);
+                            var childArmatureData = DBInitial.Kernel.DataStorage.GetArmatureData(displayData.path, displayData.BelongsToSkin.BelongsToArmature.parent.name);
 
                             if (childArmatureData != null)
                             {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MothDIed.Pool;
 
 namespace DragonBones
 {
@@ -8,7 +9,7 @@ namespace DragonBones
     /// </summary>
     /// <version>DragonBones 4.5</version>
     /// <language>en_US</language>
-    public abstract class DBObject
+    public abstract class DBObject : IPoolable
     {
         /// <summary>
         /// - A unique identification number assigned to the object.
@@ -109,25 +110,11 @@ namespace DragonBones
             else
             {
                 var obj = new T();
-                obj.ClearObject();
+                obj.OnReleased();
                 return obj;
             }
         }
 
-
-        /// <summary>
-        /// - Clear the object and return it back to object pool。
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>en_US</language>
-
-        public void ReturnToPool()
-        {
-            ClearObject();
-            ReturnObject(this);
-        }
-
-        protected abstract void ClearObject();
         private static void ReturnObject(DBObject obj)
         {
             var classType = obj.GetType();
@@ -150,5 +137,20 @@ namespace DragonBones
                 DBLogger.LogWarning("Pool is full");
             }
         }
+
+        /// <summary>
+        /// - Clear the object and return it back to object pool。
+        /// </summary>
+        /// <version>DragonBones 4.5</version>
+        /// <language>en_US</language>
+        public void ReleaseThis()
+        {
+            OnReleased();
+            ReturnObject(this);
+        }
+
+        public virtual void OnPicked() { }
+        public abstract void OnReleased();
+        
     }
 }

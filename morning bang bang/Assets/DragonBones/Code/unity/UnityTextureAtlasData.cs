@@ -10,9 +10,9 @@ namespace DragonBones
         public Material texture;
         public Material uiTexture;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             if (_disposeEnabled && texture != null)
             {
@@ -49,9 +49,9 @@ namespace DragonBones
         {
         }
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
-            base.ClearObject();
+            base.OnReleased();
 
             foreach (var key in this._cacheBlendModeMats.Keys)
             {

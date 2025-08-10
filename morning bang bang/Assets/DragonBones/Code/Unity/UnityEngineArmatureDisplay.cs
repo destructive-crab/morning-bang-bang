@@ -122,7 +122,7 @@ namespace DragonBones
             //
             foreach (UnitySlot slot in Armature.Structure.Slots)
             {
-                var display = slot.UnityDisplay;
+                var display = slot.UnityCurrentDisplay;
                 if (display == null)
                 {
                     continue;
@@ -132,7 +132,7 @@ namespace DragonBones
 
                 if (slot.IsDisplayingChildArmature())
                 {
-                    (slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay as UnityEngineArmatureDisplay).UpdateSlotsSorting();
+                    ((UnityEngineArmatureDisplay)slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay).UpdateSlotsSorting();
                 }
 
 #if UNITY_EDITOR
@@ -274,7 +274,7 @@ namespace DragonBones
 
                 if (dragonBonesData != null && !string.IsNullOrEmpty(armatureName))
                 {
-                    DBInitial.UnityFactory.CreateNewArmature(armatureName, unityData.dataName, this,null, null);
+                    DBInitial.UnityFactory.UnityCreateArmature(armatureName, unityData.dataName, this,null, null);
                 }
             }
 
@@ -350,6 +350,7 @@ namespace DragonBones
 
         private void OpenCombineMeshs()
         {
+            return;
             if (isUGUI)
             {
                 return;
@@ -373,7 +374,7 @@ namespace DragonBones
             {
                 if (slot.IsDisplayingChildArmature())
                 {
-                    (slot.Displays.ChildArmatureSlotDisplay as UnityEngineArmatureDisplay).OpenCombineMeshs();
+                    ((UnityEngineArmatureDisplay)slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay).OpenCombineMeshs();
                 }
             }
         }
@@ -399,7 +400,7 @@ namespace DragonBones
             {
                 if (slot.IsDisplayingChildArmature())
                 {
-                    (slot.Displays.ChildArmatureSlotDisplay as UnityEngineArmatureDisplay).CloseCombineMeshs();
+                    ((UnityEngineArmatureDisplay)slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay).CloseCombineMeshs();
                 }
             }
         }

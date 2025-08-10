@@ -33,9 +33,9 @@ namespace DragonBones
 
         public void Dispose()
         {
-            foreach (var bone in bones) { bone.ReturnToPool(); }
-            foreach (var slot in slots) { slot.ReturnToPool(); }
-            foreach (var constraint in constraints) { constraint.ReturnToPool(); }
+            foreach (var bone in bones) { bone.ReleaseThis(); }
+            foreach (var slot in slots) { slot.ReleaseThis(); }
+            foreach (var constraint in constraints) { constraint.ReleaseThis(); }
             
             bones.Clear();
             slots.Clear();
@@ -234,11 +234,16 @@ namespace DragonBones
         #endregion
         
         #region GetSet API 
-        internal void AddBone(Bone value)
+        internal void AddBone(Bone bone)
         {
-            if (!bones.Contains(value))
+            if (!bones.Contains(bone))
             {
-                bones.Add(value);
+                DBInitial.Kernel.Factory.CurLog().AddEntry("Add Bone To Structure", bone.name, $"armature: {BelongsTo.Name}");
+                bones.Add(bone);
+            }
+            else
+            {
+                DBInitial.Kernel.Factory.CurLog().AddEntry("Add Bone To Structure", bone.name, $"failed - already in list");
             }
         }
 
@@ -261,6 +266,7 @@ namespace DragonBones
         {
             if (!constraints.Contains(value))
             {
+                DBLogger.BLog.AddEntry("Add", "Constraint");
                 constraints.Add(value);
             }
         }

@@ -10,7 +10,7 @@ namespace DragonBones
         
         public VerticesData verticesData;
 
-        protected override void ClearObject()
+        public override void OnReleased()
         {
             verticesDirty = false;
             vertices.Clear();

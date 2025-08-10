@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MothDIed.Core.GameObjects.Pool
+namespace MothDIed.Pool
 {
     [DisallowMultipleComponent]
     public sealed class PoolInstanceRoot : MonoBehaviour

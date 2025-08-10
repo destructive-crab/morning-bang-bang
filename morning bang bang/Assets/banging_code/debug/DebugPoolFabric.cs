@@ -1,6 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
-using MothDIed.Core.GameObjects.Pool;
+using MothDIed.Pool;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

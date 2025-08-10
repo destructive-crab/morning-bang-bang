@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using MothDIed.Core.GameObjects.Pool;
+using MothDIed.Pool;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -15,17 +15,21 @@ namespace DragonBones
         internal const string defaultShaderName = "Sprites/Default";
         internal const string defaultUIShaderName = "UI/Default";
         
-        private GameObjectPool<UnityEngineArmatureDisplay> armatureDisplaysPool;
-        private GameObjectPool<UnityEngineSlotDisplay> slotDisplaysPool;
+        private GameObjectPool<UnityEngineArmatureDisplay> unityArmatureDisplaysPool;
+        
+        private GameObjectPool<UnityEngineMeshSlotDisplay> unityMeshDisplaysPool;
+        private GameObjectPool<UnityEngineChildArmatureSlotDisplay> unityChildArmatureDisplaysPool;
 
         public async UniTask InitializeFactory()
         {
-            armatureDisplaysPool = InitializeNewDBGOPool<UnityEngineArmatureDisplay>(64, "Armature Displays");
+            unityArmatureDisplaysPool = InitializeNewDBGOPool<UnityEngineArmatureDisplay>(64, "Armature Displays");
 
-            slotDisplaysPool = InitializeNewDBGOPool<UnityEngineSlotDisplay>(128, "Slot Displays");
+            unityMeshDisplaysPool = InitializeNewDBGOPool<UnityEngineMeshSlotDisplay>(128, "Mesh Displays");
+            unityChildArmatureDisplaysPool = InitializeNewDBGOPool<UnityEngineChildArmatureSlotDisplay>(16, "Child Armature Displays");
 
-            await armatureDisplaysPool.WarmAsync();
-            await slotDisplaysPool.WarmAsync();
+            await unityArmatureDisplaysPool.WarmAsync();
+            await unityMeshDisplaysPool.WarmAsync();
+            await unityChildArmatureDisplaysPool.WarmAsync();
         }
 
         private GameObjectPool<TPool> InitializeNewDBGOPool<TPool>(ushort size, string name)
@@ -47,7 +51,7 @@ namespace DragonBones
         {
             if (disposeData)
             {
-                armatureDisplaysPool.Dispose();
+                unityArmatureDisplaysPool.Dispose();
             }
         }
         
@@ -61,25 +65,25 @@ namespace DragonBones
         /// <param name="textureAtlasName">The textureAtlas name</param>
         /// <returns>The armature display container.</returns>
         /// <language>en_US</language>
-        public UnityEngineArmatureDisplay CreateNewArmature(string armatureName, string dragonBonesName = "", IEngineArmatureDisplay display = null, 
+        public UnityEngineArmatureDisplay UnityCreateArmature(string armatureName, string dragonBonesName = "", IEngineArmatureDisplay display = null, 
             string skinName = "", string textureAtlasName = "")
         {
             Armature armature = BuildArmature(armatureName, dragonBonesName, skinName, textureAtlasName, display);
             return armature.Display as UnityEngineArmatureDisplay;
         }
 
-        protected override Armature BuildChildArmature(BuildArmaturePackage dataPackage, Slot slot, DisplayData displayData)
+        protected override IEngineChildArmatureSlotDisplay BuildChildArmatureDisplay(BuildArmaturePackage dataPackage,
+            Slot forSlot, ChildArmatureDisplayData childArmatureData)
         {
-            string childDisplayName = slot.SlotData.name + " (" + displayData.path + ")"; 
+            UnityEngineArmatureDisplay parentArmatureDisplay = forSlot.Armature.Display as UnityEngineArmatureDisplay;
+            UnityEngineChildArmatureSlotDisplay childArmatureDisplay = unityChildArmatureDisplaysPool.Pick();
             
-            UnityEngineArmatureDisplay parentArmatureDisplay = slot.Armature.Display as UnityEngineArmatureDisplay;
-            UnityEngineArmatureDisplay childArmatureDisplay = CreateNewArmature(childDisplayName, dataPackage.DataName, armatureDisplaysPool.Get());
+            UnityEngineArmatureDisplay armatureDisplay = UnityCreateArmature(childArmatureData.armature.name, dataPackage.DataName, childArmatureDisplay.ArmatureDisplay);
 
-            childArmatureDisplay.name = childDisplayName;
-            childArmatureDisplay.transform.SetParent(parentArmatureDisplay.transform, false);
-            childArmatureDisplay.gameObject.SetActive(false);
+            childArmatureDisplay.Build(childArmatureData, forSlot as UnitySlot);
+            childArmatureDisplay.Disable();
             
-            return childArmatureDisplay.Armature;
+            return childArmatureDisplay;
         }
 
         protected override IEngineArmatureDisplay GetNewArmatureDisplayFor(Armature armature)
@@ -95,50 +99,68 @@ namespace DragonBones
                 return armature.Display;
             }
             
-            return armatureDisplaysPool.Get();
+            CurLog().AddEntry("Pick", "Unity Armature Display");
+            return unityArmatureDisplaysPool.Pick();
         }
 
         protected override Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData,
             List<DisplayData> displayDatas, Armature armature)
         {
-            DBLogger.LogMessage("BUILD SLOT");
+            DBLogger.BLog.StartSection($"Build Slot {slotData.name}");
+            
+            DBLogger.BLog.AddEntry("Borrow", "Unity Slot", $"data: {slotData.name}; displays count: {displayDatas.Count}");
             UnitySlot slot = DBObject.BorrowObject<UnitySlot>();
+            
+            slot.StartSlotBuilding(slotData, armature);
+            slot.StarUnitySlotBuilding(armature.Display as UnityEngineArmatureDisplay);
             
             bool isNeedIgnoreCombineMesh = false;
 
-            UnityEngineSlotDisplay unitySlotRoot = slotDisplaysPool.Get();
-            
             foreach (DisplayData displayData in displayDatas)
             {
                 switch (displayData)
                 {
                     case ImageDisplayData imageDisplayData:
+                        DBLogger.BLog.AddEntry("Found", $"{imageDisplayData.ToString()}");
                         imageDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.DataName, imageDisplayData.path);
                         if (!slot.Displays.MeshDisplayInitialized)
                         {
-                            slot.Displays.InitMeshDisplay(slotDisplaysPool.Get());
+                            DBLogger.BLog.AddEntry("Pick From Pool", $"Unity Mesh Slot Display");
+                            UnityEngineMeshSlotDisplay meshDisplay = unityMeshDisplaysPool.Pick();
+   //                         imageDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.TextureAtlasName, imageDisplayData.path);
+                            meshDisplay.Build(displayData, slot);
+                            
+                            slot.Displays.InitMeshDisplay(meshDisplay);
                         } break;
-                    case MeshDisplayData:
+                    case MeshDisplayData meshDisplayData:
                         if (!slot.Displays.MeshDisplayInitialized)
                         {
-                            slot.Displays.InitMeshDisplay(slotDisplaysPool.Get());
+                            DBLogger.BLog.AddEntry("Pick From Pool", $"Unity Mesh Slot Display");
+                            UnityEngineMeshSlotDisplay meshDisplay = unityMeshDisplaysPool.Pick();
+//                            meshDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(, meshDisplayData.path);
+                            meshDisplay.Build(displayData, slot);
+                            
+                            slot.Displays.InitMeshDisplay(meshDisplay);
                         } break;
-                    case ChildArmatureDisplayData:
-                        Armature childArmature = BuildChildArmature(dataPackage, slot, displayData);
-                        slot.Displays.AddChildArmatureDisplay(childArmature.Display as IEngineChildArmatureSlotDisplay);
+                    case ChildArmatureDisplayData childArmatureDisplayData:
+                        DBLogger.BLog.AddEntry("Found", "Child Armature Display Data", childArmatureDisplayData.Name);
+                        childArmatureDisplayData.armature = DBInitial.Kernel.DataStorage.GetArmatureData(childArmatureDisplayData.path, childArmatureDisplayData.BelongsToSkin.BelongsToArmature.parent.name);
+                        UnityEngineChildArmatureSlotDisplay childArmature = BuildChildArmatureDisplay(dataPackage, slot, childArmatureDisplayData) as UnityEngineChildArmatureSlotDisplay;
+                        childArmatureDisplayData.armature = childArmature.ArmatureDisplay.Armature.ArmatureData;
+
+                        slot.Displays.AddChildArmatureDisplay(childArmature);
                         break;
                 }
             }
             
-            //init slot
-            slot.Init(slotData, armature);
-            slot.Init(unitySlotRoot, armature.Display as UnityEngineArmatureDisplay);
-            
             slot.Displays.SetAllDisplays(displayDatas.ToArray());
+            
+            slot.EndSlotBuilding();
+            slot.EndUnitySlotBuilding();
+            
             slot.Displays.SwapDisplaysByIndex(slotData.displayIndex);
             
-            unitySlotRoot.Build(slot);
-
+            DBLogger.BLog.EndSection();
             return slot;
         }
 
@@ -239,7 +261,7 @@ namespace DragonBones
             //UGUI Display Object and Normal Display Object cannot be replaced with each other
             if (displayData.type == DisplayType.Image || displayData.type == DisplayType.Mesh)
             {
-                string dataName = displayData.parent.parent.parent.name;
+                string dataName = displayData.BelongsToSkin.BelongsToArmature.parent.name;
                 TextureData textureData = DBInitial.Kernel.DataStorage.GetTextureData(dataName, displayData.path);
                 if (textureData != null)
                 {
@@ -330,7 +352,7 @@ namespace DragonBones
                 newDisplayData.Name = previousDisplayData.Name;
                 newDisplayData.path = previousDisplayData.path;
                 newDisplayData.DBTransform.CopyFrom(previousDisplayData.DBTransform);
-                newDisplayData.parent = previousDisplayData.parent;
+                newDisplayData.BelongsToSkin = previousDisplayData.BelongsToSkin;
                 (newDisplayData as ImageDisplayData).pivot.CopyFrom((previousDisplayData as ImageDisplayData).pivot);
                 (newDisplayData as ImageDisplayData).texture = newTextureData;
             }
@@ -341,7 +363,7 @@ namespace DragonBones
                 newDisplayData.Name = previousDisplayData.Name;
                 newDisplayData.path = previousDisplayData.path;
                 newDisplayData.DBTransform.CopyFrom(previousDisplayData.DBTransform);
-                newDisplayData.parent = previousDisplayData.parent;
+                newDisplayData.BelongsToSkin = previousDisplayData.BelongsToSkin;
                 
                 ((MeshDisplayData)newDisplayData).texture = newTextureData;
                 ((MeshDisplayData)newDisplayData).vertices.inheritDeform = meshDisplayData.vertices.inheritDeform;
