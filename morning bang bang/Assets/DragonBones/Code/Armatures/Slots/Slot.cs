@@ -73,14 +73,13 @@ namespace DragonBones
             if(ZOrder.IsDirty) EngineUpdateZOrder();
             if(BlendMode.IsDirty) EngineUpdateBlendMode();
             
-            if (this.DeformVertices != null && this.DeformVertices.verticesData != null && !IsDisplayingChildArmature())
+            if (DeformVertices != null && DeformVertices.verticesData != null && !IsDisplayingChildArmature())
             {
-                var isSkinned = this.DeformVertices.verticesData.weight != null;
+                bool isSkinned = DeformVertices.verticesData.weight != null;
 
-                if (this.DeformVertices.verticesDirty ||
-                    (isSkinned && this.DeformVertices.AreBonesDirty()))
+                if (DeformVertices.verticesDirty || (isSkinned && DeformVertices.AreBonesDirty()))
                 {
-                    this.DeformVertices.verticesDirty = false;
+                    DeformVertices.verticesDirty = false;
                     EngineUpdateMesh();
                 }
 

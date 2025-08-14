@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEngine.Rendering;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 namespace DragonBones
 {
-
     public enum SortingMode
     {
         /// <summary>
@@ -22,7 +22,7 @@ namespace DragonBones
         /// <language>en_US</language>
         SortByOrder
     } 
-    [ExecuteInEditMode, DisallowMultipleComponent]
+    [DisallowMultipleComponent]
     [RequireComponent(typeof(SortingGroup))]
     public class UnityEngineArmatureDisplay : UnityEventDispatcher, IEngineArmatureDisplay
     {
@@ -100,26 +100,7 @@ namespace DragonBones
             {
                 return;
             }
-
-            if (!isUGUI)
-            {
-#if UNITY_5_6_OR_NEWER
-                if (_sortingGroup)
-                {
-                    _sortingMode = SortingMode.SortByOrder;
-                    _sortingGroup.sortingLayerName = _sortingLayerName;
-                    _sortingGroup.sortingOrder = _sortingOrder;
-#if UNITY_EDITOR
-                    if (!Application.isPlaying)
-                    {
-                        EditorUtility.SetDirty(_sortingGroup);
-                    }
-#endif
-                }
-#endif
-            }
-
-            //
+            
             foreach (UnitySlot slot in Armature.Structure.Slots)
             {
                 var display = slot.UnityCurrentDisplay;
@@ -136,9 +117,9 @@ namespace DragonBones
                 }
 
 #if UNITY_EDITOR
-                if (!Application.isPlaying && slot.meshRenderer != null)
+                if (!Application.isPlaying && slot.MeshRenderer != null)
                 {
-                    EditorUtility.SetDirty(slot.meshRenderer);
+                    EditorUtility.SetDirty(slot.MeshRenderer);
                 }
 #endif
             }
@@ -148,8 +129,6 @@ namespace DragonBones
         public UnityDragonBonesData unityData = null;
 
         public string armatureName = null;
-
-        public bool isUGUI = false;
 
         internal readonly DBColor _DBColor = new DBColor();
 
@@ -185,15 +164,12 @@ namespace DragonBones
                 UpdateSlotsSorting();
             }
         }
-        //default open combineMeshs
-        [SerializeField] protected bool _closeCombineMeshs;
-
         private bool _hasSortingGroup = false;
 
-        public Armature Armature { get; internal set; } = null;
+        public Armature Armature { get; internal set; }
         public AnimationPlayer AnimationPlayer => Armature != null ? Armature.AnimationPlayer : null;
-
-        ///
+        public UnityEngineMeshCombiner Combiner { get; private set; }
+        
         public void DBInit(Armature armature)
         {
             Armature = armature;
@@ -209,7 +185,6 @@ namespace DragonBones
             unityData = null;
             armatureName = null;
             animationName = null;
-            isUGUI = false;
 
             Armature = null;
             _DBColor.Identity();
@@ -220,8 +195,6 @@ namespace DragonBones
             _flipY = false;
 
             _hasSortingGroup = false;
-
-            _closeCombineMeshs = false;
         }
 
         public void DBUpdate()
@@ -251,26 +224,12 @@ namespace DragonBones
             }
         }
 
-#if UNITY_EDITOR
-        private bool IsPrefab()
-        {
-            return PrefabUtility.GetCorrespondingObjectFromSource(gameObject) == null
-                   && PrefabUtility.GetPrefabInstanceHandle(gameObject) != null;
-        }
-#endif
 
-        /// <private/>
         void Awake()
         {
-#if UNITY_EDITOR
-            if (IsPrefab())
-            {
-                return;
-            }
-#endif
             if (IsDataSetupCorrectly())
             {
-                var dragonBonesData = DBInitial.UnityDataLoader.LoadData(unityData, isUGUI);
+                var dragonBonesData = DBInitial.UnityDataLoader.LoadData(unityData, false);
 
                 if (dragonBonesData != null && !string.IsNullOrEmpty(armatureName))
                 {
@@ -297,39 +256,34 @@ namespace DragonBones
             return unityData != null && unityData.dragonBonesJSON != null && unityData.textureAtlas != null;
         }
 
-        void Start()
+        private void LateUpdate()
         {
-            // this._closeCombineMeshs = true;
-            //默认开启合并
-            if (_closeCombineMeshs)
-            {
-                CloseCombineMeshs();
-            }
-            else
-            {
-                OpenCombineMeshs();
-            }
-        }
-
-        void LateUpdate()
-        {
-            if (Armature == null)
-            {
-                return;
-            }
+            if (Armature == null) { return; }
 
             _flipX = Armature.flipX;
             _flipY = Armature.flipY;
+            
+            foreach (Slot slot in Armature.Structure.Slots)
+            {
+                UnitySlot unitySlot = slot as UnitySlot;
 
+                if (slot.IsDisplayingChildArmature()) continue;
+                
+                unitySlot.CurrentAsMeshDisplay.MeshFilter.sharedMesh = unitySlot.meshBuffer.sharedMesh;
+                unitySlot.CurrentAsMeshDisplay.MeshRenderer.sharedMaterial = unitySlot.currentTextureAtlasData.texture;
+            }
+            
+            
+            
+            //TODO
+            
             var hasSortingGroup = GetComponent<SortingGroup>() != null;
             if (hasSortingGroup != _hasSortingGroup)
             {
                 _hasSortingGroup = hasSortingGroup;
-
             }
         }
 
-        /// <private/>
         void OnDestroy()
         {
             if (Armature != null)
@@ -346,63 +300,6 @@ namespace DragonBones
             }
 
             Armature = null;
-        }
-
-        private void OpenCombineMeshs()
-        {
-            return;
-            if (isUGUI)
-            {
-                return;
-            }
-
-            //
-            var cm = gameObject.GetComponent<UnityCombineMeshes>();
-            if (cm == null)
-            {
-                cm = gameObject.AddComponent<UnityCombineMeshes>();
-            }
-            //
-
-            if (Armature == null)
-            {
-                return;
-            }
-
-            var slots = Armature.Structure.Slots;
-            foreach (var slot in slots)
-            {
-                if (slot.IsDisplayingChildArmature())
-                {
-                    ((UnityEngineArmatureDisplay)slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay).OpenCombineMeshs();
-                }
-            }
-        }
-
-        public void CloseCombineMeshs()
-        {
-            _closeCombineMeshs = true;
-            //
-            var cm = gameObject.GetComponent<UnityCombineMeshes>();
-            if (cm != null)
-            {
-                DestroyImmediate(cm);
-            }
-
-            if (Armature == null)
-            {
-                return;
-            }
-
-            //
-            var slots = Armature.Structure.Slots;
-            foreach (var slot in slots)
-            {
-                if (slot.IsDisplayingChildArmature())
-                {
-                    ((UnityEngineArmatureDisplay)slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay).CloseCombineMeshs();
-                }
-            }
         }
     }
 }

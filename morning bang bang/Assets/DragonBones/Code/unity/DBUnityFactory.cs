@@ -252,7 +252,7 @@ namespace DragonBones
                 foreach (var atlas in textureAtlasDatas)
                 {
                     var unityAtlas = (UnityTextureAtlasData)atlas;
-                    RefreshTextureAtlas(unityAtlas, unityEngineArmature.isUGUI);
+                    RefreshTextureAtlas(unityAtlas, false);
                 }
             }
         }
@@ -268,7 +268,7 @@ namespace DragonBones
                 {
                     var textureAtlasData = textureData.parent as UnityTextureAtlasData;
 
-                    var oldIsUGUI = (slot.Armature.Display as UnityEngineArmatureDisplay).isUGUI;
+                    var oldIsUGUI = false;
 
                     if ((oldIsUGUI && textureAtlasData.uiTexture == null) ||
                         (!oldIsUGUI && textureAtlasData.texture == null))
