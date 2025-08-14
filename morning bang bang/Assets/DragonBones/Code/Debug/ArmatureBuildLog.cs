@@ -25,6 +25,7 @@ namespace DragonBones.Code.Debug
         }
 
         public ArmatureBuildLog Parent;
+        public readonly List<ArmatureBuildLog> Children = new();
 
         public readonly string name;
         private string log="";

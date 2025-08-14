@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6efa8a6801de4994ab933f355ea57786
+guid: 5d1e6c57010ecac4f9cb8bb030f6b2f1
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Oswald
+  - DM Sans
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

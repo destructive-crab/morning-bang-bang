@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace DragonBones
 {
     public abstract class Slot : TransformObject
@@ -68,6 +66,8 @@ namespace DragonBones
         }
         public virtual void ProcessDirtyData()
         {
+            if (Parent._childrenTransformDirty) TransformDirty = true;
+            
             if(Color.IsDirty) EngineUpdateColor();
             if(Visible.IsDirty) EngineUpdateVisibility();
             if(ZOrder.IsDirty) EngineUpdateZOrder();
@@ -91,7 +91,11 @@ namespace DragonBones
                 }
             }
             
-            if (TransformDirty) EngineUpdateTransform();
+            if (TransformDirty)
+            {
+                UpdateGlobalTransformAndMatrix();
+                EngineUpdateTransform();
+            }
         }
         private void ProcessCacheFrameIndex(AnimationData animation, DBFrameCacher cacher, int frameIndex)
         {
@@ -132,6 +136,7 @@ namespace DragonBones
             GlobalTransformDBMatrix.CopyFrom(LocalDBMatrix);
             GlobalTransformDBMatrix.Concat(Parent.GlobalTransformDBMatrix);
 
+            _globalDirty = true;
             UpdateGlobalTransform();
         }
         private void UpdateLocalMatrix()

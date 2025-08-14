@@ -89,10 +89,12 @@ namespace DragonBones
                 passedTime *= _inheritTimeScale;
             }
 
-            var animationStateCount = _animationStates.Count;
+            int animationStateCount = _animationStates.Count;
+            
             if (animationStateCount == 1)
             {
-                var animationState = _animationStates[0];
+                AnimationState animationState = _animationStates[0];
+                
                 if (animationState._fadeState > 0 && animationState._subFadeState > 0)
                 {
                     DBInitial.Kernel.BufferObject(animationState);
@@ -101,8 +103,8 @@ namespace DragonBones
                 }
                 else
                 {
-                    var animationData = animationState.Animation;
-                    var cacheFrameRate = animationData.cacheFrameRate;
+                    AnimationData animationData = animationState.Animation;
+                    float cacheFrameRate = animationData.cacheFrameRate;
 
                     animationState.AdvanceTime(passedTime, cacheFrameRate);
                 }

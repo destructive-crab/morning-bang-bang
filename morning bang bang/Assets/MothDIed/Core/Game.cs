@@ -76,7 +76,6 @@ namespace MothDIed
                 LGR.PERR(dragonBonesException.ToString());
             }
 
-            LGR.PM("AAA");
             AudioSystem.Setup(args.AudioSystemConfig);
             
             IsBootstrapping = false;

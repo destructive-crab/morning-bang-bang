@@ -127,7 +127,7 @@ namespace DragonBones
 
         public bool IsFrameCached(AnimationData animation, int frameIndex)
         {
-            return isCachedMarkers[GetAnimationKey(animation)][frameIndex];
+            return isCachedMarkers.ContainsKey(GetAnimationKey(animation)) && isCachedMarkers[GetAnimationKey(animation)][frameIndex];
         }
         
         private static string GetAnimationKey(AnimationData animation)

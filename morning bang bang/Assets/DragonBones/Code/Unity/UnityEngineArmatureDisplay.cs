@@ -203,7 +203,7 @@ namespace DragonBones
         {
             if (disposeDisplay)
             {
-                DBUnityFactory.Helper.DestroyUnityObject(gameObject);
+                //TODO DBUnityFactory.Helper.DestroyUnityObject(gameObject);
             }
             
             unityData = null;

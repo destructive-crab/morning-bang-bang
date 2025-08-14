@@ -298,11 +298,11 @@ namespace DragonBones
             {
                 bone.Update(-1, null);
             }
-
+            
             foreach (Slot slot in Structure.Slots)
             {
                 slot.ProcessDirtyDisplay();
-                if (CachingEnabled)
+                if (CachingEnabled && AnimationPlayer.CurrentState != null)
                 {
                     slot.UpdateCache(AnimationPlayer.CurrentState.Animation, DBInitial.Kernel.Cacher, AnimationPlayer.CurrentState.CurrentCacheFrameIndex);
                 }

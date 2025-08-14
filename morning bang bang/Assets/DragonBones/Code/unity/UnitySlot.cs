@@ -1,3 +1,4 @@
+using banging_code.debug;
 using UnityEngine;
 
 namespace DragonBones
@@ -168,17 +169,13 @@ namespace DragonBones
         //
         private void _CombineMesh()
         {
-            //引起合并的条件,Display改变，混合模式改变，Visible改变，Zorder改变
-            //已经关闭合并，不再考虑
-            if (IgnoreCombineMesh || ArmatureDisplay.isUGUI)
+            if (IgnoreCombineMesh)
             {
                 return;
             }
 
-            //已经合并过了，又触发合并，那么打断合并，用自己的网格数据还原
             if (IsCombineMesh)
             {
-                //已经合并过，除非满足一下情况，否则都不能再合并, TODO
                 CancelCombineMesh();
                 IgnoreCombineMesh = true;
             }
@@ -187,6 +184,7 @@ namespace DragonBones
             //从来没有合并过，触发合并，那么尝试合并
             if (combineMeshComp != null)
             {
+                LGR.PM("COMBINE MESH");
                 combineMeshComp.MarkAsDirty();
             }
         }
@@ -596,7 +594,7 @@ namespace DragonBones
 
         protected override void EngineUpdateVisibility()
         {
-            UnityCurrentDisplay.SetEnabled(false);
+            UnityCurrentDisplay.SetEnabled(Parent.visible);
 
             if (IsCombineMesh && !Parent.visible)
             {

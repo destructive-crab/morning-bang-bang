@@ -49,7 +49,6 @@ namespace DragonBones
         /// <language>en_US</language>
         public virtual Armature BuildArmature(string armatureName, string dragonBonesName = "", string skinName = null, string textureAtlasName = null, IEngineArmatureDisplay providedDisplay = null)
         {
-            DBLogger.LogMessage("TEST");
             DBLogger.StartNewArmatureBuildLog(armatureName);
             
             Armature armature = GetEmptyArmature();
@@ -88,8 +87,11 @@ namespace DragonBones
             DBInitial.Kernel.Clock.Add(armature);
             
             armature.ArmatureReady();
+            
             DBLogger.FinishArmatureBuildLog();
+            
             DBLogger.PrintBuildLog(armatureName);
+            
             return armature;
         }
 

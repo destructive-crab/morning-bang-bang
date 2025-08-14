@@ -479,10 +479,10 @@ namespace DragonBones
 
             if (_timelineData != null)
             {
-                var valueOffset = _animationData.frameFloatOffset + _frameValueOffset + _frameIndex * 2;
-                var frameFloatArray = _DBProjectData.frameFloatArray;
-                var current = bonePose.current;
-                var delta = bonePose.delta;
+                long valueOffset = _animationData.frameFloatOffset + _frameValueOffset + _frameIndex * 2;
+                float[] frameFloatArray = _DBProjectData.frameFloatArray;
+                DBTransform current = bonePose.current;
+                DBTransform delta = bonePose.delta;
 
                 current.rotation = frameFloatArray[valueOffset++];
                 current.skew = frameFloatArray[valueOffset++];

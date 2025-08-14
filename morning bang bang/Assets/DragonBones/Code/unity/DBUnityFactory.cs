@@ -109,6 +109,7 @@ namespace DragonBones
             DBLogger.BLog.StartSection($"Build Slot {slotData.name}");
             
             DBLogger.BLog.AddEntry("Borrow", "Unity Slot", $"data: {slotData.name}; displays count: {displayDatas.Count}");
+            
             UnitySlot slot = DBObject.BorrowObject<UnitySlot>();
             
             slot.StartSlotBuilding(slotData, armature);

@@ -98,11 +98,11 @@ namespace DragonBones
                 
                 CurrentEngineDisplay?.Enable();
                 
+                DisplayDirty = true;
                 BelongsTo.RefreshData();
                 return true;
             }
 
-            DisplayDirty = true;
             return false;
         }
 
