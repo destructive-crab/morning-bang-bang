@@ -17,6 +17,7 @@ namespace DragonBones
             if (BLog != null)
             {
                 Logs.Last().Parent = BLog;
+                BLog.Children.Add(Logs.Last());
                 BLog.AddEntry(CHILD_BUILD_LOG_MARK, name);
             }
             BLog = Logs.Last();               
@@ -35,31 +36,22 @@ namespace DragonBones
             string resultLog = "";
             foreach (ArmatureBuildLog log in Logs)
             {
-                if (log.name == name)
-                {
-
-                    ArmatureBuildLog prevLog = null;
-                    var currentBuildLog = log;
-                    do
-                    {
-                        if (resultLog != "")
-                        {
-                            resultLog = currentBuildLog.ToString()
-                                .Replace(CHILD_BUILD_LOG_MARK + prevLog.name, resultLog);
-                        }
-                        else
-                        {
-                            resultLog = currentBuildLog.ToString();
-                        }
-
-                        prevLog = currentBuildLog;
-                        currentBuildLog = log.Parent;
-                        
-                    } while (currentBuildLog != null);
-                }
+                if (name == log.name) resultLog = GetBuildLogOutput(log);
             }
 
             LogMessage(resultLog);
+        }
+
+        private static string GetBuildLogOutput(ArmatureBuildLog log)
+        {
+            string resultLog = log.ToString();
+
+            foreach (ArmatureBuildLog armatureBuildLog in log.Children)
+            {
+                resultLog = resultLog.Replace(CHILD_BUILD_LOG_MARK + armatureBuildLog.name, GetBuildLogOutput(armatureBuildLog));
+            }
+            
+            return resultLog;
         }
         
         internal static void LogMessage(object message)
