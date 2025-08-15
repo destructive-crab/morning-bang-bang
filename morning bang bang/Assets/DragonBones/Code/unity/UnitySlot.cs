@@ -385,7 +385,7 @@ namespace DragonBones
         }
         protected override void EngineUpdateVisibility()
         {
-            UnityCurrentDisplay.SetEnabled(Parent.visible);
+            //UnityCurrentDisplay.SetEnabled(Parent.visible);
         }
         
         protected override void EngineUpdateColor()
@@ -447,7 +447,13 @@ namespace DragonBones
 
         private void UpdateMeshBufferTransform()
         {
-            if (Displays.CurrentDisplayData.type != DisplayType.Mesh || Displays.CurrentDisplayData.type != DisplayType.Path) return;
+            // if (Displays.CurrentDisplayData.type == DisplayType.Image)
+            // {
+            //     meshBuffer.sharedMesh.
+            // }
+            
+            
+//            if (Displays.CurrentDisplayData.type != DisplayType.Mesh || Displays.CurrentDisplayData.type != DisplayType.Path) return;
             
             float a = GlobalTransformDBMatrix.a;
             float b = GlobalTransformDBMatrix.b;
@@ -460,6 +466,8 @@ namespace DragonBones
             float ry = 0.0f;
             float vx = 0.0f;
             float vy = 0.0f;
+
+            if (meshBuffer.vertexBuffers == null) return;
             
             for (int i = 0, l = meshBuffer.vertexBuffers.Length; i < l; i++)
             {
@@ -471,14 +479,15 @@ namespace DragonBones
 
                 meshBuffer.vertexBuffers[i].x = vx;
                 meshBuffer.vertexBuffers[i].y = vy;
-
             }
             //
+            meshBuffer.InitMesh();
             meshBuffer.VertexDirty = true;
         }
 
         private void UpdateGameObjectTransform()
         {
+            return;
             UpdateGlobalTransform(); // Update transform.
 
             //localPosition

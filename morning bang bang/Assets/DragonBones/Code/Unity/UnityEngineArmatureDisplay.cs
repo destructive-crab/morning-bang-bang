@@ -93,6 +93,8 @@ namespace DragonBones
         [SerializeField]
         
         internal SortingGroup _sortingGroup;
+
+        public bool CombineMeshes = true;
         
         private void UpdateSlotsSorting()
         {
@@ -173,6 +175,11 @@ namespace DragonBones
         public void DBInit(Armature armature)
         {
             Armature = armature;
+            
+            if(Combiner == null)
+            {
+                Combiner = new UnityEngineMeshCombiner(this);
+            }
         }
 
         public void DBClear(bool disposeDisplay = false)
@@ -195,6 +202,7 @@ namespace DragonBones
             _flipY = false;
 
             _hasSortingGroup = false;
+            Combiner?.Clear();
         }
 
         public void DBUpdate()
@@ -225,7 +233,7 @@ namespace DragonBones
         }
 
 
-        void Awake()
+        private void Awake()
         {
             if (IsDataSetupCorrectly())
             {
@@ -251,17 +259,19 @@ namespace DragonBones
             }
         }
 
-        private bool IsDataSetupCorrectly()
-        {
-            return unityData != null && unityData.dragonBonesJSON != null && unityData.textureAtlas != null;
-        }
-
         private void LateUpdate()
         {
             if (Armature == null) { return; }
 
             _flipX = Armature.flipX;
             _flipY = Armature.flipY;
+ 
+            if (CombineMeshes && !Combiner.IsCombined)
+            {
+                Combiner.Combine();
+            }
+
+            if (Combiner.IsCombined) Combiner.Update();
             
             foreach (Slot slot in Armature.Structure.Slots)
             {
@@ -269,11 +279,15 @@ namespace DragonBones
 
                 if (slot.IsDisplayingChildArmature()) continue;
                 
-                unitySlot.CurrentAsMeshDisplay.MeshFilter.sharedMesh = unitySlot.meshBuffer.sharedMesh;
-                unitySlot.CurrentAsMeshDisplay.MeshRenderer.sharedMaterial = unitySlot.currentTextureAtlasData.texture;
+                if (CombineMeshes && unitySlot.IsEnabled)
+                {
+                    unitySlot.Disable();
+                    continue;
+                }
+                
+                
+                UpdateSlotGO(unitySlot);
             }
-            
-            
             
             //TODO
             
@@ -284,7 +298,7 @@ namespace DragonBones
             }
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             if (Armature != null)
             {
@@ -300,6 +314,17 @@ namespace DragonBones
             }
 
             Armature = null;
+        }
+
+        private static void UpdateSlotGO(UnitySlot unitySlot)
+        {
+            unitySlot.CurrentAsMeshDisplay.MeshFilter.sharedMesh = unitySlot.meshBuffer.sharedMesh;
+            unitySlot.CurrentAsMeshDisplay.MeshRenderer.sharedMaterial = unitySlot.currentTextureAtlasData.texture;
+        }
+
+        private bool IsDataSetupCorrectly()
+        {
+            return unityData != null && unityData.dragonBonesJSON != null && unityData.textureAtlas != null;
         }
     }
 }
