@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 #if UNITY_EDITOR
-using UnityEditor;
 #endif
 
 namespace DragonBones
@@ -273,8 +271,7 @@ namespace DragonBones
             if (CombineMeshes && !Combiner.IsCombined)
             {
                 Combiner.Combine();
-                //Registry.CommitChanges();
-                
+                Registry.CommitChanges();
             }
             else if (!CombineMeshes && !Separator.IsCreated)
             {
@@ -282,25 +279,26 @@ namespace DragonBones
                 Registry.CommitChanges();
             }
 
-//            foreach (Slot slot in Armature.Structure.Slots)
-//            {
-//                var changes = Registry.PullChanges(slot.Name);
-//                
-//                while (changes != UnitySlotStateRegistry.RegistryChange.None)
-//                {
-//                    //process changes
-//                    switch (changes)
-//                    {
-//                        case UnitySlotStateRegistry.RegistryChange.ChildArmatureVisibility: break;
-//                        case UnitySlotStateRegistry.RegistryChange.CombinedMeshVisibility: break;
-//                        case UnitySlotStateRegistry.RegistryChange.SeparatedMeshVisibility: break;
-//                        case UnitySlotStateRegistry.RegistryChange.DisplayChanged: break;
-//                    }
-//                    
-//                    changes = Registry.PullChanges(slot.Name);
-//                } 
-//            }
-           // Registry.CommitChanges();
+            foreach (Slot slot in Armature.Structure.Slots)
+            {
+                UnitySlotStateRegistry.RegistryChange[] changes = Registry.PullChanges(slot.Name);
+                foreach (UnitySlotStateRegistry.RegistryChange registryChange in changes)
+                {
+                    switch (registryChange)
+                    {
+                        case UnitySlotStateRegistry.RegistryChange.ChildArmatureVisibility:
+                            break;
+                        case UnitySlotStateRegistry.RegistryChange.CombinedMeshVisibility:
+                            break;
+                        case UnitySlotStateRegistry.RegistryChange.SeparatedMeshVisibility:
+                            break;
+                        case UnitySlotStateRegistry.RegistryChange.DisplayChanged:
+                            break;
+                    }
+                }
+                Registry.CommitChanges();
+            }
+            Registry.CommitChanges();
             
             if (Combiner.IsCombined) Combiner.Update();
             if (Separator.IsCreated) Separator.Update();
@@ -373,29 +371,31 @@ namespace DragonBones
                 this.combiner = combiner;
             }
 
-            public RegistryChange PullChanges(string name)
+            public RegistryChange[] PullChanges(string name)
             {
                 UnitySlot unitySlot = structure.GetSlot(name) as UnitySlot;
-
-                var state = GetState(name);
+                DisplayType state = GetState(name);
                 
-                if (GetVisibility(name) != unitySlot.IsVisible)
+                List<RegistryChange> changes = new();
+                
+                if (GetVisibility(name) != unitySlot.Visible.Value)
                 {
                     switch (state)
                     {
-                        case DisplayType.ChildArmature: return RegistryChange.ChildArmatureVisibility;
-                        case DisplayType.CombinedMesh: return RegistryChange.CombinedMeshVisibility; 
-                        case DisplayType.SeparatedMesh: return RegistryChange.SeparatedMeshVisibility;
+                        case DisplayType.ChildArmature: changes.Add(RegistryChange.ChildArmatureVisibility); break;
+                        case DisplayType.CombinedMesh: changes.Add(RegistryChange.CombinedMeshVisibility); break;
+                        case DisplayType.SeparatedMesh: changes.Add(RegistryChange.SeparatedMeshVisibility); break;
                     }
                 }
 
                 if (state == DisplayType.ChildArmature && !unitySlot.IsDisplayingChildArmature())
-                    return RegistryChange.DisplayChanged;
+                    changes.Add(RegistryChange.DisplayChanged);
                 if (state != DisplayType.ChildArmature && unitySlot.IsDisplayingChildArmature())
-                    return RegistryChange.DisplayChanged;
+                    changes.Add(RegistryChange.DisplayChanged);
 
+                if (changes.Count != 0) return changes.ToArray();
                 //todo warnings
-                return RegistryChange.None;
+                return null;
             }
 
             public void CommitChanges()

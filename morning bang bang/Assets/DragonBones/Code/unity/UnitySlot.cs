@@ -29,17 +29,6 @@ namespace DragonBones
 
         public UnityEngineArmatureDisplay ArmatureDisplay { get; private set; }
 
-        public bool IsVisible { get; private set; } = false;
-
-        public void Show()
-        {
-            IsVisible = true;
-        }
-
-        public void Hide()
-        {
-            IsVisible = false;
-        }
 
         public override void OnReleased()
         {
@@ -54,7 +43,6 @@ namespace DragonBones
             _skewed = false;
 
             BlendMode.Set(DragonBones.BlendMode.Normal);
-            IsVisible = false;
             Displays.Clear();
         }
 
@@ -371,8 +359,6 @@ namespace DragonBones
         }
         protected override void EngineUpdateVisibility()
         {
-            if(Parent.visible) Show();
-            if (!Parent.visible) Hide();
         }
 
         protected override void EngineUpdateColor()
