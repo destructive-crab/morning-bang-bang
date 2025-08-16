@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -21,7 +23,7 @@ namespace DragonBones
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
         SortByOrder
-    } 
+    }
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SortingGroup))]
     public class UnityEngineArmatureDisplay : UnityEventDispatcher, IEngineArmatureDisplay
@@ -68,7 +70,7 @@ namespace DragonBones
 
                 UpdateSlotsSorting();
             }
-        } 
+        }
         [SerializeField]
         internal SortingMode _sortingMode = SortingMode.SortByZ;
         [SerializeField]
@@ -89,44 +91,34 @@ namespace DragonBones
 
                 UpdateSlotsSorting();
             }
-        } 
+        }
         [SerializeField]
-        
+
         internal SortingGroup _sortingGroup;
 
         public bool CombineMeshes = true;
-        
+
+
         private void UpdateSlotsSorting()
         {
             if (Armature == null)
             {
                 return;
             }
-            
+
             foreach (UnitySlot slot in Armature.Structure.Slots)
             {
-                var display = slot.UnityCurrentDisplay;
-                if (display == null)
-                {
-                    continue;
-                }
+                if (!slot.Displays.HasVisibleDisplay) { continue; }
 
-                slot.UpdateZPosition(new Vector3(display.transform.localPosition.x, display.transform.localPosition.y, -slot.ZOrder.Value * (_zSpace + 0.001f)));
+                slot.UpdateZPosition();
 
                 if (slot.IsDisplayingChildArmature())
                 {
-                    ((UnityEngineArmatureDisplay)slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay).UpdateSlotsSorting();
+                    ((UnityEngineArmatureDisplay)slot.Displays.CurrentChildArmature.ArmatureDisplay).UpdateSlotsSorting();
                 }
-
-#if UNITY_EDITOR
-                if (!Application.isPlaying && slot.MeshRenderer != null)
-                {
-                    EditorUtility.SetDirty(slot.MeshRenderer);
-                }
-#endif
             }
         }
-        
+
         public const int ORDER_SPACE = 10;
         public UnityDragonBonesData unityData = null;
 
@@ -145,7 +137,7 @@ namespace DragonBones
 
         [SerializeField] protected bool _flipY = false;
         internal float _zSpace = 0.0f;
-        
+
         public float zSpace
         {
             get { return _zSpace; }
@@ -170,15 +162,27 @@ namespace DragonBones
 
         public Armature Armature { get; internal set; }
         public AnimationPlayer AnimationPlayer => Armature != null ? Armature.AnimationPlayer : null;
-        public UnityEngineMeshCombiner Combiner { get; private set; }
-        
+        public ArmatureMesh Combiner { get; private set; }
+        public UnityEngineMeshSeparator Separator { get; private set; }
+        public UnitySlotStateRegistry Registry { get; private set; }
+
         public void DBInit(Armature armature)
         {
             Armature = armature;
-            
-            if(Combiner == null)
+
+            if (Combiner == null)
             {
-                Combiner = new UnityEngineMeshCombiner(this);
+                Combiner = new ArmatureMesh(this);
+            }
+
+            if (Separator == null)
+            {
+                Separator = new UnityEngineMeshSeparator(this);
+            }
+
+            if (Registry == null)
+            {
+                Registry = new UnitySlotStateRegistry(Armature.Structure, Separator, Combiner);
             }
         }
 
@@ -188,7 +192,7 @@ namespace DragonBones
             {
                 //TODO DBUnityFactory.Helper.DestroyUnityObject(gameObject);
             }
-            
+
             unityData = null;
             armatureName = null;
             animationName = null;
@@ -202,7 +206,6 @@ namespace DragonBones
             _flipY = false;
 
             _hasSortingGroup = false;
-            Combiner?.Clear();
         }
 
         public void DBUpdate()
@@ -237,7 +240,7 @@ namespace DragonBones
         {
             if (IsDataSetupCorrectly())
             {
-                var dragonBonesData = DBInitial.UnityDataLoader.LoadData(unityData, false);
+                DBProjectData dragonBonesData = DBInitial.UnityDataLoader.LoadData(unityData, false);
 
                 if (dragonBonesData != null && !string.IsNullOrEmpty(armatureName))
                 {
@@ -261,36 +264,49 @@ namespace DragonBones
 
         private void LateUpdate()
         {
-            if (Armature == null) { return; }
+            if (Armature == null || !Armature.Structure.SlotsBuilt) { return; }
 
             _flipX = Armature.flipX;
             _flipY = Armature.flipY;
- 
+
+            //combine startpoint. combine mesh if needed
             if (CombineMeshes && !Combiner.IsCombined)
             {
                 Combiner.Combine();
+                //Registry.CommitChanges();
+                
             }
-
-            if (Combiner.IsCombined) Combiner.Update();
-            
-            foreach (Slot slot in Armature.Structure.Slots)
+            else if (!CombineMeshes && !Separator.IsCreated)
             {
-                UnitySlot unitySlot = slot as UnitySlot;
-
-                if (slot.IsDisplayingChildArmature()) continue;
-                
-                if (CombineMeshes && unitySlot.IsEnabled)
-                {
-                    unitySlot.Disable();
-                    continue;
-                }
-                
-                
-                UpdateSlotGO(unitySlot);
+                Separator.Create();
+                Registry.CommitChanges();
             }
+
+//            foreach (Slot slot in Armature.Structure.Slots)
+//            {
+//                var changes = Registry.PullChanges(slot.Name);
+//                
+//                while (changes != UnitySlotStateRegistry.RegistryChange.None)
+//                {
+//                    //process changes
+//                    switch (changes)
+//                    {
+//                        case UnitySlotStateRegistry.RegistryChange.ChildArmatureVisibility: break;
+//                        case UnitySlotStateRegistry.RegistryChange.CombinedMeshVisibility: break;
+//                        case UnitySlotStateRegistry.RegistryChange.SeparatedMeshVisibility: break;
+//                        case UnitySlotStateRegistry.RegistryChange.DisplayChanged: break;
+//                    }
+//                    
+//                    changes = Registry.PullChanges(slot.Name);
+//                } 
+//            }
+           // Registry.CommitChanges();
             
+            if (Combiner.IsCombined) Combiner.Update();
+            if (Separator.IsCreated) Separator.Update();
+
             //TODO
-            
+
             var hasSortingGroup = GetComponent<SortingGroup>() != null;
             if (hasSortingGroup != _hasSortingGroup)
             {
@@ -316,15 +332,89 @@ namespace DragonBones
             Armature = null;
         }
 
-        private static void UpdateSlotGO(UnitySlot unitySlot)
-        {
-            unitySlot.CurrentAsMeshDisplay.MeshFilter.sharedMesh = unitySlot.meshBuffer.sharedMesh;
-            unitySlot.CurrentAsMeshDisplay.MeshRenderer.sharedMaterial = unitySlot.currentTextureAtlasData.texture;
-        }
-
         private bool IsDataSetupCorrectly()
         {
             return unityData != null && unityData.dragonBonesJSON != null && unityData.textureAtlas != null;
+        }
+
+        public class UnitySlotStateRegistry
+        {
+            public enum DisplayType
+            {
+                ChildArmature,
+                CombinedMesh,
+                SeparatedMesh,
+            }
+
+            public enum RegistryChange
+            {
+                None,
+                
+                ChildArmatureVisibility,
+                CombinedMeshVisibility,
+                SeparatedMeshVisibility,
+                
+                DisplayChanged
+            }
+            
+            private readonly Dictionary<string, DisplayType> states = new();
+            private readonly Dictionary<string, string> currentDisplays = new();
+            private readonly Dictionary<string, bool> visibilities = new();
+            
+            private ArmatureStructure structure;
+            
+            private UnityEngineMeshSeparator separator;
+            private ArmatureMesh combiner;
+
+            public UnitySlotStateRegistry(ArmatureStructure structure, UnityEngineMeshSeparator separator, ArmatureMesh combiner)
+            {
+                this.structure = structure;
+                this.separator = separator;
+                this.combiner = combiner;
+            }
+
+            public RegistryChange PullChanges(string name)
+            {
+                UnitySlot unitySlot = structure.GetSlot(name) as UnitySlot;
+
+                var state = GetState(name);
+                
+                if (GetVisibility(name) != unitySlot.IsVisible)
+                {
+                    switch (state)
+                    {
+                        case DisplayType.ChildArmature: return RegistryChange.ChildArmatureVisibility;
+                        case DisplayType.CombinedMesh: return RegistryChange.CombinedMeshVisibility; 
+                        case DisplayType.SeparatedMesh: return RegistryChange.SeparatedMeshVisibility;
+                    }
+                }
+
+                if (state == DisplayType.ChildArmature && !unitySlot.IsDisplayingChildArmature())
+                    return RegistryChange.DisplayChanged;
+                if (state != DisplayType.ChildArmature && unitySlot.IsDisplayingChildArmature())
+                    return RegistryChange.DisplayChanged;
+
+                //todo warnings
+                return RegistryChange.None;
+            }
+
+            public void CommitChanges()
+            {
+                foreach (Slot slot in structure.Slots)
+                {
+                    if (combiner.Contains(slot.Name)) states[slot.Name] = DisplayType.CombinedMesh;
+                    else if (separator.Contains(slot.Name)) states[slot.Name] = DisplayType.SeparatedMesh;
+                    else if (slot.IsDisplayingChildArmature()) states[slot.Name] = DisplayType.ChildArmature;
+
+                    visibilities[slot.Name] = slot.Visible.Value;
+                    currentDisplays[slot.Name] = slot.Displays.CurrentName;
+                }
+            }
+            
+            private bool GetVisibility(string name) => visibilities[name];
+            private string GetSlotDisplayName(UnitySlot unitySlot) => currentDisplays[unitySlot.Name];
+            public DisplayType GetState(string name) => states[name];
+            public void SetState(string name, DisplayType state) => states[name] = state;
         }
     }
 }

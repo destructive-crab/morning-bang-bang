@@ -149,7 +149,8 @@ namespace DragonBones
                 List<DisplayData> displayDatas = skinSlots.ContainsKey(slotData.name) ? skinSlots[slotData.name] : null;
                 BuildSlot(dataPackage, slotData, displayDatas, armature);
             }
-            
+
+            armature.Structure.SlotsBuilt = true;
             DBLogger.BLog.EndSection();
         }
 
@@ -170,87 +171,6 @@ namespace DragonBones
             DBLogger.BLog.EndSection();
         }
 
-        protected object BuildSlotDisplay(BuildArmaturePackage dataPackage, DisplayData displayData, Slot slot)
-        {
-            string dataName = dataPackage != null ? dataPackage.DataName : displayData.BelongsToSkin.BelongsToArmature.parent.name;
-            
-            object display = null;
-            
-            switch (displayData.type)
-            {
-                case DisplayType.Image:
-                    {
-                        ImageDisplayData imageDisplayData = displayData as ImageDisplayData;
-                        
-                        if (imageDisplayData.texture == null)
-                        {
-                            imageDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataName, displayData.path);
-                        }
-                        else if (dataPackage != null && !string.IsNullOrEmpty(dataPackage.TextureAtlasName))
-                        {
-                            imageDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.TextureAtlasName, displayData.path);
-                        }
-                    }
-                    break;
-                case DisplayType.Mesh:
-                    {
-                        var meshDisplayData = displayData as MeshDisplayData;
-                        if (meshDisplayData.texture == null)
-                        {
-                            meshDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataName, meshDisplayData.path);
-                        }
-                        else if (dataPackage != null && !string.IsNullOrEmpty(dataPackage.TextureAtlasName))
-                        {
-                            meshDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.TextureAtlasName, meshDisplayData.path);
-                        }
-
-                        if (IsSupportMesh())
-                        {
-                            display = slot.Displays.MeshDisplay;
-                        }
-                        else
-                        {
-                            display = slot.Displays.MeshDisplay;
-                        }
-                    } break;
-                case DisplayType.Armature:
-                {
-                    ChildArmatureDisplayData childArmatureDisplayData = displayData as ChildArmatureDisplayData;
-                    Armature childArmature = BuildChildArmatureDisplay(dataPackage, slot, childArmatureDisplayData).ArmatureDisplay.Armature;
-                    
-                    if (childArmature != null)
-                    {
-                        childArmature.inheritAnimation = childArmatureDisplayData.inheritAnimation;
-                        if (!childArmature.inheritAnimation)
-                        {
-                            List<ActionData> actions = childArmatureDisplayData.actions.Count > 0 ? childArmatureDisplayData.actions : childArmature.ArmatureData.defaultActions;
-                            if (actions.Count > 0)
-                            {
-                                foreach (var action in actions)
-                                {
-                                    var eventObject = DBObject.BorrowObject<EventObject>();
-                                    EventObject.ActionDataToInstance(action, eventObject, slot.Armature);
-                                    eventObject.slot = slot;
-                                    slot.Armature.BufferAction(eventObject, false);
-                                }
-                            }
-                            else
-                            {
-                                childArmature.AnimationPlayer.Play();
-                            }
-                        }
-
-                        childArmatureDisplayData.armature = childArmature.ArmatureData; 
-                    }
-
-                    display = childArmature.Display;
-                } break;
-                case DisplayType.BoundingBox:
-                    break;
-            }
-
-            return display;
-        }
         protected virtual Armature GetEmptyArmature()
         {
             CurLog().AddEntry("Borrow", "New Armature");
@@ -503,25 +423,25 @@ namespace DragonBones
             foreach (Slot slot in armature.Structure.Slots)
             {
                 int index = 0;
-                
-                foreach (IEngineChildArmatureSlotDisplay display in slot.Displays.GetChildArmaturesDisplays)
-                {
-                    var displayDatas = skinData.GetDisplays(slot.Name);
-                    if (displayDatas != null && index < displayDatas.Count)
-                    {
-                        var displayData = displayDatas[index];
-
-                        if (displayData != null && displayData.type == DisplayType.Armature)
-                        {
-                            var childArmatureData = DBInitial.Kernel.DataStorage.GetArmatureData(displayData.path, displayData.BelongsToSkin.BelongsToArmature.parent.name);
-
-                            if (childArmatureData != null)
-                            {
-                                ReplaceAnimation(display.ArmatureDisplay.Armature, childArmatureData, isOverride);
-                            }
-                        }
-                    }
-                }
+                //TODO
+                //foreach (IEngineChildArmatureSlotDisplay display in slot.Displays.GetChildArmatureDisplays)
+                //{
+                //    var displayDatas = skinData.GetDisplays(slot.Name);
+                //    if (displayDatas != null && index < displayDatas.Count)
+                //    {
+                //        var displayData = displayDatas[index];
+//
+                //        if (displayData != null && displayData.Type == DisplayType.Armature)
+                //        {
+                //            var childArmatureData = DBInitial.Kernel.DataStorage.GetArmatureData(displayData.path, displayData.BelongsToSkin.BelongsToArmature.parent.name);
+//
+                //            if (childArmatureData != null)
+                //            {
+                //                ReplaceAnimation(display.ArmatureDisplay.Armature, childArmatureData, isOverride);
+                //            }
+                //        }
+                //    }
+                //}
             }
 
             return true;

@@ -22,22 +22,24 @@ namespace DragonBones
         public readonly UnityEngineArmatureDisplay BelongsTo;
 
         private List<CombineSlot> Combines = new();
-        private Mesh combinedMesh;
-        private List<CombineInstance> cs1;
+        private List<CombineInstance> cs;
+        private List<MeshBuffer> mbs;
+
+        private MeshFilter meshFilter;
+
+        private MeshBuffer combinedBuffer;
 
         public UnityEngineMeshCombiner(UnityEngineArmatureDisplay belongsTo)
         {
             BelongsTo = belongsTo;
         }
 
-        public void Clear()
-        {
-            
-        }
-        
         public void Combine()
         {
-            cs1 = new();
+            cs = new List<CombineInstance>();
+            mbs = new List<MeshBuffer>();
+            combinedBuffer = new MeshBuffer();
+            
             foreach (Slot slot in BelongsTo.Armature.Structure.Slots)
             {
                 UnitySlot unitySlot = (UnitySlot)slot;
@@ -48,26 +50,39 @@ namespace DragonBones
 
                 CombineSlot currentCombine = Combines.Last();
 
-                currentCombine.CombineInstance.mesh = unitySlot.meshBuffer.sharedMesh;
-                currentCombine.CombineInstance.transform = unitySlot.CurrentAsMeshDisplay.MeshFilter.transform.localToWorldMatrix;
+                currentCombine.CombineInstance.mesh = unitySlot.MeshBuffer.sharedMesh;
+                currentCombine.CombineInstance.transform = BelongsTo.transform.localToWorldMatrix * BelongsTo.transform.worldToLocalMatrix;
                 
-                cs1.Add(currentCombine.CombineInstance);
+                cs.Add(currentCombine.CombineInstance);
+                mbs.Add(currentCombine.Slot.MeshBuffer);
                 unitySlot.Disable();
             }
 
-            combinedMesh = new Mesh();
-            combinedMesh.CombineMeshes(cs1.ToArray());
+            meshFilter = BelongsTo.gameObject.AddComponent<MeshFilter>();
             
-            BelongsTo.gameObject.AddComponent<MeshFilter>().sharedMesh = combinedMesh;
-            BelongsTo.gameObject.AddComponent<MeshRenderer>().material = Combines[0].Slot.currentTextureAtlasData.texture;
+            combinedBuffer.SplitFrom(Combines.ToArray());
+
+            BelongsTo.gameObject.AddComponent<MeshRenderer>().material = Combines[0].Slot.CurrentTextureAtlasData.texture;
+            meshFilter.sharedMesh = combinedBuffer.sharedMesh;
 
             IsCombined = true;
         }
 
+        public void Clear() { }
+
         public void Update()
         {
-             combinedMesh.CombineMeshes(cs1.ToArray());
-             BelongsTo.gameObject.GetComponent<MeshFilter>().sharedMesh = combinedMesh;
+            combinedBuffer.UpdateFromSplits();
+        }
+
+        private int Comparison(CombineInstance x, CombineInstance y)
+        {
+            if (x.mesh.vertices[0].z < y.mesh.vertices[0].z)
+                return 1;
+            if(x.mesh.vertices[0].z > y.mesh.vertices[0].z)
+                return -1;
+
+            return 0;
         }
     }
 }

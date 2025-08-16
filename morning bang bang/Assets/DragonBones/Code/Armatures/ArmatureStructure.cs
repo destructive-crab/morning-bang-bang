@@ -23,7 +23,10 @@ namespace DragonBones
         private readonly List<Armature> currentChildArmatures = new();
         
         public bool SlotsDirty { get; private set; }
+        public bool SlotsBuilt { get; set; }
+
         private bool SlotsZOrderDirty;
+        
         public void MarkSlotsAsDirty() => SlotsDirty = true;
 
         public ArmatureStructure(Armature belongsTo)
@@ -253,9 +256,9 @@ namespace DragonBones
             {
                 slots.Add(value);
 
-                if (value.Displays.CurrentEngineDisplay is IEngineChildArmatureSlotDisplay childArmatureSlotDisplay)
+                if (value.Displays.CurrentChildArmature != null)
                 {
-                    childArmatures.Add(childArmatureSlotDisplay.ArmatureDisplay.Armature);
+                    childArmatures.Add(value.Displays.CurrentChildArmature.ArmatureDisplay.Armature);
                 }
                 
                 SlotsDirty = true;

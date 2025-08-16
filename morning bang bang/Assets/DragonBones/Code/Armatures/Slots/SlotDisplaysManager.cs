@@ -1,37 +1,27 @@
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace DragonBones
 {
     public class SlotDisplaysManager
     {
         public bool DisplayDirty { get; set; } = true;
+        
         public readonly Slot BelongsTo;
         
         //displays management
         private readonly Dictionary<string, DisplayData> displays = new();
         private readonly List<ChildArmatureDisplayData> childArmatures = new();
-
         private DisplayData[] allDisplays;
-
-        public DisplayData CurrentDisplayDataRaw { get; private set; }
-        private DisplayData[] rawDisplaysData;
-        
-        public IEngineChildArmatureSlotDisplay[] GetChildArmaturesDisplays => childArmatureDisplays.Values.ToArray();
         private readonly Dictionary<string, IEngineChildArmatureSlotDisplay> childArmatureDisplays = new();
-        public IEngineSlotDisplay MeshDisplay { get; private set; }
 
         public DisplayData CurrentDisplayData { get; private set; }
-        public IEngineSlotDisplay CurrentEngineDisplay { get; private set; }
-        
-        public IEngineChildArmatureSlotDisplay ChildArmatureSlotDisplay => CurrentEngineDisplay as IEngineChildArmatureSlotDisplay;
-        public bool MeshDisplayInitialized => MeshDisplay != null;
+        public string CurrentName => CurrentDisplayData.Name;
 
-        public SlotDisplaysManager(Slot belongsTo)
-        {
-            BelongsTo = belongsTo;
-        }
+        public bool HasVisibleDisplay { get; private set; }
+        public IEngineChildArmatureSlotDisplay CurrentChildArmature { get; set; }
+
+        public SlotDisplaysManager(Slot belongsTo) { BelongsTo = belongsTo; }
         
         public virtual bool AddDisplay(DisplayData data)
         {
@@ -62,44 +52,34 @@ namespace DragonBones
             BelongsTo.RefreshData();
         }
 
-        public DisplayData GetDisplay(string displayName)
-        {
-            return displays[displayName];
-        }
+        public DisplayData GetDisplay(string displayName) => displays[displayName];
+        public DisplayData[] GetAllData() => allDisplays;
 
-        public DisplayData[] GetAllData()
-        {
-            return displays.Values.ToArray();
-        }
-        
         public virtual bool SwapCurrentDisplay(string displayName)
         {
-            if (displays.TryGetValue(displayName, out DisplayData newDisplayData) &&
-                ((CurrentDisplayData != null && CurrentDisplayData.Name != displayName) || CurrentDisplayData == null))
+            if (displays.TryGetValue(displayName, out DisplayData newDisplayData) &
+                ((CurrentDisplayData != null && CurrentDisplayData.Name != displayName) || CurrentDisplayData == null ))
             {
-                IEngineSlotDisplay newDisplay = null;
-
-                if (newDisplayData.type == DisplayType.Armature)
+                //check if previous display was child armature
+                if (CurrentDisplayData != null && CurrentDisplayData.Type == DisplayType.Armature)
                 {
-                    newDisplay = childArmatureDisplays[displayName];
-                }
-                else if (newDisplayData.type == DisplayType.Image || newDisplayData.type == DisplayType.Mesh)
-                {
-                    newDisplay = MeshDisplay;
-                }
-
-                if (CurrentEngineDisplay != newDisplay && CurrentDisplayData != null)
-                {
-                    CurrentEngineDisplay.Disable();
+                    childArmatureDisplays[CurrentDisplayData.Name].Disable();
                 }
                 
-                CurrentEngineDisplay = newDisplay;
+                //if our new display is child armature, we should enable its engine display
+                if (newDisplayData.Type == DisplayType.Armature)
+                {
+                    childArmatureDisplays[newDisplayData.Name].Enable();
+                    CurrentChildArmature = childArmatureDisplays[newDisplayData.Name];
+                }
+                
                 CurrentDisplayData = newDisplayData;
                 
-                CurrentEngineDisplay?.Enable();
-                
                 DisplayDirty = true;
+                HasVisibleDisplay = true;
+                
                 BelongsTo.RefreshData();
+                
                 return true;
             }
 
@@ -110,15 +90,9 @@ namespace DragonBones
         {
         }
 
-        public void InitMeshDisplay(IEngineSlotDisplay display)
-        {
-            DBLogger.BLog.AddEntry("SlotDisplaysManager Init Mesh Display", display.Data.Name);
-            MeshDisplay = display;
-        }
-
         public void AddChildArmatureDisplay(IEngineChildArmatureSlotDisplay childArmatureSlotDisplay)
         {
-            DBLogger.BLog.AddEntry("Slot Displays Manager: Add Child Armature Display", childArmatureSlotDisplay.ChildArmatureDisplayData.Name);
+            DBLogger.BLog.AddEntry("Slot Displays Manager: Add Child Armature Display", childArmatureSlotDisplay.Data.Name);
             childArmatureDisplays.Add(childArmatureSlotDisplay.Data.Name, childArmatureSlotDisplay);
         }
 
@@ -136,12 +110,18 @@ namespace DragonBones
         {
             if (index == -1)
             {
-                CurrentEngineDisplay.Disable();
+                HasVisibleDisplay = false;
+                return true;
+            }
+            if (CurrentDisplayData != null && DisplayIndexToName(index) == CurrentDisplayData.Name && !HasVisibleDisplay)
+            {
+                HasVisibleDisplay = true;
                 return true;
             }
             
             return SwapCurrentDisplay(DisplayIndexToName(index));
         }
+
 
         public void RefreshCurrentDisplayWithIndex()
         {

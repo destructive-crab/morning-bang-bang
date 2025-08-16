@@ -16,19 +16,15 @@ namespace DragonBones
         internal const string defaultUIShaderName = "UI/Default";
         
         private GameObjectPool<UnityEngineArmatureDisplay> unityArmatureDisplaysPool;
-        
-        private GameObjectPool<UnityEngineMeshSlotDisplay> unityMeshDisplaysPool;
         private GameObjectPool<UnityEngineChildArmatureSlotDisplay> unityChildArmatureDisplaysPool;
 
         public async UniTask InitializeFactory()
         {
             unityArmatureDisplaysPool = InitializeNewDBGOPool<UnityEngineArmatureDisplay>(64, "Armature Displays");
 
-            unityMeshDisplaysPool = InitializeNewDBGOPool<UnityEngineMeshSlotDisplay>(128, "Mesh Displays");
             unityChildArmatureDisplaysPool = InitializeNewDBGOPool<UnityEngineChildArmatureSlotDisplay>(16, "Child Armature Displays");
 
             await unityArmatureDisplaysPool.WarmAsync();
-            await unityMeshDisplaysPool.WarmAsync();
             await unityChildArmatureDisplaysPool.WarmAsync();
         }
 
@@ -124,25 +120,10 @@ namespace DragonBones
                     case ImageDisplayData imageDisplayData:
                         DBLogger.BLog.AddEntry("Found", $"{imageDisplayData.ToString()}");
                         imageDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.DataName, imageDisplayData.path);
-                        if (!slot.Displays.MeshDisplayInitialized)
-                        {
-                            DBLogger.BLog.AddEntry("Pick From Pool", $"Unity Mesh Slot Display");
-                            UnityEngineMeshSlotDisplay meshDisplay = unityMeshDisplaysPool.Pick();
-   //                         imageDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(dataPackage.TextureAtlasName, imageDisplayData.path);
-                            meshDisplay.Build(displayData, slot);
-                            
-                            slot.Displays.InitMeshDisplay(meshDisplay);
-                        } break;
+                        break;
                     case MeshDisplayData meshDisplayData:
-                        if (!slot.Displays.MeshDisplayInitialized)
-                        {
-                            DBLogger.BLog.AddEntry("Pick From Pool", $"Unity Mesh Slot Display");
-                            UnityEngineMeshSlotDisplay meshDisplay = unityMeshDisplaysPool.Pick();
 //                            meshDisplayData.texture = DBInitial.Kernel.DataStorage.GetTextureData(, meshDisplayData.path);
-                            meshDisplay.Build(displayData, slot);
-                            
-                            slot.Displays.InitMeshDisplay(meshDisplay);
-                        } break;
+                        break;
                     case ChildArmatureDisplayData childArmatureDisplayData:
                         DBLogger.BLog.AddEntry("Found", "Child Armature Display Data", childArmatureDisplayData.Name);
                         childArmatureDisplayData.armature = DBInitial.Kernel.DataStorage.GetArmatureData(childArmatureDisplayData.path, childArmatureDisplayData.BelongsToSkin.BelongsToArmature.parent.name);
@@ -260,7 +241,7 @@ namespace DragonBones
         public override void ReplaceDisplay(Slot slot, DisplayData displayData, int displayIndex = -1)
         {
             //UGUI Display Object and Normal Display Object cannot be replaced with each other
-            if (displayData.type == DisplayType.Image || displayData.type == DisplayType.Mesh)
+            if (displayData.Type == DisplayType.Image || displayData.Type == DisplayType.Mesh)
             {
                 string dataName = displayData.BelongsToSkin.BelongsToArmature.parent.name;
                 TextureData textureData = DBInitial.Kernel.DataStorage.GetTextureData(dataName, displayData.path);
@@ -349,7 +330,7 @@ namespace DragonBones
             if (previousDisplayData is ImageDisplayData)
             {
                 newDisplayData = new ImageDisplayData();
-                newDisplayData.type = previousDisplayData.type;
+                newDisplayData.Type = previousDisplayData.Type;
                 newDisplayData.Name = previousDisplayData.Name;
                 newDisplayData.path = previousDisplayData.path;
                 newDisplayData.DBTransform.CopyFrom(previousDisplayData.DBTransform);
@@ -360,7 +341,7 @@ namespace DragonBones
             else if (previousDisplayData is MeshDisplayData meshDisplayData)
             {
                 newDisplayData = new MeshDisplayData();
-                newDisplayData.type = previousDisplayData.type;
+                newDisplayData.Type = previousDisplayData.Type;
                 newDisplayData.Name = previousDisplayData.Name;
                 newDisplayData.path = previousDisplayData.path;
                 newDisplayData.DBTransform.CopyFrom(previousDisplayData.DBTransform);

@@ -1,8 +1,11 @@
 namespace DragonBones
 {
-    public interface IEngineChildArmatureSlotDisplay : IEngineSlotDisplay
+    public interface IEngineChildArmatureSlotDisplay 
     {
-        public ChildArmatureDisplayData ChildArmatureDisplayData => Data as ChildArmatureDisplayData;
+        public ChildArmatureDisplayData Data { get; }
         public IEngineArmatureDisplay ArmatureDisplay { get; }
+
+        void Enable();
+        void Disable();
     }
 }

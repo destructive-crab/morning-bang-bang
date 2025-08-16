@@ -3,6 +3,7 @@ namespace DragonBones
     public class Dirty<TType>
     {
         public bool IsDirty { get; private set; }
+        public bool NotDirty => !IsDirty;
         public TType Value;
 
         public Dirty() { }
@@ -14,7 +15,7 @@ namespace DragonBones
         public void Set(TType newValue)
         {
             Value = newValue;
-            MarkAsDirty();
+            MarkAsDirty(); 
         }
 
         public TType GetAndChange()

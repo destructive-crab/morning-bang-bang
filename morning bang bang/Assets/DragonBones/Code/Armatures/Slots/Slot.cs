@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace DragonBones
 {
     public abstract class Slot : TransformObject
@@ -51,6 +53,14 @@ namespace DragonBones
         #region Animation Loop 
         public void ProcessDirtyDisplay()
         {
+            if (!Displays.HasVisibleDisplay)
+            {
+                Visible.Set(false);
+                return;
+            }
+           
+            if(!Visible.Value) Visible.Set(true);
+            
             if (Displays.DisplayDirty)
             {
                 Displays.DisplayDirty = false;
@@ -285,10 +295,7 @@ namespace DragonBones
         protected abstract void EngineUpdateFrame();
         #endregion
 
-        public void SetZOrder(int zOrder)
-        {
-            ZOrder.Set(zOrder);
-        }
+        public void SetZOrder(int zOrder) => ZOrder.Set(zOrder);
 
         public void InvalidUpdate()
         {
@@ -298,7 +305,7 @@ namespace DragonBones
 
         public bool IsDisplayingChildArmature()
         {
-            return Displays.ChildArmatureSlotDisplay != null && Displays.CurrentDisplayData.type == DisplayType.Armature;
+            return Displays.CurrentChildArmature != null && Displays.CurrentDisplayData.Type == DisplayType.Armature;
         }
     }
 }

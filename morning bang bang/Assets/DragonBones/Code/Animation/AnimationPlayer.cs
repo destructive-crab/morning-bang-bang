@@ -395,7 +395,7 @@ namespace DragonBones
             // Child armature play same name animation.
             foreach (var slot in Armature.Structure.Slots)
             {
-                Armature childArmature = slot.Displays.ChildArmatureSlotDisplay?.ArmatureDisplay.Armature;
+                Armature childArmature = slot.Displays.CurrentChildArmature?.ArmatureDisplay.Armature;
                 
                 if (childArmature != null &&
                     childArmature.inheritAnimation &&

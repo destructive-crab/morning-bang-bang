@@ -36,7 +36,7 @@ namespace DragonBones
 
     public abstract class DisplayData : DBObject
     {
-        public DisplayType type;
+        public DisplayType Type;
         public string Name;
         public string path;
         public SkinData BelongsToSkin;
@@ -62,7 +62,7 @@ namespace DragonBones
         {
             base.OnReleased();
 
-            type = DisplayType.Image;
+            Type = DisplayType.Image;
             pivot.Clear();
             texture = null;
         }
@@ -83,7 +83,7 @@ namespace DragonBones
                 action.ReleaseThis();
             }
 
-            type = DisplayType.Armature;
+            Type = DisplayType.Armature;
             inheritAnimation = false;
             actions.Clear();
             armature = null;
@@ -106,7 +106,7 @@ namespace DragonBones
         {
             base.OnReleased();
 
-            type = DisplayType.Mesh;
+            Type = DisplayType.Mesh;
             vertices.Clear();
             texture = null;
         }
@@ -127,7 +127,7 @@ namespace DragonBones
                 boundingBox.ReleaseThis();
             }
 
-            type = DisplayType.BoundingBox;
+            Type = DisplayType.BoundingBox;
             boundingBox = null;
         }
     }
@@ -145,7 +145,7 @@ namespace DragonBones
         {
             base.OnReleased();
 
-            type = DisplayType.Path;
+            Type = DisplayType.Path;
             closed = false;
             constantSpeed = false;
             vertices.Clear();

@@ -461,7 +461,7 @@ namespace DragonBones
 
                             foreach (var displayData in slot.Displays.GetAllData())
                             {
-                                if (displayData.type == DisplayType.Mesh)
+                                if (displayData.Type == DisplayType.Mesh)
                                 {
                                     int meshOffset = (displayData as MeshDisplayData).vertices.offset;
                                     

@@ -129,7 +129,7 @@ namespace DragonBones
                 // Update childArmature clock.
                 foreach (Slot slot in Structure.Slots)
                 {
-                    Armature childArmature = slot.Displays.ChildArmatureSlotDisplay?.ArmatureDisplay.Armature;
+                    Armature childArmature = slot.Displays.CurrentChildArmature?.ArmatureDisplay.Armature;
                     
                     if (childArmature != null)
                     {
@@ -328,7 +328,7 @@ namespace DragonBones
                             {
                                 if (action.slot.IsDisplayingChildArmature())
                                 {
-                                    action.slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay.AnimationPlayer.FadeIn(actionData.name);
+                                    action.slot.Displays.CurrentChildArmature.ArmatureDisplay.AnimationPlayer.FadeIn(actionData.name);
                                 }
                             }
                             else if (action.bone != null)
@@ -339,7 +339,7 @@ namespace DragonBones
                                     {
                                         if (slot.IsDisplayingChildArmature())
                                         {
-                                            slot.Displays.ChildArmatureSlotDisplay.ArmatureDisplay.AnimationPlayer.FadeIn(actionData.name);
+                                            slot.Displays.CurrentChildArmature.ArmatureDisplay.AnimationPlayer.FadeIn(actionData.name);
                                         }
 
                                     }
