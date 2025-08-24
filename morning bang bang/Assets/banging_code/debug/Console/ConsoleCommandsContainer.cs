@@ -1,4 +1,6 @@
+using DragonBones;
 using MothDIed;
+using UnityEngine;
 
 namespace banging_code.debug.Console
 {
@@ -69,6 +71,27 @@ namespace banging_code.debug.Console
         {
             Game.GetDebugger().Map.HideMap();
             return "Map hidden";
+        }
+
+        [ConsoleCommandKey("time_scale")]
+        public string TimeScale(float timeScale)
+        {
+            Time.timeScale = timeScale;
+            return $"timeScale: {timeScale}";
+        }
+        
+        [ConsoleCommandKey("db_registry_state")]
+        public string RegistryState()
+        {
+            DB.Registry.PrintCurrentState();
+            return "";
+        }
+
+        [ConsoleCommandKey("quit")]
+        public string Quit()
+        {
+            Game.QuitGame();
+            return "";
         }
     }
 }

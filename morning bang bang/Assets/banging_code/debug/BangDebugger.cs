@@ -38,7 +38,6 @@ namespace banging_code.debug
 
             return container;
         }
-
         public async UniTask SetupDebugger()
         {
             Lines = new DebugLinesDrawer(debuggerConfig, this);

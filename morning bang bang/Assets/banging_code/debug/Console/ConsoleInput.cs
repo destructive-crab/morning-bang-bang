@@ -38,7 +38,7 @@ namespace banging_code.debug.Console
             {
                 if (float.TryParse(part, out Single floatArg))
                 {
-                    if(part.Contains("."))
+                    if(part.Contains(","))
                     {
                         fullCommand.Add(floatArg);
                     }
