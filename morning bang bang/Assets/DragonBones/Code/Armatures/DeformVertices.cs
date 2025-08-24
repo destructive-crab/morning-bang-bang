@@ -48,7 +48,7 @@ namespace DragonBones
                 {
                     for (int i = 0, l = verticesData.weight.bones.Count; i < l; ++i)
                     {
-                        Bone bone = armature.Structure.GetBone(verticesData.weight.bones[i].name);
+                        Bone bone = DB.Registry.GetBone(DB.Registry.SearchAtArmature(armature.ID, verticesData.weight.bones[i].name));
                         bones.Add(bone);
                     }
                 }

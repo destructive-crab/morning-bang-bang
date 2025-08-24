@@ -614,7 +614,7 @@ namespace DragonBones
         private SlotData _ParseSlot(Dictionary<string, object> rawData, int zOrder)
         {
             var slot = DBObject.BorrowObject<SlotData>();
-            slot.displayIndex = ObjectDataParser._GetNumber(rawData, ObjectDataParser.DISPLAY_INDEX, 0);
+            slot.DefaultDisplayIndex = ObjectDataParser._GetNumber(rawData, ObjectDataParser.DISPLAY_INDEX, 0);
             slot.zOrder = zOrder;
             slot.name = ObjectDataParser._GetString(rawData, ObjectDataParser.NAME, "");
             slot.parent = this._armature.GetBone(ObjectDataParser._GetString(rawData, ObjectDataParser.PARENT, "")); //
@@ -727,7 +727,7 @@ namespace DragonBones
                     else if (this._slotChildActions.ContainsKey(this._slot.name))
                     {
                         var displays = this._skin.GetDisplays(this._slot.name);
-                        if (displays == null ? this._slot.displayIndex == 0 : this._slot.displayIndex == displays.Count)
+                        if (displays == null ? this._slot.DefaultDisplayIndex == 0 : this._slot.DefaultDisplayIndex == displays.Count)
                         {
                             foreach (var action in this._slotChildActions[this._slot.name])
                             {

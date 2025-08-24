@@ -52,7 +52,7 @@ namespace DragonBones
                     }
 #endif
 
-                    var textureAtlasDatas = DBInitial.Kernel.DataStorage.GetTextureAtlasData(data.dataName);
+                    var textureAtlasDatas = DB.Kernel.DataStorage.GetTextureAtlasData(data.dataName);
                     if (textureAtlasDatas != null)
                     {
                         for (int i = 0, l = textureAtlasDatas.Count; i < l; ++i)
@@ -69,7 +69,7 @@ namespace DragonBones
                                 {
                                     textureAtlasData.imagePath = AssetDatabase.GetAssetPath(textureAtlas.texture);
                                     textureAtlasData.imagePath = textureAtlasData.imagePath.Substring(0, textureAtlasData.imagePath.Length - 4);
-                                    DBUnityFactory.RefreshTextureAtlas(textureAtlasData, isUGUI);
+                                    UnityDBFactory.RefreshTextureAtlas(textureAtlasData, isUGUI);
                                     if (isUGUI)
                                     {
                                         textureAtlas.uiMaterial = textureAtlasData.uiTexture;
@@ -116,7 +116,7 @@ namespace DragonBones
         /// <language>en_US</language>
         public DBProjectData LoadDragonBonesData(string dragonBonesJSONPath, string name = "", float scale = 0.01f)
         {
-            dragonBonesJSONPath = DBUnityFactory.Helper.CheckResourcesPath(dragonBonesJSONPath);
+            dragonBonesJSONPath = UnityDBFactory.Helper.CheckResourcesPath(dragonBonesJSONPath);
 
             TextAsset dragonBonesJSON = Resources.Load<TextAsset>(dragonBonesJSONPath);
 
@@ -143,7 +143,7 @@ namespace DragonBones
             
             if (!string.IsNullOrEmpty(name))
             {
-                var existedData = DBInitial.Kernel.DataStorage.GetDragonBonesData(name);
+                var existedData = DB.Kernel.DataStorage.GetDragonBonesData(name);
                 if (existedData != null)
                 {
                     return existedData; //was already loaded
@@ -155,11 +155,11 @@ namespace DragonBones
             if (dragonBonesJSON.text == "DBDT")
             {
                 BinaryDataParser.jsonParseDelegate = MiniJSON.Json.Deserialize;
-                data = DBInitial.Kernel.DataStorage.ParseAndAddDragonBonesData(dragonBonesJSON.bytes, name, scale); // Unity default Scale Factor.
+                data = DB.Kernel.DataStorage.ParseAndAddDragonBonesData(dragonBonesJSON.bytes, name, scale); // Unity default Scale Factor.
             }
             else
             {
-                data = DBInitial.Kernel.DataStorage.ParseAndAddDragonBonesData((Dictionary<string, object>)MiniJSON.Json.Deserialize(dragonBonesJSON.text), name, scale); // Unity default Scale Factor.
+                data = DB.Kernel.DataStorage.ParseAndAddDragonBonesData((Dictionary<string, object>)MiniJSON.Json.Deserialize(dragonBonesJSON.text), name, scale); // Unity default Scale Factor.
             }
 
             return data;
@@ -176,7 +176,7 @@ namespace DragonBones
         /// <language>en_US</language>  
         public UnityTextureAtlasData LoadTextureAtlasData(string textureAtlasJSONPath, string name = "", float scale = 1.0f, bool isUGUI = false)
         {
-            textureAtlasJSONPath = DBUnityFactory.Helper.CheckResourcesPath(textureAtlasJSONPath);
+            textureAtlasJSONPath = UnityDBFactory.Helper.CheckResourcesPath(textureAtlasJSONPath);
 
             TextAsset textureAtlasJSON = Resources.Load<TextAsset>(textureAtlasJSONPath);
 
@@ -184,13 +184,13 @@ namespace DragonBones
             if (textureAtlasJSON != null)
             {
                 Dictionary<string, object> textureJSONData = (Dictionary<string, object>)MiniJSON.Json.Deserialize(textureAtlasJSON.text);
-                UnityTextureAtlasData textureAtlasData = DBInitial.Kernel.DataStorage.ParseAndAddTextureAtlasData(textureJSONData, null, name, scale) as UnityTextureAtlasData;
+                UnityTextureAtlasData textureAtlasData = DB.Kernel.DataStorage.ParseAndAddTextureAtlasData(textureJSONData, null, name, scale) as UnityTextureAtlasData;
 
                 if (textureAtlasData != null)
                 {
-                    textureAtlasData.imagePath = DBUnityFactory.Helper.GetTextureAtlasImagePath(textureAtlasJSONPath, textureAtlasData.imagePath);
+                    textureAtlasData.imagePath = UnityDBFactory.Helper.GetTextureAtlasImagePath(textureAtlasJSONPath, textureAtlasData.imagePath);
 
-                    DBUnityFactory.RefreshTextureAtlas(textureAtlasData, isUGUI);
+                    UnityDBFactory.RefreshTextureAtlas(textureAtlasData, isUGUI);
                 }
 
                 return textureAtlasData;
@@ -211,7 +211,7 @@ namespace DragonBones
         public UnityTextureAtlasData LoadTextureAtlasData(UnityDragonBonesData.TextureAtlas textureAtlas, string name, float scale = 1.0f, bool isUGUI = false)
         {
             Dictionary<string, object> textureJSONData = (Dictionary<string, object>)MiniJSON.Json.Deserialize(textureAtlas.textureAtlasJSON.text);
-            UnityTextureAtlasData textureAtlasData = DBInitial.Kernel.DataStorage.ParseAndAddTextureAtlasData(textureJSONData, null, name, scale) as UnityTextureAtlasData;
+            UnityTextureAtlasData textureAtlasData = DB.Kernel.DataStorage.ParseAndAddTextureAtlasData(textureJSONData, null, name, scale) as UnityTextureAtlasData;
 
             if (textureJSONData.ContainsKey("width"))
             {

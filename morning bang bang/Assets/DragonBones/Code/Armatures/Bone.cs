@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace DragonBones
 {
-    public class Bone : TransformObject
+    public class Bone : TransformObject, IRegistryEntry
     {
         internal OffsetMode offsetMode;
         internal readonly DBTransform animationPose = new DBTransform();
@@ -11,11 +12,8 @@ namespace DragonBones
         internal bool _childrenTransformDirty;
         private bool _localDirty;
         internal bool _hasConstraint;
-        private bool _visible;
         private int _cachedFrameIndex;
         internal readonly BlendState _blendState = new BlendState();
-        internal BoneData _boneData;
-        protected Bone _parent;
         internal List<int> _cachedFrameIndices = new List<int>();
 
         public override void OnReleased()
@@ -29,18 +27,18 @@ namespace DragonBones
             _childrenTransformDirty = false;
             _localDirty = true;
             _hasConstraint = false;
-            _visible = true;
+            Visible = true;
             _cachedFrameIndex = -1;
             _blendState.Clear();
-            _boneData = null; //
-            _parent = null;
+            boneData = null;
+            ParentID = DBRegistry.EMPTY_ID;
             _cachedFrameIndices = null;
         }
-        /// <private/>
+        
         private void _UpdateGlobalTransformMatrix(bool isCache)
         {
-            var boneData = _boneData;
-            var parent = _parent;
+            var boneData = this.boneData;
+            var parent = this.parent;
             var flipX = Armature.flipX;
             var flipY = Armature.flipY == DBKernel.IsNegativeYDown;
             var rotation = 0.0f;
@@ -115,7 +113,7 @@ namespace DragonBones
                     global.ToMatrix(globalTransformMatrix);
                     globalTransformMatrix.Concat(parentMatrix);
 
-                    if (_boneData.inheritTranslation)
+                    if (this.boneData.inheritTranslation)
                     {
                         global.x = globalTransformMatrix.tx;
                         global.y = globalTransformMatrix.ty;
@@ -245,40 +243,30 @@ namespace DragonBones
                 global.ToMatrix(globalTransformMatrix);
             }
         }
-        /// <internal/>
-        /// <private/>
-        internal void Init(BoneData boneData, Armature armatureValue)
+
+        internal void InitData(BoneData data)
         {
-            _boneData = boneData; 
-            if (_boneData == null)
+            boneData = data;
+            if (boneData == null)
             {
-                DBLogger.BLog.AddEntry("Bone Data Null", "Bone Init Aborted");
+                DBLogger.Error("Null BoneData provided to bone");
                 return;
             }
-
-            Armature = armatureValue;
-
-            SetParentBone();
-
-            origin = _boneData.DBTransform;
-            DBLogger.BLog.AddEntry("Trying To Add Bone To Structure", boneData.name);
-            Armature.Structure.AddBone(this);
+            origin = boneData.DBTransform;
         }
 
-        private void SetParentBone()
+        internal void BoneReady(DBRegistry.DBID armatureID, DBRegistry.DBID parentID)
         {
-            if (_boneData.parent != null)
-            {
-                DBInitial.Kernel.Factory.CurLog().AddEntry("Set Parent Bone", name, $"{_boneData.parent.name}");
-                _parent = Armature.Structure.GetBone(_boneData.parent.name);
-            }
-            DBLogger.BLog.AddEntry("Trying To Set Parent Bone", boneData.name, "No Parent Bone Found");
+            ArmatureID = armatureID;
+            ParentID = parentID;
         }
 
-        /// <internal/>
-        /// <private/>
+        public DBRegistry.DBID ParentID { get; protected set; }
+        public DBRegistry.DBID ArmatureID { get; protected set; }
+
         internal void Update(int cacheFrameIndex, AnimationData currentStateAnimationData)
         {
+            if (Armature == null) Armature = DB.Registry.GetArmature(ArmatureID);
             _blendState.dirty = false;
 
             if (cacheFrameIndex >= 0 && _cachedFrameIndices != null)
@@ -301,8 +289,9 @@ namespace DragonBones
                     if (_hasConstraint)
                     {
                         // Update constraints.
-                        foreach (var constraint in Armature.Structure.Constraints)
+                        foreach (DBRegistry.DBID id in DB.Registry.GetAllChildEntries<Constraint>(Armature.ID))
                         {
+                            Constraint constraint = DB.Registry.GetEntry<Constraint>(id);
                             if (constraint._root == this)
                             {
                                 constraint.Update();
@@ -310,7 +299,7 @@ namespace DragonBones
                         }
                     }
 
-                    if (_transformDirty || (_parent != null && _parent._childrenTransformDirty))
+                    if (_transformDirty || (parent != null && parent._childrenTransformDirty))
                     {
                         // Dirty.
                         _transformDirty = true;
@@ -335,8 +324,9 @@ namespace DragonBones
                 if (_hasConstraint)
                 {
                     // Update constraints.
-                    foreach (var constraint in Armature.Structure.Constraints)
+                    foreach (DBRegistry.DBID id in DB.Registry.GetAllChildEntries<Constraint>(Armature.ID))
                     {
+                        Constraint constraint = DB.Registry.GetEntry<Constraint>(id);
                         if (constraint._root == this)
                         {
                             constraint.Update();
@@ -344,7 +334,7 @@ namespace DragonBones
                     }
                 }
 
-                if (_transformDirty || (_parent != null && _parent._childrenTransformDirty))
+                if (_transformDirty || (parent != null && parent._childrenTransformDirty))
                 {
                     // Dirty.
                     cacheFrameIndex = -1;
@@ -379,7 +369,7 @@ namespace DragonBones
             {
                 _localDirty = false;
 
-                if (_transformDirty || (_parent != null && _parent._childrenTransformDirty))
+                if (_transformDirty || (parent != null && parent._childrenTransformDirty))
                 {
                     _UpdateGlobalTransformMatrix(true);
                 }
@@ -433,10 +423,7 @@ namespace DragonBones
         /// </summary>
         /// <version>DragonBones 4.5</version>
         /// <language>en_US</language>
-        public BoneData boneData
-        {
-            get { return _boneData; }
-        }
+        public BoneData boneData { get; internal set; }
 
         /// <summary>
         /// - The visible of all slots in the bone.
@@ -445,46 +432,22 @@ namespace DragonBones
         /// <see cref="DBKernel.Slot.visible"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public bool visible
-        {
-            get { return _visible; }
-            set
-            {
-                if (_visible == value)
-                {
-                    return;
-                }
-
-                _visible = value;
-
-                foreach (var slot in Armature.Structure.Slots)
-                {
-                    if (slot.Parent == this)
-                    {
-                        slot.Visible.Set(value);
-                    }
-                }
-            }
-        }
+        public bool Visible { get; set; }
 
         /// <summary>
         /// - The bone name.
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public string name
-        {
-            get { return _boneData.name; }
-        }
+        public string name => boneData.name;
 
         /// <summary>
         /// - The parent bone to which it belongs.
         /// </summary>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public Bone parent
-        {
-            get { return _parent; }
-        }
+        public Bone parent => DB.Registry.GetBone(ParentID);
+        public DBRegistry.DBID ID { get; private set; }
+        public void SetID(DBRegistry.DBID id) => ID = id;
     }
 }

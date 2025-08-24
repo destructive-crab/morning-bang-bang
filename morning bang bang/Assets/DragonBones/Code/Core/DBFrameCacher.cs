@@ -119,7 +119,7 @@ namespace DragonBones
             
             if (frameIndex >= isCachedMarkers[animationKey].Length)
             {
-                DBLogger.LogWarning("Frame index to cache is above frames count");
+                DBLogger.Warn("Frame index to cache is above frames count");
             }
             
             isCachedMarkers[animationKey][frameIndex] = true;

@@ -213,7 +213,7 @@ namespace DragonBones
         /// <private/>
         public void AddBoneMask(Armature armature, string boneName, bool recursive = false)
         {
-            var currentBone = armature.Structure.GetBone(boneName);
+            var currentBone = DB.Registry.GetBone(DB.Registry.SearchAtArmature(armature.ID, boneName));
             if (currentBone == null)
             {
                 return;
@@ -226,10 +226,10 @@ namespace DragonBones
 
             if (recursive) // Add recursive mixing.
             {
-                Bone[] bones = armature.Structure.Bones;
+                DBRegistry.DBID[] bones = DB.Registry.GetAllChildEntries<Bone>(armature.ID);
                 for (int i = 0, l = bones.Length; i < l; ++i)
                 {
-                    var bone = bones[i];
+                    var bone = DB.Registry.GetBone(bones[i]);
                     
                     if (!boneMask.Contains(bone.name) && currentBone.Contains(bone))
                     {
@@ -240,24 +240,24 @@ namespace DragonBones
         }
 
         /// <private/>
-        public void RemoveBoneMask(Armature armature, string name, bool recursive = true)
+        public void RemoveBoneMask(Armature armature, string boneName, bool recursive = true)
         {
-            if (boneMask.Contains(name)) // Remove mixing.
+            if (boneMask.Contains(boneName)) // Remove mixing.
             {
-                boneMask.Remove(name);
+                boneMask.Remove(boneName);
             }
 
             if (recursive)
             {
-                Bone currentBone = armature.Structure.GetBone(name);
+                Bone currentBone = DB.Registry.GetBone(DB.Registry.SearchAtArmature(armature.ID, boneName));
                 if (currentBone != null)
                 {
-                    Bone[] bones = armature.Structure.Bones;
+                    DBRegistry.DBID[] bones = DB.Registry.GetAllChildEntries<Bone>(armature.ID);
                     if (boneMask.Count > 0) // Remove recursive mixing.
                     {
                         for (int i = 0, l = bones.Length; i < l; ++i)
                         {
-                            Bone bone = bones[i];
+                            Bone bone = DB.Registry.GetBone(bones[i]);
                             if (boneMask.Contains(bone.name) && currentBone.Contains(bone))
                             {
                                 boneMask.Remove(bone.name);
@@ -268,8 +268,8 @@ namespace DragonBones
                     {
                         for (int i = 0, l = bones.Length; i < l; ++i)
                         {
-                            var bone = bones[i];
-                            if (bone == currentBone)
+                            Bone bone = DB.Registry.GetBone(bones[i]);
+                            if (bone.ID.Equals(currentBone.ID))
                             {
                                 continue;
                             }

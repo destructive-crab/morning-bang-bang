@@ -69,7 +69,7 @@ namespace MothDIed
 
             try
             {
-                await DBInitial.InitializeDragonBones();
+                await DB.InitializeDragonBones();
             }
             catch (Exception dragonBonesException)
             {
@@ -112,7 +112,7 @@ namespace MothDIed
 
                     InputService.Tick();
                     EventManager.Tick();
-                    DBInitial.Kernel.AdvanceTime(Time.deltaTime);
+                    DB.Kernel.AdvanceTime(Time.deltaTime);
 
                     if (RunSystem.IsInRun && RunSystem.Data.Level != null && SceneSwitcher.IsSceneLoaded)
                     {

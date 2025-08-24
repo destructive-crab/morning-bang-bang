@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DragonBones.ChildArmatures;
 
 namespace DragonBones
 {
@@ -97,7 +96,7 @@ namespace DragonBones
                 
                 if (animationState._fadeState > 0 && animationState._subFadeState > 0)
                 {
-                    DBInitial.Kernel.BufferObject(animationState);
+                    DB.Kernel.BufferObject(animationState);
                     _animationStates.Clear();
                     lastAnimationState = null;
                 }
@@ -117,7 +116,7 @@ namespace DragonBones
                     if (animationState._fadeState > 0 && animationState._subFadeState > 0)
                     {
                         r++;
-                        DBInitial.Kernel.BufferObject(animationState);
+                        DB.Kernel.BufferObject(animationState);
                         _animationDirty = true;
                         if (lastAnimationState == animationState)
                         {
@@ -264,7 +263,7 @@ namespace DragonBones
         /// </summary>
         /// <param name="animationConfig">- The animation config.</param>
         /// <returns>The playing animation state.</returns>
-        /// <see cref="DBKernel.AnimationConfig"/>
+        /// <see cref="AnimationConfig"/>
         /// <beta/>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
@@ -393,12 +392,11 @@ namespace DragonBones
             }
 
             // Child armature play same name animation.
-            foreach (var slot in Armature.Structure.Slots)
+            foreach (DBRegistry.DBID id in DB.Registry.GetAllChildEntries<ChildArmature>(Armature.ID))
             {
-                Armature childArmature = slot.Displays.CurrentChildArmature?.ArmatureDisplay.Armature;
+                ChildArmature childArmature = DB.Registry.GetChildArmature(id);
                 
-                if (childArmature != null &&
-                    childArmature.inheritAnimation &&
+                if (childArmature.inheritAnimation &&
                     childArmature.AnimationPlayer.HasAnimation(animationName) &&
                     childArmature.AnimationPlayer.GetState(animationName) == null)
                 {
@@ -655,7 +653,7 @@ namespace DragonBones
         /// - Check whether a specific animation data is included.
         /// </summary>
         /// <param name="animationName">- The name of animation data.</param>
-        /// <see cref="DBKernel.AnimationData"/>
+        /// <see cref="AnimationData"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         public bool HasAnimation(string animationName)
@@ -761,7 +759,7 @@ namespace DragonBones
         /// <summary>
         /// - An AnimationConfig instance that can be used quickly.
         /// </summary>
-        /// <see cref="DBKernel.AnimationConfig"/>
+        /// <see cref="AnimationConfig"/>
         /// <version>DragonBones 5.0</version>
         /// <language>en_US</language>
         public AnimationConfig animationConfig

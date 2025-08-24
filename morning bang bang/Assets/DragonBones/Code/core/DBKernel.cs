@@ -16,6 +16,7 @@ namespace DragonBones
         private readonly List<DBObject> objectsToDispose = new();
 
         //components
+        public DBRegistry Registry { get; private set; } = new();
         public DBDataStorage DataStorage { get; private set; }
         public DBFactory Factory { get; private set; }
         public WorldClock Clock { get; } = new WorldClock();

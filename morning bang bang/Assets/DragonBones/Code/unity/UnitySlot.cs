@@ -12,7 +12,7 @@ namespace DragonBones
 
         private bool _skewed;
 
-        public MeshBuffer MeshBuffer;
+        public DBMeshBuffer MeshBufferBuffer => DB.Registry.GetMesh(ID);
 
         public UnityTextureAtlasData CurrentTextureAtlasData
         {
@@ -27,62 +27,52 @@ namespace DragonBones
             }
         }
 
-        public UnityEngineArmatureDisplay ArmatureDisplay { get; private set; }
+        public UnityArmatureRoot ArmatureRoot { get; private set; }
 
 
         public override void OnReleased()
         {
-            base.OnReleased();
-
-            MeshBuffer?.Dispose();
-
-            ArmatureDisplay = null;
-
-            MeshBuffer = null;
-
+            base.OnReleased();           
+            ArmatureRoot = null;
             _skewed = false;
-
             BlendMode.Set(DragonBones.BlendMode.Normal);
-            Displays.Clear();
         }
 
         internal void UpdateZPosition()
         {
-            float z = -ZOrder.Value * (ArmatureDisplay._zSpace + Z_OFFSET);
-
-            if (!IsDisplayingChildArmature()) return;
-
-            UnityEngineArmatureDisplay childArmatureComp =
-                (Displays.CurrentChildArmature as UnityEngineChildArmatureSlotDisplay).ArmatureDisplay as UnityEngineArmatureDisplay;
-
-            childArmatureComp.transform.localPosition = new Vector3(childArmatureComp.transform.localPosition.x,
-                childArmatureComp.transform.localPosition.y, z);
-
-            childArmatureComp._sortingMode = ArmatureDisplay._sortingMode;
-            childArmatureComp._sortingLayerName = ArmatureDisplay._sortingLayerName;
-
-            if (ArmatureDisplay._sortingMode == SortingMode.SortByOrder)
-            {
-                childArmatureComp.sortingOrder = ZOrder.Value * UnityEngineArmatureDisplay.ORDER_SPACE;
-            }
-            else
-            {
-                childArmatureComp.sortingOrder = ArmatureDisplay._sortingOrder;
-            }
+            return;
+            //float z = -DrawOrder.Value * (ArmatureDisplay._zSpace + Z_OFFSET);
+//
+            //if (!IsDisplayingChildArmature()) return;
+//
+            //UnityEngineArmatureDisplay childArmatureComp =
+            //    (Displays.CurrentChildArmature as UnityEngineChildArmatureSlotDisplay).ArmatureDisplay as UnityEngineArmatureDisplay;
+//
+            //childArmatureComp.transform.localPosition = new Vector3(childArmatureComp.transform.localPosition.x,
+            //    childArmatureComp.transform.localPosition.y, z);
+//
+            //childArmatureComp._sortingMode = ArmatureDisplay._sortingMode;
+            //childArmatureComp._sortingLayerName = ArmatureDisplay._sortingLayerName;
+//
+            //if (ArmatureDisplay._sortingMode == SortingMode.SortByOrder)
+            //{
+            //    childArmatureComp.sortingOrder = DrawOrder.Value * UnityEngineArmatureDisplay.ORDER_SPACE;
+            //}
+            //else
+            //{
+            //    childArmatureComp.sortingOrder = ArmatureDisplay._sortingOrder;
+            //}
         }
 
-        public void StarUnitySlotBuilding(UnityEngineArmatureDisplay unityArmatureDisplay) => ArmatureDisplay = unityArmatureDisplay;
-        public void EndUnitySlotBuilding()
+        public void StarUnitySlotBuilding(UnityArmatureRoot unityArmatureRoot)
         {
-            if (MeshBuffer == null)
-            {
-                MeshBuffer = new MeshBuffer();
-                MeshBuffer.Name = Name;
-            }
-            else
-            {
-                MeshBuffer.Clear();
-            }
+            ArmatureRoot = unityArmatureRoot;
+        }
+
+        public override void SlotReady()
+        {
+            base.SlotReady();
+
             EngineUpdateDisplay();
         }
 
@@ -93,20 +83,20 @@ namespace DragonBones
 
         private bool CreateMeshBuffer()
         {
-            if (MeshBuffer == null)
+            if (!DB.Registry.HasMesh(ID))
             {
-                MeshBuffer = new MeshBuffer();
-                MeshBuffer.Name = Name;
+                DB.Registry.CreateMesh(ID);
             }
-            else
+
+            if (IsDisplayingChildArmature())
             {
-                MeshBuffer.Clear();
+                return true;
             }
 
             VerticesData currentVerticesData = (DeformVertices != null && !IsDisplayingChildArmature()) ? DeformVertices.verticesData : null;
             UnityTextureData currentTextureData = TextureData as UnityTextureData;
 
-            if (!IsDisplayingChildArmature() && !Displays.HasVisibleDisplay || currentTextureData == null) return false;
+            if (!IsDisplayingChildArmature() && (!HasVisibleDisplay || currentTextureData == null)) return false;
 
             Material currentTextureAtlas = CurrentTextureAtlasData.texture;
 
@@ -123,12 +113,11 @@ namespace DragonBones
                 CreateRectangleMeshForImageDisplay(currentTextureData);
             }
 
-            MeshBuffer.Name = currentTextureAtlas.name;
-
             BlendMode.Set(DragonBones.BlendMode.Normal);
             BlendMode.MarkAsDirty();
             Color.MarkAsDirty();
             Visible.MarkAsDirty();
+            DB.Registry.GetMesh(ID).Material = currentTextureAtlas;
 
             return true;
         }
@@ -159,26 +148,26 @@ namespace DragonBones
 
             int uvOffset = vertexOffset + vertexCount * 2;
 
-            MeshBuffer.uvBuffer = new Vector2[vertexCount];
-            MeshBuffer.rawVertexBuffer = new Vector3[vertexCount];
-            MeshBuffer.vertexBuffer = new Vector3[vertexCount];
-            MeshBuffer.triangleBuffer = new int[triangleCount * 3];
+            MeshBufferBuffer.uvBuffer = new Vector2[vertexCount];
+            MeshBufferBuffer.rawVertexBuffer = new Vector3[vertexCount];
+            MeshBufferBuffer.vertexBuffer = new Vector3[vertexCount];
+            MeshBufferBuffer.triangleBuffer = new int[triangleCount * 3];
 
             for (int i = 0, iV = vertexOffset, iU = uvOffset, l = vertexCount; i < l; ++i)
             {
-                MeshBuffer.uvBuffer[i].x = (sourceX + floatArray[iU++] * sourceWidth) / textureAtlasWidth;
-                MeshBuffer.uvBuffer[i].y = 1.0f - (sourceY + floatArray[iU++] * sourceHeight) / textureAtlasHeight;
+                MeshBufferBuffer.uvBuffer[i].x = (sourceX + floatArray[iU++] * sourceWidth) / textureAtlasWidth;
+                MeshBufferBuffer.uvBuffer[i].y = 1.0f - (sourceY + floatArray[iU++] * sourceHeight) / textureAtlasHeight;
 
-                MeshBuffer.rawVertexBuffer[i].x = floatArray[iV++] * textureScale;
-                MeshBuffer.rawVertexBuffer[i].y = floatArray[iV++] * textureScale;
+                MeshBufferBuffer.rawVertexBuffer[i].x = floatArray[iV++] * textureScale;
+                MeshBufferBuffer.rawVertexBuffer[i].y = floatArray[iV++] * textureScale;
 
-                MeshBuffer.vertexBuffer[i].x = MeshBuffer.rawVertexBuffer[i].x;
-                MeshBuffer.vertexBuffer[i].y = MeshBuffer.rawVertexBuffer[i].y;
+                MeshBufferBuffer.vertexBuffer[i].x = MeshBufferBuffer.rawVertexBuffer[i].x;
+                MeshBufferBuffer.vertexBuffer[i].y = MeshBufferBuffer.rawVertexBuffer[i].y;
             }
 
             for (int i = 0; i < triangleCount * 3; ++i)
             {
-                MeshBuffer.triangleBuffer[i] = intArray[meshOffset + (int)BinaryOffset.MeshVertexIndices + i];
+                MeshBufferBuffer.triangleBuffer[i] = intArray[meshOffset + (int)BinaryOffset.MeshVertexIndices + i];
             }
         }
         private void CreateRectangleMeshForImageDisplay(TextureData currentTextureData)
@@ -192,18 +181,18 @@ namespace DragonBones
             float sourceWidth = currentTextureData.region.width;
             float sourceHeight = currentTextureData.region.height;
 
-            if (MeshBuffer.rawVertexBuffer == null || MeshBuffer.rawVertexBuffer.Length != 4)
+            if (MeshBufferBuffer.rawVertexBuffer == null || MeshBufferBuffer.rawVertexBuffer.Length != 4)
             {
-                MeshBuffer.rawVertexBuffer = new Vector3[4];
-                MeshBuffer.vertexBuffer = new Vector3[4];
+                MeshBufferBuffer.rawVertexBuffer = new Vector3[4];
+                MeshBufferBuffer.vertexBuffer = new Vector3[4];
             }
 
-            if (MeshBuffer.uvBuffer == null || MeshBuffer.uvBuffer.Length != MeshBuffer.rawVertexBuffer.Length)
+            if (MeshBufferBuffer.uvBuffer == null || MeshBufferBuffer.uvBuffer.Length != MeshBufferBuffer.rawVertexBuffer.Length)
             {
-                MeshBuffer.uvBuffer = new Vector2[MeshBuffer.rawVertexBuffer.Length];
+                MeshBufferBuffer.uvBuffer = new Vector2[MeshBufferBuffer.rawVertexBuffer.Length];
             }
 
-            if(MeshBuffer.color32Buffer == null) MeshBuffer.color32Buffer = new Color32[MeshBuffer.VertexCount];
+            if(MeshBufferBuffer.color32Buffer == null) MeshBufferBuffer.color32Buffer = new Color32[MeshBufferBuffer.VertexCount];
 
             // Normal texture.
             for (int i = 0, l = 4; i < l; ++i)
@@ -242,30 +231,35 @@ namespace DragonBones
                     pivotX = scaleWidth - PivotX;
                     pivotY = scaleHeight - PivotY;
                     //uv
-                    MeshBuffer.uvBuffer[i].x = (sourceX + (1.0f - v) * sourceWidth) / textureAtlasWidth;
-                    MeshBuffer.uvBuffer[i].y = 1.0f - (sourceY + u * sourceHeight) / textureAtlasHeight;
+                    MeshBufferBuffer.uvBuffer[i].x = (sourceX + (1.0f - v) * sourceWidth) / textureAtlasWidth;
+                    MeshBufferBuffer.uvBuffer[i].y = 1.0f - (sourceY + u * sourceHeight) / textureAtlasHeight;
                 }
                 else
                 {
                     //uv
-                    MeshBuffer.uvBuffer[i].x = (sourceX + u * sourceWidth) / textureAtlasWidth;
-                    MeshBuffer.uvBuffer[i].y = 1.0f - (sourceY + v * sourceHeight) / textureAtlasHeight;
+                    MeshBufferBuffer.uvBuffer[i].x = (sourceX + u * sourceWidth) / textureAtlasWidth;
+                    MeshBufferBuffer.uvBuffer[i].y = 1.0f - (sourceY + v * sourceHeight) / textureAtlasHeight;
                 }
 
                 //vertices
-                MeshBuffer.rawVertexBuffer[i].x = u * scaleWidth - pivotX;
-                MeshBuffer.rawVertexBuffer[i].y = (1.0f - v) * scaleHeight - pivotY;
+                MeshBufferBuffer.rawVertexBuffer[i].x = u * scaleWidth - pivotX;
+                MeshBufferBuffer.rawVertexBuffer[i].y = (1.0f - v) * scaleHeight - pivotY;
 
-                MeshBuffer.vertexBuffer[i].x = MeshBuffer.rawVertexBuffer[i].x;
-                MeshBuffer.vertexBuffer[i].y = MeshBuffer.rawVertexBuffer[i].y;
+                MeshBufferBuffer.vertexBuffer[i].x = MeshBufferBuffer.rawVertexBuffer[i].x;
+                MeshBufferBuffer.vertexBuffer[i].y = MeshBufferBuffer.rawVertexBuffer[i].y;
             }
 
-            MeshBuffer.triangleBuffer = TRIANGLES;
+            MeshBufferBuffer.triangleBuffer = TRIANGLES;
+        }
+
+        protected override void EngineUpdateOutput()
+        {
+            if (IsDisplayingChildArmature()) return;
         }
 
         protected override void EngineUpdateDisplay()
         {
-            ArmatureDisplay = Armature.Display as UnityEngineArmatureDisplay;
+            ArmatureRoot = Armature.Root as UnityArmatureRoot;
 
 
         }
@@ -275,9 +269,9 @@ namespace DragonBones
             UpdateZPosition();
         }
 
-        protected override void EngineUpdateMesh()
+        protected override void EngineUpdateDeformMesh()
         {
-            if (MeshBuffer.sharedMesh == null || DeformVertices == null) { return; }
+            if (MeshBufferBuffer.GeneratedMesh == null || DeformVertices == null) { return; }
 
             float scale = Armature.ArmatureData.scale;
             List<float> deformVertices = DeformVertices.vertices;
@@ -327,8 +321,8 @@ namespace DragonBones
                             yG += (matrix.b * xL + matrix.d * yL + matrix.ty) * weight;
                         }
                     }
-                    MeshBuffer.vertexBuffer[i].x = xG;
-                    MeshBuffer.vertexBuffer[i].y = yG;
+                    MeshBufferBuffer.vertexBuffer[i].x = xG;
+                    MeshBufferBuffer.vertexBuffer[i].y = yG;
                 }
             }
             else if (deformVertices.Count > 0)
@@ -349,11 +343,11 @@ namespace DragonBones
                     rx = (data.floatArray[vertexOffset + (iV++)] * scale + deformVertices[iF++]);
                     ry = (data.floatArray[vertexOffset + (iV++)] * scale + deformVertices[iF++]);
 
-                    MeshBuffer.rawVertexBuffer[i].x = rx;
-                    MeshBuffer.rawVertexBuffer[i].y = -ry;
+                    MeshBufferBuffer.rawVertexBuffer[i].x = rx;
+                    MeshBufferBuffer.rawVertexBuffer[i].y = -ry;
 
-                    MeshBuffer.vertexBuffer[i].x = rx;
-                    MeshBuffer.vertexBuffer[i].y = -ry;
+                    MeshBufferBuffer.vertexBuffer[i].x = rx;
+                    MeshBufferBuffer.vertexBuffer[i].y = -ry;
                 }
             }
         }
@@ -365,20 +359,20 @@ namespace DragonBones
         {
             if (!IsDisplayingChildArmature())
             {
-                DBColor proxyTrans = ArmatureDisplay._DBColor;
+                DBColor proxyTrans = ArmatureRoot.Color;
 
-                for (int i = 0, l = MeshBuffer.vertexBuffer.Length; i < l; ++i)
+                return;
+                for (int i = 0, l = MeshBufferBuffer.vertexBuffer.Length; i < l; ++i)
                 {
-                    MeshBuffer.color32Buffer[i].r = (byte)(Color.Value.redMultiplier * proxyTrans.redMultiplier * 255);
-                    MeshBuffer.color32Buffer[i].g = (byte)(Color.Value.greenMultiplier * proxyTrans.greenMultiplier * 255);
-                    MeshBuffer.color32Buffer[i].b = (byte)(Color.Value.blueMultiplier * proxyTrans.blueMultiplier * 255);
-                    MeshBuffer.color32Buffer[i].a = (byte)(Color.Value.alphaMultiplier * proxyTrans.alphaMultiplier * 255);
+                    MeshBufferBuffer.color32Buffer[i].r = (byte)(Color.V.redMultiplier * proxyTrans.redMultiplier * 255);
+                    MeshBufferBuffer.color32Buffer[i].g = (byte)(Color.V.greenMultiplier * proxyTrans.greenMultiplier * 255);
+                    MeshBufferBuffer.color32Buffer[i].b = (byte)(Color.V.blueMultiplier * proxyTrans.blueMultiplier * 255);
+                    MeshBufferBuffer.color32Buffer[i].a = (byte)(Color.V.alphaMultiplier * proxyTrans.alphaMultiplier * 255);
                 }
             }
             else
             {
-                //Set all childArmature color dirty
-                ((UnityEngineArmatureDisplay)Displays.CurrentChildArmature.ArmatureDisplay).DBColor = Color.Value;
+                //Set all childArmature color dirty TODO
             }
         }
 
@@ -393,10 +387,11 @@ namespace DragonBones
             }
             else
             {
-                foreach (Slot slot in Displays.CurrentChildArmature.ArmatureDisplay.Armature.Structure.Slots)
-                {
-                    slot.BlendMode.Set(BlendMode.Value);
-                }
+                //TODO
+                //foreach (Slot slot in Displays.CurrentChildArmature.Armature.Structure.Slots)
+                //{
+                //    slot.BlendMode.Set(BlendMode.V);
+                //}
             }
 
             BlendMode.ResetDirty();
@@ -405,18 +400,14 @@ namespace DragonBones
         protected override void EngineUpdateTransform()
         {
             UpdateGlobalTransform(); // Update transform.
+            UpdateMeshBufferTransform();
 
-            if (IsDisplayingChildArmature())
+            return;
+            if (IsDisplayingChildArmature() && MeshBufferBuffer.GeneratedMesh== null)
             {
-                UnityEngineChildArmatureSlotDisplay CurrentAsChildArmatureDisplay = Displays.CurrentChildArmature as UnityEngineChildArmatureSlotDisplay;
-                UpdateGameObjectTransform(CurrentAsChildArmatureDisplay.transform);
-
-                CurrentAsChildArmatureDisplay.ArmatureDisplay.Armature.flipX = Armature.flipX;
-                CurrentAsChildArmatureDisplay.ArmatureDisplay.Armature.flipY = Armature.flipY;
             }
             else
             {
-                UpdateMeshBufferTransform();
             }
         }
 
@@ -434,23 +425,19 @@ namespace DragonBones
             float vx = 0.0f;
             float vy = 0.0f;
 
-            if (MeshBuffer == null || MeshBuffer.vertexBuffer == null) return;
+            if (MeshBufferBuffer == null || MeshBufferBuffer.vertexBuffer == null) return;
 
-            for (int i = 0, l = MeshBuffer.vertexBuffer.Length; i < l; i++)
+            for (int i = 0, l = MeshBufferBuffer.vertexBuffer.Length; i < l; i++)
             {
-                rx = MeshBuffer.rawVertexBuffer[i].x;
-                ry = -MeshBuffer.rawVertexBuffer[i].y;
+                rx = MeshBufferBuffer.rawVertexBuffer[i].x;
+                ry = -MeshBufferBuffer.rawVertexBuffer[i].y;
 
                 vx = rx * a + ry * c + tx;
                 vy = rx * b + ry * d + ty;
 
-                MeshBuffer.vertexBuffer[i].x = vx;
-                MeshBuffer.vertexBuffer[i].y = vy;
-                MeshBuffer.vertexBuffer[i].z = -ZOrder.Value * (ArmatureDisplay._zSpace + Z_OFFSET);
+                MeshBufferBuffer.vertexBuffer[i].x = vx * 0.16f;
+                MeshBufferBuffer.vertexBuffer[i].y = vy * 0.16f;
             }
-
-            //MeshBuffer.InitMesh();
-            //MeshBuffer.VertexDirty = true;
         }
 
         private void UpdateGameObjectTransform(Transform transform)
@@ -536,21 +523,21 @@ namespace DragonBones
                     var x = 0.0f;
                     var y = 0.0f;
 
-                    for (int i = 0, l = MeshBuffer.vertexBuffer.Length; i < l; ++i)
+                    for (int i = 0, l = MeshBufferBuffer.vertexBuffer.Length; i < l; ++i)
                     {
-                        x = MeshBuffer.rawVertexBuffer[i].x;
-                        y = MeshBuffer.rawVertexBuffer[i].y;
+                        x = MeshBufferBuffer.rawVertexBuffer[i].x;
+                        y = MeshBufferBuffer.rawVertexBuffer[i].y;
 
                         if (isPositive)
                         {
-                            MeshBuffer.vertexBuffer[i].x = x + y * sin;
+                            MeshBufferBuffer.vertexBuffer[i].x = x + y * sin;
                         }
                         else
                         {
-                            MeshBuffer.vertexBuffer[i].x = -x + y * sin;
+                            MeshBufferBuffer.vertexBuffer[i].x = -x + y * sin;
                         }
 
-                        MeshBuffer.vertexBuffer[i].y = y * cos;
+                        MeshBufferBuffer.vertexBuffer[i].y = y * cos;
                     }
 
                     // if (this.CurrentUnityDisplay.MeshRenderer && this.CurrentUnityDisplay.MeshRenderer.enabled)

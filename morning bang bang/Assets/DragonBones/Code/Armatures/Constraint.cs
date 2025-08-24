@@ -4,7 +4,7 @@ namespace DragonBones
 {
     /// <internal/>
     /// <private/>
-    internal abstract class Constraint : DBObject
+    public abstract class Constraint : DBObject, IRegistryEntry
     {
         protected static readonly DBMatrix HelpDBMatrix = new DBMatrix();
         protected static readonly DBTransform HelpDBTransform = new DBTransform();
@@ -31,24 +31,31 @@ namespace DragonBones
 
         public override void OnReleased()
         {
-            this._armature = null;
-            this._target = null; //
-            this._root = null; //
-            this._bone = null; //
+            _armature = null;
+            _target = null; //
+            _root = null; //
+            _bone = null; //
         }
 
-        public abstract void Init(ConstraintData constraintData, Armature armature);
+        public abstract void Init(ConstraintData constraintData, Armature armature, Bone target, Bone root, Bone bone);
         public abstract void Update();
         public abstract void InvalidUpdate();
 
         public string name
         {
-            get { return this._constraintData.name; }
+            get { return _constraintData.name; }
+        }
+
+        public DBRegistry.DBID ID { get; private set; }
+
+        public void SetID(DBRegistry.DBID id)
+        {
+            ID = id;
         }
     }
     /// <internal/>
     /// <private/>
-    internal class IKConstraint : Constraint
+    public class IKConstraint : Constraint
     {
         internal bool _scaleEnabled; // TODO
         /// <summary>
@@ -66,17 +73,17 @@ namespace DragonBones
         {
             base.OnReleased();
 
-            this._scaleEnabled = false;
-            this._bendPositive = false;
-            this._weight = 1.0f;
-            this._constraintData = null;
+            _scaleEnabled = false;
+            _bendPositive = false;
+            _weight = 1.0f;
+            _constraintData = null;
         }
 
         private void _ComputeA()
         {
-            var ikGlobal = this._target.global;
-            var global = this._root.global;
-            var globalTransformMatrix = this._root.GlobalTransformDBMatrix;
+            var ikGlobal = _target.global;
+            var global = _root.global;
+            var globalTransformMatrix = _root.GlobalTransformDBMatrix;
 
             var radian = (float)Math.Atan2(ikGlobal.y - global.y, ikGlobal.x - global.x);
             if (global.scaleX < 0.0f)
@@ -84,18 +91,18 @@ namespace DragonBones
                 radian += (float)Math.PI;
             }
 
-            global.rotation += DBTransform.NormalizeRadian(radian - global.rotation) * this._weight;
+            global.rotation += DBTransform.NormalizeRadian(radian - global.rotation) * _weight;
             global.ToMatrix(globalTransformMatrix);
         }
 
         private void _ComputeB()
         {
-            var boneLength = this._bone.boneData.length;
-            var parent = this._root as Bone;
-            var ikGlobal = this._target.global;
+            var boneLength = _bone.boneData.length;
+            var parent = _root as Bone;
+            var ikGlobal = _target.global;
             var parentGlobal = parent.global;
-            var global = this._bone.global;
-            var globalTransformMatrix = this._bone.GlobalTransformDBMatrix;
+            var global = _bone.global;
+            var globalTransformMatrix = _bone.GlobalTransformDBMatrix;
 
             var x = globalTransformMatrix.a * boneLength;
             var y = globalTransformMatrix.b * boneLength;
@@ -145,7 +152,7 @@ namespace DragonBones
                     isPPR = parentParentMatrix.a * parentParentMatrix.d - parentParentMatrix.b * parentParentMatrix.c < 0.0f;
                 }
 
-                if (isPPR != this._bendPositive)
+                if (isPPR != _bendPositive)
                 {
                     global.x = hX - rX;
                     global.y = hY - rY;
@@ -160,10 +167,10 @@ namespace DragonBones
             }
 
             var dR = DBTransform.NormalizeRadian(radianA - rawRadianA);
-            parentGlobal.rotation = rawParentRadian + dR * this._weight;
+            parentGlobal.rotation = rawParentRadian + dR * _weight;
             parentGlobal.ToMatrix(parent.GlobalTransformDBMatrix);
             //
-            var currentRadianA = rawRadianA + dR * this._weight;
+            var currentRadianA = rawRadianA + dR * _weight;
             global.x = parentGlobal.x + (float)Math.Cos(currentRadianA) * lP;
             global.y = parentGlobal.y + (float)Math.Sin(currentRadianA) * lP;
             //
@@ -173,56 +180,54 @@ namespace DragonBones
                 radianB += (float)Math.PI;
             }
 
-            global.rotation = parentGlobal.rotation + rawRadian - rawParentRadian + DBTransform.NormalizeRadian(radianB - dR - rawRadian) * this._weight;
+            global.rotation = parentGlobal.rotation + rawRadian - rawParentRadian + DBTransform.NormalizeRadian(radianB - dR - rawRadian) * _weight;
             global.ToMatrix(globalTransformMatrix);
         }
 
-        public override void Init(ConstraintData constraintData, Armature armature)
+        public override void Init(ConstraintData constraintData, Armature armature, Bone target, Bone root, Bone bone)
         {
-            if (this._constraintData != null)
-            {
-                return;
-            }
+            if (_constraintData != null) { return; }
 
-            this._constraintData = constraintData;
-            this._armature = armature;
-            this._target = this._armature.Structure.GetBone(this._constraintData.target.name);
-            this._root = this._armature.Structure.GetBone(this._constraintData.root.name);
-            this._bone = this._constraintData.bone != null ? this._armature.Structure.GetBone(this._constraintData.bone.name) : null;
+            _constraintData = constraintData;
+            _armature = armature;
+            
+            _target = target;
+            _root = root;
+            _bone = bone;
 
             {
-                var ikConstraintData = this._constraintData as IKConstraintData;
+                var ikConstraintData = _constraintData as IKConstraintData;
                 //
-                this._scaleEnabled = ikConstraintData.scaleEnabled;
-                this._bendPositive = ikConstraintData.bendPositive;
-                this._weight = ikConstraintData.weight;
+                _scaleEnabled = ikConstraintData.scaleEnabled;
+                _bendPositive = ikConstraintData.bendPositive;
+                _weight = ikConstraintData.weight;
             }
 
-            this._root._hasConstraint = true;
+            _root._hasConstraint = true;
         }
 
         public override void Update()
         {
-            this._root.UpdateByConstraint();
+            _root.UpdateByConstraint();
 
-            if (this._bone != null)
+            if (_bone != null)
             {
-                this._bone.UpdateByConstraint();
-                this._ComputeB();
+                _bone.UpdateByConstraint();
+                _ComputeB();
             }
             else
             {
-                this._ComputeA();
+                _ComputeA();
             }
         }
 
         public override void InvalidUpdate()
         {
-            this._root.InvalidUpdate();
+            _root.InvalidUpdate();
 
-            if (this._bone != null)
+            if (_bone != null)
             {
-                this._bone.InvalidUpdate();
+                _bone.InvalidUpdate();
             }
         }
     }

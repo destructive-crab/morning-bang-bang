@@ -20,14 +20,14 @@ namespace DragonBones
 
         public void RemoveFromCash(bool disposeData =true)
         {
-            DBInitial.Kernel.DataStorage.RemoveDragonBonesData(dataName, disposeData);
+            DB.Kernel.DataStorage.RemoveDragonBonesData(dataName, disposeData);
             if(textureAtlas != null)
             {
                 foreach(TextureAtlas ta in textureAtlas)
                 {
                     if(ta != null && ta.texture != null)
                     {
-                        DBInitial.Kernel.DataStorage.RemoveTextureAtlasData(ta.texture.name,disposeData);
+                        DB.Kernel.DataStorage.RemoveTextureAtlasData(ta.texture.name,disposeData);
                     }
                 }
             }

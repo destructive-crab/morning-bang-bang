@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using DragonBones.Code.Debug;
+using UnityEngine;
 
 namespace DragonBones
 {
@@ -12,6 +12,9 @@ namespace DragonBones
         public DBProjectData DBProjectData;
         public ArmatureData ArmatureData;
         public SkinData Skin;
+        
+        public DBRegistry.DBID BuildID;
+        public DBRegistry.DBID ArmatureID;
     }
     
     /// <summary>
@@ -27,8 +30,6 @@ namespace DragonBones
         protected static bool IsSupportMesh() => true;
         public abstract void Clear(bool disposeData = true);
 
-        public ArmatureBuildLog CurLog() => DBLogger.BLog;
-        
         /// <summary>
         /// - Create a armature from cached DragonBonesData instances and TextureAtlasData instances.
         /// Note that when the created armature that is no longer in use, you need to explicitly dispose {@link #dragonBones.Armature#dispose()}.
@@ -47,88 +48,99 @@ namespace DragonBones
         /// <see cref="DBProjectData"/>, <see cref="ArmatureData"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public virtual Armature BuildArmature(string armatureName, string dragonBonesName = "", string skinName = null, string textureAtlasName = null, IEngineArmatureDisplay providedDisplay = null)
+        public virtual Armature BuildArmature(string armatureName, string dragonBonesName = "", string skinName = null, string textureAtlasName = null, IEngineArmatureRoot providedRoot = null)
         {
-            DBLogger.StartNewArmatureBuildLog(armatureName);
-            
             Armature armature = GetEmptyArmature();
-            IEngineArmatureDisplay armatureDisplay = null;
+            IEngineArmatureRoot armatureRoot = null;
 
-            if (providedDisplay == null)
+            if (providedRoot == null)
             {
-                armatureDisplay = GetNewArmatureDisplayFor(armature);
+                armatureRoot = GetNewArmatureDisplayFor(armature);
             }
             else
             {
-                CurLog().AddEntry("Reuse", "Provided Display", providedDisplay.ToString());
-                providedDisplay.Armature?.ReleaseThis();
-                providedDisplay.DBClear(false);
-                armatureDisplay = providedDisplay;
+                providedRoot.Armature?.ReleaseThis();
+                providedRoot.DBClear();
+                armatureRoot = providedRoot;
             }
             
             BuildArmaturePackage dataPackage = new BuildArmaturePackage();
             
-            if (!DBInitial.Kernel.DataStorage.FillBuildArmaturePackage(dataPackage, dragonBonesName, armatureName, skinName, textureAtlasName))
+            if (!DB.Kernel.DataStorage.FillBuildArmaturePackage(dataPackage, dragonBonesName, armatureName, skinName, textureAtlasName))
             {
-                DBLogger.LogWarning("No armature data: " + armatureName + ", " + (dragonBonesName != "" ? dragonBonesName : ""));
+                DBLogger.Warn("No armature data: " + armatureName + ", " + (dragonBonesName != "" ? dragonBonesName : ""));
                 return null;
             }
             
-            CurLog().AddEntry("Initialize", "Armature", $"data: {dataPackage.ArmatureData.name}; display: {armatureDisplay.ToString()}");
-            armature.Initialize(dataPackage.ArmatureData, armatureDisplay);
+            armature.Initialize(dataPackage.ArmatureData, armatureRoot);
+            
+            dataPackage.BuildID = DB.Kernel.Registry.StartBuilding(armature.Name);
+            dataPackage.ArmatureID = DB.Kernel.Registry.RegisterArmature(dataPackage.BuildID, armature, armatureRoot);
             
             BuildBonesFor(dataPackage, armature);
             BuildSlotsFor(dataPackage, armature);
+            //todo
             BuildConstraintsFor(dataPackage, armature);
             
             armature.InvalidUpdate(null, true);
             armature.AdvanceTime(0.0f); // Update armature pose.
 
-            DBInitial.Kernel.Clock.Add(armature);
+            DB.Kernel.Registry.CompleteBuilding(dataPackage.BuildID);
+
+            DBRegistry.DBID[] ids = DB.Kernel.Registry.GetChildSlotsOf(armature.ID);
+            
+            foreach (DBRegistry.DBID id in ids)
+            {
+                Slot slot = DB.Kernel.Registry.GetSlot(id);
+                
+                DB.Kernel.Registry.SetActiveDisplayForByIndex(slot.ID, slot.SlotData.DefaultDisplayIndex);
+                slot.DisplayID = new Dirty<DBRegistry.DBID>(DB.Registry.GetCurrentActiveDisplayOf(slot.ID));
+                
+                slot.SlotReady();
+            }
             
             armature.ArmatureReady();
-            
-            DBLogger.FinishArmatureBuildLog();
-            
-            DBLogger.PrintBuildLog(armatureName);
+            armature.Root.DBInit(armature);
             
             return armature;
         }
 
-        protected abstract IEngineChildArmatureSlotDisplay BuildChildArmatureDisplay(BuildArmaturePackage dataPackage,
-            Slot forSlot, ChildArmatureDisplayData childArmatureData);
+        protected abstract IEngineChildArmature BuildChildArmatureDisplay(BuildArmaturePackage dataPackage,
+            Slot forSlot, DBRegistry.DBID displayID, ChildArmatureDisplayData childArmatureData);
 
-        protected abstract IEngineArmatureDisplay GetNewArmatureDisplayFor(Armature armature);
+        protected abstract IEngineArmatureRoot GetNewArmatureDisplayFor(Armature armature);
 
         public abstract TextureAtlasData BuildTextureAtlasData(TextureAtlasData textureAtlasData, object textureAtlas);
 
         protected void BuildBonesFor(BuildArmaturePackage dataPackage, Armature armature)
         {
-            CurLog().StartSection($"Building Bones For {armature.Name}");
             List<BoneData> bones = dataPackage.ArmatureData.sortedBones;
             
             for (int i = 0, l = bones.Count; i < l; ++i)
             {
                 BoneData boneData = bones[i];
-                DBLogger.BLog.StartSection($"Bone Building {boneData.name}");
                 Bone bone = DBObject.BorrowObject<Bone>();
-                CurLog().AddEntry("Borrow", "Bone");
                 
-                CurLog().AddEntry("Init", "Bone", $"data: {boneData.name}; armature: {armature.Name}");
-                bone.Init(boneData, armature);
-                DBLogger.BLog.EndSection();
+                bone.InitData(boneData);
+                
+                DBRegistry.DBID parent = dataPackage.ArmatureID;
+                
+                if (bone.boneData.parent != null && bone.boneData.parent.name != "")
+                {
+                    parent = DB.Kernel.Registry.SearchInBuild(dataPackage.BuildID, bone.boneData.parent.name);
+                }
+                
+                DB.Kernel.Registry.RegisterBone(dataPackage.BuildID, parent, bone);
+                bone.BoneReady(armature.ID, parent);
             }
-            CurLog().EndSection();
         }
 
         protected void BuildSlotsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
-            DBLogger.BLog.StartSection($"Building Slots For {armature.Name}");
-            
             SkinData currentSkin = dataPackage.Skin;
             SkinData defaultSkin = dataPackage.ArmatureData.defaultSkin;
             
-            if (currentSkin == null || defaultSkin == null) {DBLogger.BLog.AddEntry("Build Slots Failed", armature.Name, "no skin found"); return; }
+            if (currentSkin == null || defaultSkin == null) { return; }
 
             Dictionary<string, List<DisplayData>> skinSlots = new Dictionary<string, List<DisplayData>>();
             
@@ -149,9 +161,6 @@ namespace DragonBones
                 List<DisplayData> displayDatas = skinSlots.ContainsKey(slotData.name) ? skinSlots[slotData.name] : null;
                 BuildSlot(dataPackage, slotData, displayDatas, armature);
             }
-
-            armature.Structure.SlotsBuilt = true;
-            DBLogger.BLog.EndSection();
         }
 
         protected abstract Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData,
@@ -159,21 +168,24 @@ namespace DragonBones
 
         protected void BuildConstraintsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
-            DBLogger.BLog.StartSection($"Build Constraints For {armature.Name}");
-            var constraints = dataPackage.ArmatureData.constraints;
+            Dictionary<string, ConstraintData> constraints = dataPackage.ArmatureData.constraints;
             foreach (var constraintData in constraints.Values)
             {
                 // TODO more constraint type.
-                var constraint = DBObject.BorrowObject<IKConstraint>();
-                constraint.Init(constraintData, armature);
-                armature.Structure.AddConstraint(constraint);
+                IKConstraint constraint = DBObject.BorrowObject<IKConstraint>();
+
+                Bone target = DB.Registry.SearchInBuildAndGetBone(dataPackage.BuildID, constraintData.target.name);
+                Bone bone = DB.Registry.SearchInBuildAndGetBone(dataPackage.BuildID, constraintData.bone.name);
+                Bone root = DB.Registry.SearchInBuildAndGetBone(dataPackage.BuildID, constraintData.root.name);
+                
+                constraint.Init(constraintData, armature, target, root, bone);
+
+                DB.Registry.RegisterConstraint(dataPackage.BuildID, armature.ID, constraint);
             }
-            DBLogger.BLog.EndSection();
         }
 
         protected virtual Armature GetEmptyArmature()
         {
-            CurLog().AddEntry("Borrow", "New Armature");
             return DBObject.BorrowObject<Armature>();
         }
 
@@ -251,7 +263,7 @@ namespace DragonBones
                                         string displayName,
                                         Slot slot, int displayIndex = -1)
         {
-            var armatureData = DBInitial.Kernel.DataStorage.GetArmatureData(armatureName, dragonBonesName);
+            var armatureData = DB.Kernel.DataStorage.GetArmatureData(armatureName, dragonBonesName);
             if (armatureData == null || armatureData.defaultSkin == null)
             {
                 return false;
@@ -269,7 +281,7 @@ namespace DragonBones
         }
         public bool ReplaceSlotDisplayList(string dragonBonesName, string armatureName, string slotName, Slot slot)
         {
-            var armatureData = DBInitial.Kernel.DataStorage.GetArmatureData(armatureName, dragonBonesName);
+            var armatureData = DB.Kernel.DataStorage.GetArmatureData(armatureName, dragonBonesName);
             if (armatureData == null || armatureData.defaultSkin == null)
             {
                 return false;
@@ -307,40 +319,40 @@ namespace DragonBones
         ///     }
         /// </pre>
         /// </example>
-        /// <see cref="DBKernel.Armature"/>
-        /// <see cref="DBKernel.SkinData"/>
+        /// <see cref="Armature"/>
+        /// <see cref="SkinData"/>
         /// <version>DragonBones 5.6</version>
         /// <language>en_US</language>
         public bool ReplaceSkin(Armature armature, SkinData skin, bool isOverride = false, List<string> exclude = null)
         {
-            var success = false;
-            var defaultSkin = skin.BelongsToArmature.defaultSkin;
-
-            foreach (var slot in armature.Structure.Slots)
-            {
-                if (exclude != null && exclude.Contains(slot.Name))
-                {
-                    continue;
-                }
-
-                var displays = skin.GetDisplays(slot.Name);
-                if (displays == null)
-                {
-                    if (defaultSkin != null && skin != defaultSkin)
-                    {
-                        displays = defaultSkin.GetDisplays(slot.Name);
-                    }
-
-                    if (displays == null)
-                    {
-                        if (isOverride)
-                        {
-                            slot.Displays.Clear();
-                        }
-
-                        continue;
-                    }
-                }
+           // var success = false;
+           // var defaultSkin = skin.BelongsToArmature.defaultSkin;
+//
+           // foreach (var slot in armature.Structure.Slots)
+           // {
+           //     if (exclude != null && exclude.Contains(slot.Name))
+           //     {
+           //         continue;
+           //     }
+//
+           //     var displays = skin.GetDisplays(slot.Name);
+           //     if (displays == null)
+           //     {
+           //         if (defaultSkin != null && skin != defaultSkin)
+           //         {
+           //             displays = defaultSkin.GetDisplays(slot.Name);
+           //         }
+//
+           //         if (displays == null)
+           //         {
+           //             if (isOverride)
+           //             {
+           //                 slot.Displays.Clear();
+           //             }
+//
+           //             continue;
+           //         }
+           //     }
                 
                 /*int displayCount = displays.Count;
                 List<object> displayList = slot.Displays.All; // Copy.
@@ -362,9 +374,10 @@ namespace DragonBones
                 success = true;
                 slot.AllDisplaysData = displays;
                 slot.DisplayList = displayList;*/
-            }
-
-            return success;
+         //   }
+//
+         //   return success;
+         return true;
         }
         /// <summary>
         /// - Replaces the existing animation data for a specific armature with the animation data for the specific armature data.
@@ -392,58 +405,58 @@ namespace DragonBones
                                     bool isOverride = true)
         {
 
-            var skinData = armatureData.defaultSkin;
-            if (skinData == null)
-            {
-                return false;
-            }
-
-            if (isOverride)
-            {
-                armature.AnimationPlayer.Animations = armatureData.animations;
-            }
-            else
-            {
-                Dictionary<string, AnimationData> rawAnimations = armature.AnimationPlayer.Animations;
-                Dictionary<string, AnimationData> animations = new Dictionary<string, AnimationData>();
-
-                foreach (var k in rawAnimations.Keys)
-                {
-                    animations[k] = rawAnimations[k];
-                }
-
-                foreach (var k in armatureData.animations.Keys)
-                {
-                    animations[k] = armatureData.animations[k];
-                }
-
-                armature.AnimationPlayer.Animations = animations;
-            }
-
-            foreach (Slot slot in armature.Structure.Slots)
-            {
-                int index = 0;
-                //TODO
-                //foreach (IEngineChildArmatureSlotDisplay display in slot.Displays.GetChildArmatureDisplays)
-                //{
-                //    var displayDatas = skinData.GetDisplays(slot.Name);
-                //    if (displayDatas != null && index < displayDatas.Count)
-                //    {
-                //        var displayData = displayDatas[index];
+         //   var skinData = armatureData.defaultSkin;
+         //   if (skinData == null)
+         //   {
+         //       return false;
+         //   }
 //
-                //        if (displayData != null && displayData.Type == DisplayType.Armature)
-                //        {
-                //            var childArmatureData = DBInitial.Kernel.DataStorage.GetArmatureData(displayData.path, displayData.BelongsToSkin.BelongsToArmature.parent.name);
+         //   if (isOverride)
+         //   {
+         //       armature.AnimationPlayer.Animations = armatureData.animations;
+         //   }
+         //   else
+         //   {
+         //       Dictionary<string, AnimationData> rawAnimations = armature.AnimationPlayer.Animations;
+         //       Dictionary<string, AnimationData> animations = new Dictionary<string, AnimationData>();
 //
-                //            if (childArmatureData != null)
-                //            {
-                //                ReplaceAnimation(display.ArmatureDisplay.Armature, childArmatureData, isOverride);
-                //            }
-                //        }
-                //    }
-                //}
-            }
-
+         //       foreach (var k in rawAnimations.Keys)
+         //       {
+         //           animations[k] = rawAnimations[k];
+         //       }
+//
+         //       foreach (var k in armatureData.animations.Keys)
+         //       {
+         //           animations[k] = armatureData.animations[k];
+         //       }
+//
+         //       armature.AnimationPlayer.Animations = animations;
+         //   }
+//
+         //   foreach (Slot slot in armature.Structure.Slots)
+         //   {
+         //       int index = 0;
+         //       //TODO
+         //       //foreach (IEngineChildArmatureSlotDisplay display in slot.Displays.GetChildArmatureDisplays)
+         //       //{
+         //       //    var displayDatas = skinData.GetDisplays(slot.Name);
+         //       //    if (displayDatas != null && index < displayDatas.Count)
+         //       //    {
+         //       //        var displayData = displayDatas[index];
+////
+         //       //        if (displayData != null && displayData.Type == DisplayType.Armature)
+         //       //        {
+         //       //            var childArmatureData = DBInitial.Kernel.DataStorage.GetArmatureData(displayData.path, displayData.BelongsToSkin.BelongsToArmature.parent.name);
+////
+         //       //            if (childArmatureData != null)
+         //       //            {
+         //       //                ReplaceAnimation(display.ArmatureDisplay.Armature, childArmatureData, isOverride);
+         //       //            }
+         //       //        }
+         //       //    }
+         //       //}
+         //   }
+//
             return true;
         }
     }

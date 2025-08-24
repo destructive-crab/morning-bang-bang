@@ -17,10 +17,5 @@
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
         void AdvanceTime(float passedTime);
-        WorldClock Clock
-        {
-            get;
-            set;
-        }
     }
 }

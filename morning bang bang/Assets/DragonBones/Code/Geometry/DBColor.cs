@@ -1,13 +1,12 @@
 namespace DragonBones
 {
-    /// <internal/>
-    /// <private/>
     public class DBColor
     {
         public float alphaMultiplier = 1.0f;
         public float redMultiplier = 1.0f;
         public float greenMultiplier = 1.0f;
         public float blueMultiplier = 1.0f;
+        
         public int alphaOffset = 0;
         public int redOffset = 0;
         public int greenOffset = 0;

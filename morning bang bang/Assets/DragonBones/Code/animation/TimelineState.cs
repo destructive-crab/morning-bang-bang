@@ -8,7 +8,7 @@ namespace DragonBones
     {
         private void _OnCrossFrame(int frameIndex)
         {
-            var eventDispatcher = _armature.Display;
+            var eventDispatcher = _armature.Root;
             if (_animationState.actionEnabled)
             {
                 var frameOffset = _animationData.frameOffset + _timelineArray[_timelineData.offset + (int)BinaryOffset.TimelineFrameOffset + frameIndex];
@@ -39,7 +39,7 @@ namespace DragonBones
                             eventObject.time = _frameArray[frameOffset] / (float)_frameRate;
                             eventObject.animationState = _animationState;
                             EventObject.ActionDataToInstance(action, eventObject, _armature);
-                            DBInitial.Kernel.BufferEvent(eventObject);
+                            DB.Kernel.BufferEvent(eventObject);
                         }
                     }
                 }
@@ -57,15 +57,15 @@ namespace DragonBones
 
             if (_SetCurrentTime(passedTime))
             {
-                var eventDispatcher = _armature.Display;
+                var eventDispatcher = _armature.Root;
                 if (prevState < 0)
                 {
                     if (playState != prevState)
                     {
                         if (_animationState.displayControl && _animationState.resetToPose)
                         {
-                            // Reset zorder to pose.
-                            _armature.Structure.SortZOrder(null, 0);
+                            // Reset zorder to pose.TODO
+                            //_armature.Structure.SortZOrder(null, 0);
                         }
 
                         prevPlayTimes = currentPlayTimes;
@@ -76,7 +76,7 @@ namespace DragonBones
                             eventObject.type = EventObject.START;
                             eventObject.armature = _armature;
                             eventObject.animationState = _animationState;
-                            DBInitial.Kernel.BufferEvent(eventObject);
+                            DB.Kernel.BufferEvent(eventObject);
                         }
                     }
                     else
@@ -155,7 +155,7 @@ namespace DragonBones
                                     if (loopCompleteEvent != null && crossedFrameIndex == 0)
                                     {
                                         // Add loop complete event after first frame.
-                                        DBInitial.Kernel.BufferEvent(loopCompleteEvent);
+                                        DB.Kernel.BufferEvent(loopCompleteEvent);
                                         loopCompleteEvent = null;
                                     }
 
@@ -229,7 +229,7 @@ namespace DragonBones
                                     if (loopCompleteEvent != null && crossedFrameIndex == 0)
                                     {
                                         // Add loop complete event before first frame.
-                                        DBInitial.Kernel.BufferEvent(loopCompleteEvent);
+                                        DB.Kernel.BufferEvent(loopCompleteEvent);
                                         loopCompleteEvent = null;
                                     }
 
@@ -264,7 +264,7 @@ namespace DragonBones
                             if (!isReverse && loopCompleteEvent != null)
                             {
                                 // Add loop complete event before first frame.
-                                DBInitial.Kernel.BufferEvent(loopCompleteEvent);
+                                DB.Kernel.BufferEvent(loopCompleteEvent);
                                 loopCompleteEvent = null;
                             }
 
@@ -275,12 +275,12 @@ namespace DragonBones
 
                 if (loopCompleteEvent != null)
                 {
-                    DBInitial.Kernel.BufferEvent(loopCompleteEvent);
+                    DB.Kernel.BufferEvent(loopCompleteEvent);
                 }
 
                 if (completeEvent != null)
                 {
-                    DBInitial.Kernel.BufferEvent(completeEvent);
+                    DB.Kernel.BufferEvent(completeEvent);
                 }
             }
         }
@@ -301,11 +301,11 @@ namespace DragonBones
                 var count = _frameArray[_frameOffset + 1];
                 if (count > 0)
                 {
-                    _armature.Structure.SortZOrder(_frameArray, (int)_frameOffset + 2);
+                    //armature.Structure.SortZOrder(_frameArray, (int)_frameOffset + 2);
                 }
                 else
                 {
-                    _armature.Structure.SortZOrder(null, 0);
+                    //_armature.Structure.SortZOrder(null, 0);
                 }
             }
         }
@@ -614,9 +614,10 @@ namespace DragonBones
         {
             if (playState >= 0)
             {
-                int displayIndex = _timelineData != null ? _frameArray[_frameOffset + 1] : slot.SlotData.displayIndex;
+                int displayIndex = _timelineData != null ? _frameArray[_frameOffset + 1] : slot.SlotData.DefaultDisplayIndex;
                 
-                slot.Displays.SwapDisplaysByIndex(displayIndex);
+                //TODO
+                //slot.Displays.SwapDisplaysByIndex(displayIndex);
             }
         }
     }
@@ -734,7 +735,7 @@ namespace DragonBones
             // Fade animation.
             if (_tweenState != TweenState.None || _dirty)
             {
-                var result = slot.Color.Value;
+                var result = slot.Color.V;
 
                 if (_animationState._fadeState != 0 || _animationState._subFadeState != 0)
                 {

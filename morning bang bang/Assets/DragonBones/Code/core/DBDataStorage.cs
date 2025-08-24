@@ -105,7 +105,7 @@ namespace DragonBones
             //idk what that code means lol ;todo
             while (true)
             {
-                TextureAtlasData textureAtlasData = DBInitial.Kernel.Factory.BuildTextureAtlasData(null, null);
+                TextureAtlasData textureAtlasData = DB.Kernel.Factory.BuildTextureAtlasData(null, null);
                 
                 if (parser.ParseTextureAtlasData(null, textureAtlasData, scale))
                 {
@@ -141,9 +141,9 @@ namespace DragonBones
         /// <language>en_US</language>
         public TextureAtlasData ParseAndAddTextureAtlasData(Dictionary<string, object> rawData, object textureAtlas, string name = null, float scale = 1.0f)
         {
-            var textureAtlasData = DBInitial.Kernel.Factory.BuildTextureAtlasData(null, null);
+            var textureAtlasData = DB.Kernel.Factory.BuildTextureAtlasData(null, null);
             dataParser.ParseTextureAtlasData(rawData, textureAtlasData, scale);
-            DBInitial.Kernel.Factory.BuildTextureAtlasData(textureAtlasData, textureAtlas);
+            DB.Kernel.Factory.BuildTextureAtlasData(textureAtlasData, textureAtlas);
             AddTextureAtlasData(textureAtlasData, name);
 
             return textureAtlasData;
@@ -158,7 +158,7 @@ namespace DragonBones
                 {
                     if (i < textureAtlases.Count)
                     {
-                        DBInitial.Kernel.Factory.BuildTextureAtlasData(textureAtlasDatas[i], textureAtlases[i]);
+                        DB.Kernel.Factory.BuildTextureAtlasData(textureAtlasDatas[i], textureAtlases[i]);
                     }
                 }
             }
@@ -254,7 +254,7 @@ namespace DragonBones
             {
                 if (disposeData)
                 {
-                    DBInitial.Kernel.BufferObject(dragonBonesDataMap[name]);
+                    DB.Kernel.BufferObject(dragonBonesDataMap[name]);
                 }
 
                 dragonBonesDataMap.Remove(name);
@@ -317,7 +317,7 @@ namespace DragonBones
                 {
                     foreach (var textureAtlasData in textureAtlasDataList)
                     {
-                        DBInitial.Kernel.BufferObject(textureAtlasData);
+                        DB.Kernel.BufferObject(textureAtlasData);
                     }
                 }
 
@@ -354,14 +354,14 @@ namespace DragonBones
             {
                 foreach (var dragonBoneData in dragonBonesDataMap.Values)
                 {
-                    DBInitial.Kernel.BufferObject(dragonBoneData);
+                    DB.Kernel.BufferObject(dragonBoneData);
                 }
 
                 foreach (var textureAtlasDatas in textureAtlasDataMap.Values)
                 {
                     foreach (var textureAtlasData in textureAtlasDatas)
                     {
-                        DBInitial.Kernel.BufferObject(textureAtlasData);
+                        DB.Kernel.BufferObject(textureAtlasData);
                     }
                 }
             }
@@ -388,12 +388,12 @@ namespace DragonBones
                 {
                     if (!dbProjectData.TryGetArmatureData(armatureName, out armatureData))
                     {
-                        DBLogger.LogWarning($"No {nameof(ArmatureData)} with name {armatureName} found");
+                        DBLogger.Warn($"No {nameof(ArmatureData)} with name {armatureName} found");
                     }
                 }
                 else
                 {
-                    DBLogger.LogWarning($"No {nameof(DBProjectData)} with name {dbProjectName} found");
+                    DBLogger.Warn($"No {nameof(DBProjectData)} with name {dbProjectName} found");
                     return false;
                 }
             }
@@ -403,7 +403,7 @@ namespace DragonBones
                 
                 if (armatureData == null)
                 {
-                    DBLogger.LogWarning($"Auto search failed. No {nameof(ArmatureData)} with name {armatureName} found");
+                    DBLogger.Warn($"Auto search failed. No {nameof(ArmatureData)} with name {armatureName} found");
                 }
                 
                 dbProjectData = armatureData.parent;
@@ -425,7 +425,7 @@ namespace DragonBones
 
                 if (dataPackage.Skin == null)
                 {
-                    DBLogger.LogWarning($"No {nameof(SkinData)} with name {skinName} found. Default skin will be used");
+                    DBLogger.Warn($"No {nameof(SkinData)} with name {skinName} found. Default skin will be used");
                     dataPackage.Skin = armatureData.defaultSkin;
                 }
             }

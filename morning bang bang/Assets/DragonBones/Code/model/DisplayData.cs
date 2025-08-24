@@ -95,8 +95,6 @@ namespace DragonBones
         }
     }
 
-    /// <internal/>
-    /// <private/>
     public class MeshDisplayData : DisplayData
     {
         public readonly VerticesData vertices = new VerticesData();

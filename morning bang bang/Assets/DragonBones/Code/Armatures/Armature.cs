@@ -9,14 +9,13 @@ namespace DragonBones
     /// <see cref="DragonBones.ArmatureStructure"/>, <see cref="DragonBones.ArmatureData"/>, <see cref="Bone"/>, <see cref="Slot"/>, <see cref="AnimationPlayer"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public class Armature : DBObject, IAnimatable
+    public class Armature : DBObject, IAnimatable, IRegistryEntry
     {
-        public readonly ArmatureStructure Structure;
         public readonly AnimationPlayer AnimationPlayer;
         
         public ArmatureData ArmatureData { get; set; }
-        public IEngineArmatureDisplay Display { get; private set; } = null;
-        public IEventDispatcher<EventObject> ArmatureEventDispatcher => Display;
+        public IEngineArmatureRoot Root { get; private set; } = null;
+        public IEventDispatcher<EventObject> ArmatureEventDispatcher => Root;
         
         /// <summary>
         /// - The armature name.
@@ -105,37 +104,12 @@ namespace DragonBones
 
                 _replacedTexture = value;
 
-                foreach (var slot in Structure.Slots)
-                {
-                    slot.InvalidUpdate();
-                    slot.ProcessDirtyDisplay();
-                }
-            }
-        }
-        
-        private WorldClock _clock = null; // Initial value.
-        public WorldClock Clock
-        {
-            get => _clock;
-            set
-            {
-                if (_clock == value) { return; }
-                if (_clock != null) { _clock.Remove(this); }
-
-                _clock = value;
-
-                if (_clock != null) { _clock.Add(this); }
-
-                // Update childArmature clock.
-                foreach (Slot slot in Structure.Slots)
-                {
-                    Armature childArmature = slot.Displays.CurrentChildArmature?.ArmatureDisplay.Armature;
-                    
-                    if (childArmature != null)
-                    {
-                        childArmature.Clock = _clock;
-                    }
-                }
+                //todo
+        //        foreach (var slot in DBI.Registry.GetChildSlotsOf(ID))
+        //        {
+        //            slot.InvalidUpdate();
+        //            slot.ProcessDirtyDisplay();
+        //        }
             }
         }
         
@@ -144,18 +118,14 @@ namespace DragonBones
 
         public Armature()
         {
-            Structure = new ArmatureStructure(this);
             AnimationPlayer = new AnimationPlayer(this);
         }
         
-        internal void Initialize(ArmatureData armatureData, IEngineArmatureDisplay engineDisplay)
+        internal virtual void Initialize(ArmatureData armatureData, IEngineArmatureRoot engineRoot)
         {
-            if (ArmatureData != null) return;
-
             ArmatureData = armatureData;
-            Display = engineDisplay;
+            Root = engineRoot;
 
-            Display.DBInit(this);
             AnimationPlayer.Init(ArmatureData.animations);
         }
 
@@ -182,19 +152,13 @@ namespace DragonBones
             {
                 lockArmatureUpdate = true;
 
-                DBInitial.Kernel.BufferObject(this);
+                DB.Kernel.BufferObject(this);
             }
         }
 
         public override void OnReleased()
         {
-            if (_clock != null)
-            {
-                // Remove clock first.
-                _clock.Remove(this);
-            }
-
-            Display?.DBClear();
+            Root?.DBClear();
             _replaceTextureAtlasData?.ReleaseThis();
 
             inheritAnimation = true;
@@ -204,14 +168,12 @@ namespace DragonBones
             _flipX = false;
             _flipY = false;
 
-            Structure.Dispose();
             AnimationPlayer.Clear();
             actions.Clear();
             ArmatureData = null;
-            Display = null;
+            Root = null;
             _replaceTextureAtlasData = null;
             _replacedTexture = null;
-            _clock = null;
         }
 
         public void AdvanceTime(float passedTime)
@@ -223,25 +185,22 @@ namespace DragonBones
             //asserts
             if (ArmatureData == null)
             {
-                DBLogger.LogWarning("The armature has been disposed.");
+                DBLogger.Warn("The armature has been disposed.");
                 return;
             }
 
             if (ArmatureData.parent == null)
             {
-                DBLogger.LogWarning("The armature data has been disposed.\nPlease make sure dispose armature before call factory.clear().");
+                DBLogger.Warn("The armature data has been disposed.\nPlease make sure dispose armature before call factory.clear().");
                 return;
             }
             
             // Update animation.
             AnimationPlayer.AdvanceTime(passedTime);
-            
-            if(Structure.SlotsDirty) Structure.SortSlotsListByZOrder();
-            
             UpdateBonesAndSlots();
+            
+            if(Root.Armature == this) Root.DBUpdate();
             ProcessActions();
-
-            Display.DBUpdate();
         }
 
         /// <summary>
@@ -255,38 +214,16 @@ namespace DragonBones
         /// <language>en_US</language>
         public void InvalidUpdate(string boneName = null, bool updateSlot = false)
         {
-            if (!string.IsNullOrEmpty(boneName))
+            foreach (DBRegistry.DBID id in DB.Registry.GetBones(ID))
             {
-                Bone bone = Structure.GetBone(boneName);
-                if (bone != null)
-                {
-                    bone.InvalidUpdate();
-
-                    if (updateSlot)
-                    {
-                        foreach (var slot in Structure.Slots)
-                        {
-                            if (slot.Parent == bone)
-                            {
-                                slot.InvalidUpdate();
-                            }
-                        }
-                    }
-                }
+                DB.Registry.GetBone(id).InvalidUpdate();
             }
-            else
-            {
-                foreach (var bone in Structure.Bones)
-                {
-                    bone.InvalidUpdate();
-                }
 
-                if (updateSlot)
+            if (updateSlot)
+            {
+                foreach (DBRegistry.DBID id in DB.Registry.GetChildSlotsOf(ID))
                 {
-                    foreach (var slot in Structure.Slots)
-                    {
-                        slot.InvalidUpdate();
-                    }
+                    DB.Registry.GetSlot(id).InvalidUpdate();
                 }
             }
         }
@@ -294,17 +231,19 @@ namespace DragonBones
 
         private void UpdateBonesAndSlots()
         {
-            foreach (Bone bone in Structure.Bones)
+            foreach (DBRegistry.DBID id in DB.Registry.GetBones(ID))
             {
-                bone.Update(-1, null);
+                DB.Registry.GetBone(id).Update(-1, null);
             }
             
-            foreach (Slot slot in Structure.Slots)
+            foreach (DBRegistry.DBID id in DB.Registry.GetChildSlotsOf(ID))
             {
+               Slot slot = DB.Registry.GetSlot(id);
+               
                 slot.ProcessDirtyDisplay();
                 if (CachingEnabled && AnimationPlayer.CurrentState != null)
                 {
-                    slot.UpdateCache(AnimationPlayer.CurrentState.Animation, DBInitial.Kernel.Cacher, AnimationPlayer.CurrentState.CurrentCacheFrameIndex);
+                    slot.UpdateCache(AnimationPlayer.CurrentState.Animation, DB.Kernel.Cacher, AnimationPlayer.CurrentState.CurrentCacheFrameIndex);
                 }
                 slot.ProcessDirtyData();
             }
@@ -328,21 +267,14 @@ namespace DragonBones
                             {
                                 if (action.slot.IsDisplayingChildArmature())
                                 {
-                                    action.slot.Displays.CurrentChildArmature.ArmatureDisplay.AnimationPlayer.FadeIn(actionData.name);
+                                    DB.Registry.GetChildArmatureFromDisplayID(action.slot.DisplayID.V).AnimationPlayer.FadeIn(actionData.name);
                                 }
                             }
                             else if (action.bone != null)
                             {
-                                foreach (Slot slot in Structure.Slots)
+                                foreach (DBRegistry.DBID id in DB.Registry.GetAllChildArmaturesOf(action.bone.ID))
                                 {
-                                    if (slot.Parent == action.bone)
-                                    {
-                                        if (slot.IsDisplayingChildArmature())
-                                        {
-                                            slot.Displays.CurrentChildArmature.ArmatureDisplay.AnimationPlayer.FadeIn(actionData.name);
-                                        }
-
-                                    }
+                                    DB.Registry.GetChildArmature(id).AnimationPlayer.FadeIn(actionData.name);
                                 }
                             }
                             else
@@ -373,6 +305,13 @@ namespace DragonBones
                     actions.Insert(0, action);                    
                 }
             }
+        }
+
+        public DBRegistry.DBID ID { get; private set; } = DBRegistry.EMPTY_ID;
+
+        public void SetID(DBRegistry.DBID id)
+        {
+            ID = id;
         }
     }
 }

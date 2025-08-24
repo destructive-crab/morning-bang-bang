@@ -134,7 +134,7 @@ namespace DragonBones
             }
             else
             {
-                DBLogger.LogWarning("Pool is full");
+                DBLogger.Warn("Pool is full");
             }
         }
 

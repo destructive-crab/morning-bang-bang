@@ -97,12 +97,12 @@ namespace DragonBones
 
             if (data.bone != null)
             {
-                instance.bone = armature.Structure.GetBone(data.bone.name);
+                instance.bone = DB.Registry.GetBone(DB.Registry.SearchAtArmature(armature.ID, data.bone.name));
             }
 
             if (data.slot != null)
             {
-                instance.slot = armature.Structure.GetSlot(data.slot.name);
+                instance.slot = DB.Registry.GetSlot(DB.Registry.SearchAtArmature(armature.ID, data.slot.name));
             }
         }
 

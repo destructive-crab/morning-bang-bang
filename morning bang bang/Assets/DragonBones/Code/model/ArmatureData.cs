@@ -469,7 +469,7 @@ namespace DragonBones
         /// <private/>
         public BlendMode blendMode;
         /// <private/>
-        public int displayIndex;
+        public int DefaultDisplayIndex;
         /// <private/>
         public int zOrder;
         /// <summary>
@@ -497,7 +497,7 @@ namespace DragonBones
             }
 
             this.blendMode = BlendMode.Normal;
-            this.displayIndex = 0;
+            this.DefaultDisplayIndex = 0;
             this.zOrder = 0;
             this.name = "";
             this.DBColor = null; //

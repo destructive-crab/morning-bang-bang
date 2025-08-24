@@ -24,11 +24,12 @@ namespace DragonBones
             return BLog;
         }
 
-        public static bool FinishArmatureBuildLog()
+        public static string FinishArmatureBuildLog()
         {
+            string name = BLog.name;
             BLog.FinishLog();
             BLog = BLog.Parent;
-            return true;
+            return name;
         }
 
         public static void PrintBuildLog(string name)
@@ -59,7 +60,7 @@ namespace DragonBones
             LGR.PM("[DragonBones] " + message);
         }
         
-        internal static void LogWarning(object message)
+        internal static void Warn(object message)
         {
             LGR.PW("[DragonBones] " + message);
         }
@@ -67,6 +68,11 @@ namespace DragonBones
         internal static void Assert(bool condition, string message)
         {
             LGR.AM(condition, "[DragonBones] " + message);
+        }
+
+        public static void Error(string error)
+        {
+            LGR.PERR("[DragonBones] " + error);
         }
     }
 }
