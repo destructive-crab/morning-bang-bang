@@ -228,17 +228,35 @@ namespace DragonBones
             }
         }
 
-
+        private DBRegistry.DBID[] cachedSlots = null;
+        private DBRegistry.DBID[] cachedBones = null;
         private void UpdateBonesAndSlots()
         {
-            foreach (DBRegistry.DBID id in DB.Registry.GetBones(ID))
+            if (cachedBones == null || cachedSlots == null)
+            {
+                DBRegistry.DBID[] ids = DB.Registry.GetAllChildEntries<Bone>(ID);
+                cachedBones = new DBRegistry.DBID[ids.Length];
+                for (int i = 0; i < ids.Length; i++)
+                {
+                    cachedBones[i] = ids[i];
+                }
+                
+                ids = DB.Registry.GetAllChildEntries<Slot>(ID);
+                cachedSlots = new DBRegistry.DBID[ids.Length];
+                for (int i = 0; i < ids.Length; i++)
+                {
+                    cachedSlots[i] = ids[i];
+                }               
+            }
+            
+            foreach (DBRegistry.DBID id in cachedBones)
             {
                 DB.Registry.GetBone(id).Update(-1, null);
             }
             
-            foreach (DBRegistry.DBID id in DB.Registry.GetChildSlotsOf(ID))
+            foreach (DBRegistry.DBID id in cachedSlots)
             {
-               Slot slot = DB.Registry.GetSlot(id);
+                Slot slot = DB.Registry.GetSlot(id);
                
                 slot.ProcessDirtyDisplay();
                 if (CachingEnabled && AnimationPlayer.CurrentState != null)

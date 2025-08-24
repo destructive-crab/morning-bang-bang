@@ -39,7 +39,7 @@ namespace DragonBones
             passedTime = Mathf.Abs(passedTime);
             Time += passedTime;
             
-            if (DB.Registry.RegistryChangedOnPreviousFrame)
+            if (DB.Registry.RegistryChanged)
             {
                 DBRegistry.DBID[] armatures = DB.Registry.GetAllRootArmatures();
                 

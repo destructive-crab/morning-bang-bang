@@ -82,9 +82,6 @@ namespace DragonBones
             //todo
             BuildConstraintsFor(dataPackage, armature);
             
-            armature.InvalidUpdate(null, true);
-            armature.AdvanceTime(0.0f); // Update armature pose.
-
             DB.Kernel.Registry.CompleteBuilding(dataPackage.BuildID);
 
             DBRegistry.DBID[] ids = DB.Kernel.Registry.GetChildSlotsOf(armature.ID);
@@ -99,8 +96,11 @@ namespace DragonBones
                 slot.SlotReady();
             }
             
+
             armature.ArmatureReady();
             armature.Root.DBInit(armature);
+            armature.InvalidUpdate(null, true);
+            armature.AdvanceTime(0.0f); // Update armature pose.
             
             return armature;
         }

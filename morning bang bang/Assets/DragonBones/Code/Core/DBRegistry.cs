@@ -7,10 +7,10 @@ namespace DragonBones
 {
     public sealed class DBRegistry
     {
-        public bool RegistryChangedOnPreviousFrame { get; private set; } = false;
+        public bool RegistryChanged { get; private set; } = false;
         
-        private void MarkAsChanged() => RegistryChangedOnPreviousFrame = true;
-        public void MarkAsUnchanged() => RegistryChangedOnPreviousFrame = false;
+        private void MarkAsChanged() => RegistryChanged = true;
+        public void MarkAsUnchanged() => RegistryChanged = false;
         
         private readonly Dictionary<DBID, object> activeRegistry = new();
         
@@ -401,7 +401,7 @@ namespace DragonBones
 
             if (!activeMeshes.ContainsKey(id))
             {
-                DBLogger.LogMessage($"NO {id} FOUND IN ACTIVE MESHES REGISTRY");
+                //DBLogger.LogMessage($"NO {id} FOUND IN ACTIVE MESHES REGISTRY");
                 return null;
             }
 
@@ -411,9 +411,8 @@ namespace DragonBones
         private readonly List<DBID> helpIDList = new();
         private readonly object lockHelpList = new();
 
-        public DBID[] GetAllChildEntries<TEntry>(DBID parentID, bool includeChildrenArmatures = false)
+        public DBID[] GetAllChildEntries<TEntry>(DBID parentID, bool includeChildArmatures = false)
             where TEntry : class, IRegistryEntry
-
         {
             lock (lockHelpList)
             {
@@ -424,10 +423,17 @@ namespace DragonBones
                 if (typeof(TEntry) == typeof(Constraint)) { hasCheck = CONSTRAINT; }
                 
                 helpIDList.Clear();
+                int childArmaturesInParentsPath = 0;
+                if(!includeChildArmatures)
+                {
+                    childArmaturesInParentsPath = CountInPath(parentID, CHILD_ARMATURE);
+                }
                 foreach (KeyValuePair<DBID, object> pair in activeRegistry)
                 {
-                    if(pair.Key.Has(parentID) && GetLeaf(pair.Key).Contains(hasCheck) && (!pair.Key.Has(CHILD_ARMATURE) || includeChildrenArmatures))
+                    if(pair.Key.Has(parentID) && Is(pair.Key, hasCheck) && (includeChildArmatures || childArmaturesInParentsPath == CountInPath(pair.Key, CHILD_ARMATURE)))
+                    {
                         helpIDList.Add(pair.Key);
+                    }
                 }
                 return helpIDList.ToArray();   
             }

@@ -252,11 +252,6 @@ namespace DragonBones
             MeshBufferBuffer.triangleBuffer = TRIANGLES;
         }
 
-        protected override void EngineUpdateOutput()
-        {
-            if (IsDisplayingChildArmature()) return;
-        }
-
         protected override void EngineUpdateDisplay()
         {
             ArmatureRoot = Armature.Root as UnityArmatureRoot;

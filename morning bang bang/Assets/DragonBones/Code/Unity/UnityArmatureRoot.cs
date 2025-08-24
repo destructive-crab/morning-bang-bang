@@ -46,7 +46,6 @@ namespace DragonBones
             if (!CombineMeshes) return;
             if (CombineMeshes && !MeshRoot.IsCombined)
             {
-                Debug.Log("COMBINE");
                 MeshRoot.Combine();
 //                Registry.CommitChanges();
             }

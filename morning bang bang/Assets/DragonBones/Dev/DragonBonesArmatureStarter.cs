@@ -50,24 +50,21 @@ public class DragonBonesArmatureStarter : MonoBehaviour
 
     private IEnumerator Spawn()
     {
-        // var a =DBI.Factory.UnityCreateArmature("mecha_1502b", "mecha_1502b");
-        // a.AnimationPlayer.Play("walk");
-        // yield return null;
-        for(int i = 0; i < 25; i++)
+        for (int x = 0; x < 20; x++)
         {
-            var a = DB.Factory.UnityCreateArmature("rat_gun_side", "rat_gun");
-//            var b = DBI.Factory.UnityCreateArmature("rat_gun_down", "rat_gun");
-            var c = DB.Factory.UnityCreateArmature("rat_gun_up", "rat_gun");
+            for (int y = 0; y < 10; y++)
+            {
 
-            a.transform.position += Vector3.down * (2 * i);
-            //b.transform.position += Vector3.up * (2 * i);
-            c.transform.position += Vector3.right * (2 * i);
+                UnityArmatureRoot a = null;
+                if(x%2 ==0) a = DB.Factory.UnityCreateArmature("rat_gun_side", "rat_gun"); 
+                else a= DB.Factory.UnityCreateArmature("rat_gun_up", "rat_gun");
 
-            armatures.Add(a);
-            //armatures.Add(b);
-            armatures.Add(c);
+                a.transform.position = new Vector3(x, y, 0); 
 
-            yield return new WaitForSeconds(1);
+                armatures.Add(a);
+
+                yield return new WaitForSeconds(0.5f);
+            }
         }
     }
 }

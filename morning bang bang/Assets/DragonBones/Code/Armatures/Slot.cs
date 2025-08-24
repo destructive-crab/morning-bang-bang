@@ -48,10 +48,11 @@ namespace DragonBones
         {
             if (DisplayID.IsDirty)
             {
-                DisplayID.ResetDirty();
                 RefreshData();
                 UpdateDisplay();
                 if (TransformDirty) UpdateLocalMatrix();
+                
+                DisplayID.ResetDirty();
             }
             if (!HasVisibleDisplay)
             {
@@ -101,11 +102,7 @@ namespace DragonBones
                 UpdateGlobalTransformAndMatrix();
                 EngineUpdateTransform();
             }
-
-            EngineUpdateOutput();
         }
-
-        protected abstract void EngineUpdateOutput();
 
         private void ProcessCacheFrameIndex(AnimationData animation, DBFrameCacher cacher, int frameIndex)
         {

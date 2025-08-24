@@ -118,18 +118,14 @@ namespace DragonBones
                 switch (displayData)
                 {
                     case ImageDisplayData imageDisplayData:
-                        imageDisplayData.texture =
-                            DB.Kernel.DataStorage.GetTextureData(dataPackage.DataName, imageDisplayData.path);
+                        imageDisplayData.texture = DB.Kernel.DataStorage.GetTextureData(dataPackage.DataName, imageDisplayData.path);
                         break;
                     case MeshDisplayData meshDisplayData:
-                            meshDisplayData.texture = DB.Kernel.DataStorage.GetTextureData(dataPackage.DataName, meshDisplayData.path);
+                        meshDisplayData.texture = DB.Kernel.DataStorage.GetTextureData(dataPackage.DataName, meshDisplayData.path);
                         break;
                     case ChildArmatureDisplayData childArmatureDisplayData:
-                        childArmatureDisplayData.armature = DB.Kernel.DataStorage.GetArmatureData(
-                            childArmatureDisplayData.path,
-                            childArmatureDisplayData.BelongsToSkin.BelongsToArmature.parent.name);
-                        UnityChildArmature childArmature =
-                            BuildChildArmatureDisplay(dataPackage, slot, displayID, childArmatureDisplayData) as UnityChildArmature;
+                        childArmatureDisplayData.armature = DB.Kernel.DataStorage.GetArmatureData(childArmatureDisplayData.path, childArmatureDisplayData.BelongsToSkin.BelongsToArmature.parent.name);
+                        UnityChildArmature childArmature = BuildChildArmatureDisplay(dataPackage, slot, displayID, childArmatureDisplayData) as UnityChildArmature;
                         childArmatureDisplayData.armature = childArmature.Armature.ArmatureData;
                         break;
                 }
