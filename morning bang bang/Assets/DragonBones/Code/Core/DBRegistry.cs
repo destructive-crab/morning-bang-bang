@@ -25,13 +25,21 @@ namespace DragonBones
         private readonly Dictionary<DBID, DisplayData> displayDataRegistry = new();
         private readonly Dictionary<DBID, DBID> displayDataToChildArmature = new();
         
-        private readonly Dictionary<DBID, Dictionary<DBID, object>> buildingRegistry = new();
+        private readonly Dictionary<DBID, DBID[]> armatureToContent = new();
         
-        private readonly Dictionary<DBID, DBID[]> structures = new();
+        //animation runtime
         private readonly Dictionary<DBID, DBID> activeDisplays = new();
         private readonly Dictionary<DBID, DBID[]> drawOrders = new();
+        private readonly Dictionary<DBID, bool> visibilities = new();
 
+        private readonly Dictionary<DBID, DBID> activeDisplaysChanges = new();
+        private readonly Dictionary<DBID, DBID[]> drawOrderChanges = new();
+        private readonly Dictionary<DBID, bool> visibilitiesChanges = new();
+ 
+        private const char SEPARATOR = ':';
+        
         private const string BUILD = "build";
+        private readonly Dictionary<DBID, Dictionary<DBID, object>> buildingRegistry = new();
         
         private const string ARMATURE = "armature";
         public const string BONE = "bone";
@@ -56,10 +64,30 @@ namespace DragonBones
             if(throwError) DBLogger.Error($"Invalid Build ID {buildID.ToString()}");
             return false;
         }
+        public object GetInBuild(DBID buildID, DBID id)
+        {
+            if (id.Equals(INVALID_ID) || buildID.Equals(INVALID_ID) || !buildingRegistry.ContainsKey(buildID) || !buildingRegistry[buildID].ContainsKey(id))
+            {
+                return null;
+            }
+            return buildingRegistry[buildID][id];
+        }
+        public DBID SearchInBuild(DBID buildID, params string[] keywords)
+        {
+            foreach (DBID key in buildingRegistry[buildID].Keys)
+            {
+                if (DoesLeafHas(key, keywords))
+                {
+                    return key;
+                }
+            }
+
+            return INVALID_ID;
+        }
 
         public DBID StartBuilding(string name)
         {
-            DBID buildID = GetRootID(BUILD + "_"+ name);
+            DBID buildID = GenerateRootID(BUILD + "_"+ name);
             buildingRegistry.Add(buildID, new Dictionary<DBID, object>());
             return buildID;
         }
@@ -69,7 +97,7 @@ namespace DragonBones
             
             if (armature.ID.Equals(EMPTY_ID))
             {
-                armature.SetID(GetRootID(ARMATURE+"_"+armature.Name));
+                armature.SetID(GenerateRootID(ARMATURE+"_"+armature.Name));
             }
             else
             {
@@ -78,7 +106,7 @@ namespace DragonBones
             }
             
             RegisterEntryToBuild(buildID, armature);
-            RegisterDataToBuild(buildID, PutPostfix(armature.ID, ARMATURE_ROOT_CONNECTION_POSTFIX), root);
+            RegisterDataToBuild(buildID, PutPostfixInID(armature.ID, ARMATURE_ROOT_CONNECTION_POSTFIX), root);
             
             return armature.ID;
         }
@@ -87,10 +115,10 @@ namespace DragonBones
             if (!IsBuildIDValid(buildID)) return INVALID_ID;
             if (!IsSlot(slotID, true)) return INVALID_ID;
             
-            childArmature.SetID(AppendID(slotID, CHILD_ARMATURE + "_" + childArmature.Name));
+            childArmature.SetID(AppendLeaf(slotID, CHILD_ARMATURE + "_" + childArmature.Name));
             
             RegisterEntryToBuild(buildID, childArmature);
-            RegisterDataToBuild(buildID, PutPostfix(displayDataID, DISPLAY_TO_CHILD_ARMATURE_CONNECTION_POSTFIX), childArmature.ID);
+            RegisterDataToBuild(buildID, PutPostfixInID(displayDataID, DISPLAY_TO_CHILD_ARMATURE_CONNECTION_POSTFIX), childArmature.ID);
             
             return childArmature.ID;
         }
@@ -98,7 +126,7 @@ namespace DragonBones
         {
             if (!IsBuildIDValid(buildID)) return INVALID_ID;
 
-            bone.SetID(AppendID(parentID, BONE + "_" + bone.name));
+            bone.SetID(AppendLeaf(parentID, BONE + "_" + bone.name));
             RegisterEntryToBuild(buildID, bone);
             return bone.ID;
         }
@@ -113,7 +141,7 @@ namespace DragonBones
                 return INVALID_ID;
             }
             
-            slot.SetID(AppendID(boneID, SLOT + "_" + slot.Name));
+            slot.SetID(AppendLeaf(boneID, SLOT + "_" + slot.Name));
             RegisterEntryToBuild(buildID, slot);
             return slot.ID;
 
@@ -122,7 +150,7 @@ namespace DragonBones
         {
             if (!IsBuildIDValid(buildID)) return INVALID_ID;
 
-            constraint.SetID(AppendID(armatureID, CONSTRAINT + "_" + constraint.name));
+            constraint.SetID(AppendLeaf(armatureID, CONSTRAINT + "_" + constraint.name));
             RegisterEntryToBuild(buildID, constraint);
             return constraint.ID;
         }
@@ -131,36 +159,41 @@ namespace DragonBones
             if (!IsBuildIDValid(buildID)) return INVALID_ID;
             if (!IsSlot(slotID)) return INVALID_ID;
             
-            DBID id = AppendID(slotID, DISPLAY_DATA + DISPLAY_INDEX_MARK.Replace("*", index.ToString()) + data.Name);
+            DBID id = AppendLeaf(slotID, DISPLAY_DATA + DISPLAY_INDEX_MARK.Replace("*", index.ToString()) + data.Name);
             buildingRegistry[buildID].Add(id, data);
             
             return id;
         }
+        
+        //buffers. only MUST be used in CompleteBuilding
+        private readonly List<Tuple<DBID, object>> activeRegistryBuffer = new();
+        private readonly List<Tuple<DBID, DisplayData>> displayDataBuffer = new();
+        private readonly List<DBID> armaturesBuffer = new(); //0 - armature; 1 - engine root; 2...n - content
         public void CompleteBuilding(DBID buildingID)
         {
-            foreach (KeyValuePair<DBID, object> pair in buildingRegistry[buildingID])
+            int armaturesBufferCurrent = 0;
+            foreach (KeyValuePair<DBID, object> entry in buildingRegistry[buildingID])
             {
-                if (pair.Key.Has(DISPLAY_DATA))
+                if (IsArmature(entry.Key))
                 {
-                    displayDataRegistry[pair.Key] = pair.Value as DisplayData;
-
-                    if (pair.Key.Has(DISPLAY_TO_CHILD_ARMATURE_CONNECTION_POSTFIX))
-                    {
-                        displayDataToChildArmature[new DBID(pair.Key.ToString().Replace(DISPLAY_TO_CHILD_ARMATURE_CONNECTION_POSTFIX, ""))] = (DBID)pair.Value;
-                    }
+                    AddToArmaturesBuffer(entry.Key);
                     continue;
                 }
-
-                if (pair.Key.Has(ARMATURE_ROOT_CONNECTION_POSTFIX))
+                if (entry.Key.ID.Contains(ARMATURE_ROOT_CONNECTION_POSTFIX))
                 {
-                    activeRoots.Add(new DBID(pair.Key.ToString().Replace(ARMATURE_ROOT_CONNECTION_POSTFIX, "")), pair.Value as IEngineArmatureRoot);
+                    
                 }
-                
-                activeRegistry.Add(pair.Key, pair.Value);
             }
 
             buildingRegistry.Remove(buildingID);
             MarkAsChanged();
+
+            void AddToArmaturesBuffer(DBID id)
+            {
+                if(armaturesBuffer.Count > armaturesBufferCurrent) armaturesBuffer[armaturesBufferCurrent] = id;
+                else armaturesBuffer.Add(id);
+                armaturesBufferCurrent++;
+            }
         }
         
         private void RegisterEntryToBuild(DBID buildID, IRegistryEntry entry)
@@ -291,30 +324,16 @@ namespace DragonBones
 
         public DBID SearchAtArmature(DBID armatureID, string keyword)
         {
-            for (int i = 0; i < structures[armatureID].Length; i++)
+            for (int i = 0; i < armatureToContent[armatureID].Length; i++)
             {
-                if (structures[armatureID][i].Has(keyword)) return structures[armatureID][i];
+                if (armatureToContent[armatureID][i].Has(keyword)) return armatureToContent[armatureID][i];
             }
 
             return INVALID_ID;
         }
-
-        public DBID SearchInBuild(DBID buildID, params string[] keywords)
-        {
-            foreach (DBID key in buildingRegistry[buildID].Keys)
-            {
-                if (DoesLeafHas(key, keywords))
-                {
-                    return key;
-                }
-            }
-
-            return INVALID_ID;
-        }
-
         public DBID GetParent(DBID childID)
         {
-            int childPartStart = childID.ID.LastIndexOf(":", StringComparison.Ordinal);
+            int childPartStart = childID.ID.LastIndexOf(SEPARATOR);
 
             if (childPartStart < 0)
             {
@@ -324,7 +343,7 @@ namespace DragonBones
             return new DBID(childID.ID.Remove(childPartStart));
         }
         
-        public TRoot GetRoot<TRoot>(DBID armatureID)
+        public TRoot GetEngineRoot<TRoot>(DBID armatureID)
             where TRoot : class, IEngineArmatureRoot
         {
             return activeRoots[armatureID] as TRoot;
@@ -345,21 +364,16 @@ namespace DragonBones
         public ChildArmature GetChildArmature(DBID id) => Get(id) as ChildArmature;
         public ChildArmature GetChildArmatureFromDisplayID(DBID displayID) => Get(displayDataToChildArmature[displayID]) as ChildArmature;
         public ChildArmature GetChildArmatureInBuild(DBID buildID, DBID id) => GetInBuild(buildID, id) as ChildArmature;
-
         public ChildArmature SearchInBuildAndGetChildArmature(DBID buildId, string keyword) => GetChildArmatureInBuild(buildId, SearchInBuild(buildId, keyword));
-        
         public Armature GetArmature(DBID id) => Get(id) as Armature;
         public Armature GetArmatureInBuild(DBID buildID, DBID id) => GetInBuild(buildID, id) as Armature;
         public Armature SearchInBuildAndGetArmature(DBID buildID, string keyword) => GetArmatureInBuild(buildID, SearchInBuild(buildID, keyword));
-        
         public Bone GetBone(DBID id) => Get(id) as Bone;
         public Bone GetBoneInBuild(DBID buildID, DBID id) => GetInBuild(buildID, id) as Bone;
         public Bone SearchInBuildAndGetBone(DBID buildID, string keyword) => GetBoneInBuild(buildID, SearchInBuild(buildID, keyword));
-        
         public Slot GetSlot(DBID id) => Get(id) as Slot;
         public Slot GetSlotInBuild(DBID buildID, DBID id) => GetInBuild(buildID, id) as Slot;
         public Slot SearchInBuildAndGetSlot(DBID buildID, string keyword) => GetSlotInBuild(buildID, SearchInBuild(buildID, keyword));
-        
         public object Get(DBID id)
         {
             if (!activeRegistry.ContainsKey(id) || id.Equals(INVALID_ID))
@@ -370,14 +384,6 @@ namespace DragonBones
             return activeRegistry[id];
         }
 
-        public object GetInBuild(DBID buildID, DBID id)
-        {
-            if (id.Equals(INVALID_ID) || buildID.Equals(INVALID_ID) || !buildingRegistry.ContainsKey(buildID) || !buildingRegistry[buildID].ContainsKey(id))
-            {
-                return null;
-            }
-            return buildingRegistry[buildID][id];
-        }
 
         public DisplayData GetDisplayData(DBID id)
         {
@@ -525,7 +531,6 @@ namespace DragonBones
             }
         }
         #endregion
-
         #region ID
         public struct DBID : IEquatable<DBID>
         {
@@ -616,8 +621,19 @@ namespace DragonBones
                 DBLogger.Error($"Invalid ID({id}) provided, can not get leaf");
                 return string.Empty;
             }
-            return id.ID.Substring(id.ID.LastIndexOf(':'));
+            return id.ID.Substring(id.ID.LastIndexOf(SEPARATOR));
         }
+
+        private DBID GetRootOf(DBID id)
+        {
+            if (id.Invalid())
+            {
+                DBLogger.Error($"Invalid ID({id}) provided, can not get leaf");
+                return INVALID_ID;
+            }
+            return new DBID(id.ID.Substring(0, id.ID.IndexOf(SEPARATOR)));
+        }
+
 
         private bool DoesLeafHas(DBID id, string key) => GetLeaf(id).Contains(key);
         private bool DoesLeafHas(DBID id, params string[] keys)
@@ -659,27 +675,21 @@ namespace DragonBones
         public bool IsDisplayData(DBID id, bool throwError = false) => Is(id, DISPLAY_DATA, throwError);
         public bool IsConstraint(DBID id, bool throwError = false) => Is(id, CONSTRAINT, throwError);
 
-        private DBID AppendID(DBID parent, string childName)
+        private DBID AppendLeaf(DBID parent, string leaf)
         {
             DBID newID;
-            newID.ID = parent + ":" + childName + "_" + GetRandomID();
+            newID.ID = parent.ID + SEPARATOR + leaf + "_" + GetRandomID();
             
             return newID;
         }
-
-        private DBID PutPostfix(DBID id, string postfix)
+        private DBID PutPostfixInID(DBID id, string postfix)
         {
             DBID newID;
             newID.ID = id.ID + "_" + postfix;
             
             return newID;
         }
-        
-        private int CountElements(DBID id)
-        {
-            return id.ID.Count((c => c == ':'));
-        }
-
+        private int CountElements(DBID id) => id.ID.Count((c => c == SEPARATOR));
         private int CountInPath(DBID id, string key)
         {
             int c = 0;
@@ -693,12 +703,11 @@ namespace DragonBones
             GoToRootOf(id, Count);
             return c;
         }
-        private DBID GetRootID(string name)
+        private DBID GenerateRootID(string name)
         {
-            DBID newID = new(":" + name + "_" + GetRandomID());
+            DBID newID = new(SEPARATOR + name + "_" + GetRandomID());
             return newID;
         }
-
         private static string GetRandomID()
         {
             string ID = "";
@@ -711,7 +720,7 @@ namespace DragonBones
             return ID;
         }
         #endregion
-
+        #region DEBUG
         public void PrintCurrentState()
         {
             DBLogger.StartNewArmatureBuildLog("DB Registry State");
@@ -754,7 +763,7 @@ namespace DragonBones
             
             DBLogger.BLog.StartSection("Structures Registry");
             i = 0;
-            foreach (KeyValuePair<DBID, DBID[]> entry in structures)
+            foreach (KeyValuePair<DBID, DBID[]> entry in armatureToContent)
             {
                 DBLogger.BLog.StartSection($"Structure {i}: {entry.Key}");
                 foreach (DBID dbid in entry.Value)
@@ -785,5 +794,6 @@ namespace DragonBones
             
             DBLogger.PrintBuildLog(DBLogger.FinishArmatureBuildLog());
         }
+        #endregion
     }
 }
