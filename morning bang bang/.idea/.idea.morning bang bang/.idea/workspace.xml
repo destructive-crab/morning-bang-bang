@@ -5,21 +5,35 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4849ab8a-b017-404e-910e-1744aa022006" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/projectSettingsUpdater.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/projectSettingsUpdater.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_bottom_wall.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_bottom_wall.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_bottom_wall.png~" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_bottom_wall.png~" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_corner_walls.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_corner_walls.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_corner_walls.png~" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_corner_walls.png~" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_side_walls.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_side_walls.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_side_walls.png~" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/cb_side_walls.png~" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/g_wall_left.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/g_wall_left.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/commuter_basement/g_wall_right.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/commuter_basement/g_wall_right.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/development/dev_wall_left.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/development/dev_wall_left.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/development/dev_wall_left.png~" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/development/dev_wall_left.png~" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/development/dev_wall_up.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/development/dev_wall_up.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/art/development/dev_wall_up.png~" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/art/development/dev_wall_up.png~" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleOutput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleOutput.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/ui/DeathMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/ui/DeathMenu.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Armature.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Armature.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ChildArmatures/ChildArmature.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ChildArmatures/ChildArmature.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/IEngineArmatureRoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/IEngineArmatureRoot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBRegistry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBRegistry.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityArmatureRoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityArmatureRoot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityDBFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityDBFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/animation/WorldClock.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/animation/WorldClock.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Dev/DragonBonesArmatureStarter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Dev/DragonBonesArmatureStarter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Debug/DebugUI.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Resources/Debug/DebugUI.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/.#BangBoot.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/BangBoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/BangBoot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/common/audio.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/BangDebugger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/BangDebugger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/BangingConsole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/BangingConsole.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandsContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandsContainer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleInput.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/FPS.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/FPS.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/banging_code/json/SaveManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/json/SaveManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/art/sources/bastard_imp.kra.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/QualitySettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/QualitySettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -31,21 +45,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37cc348edc804f4cb176b63962c716e7177200/0b/c88ab00e/Matrix4x4.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37cc348edc804f4cb176b63962c716e7177200/13/2def11c0/Logger.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37cc348edc804f4cb176b63962c716e7177200/25/e0bd2277/Object.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37cc348edc804f4cb176b63962c716e7177200/47/12193a1f/Mesh.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37cc348edc804f4cb176b63962c716e7177200/62/783a8d47/MeshFilter.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37cc348edc804f4cb176b63962c716e7177200/7c/95ebef22/MeshRenderer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37cc348edc804f4cb176b63962c716e7177200/e1/91542cb6/Mathf.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37cc348edc804f4cb176b63962c716e7177200/e9/15d9a7a8/CombineInstance.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/0b/65960d28/Dictionary`2.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/42/6652a1d5/Tuple`2.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/77/4230ea42/Object.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/8d/444ce99b/ValueTuple`2.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/b5/bd5364c1/Void.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5a41d6b7189842eca409fd0b1c3e3dcf17bf78/c5/73247026/String.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/738dfc017b6f49678c748c0a004fcafe2da00/c4/a8dd6e83/GUIStyle.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37cc348edc804f4cb176b63962c716e7177200/cf/97656bda/Time.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3ea01e77be99618395f448b16bd7cc2bd4248bd9e5d8474964b2d97f39c5d74/System.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/da6a1787df247a0274ec8fc4840f41df092ee13874f55f87a9db568acab1bd2/System.Reflection.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/DragonBones/Code/Model/DisplayData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/DragonBones/Code/Unity/Meshes/UnityArmatureMeshPart.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityEventDispatcher.cs" root0="FORCE_HIGHLIGHTING" />
@@ -57,13 +59,13 @@
     <setting file="file://$PROJECT_DIR$/Assets/MothDIed/Core/Scenes/SceneSwitcher.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/MothDIed/Optional/GUI/Common/CommonLayer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/MothDIed/Optional/Pool/PoolInstanceRoot.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/banging_code/.#BangBoot.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/DevBoot.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/ai/management/EntitySpawnPoint.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/ai/management/EntitySpawner.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/ai/management/SceneEntitiesModule.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/banging_code/debug/BangDebugger.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/banging_code/debug/console/BangingConsole.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/banging_code/debug/BangDebugger.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/banging_code/debug/Console/BangingConsole.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/banging_code/debug/DebugUIRoot.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/debug/visual/DebugMapDrawer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/dev/DevelopmentLevel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/banging_code/dev/MeshPivotFeature.cs" root0="FORCE_HIGHLIGHTING" />
@@ -106,24 +108,29 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;ToolWindowExplorer.ShowToolbar&quot;: &quot;false&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\destructive_crab\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\destructive_crab\\AppData\\Local\\Symbols\\src&quot;
+    ]
   }
 }</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="$PROJECT_DIR$/../../../builds/ther/Morning Thriller.exe" />
+      <option name="EXE_PATH" value="D:/builds/bang_bang_04/Morning Thriller.exe" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="D:\builds\bang_bang_04" />
       <option name="PASS_PARENT_ENVS" value="1" />
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      <option name="ENV_FILE_PATHS" value="" />
-      <option name="REDIRECT_INPUT_PATH" value="" />
-      <option name="PTY_MODE" value="Auto" />
       <method v="2" />
     </configuration>
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
@@ -132,9 +139,6 @@
       <option name="WORKING_DIRECTORY" value="C:\Users\destructive_crab\dev\band-bang\morning bang bang" />
       <option name="PASS_PARENT_ENVS" value="1" />
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      <option name="ENV_FILE_PATHS" value="" />
-      <option name="REDIRECT_INPUT_PATH" value="" />
-      <option name="PTY_MODE" value="Auto" />
       <method v="2" />
     </configuration>
     <configuration name="Unit Tests (batch mode)" type="RunUnityExe" factoryName="Unity Executable">
@@ -143,9 +147,6 @@
       <option name="WORKING_DIRECTORY" value="C:\Users\destructive_crab\dev\band-bang\morning bang bang" />
       <option name="PASS_PARENT_ENVS" value="1" />
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      <option name="ENV_FILE_PATHS" value="" />
-      <option name="REDIRECT_INPUT_PATH" value="" />
-      <option name="PTY_MODE" value="Auto" />
       <method v="2" />
     </configuration>
     <configuration name="Attach to Unity Editor &amp; Play" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="UNITY_ATTACH_AND_PLAY" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
@@ -153,13 +154,9 @@
       <option name="listenPortForConnections" value="false" />
       <option name="pid" />
       <option name="projectPathOnTarget" />
-      <option name="runtimes">
-        <list />
-      </option>
       <option name="selectedOptions">
         <list />
       </option>
-      <option name="useMixedMode" value="false" />
       <method v="2" />
     </configuration>
     <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
@@ -167,13 +164,9 @@
       <option name="listenPortForConnections" value="false" />
       <option name="pid" />
       <option name="projectPathOnTarget" />
-      <option name="runtimes">
-        <list />
-      </option>
       <option name="selectedOptions">
         <list />
       </option>
-      <option name="useMixedMode" value="false" />
       <method v="2" />
     </configuration>
   </component>
@@ -206,22 +199,8 @@
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
-          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
-          <option name="timeStamp" value="1" />
-        </breakpoint>
-        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
-          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
-          <option name="timeStamp" value="2" />
-        </breakpoint>
-        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
-          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
-          <option name="timeStamp" value="3" />
-        </breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

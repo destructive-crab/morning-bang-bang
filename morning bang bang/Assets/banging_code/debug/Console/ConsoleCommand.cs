@@ -75,13 +75,24 @@ namespace banging_code.debug.Console
                 return "[!] Command invocation failed; Invalid arguments";
             }
 
-            for (var i = 0; i < args.Length; i++)
+            for (int index = 0; index < args.Length; index++)
             {
-                var arg = args[i];
+                object arg = args[index];
                 
-                if (arg.GetType() != Args[i].ParameterType)
+                if (arg.GetType() != Args[index].ParameterType)
                 {
-                    return $"Invalid argument: {arg.GetType()}. {Args[i].ParameterType} was expected";
+                    if(arg is Single s && Args[index].ParameterType == typeof(int))
+                    {
+                        args[index] = (int)s;
+                        continue;
+                    }
+                    if(arg is int i && Args[index].ParameterType == typeof(Single))
+                    {
+                        args[index] = (float)i;
+                        continue;
+                    }
+                    
+                    return $"Invalid argument: {arg.GetType()}. {Args[index].ParameterType} was expected";
                 }
             }
             

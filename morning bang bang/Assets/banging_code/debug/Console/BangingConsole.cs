@@ -21,23 +21,10 @@ public class BangingConsole
     public ConsoleView View { get; private set; }
     public string[] OutputHistory => outputHistory.ToArray();
 
-    public void Setup()
+    public void Setup(ConsoleView view)
     {
         CollectCommandFromContainer();
-    }
-
-    public async UniTask CreatePersistentConsoleView()
-    { 
-        ResourceRequest loadOperation = Resources.LoadAsync<ConsoleView>("Debug/Console View");
-        await loadOperation;
-        ConsoleView viewPrefab = loadOperation.asset as ConsoleView;
-        
-        AsyncInstantiateOperation<ConsoleView> instantiateOperation = GameObject.InstantiateAsync(viewPrefab);
-        await instantiateOperation;
-        ConsoleView viewInstance = instantiateOperation.Result[0];
-        
-        Game.MakeGameObjectPersistent(viewInstance.gameObject);
-        View = viewInstance;
+        View = view;
         View.Disable();
     }
     

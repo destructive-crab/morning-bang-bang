@@ -36,16 +36,13 @@ namespace banging_code.debug.Console
             
             foreach (string part in parts)
             {
-                if (float.TryParse(part, out Single floatArg))
+                if (part.Contains(".") && Single.TryParse(part, out Single floatArg))
                 {
-                    if(part.Contains(","))
-                    {
-                        fullCommand.Add(floatArg);
-                    }
-                    else if(int.TryParse(part, out Int32 intArg))
-                    {
-                        fullCommand.Add(intArg);
-                    }
+                    fullCommand.Add(floatArg);
+                }
+                else if(int.TryParse(part, out Int32 intArg))
+                {
+                    fullCommand.Add(intArg);
                 }
                 else
                 {

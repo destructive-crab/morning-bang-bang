@@ -10,12 +10,18 @@ namespace DragonBones
 
         public readonly DBColor Color = new DBColor();
 
+        public DBRegistry.DBID ArmatureID { get; private set; }
         public Armature Armature { get; private set; }
         public AnimationPlayer AnimationPlayer => Armature != null ? Armature.AnimationPlayer : null;
         
         public UnityArmatureMeshRoot MeshRoot { get; private set; }
         
         public ArmatureRegistry Registry { get; private set; }
+
+        public void DBConnect(DBRegistry.DBID armatureID)
+        {
+            ArmatureID = armatureID;
+        }
 
         public void DBInit(Armature armature)
         {
@@ -66,6 +72,7 @@ namespace DragonBones
             
             if (MeshRoot.IsCombined) MeshRoot.Update();
         }
+
 
         private void BuildMeshes()
         {

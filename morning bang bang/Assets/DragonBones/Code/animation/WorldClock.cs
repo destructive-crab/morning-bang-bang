@@ -39,8 +39,9 @@ namespace DragonBones
             passedTime = Mathf.Abs(passedTime);
             Time += passedTime;
             
-            if (DB.Registry.RegistryChanged)
+            if (DB.Registry.ActiveRegistryChanged)
             {
+                DB.Registry.MarkActiveAsUnchanged();
                 DBRegistry.DBID[] armatures = DB.Registry.GetAllRootArmatures();
                 
                 if(animatables == null || animatables.Length != armatures.Length)
@@ -61,8 +62,8 @@ namespace DragonBones
                     animatable.AdvanceTime(passedTime);
                 }
             }
-
-            DB.Registry.MarkAsUnchanged();
+            
+            DB.Registry.CommitRuntimeChanges();
         }
     }
 }

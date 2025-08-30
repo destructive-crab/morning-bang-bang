@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using DragonBones;
@@ -6,7 +5,7 @@ using UnityEngine;
 
 public class DragonBonesArmatureStarter : MonoBehaviour
 {
-    private List<UnityArmatureRoot> armatures=new();
+    private List<UnityArmatureRoot> armatures = new();
     
     private void Start()
     {

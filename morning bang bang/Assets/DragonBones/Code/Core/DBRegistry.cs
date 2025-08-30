@@ -7,10 +7,13 @@ namespace DragonBones
 {
     public sealed class DBRegistry
     {
-        public bool RegistryChanged { get; private set; } = false;
+        public bool ActiveRegistryChanged { get; private set; } = false;
+        public bool RuntimeRegistryChanged { get; private set; } = false;
         
-        private void MarkAsChanged() => RegistryChanged = true;
-        public void MarkAsUnchanged() => RegistryChanged = false;
+        private void MarkActiveAsChanged() => ActiveRegistryChanged = true;
+        private void MarkRuntimeAsChanged() => RuntimeRegistryChanged = true;
+        public void MarkActiveAsUnchanged() => ActiveRegistryChanged = false;
+        public void MarkRuntimeAsUnchanged() => RuntimeRegistryChanged = false;
         
         private readonly Dictionary<DBID, object> activeRegistry = new();
         
@@ -28,9 +31,9 @@ namespace DragonBones
         private readonly Dictionary<DBID, DBID[]> armatureToContent = new();
         
         //animation runtime
-        private readonly Dictionary<DBID, DBID> activeDisplays = new();
-        private readonly Dictionary<DBID, DBID[]> drawOrders = new();
-        private readonly Dictionary<DBID, bool> visibilities = new();
+        private readonly Dictionary<DBID, DBID> activeDisplays = new(); //slot id -> display id
+        private readonly Dictionary<DBID, DBID[]> drawOrders = new(); //armature id -> slots ids
+        private readonly Dictionary<DBID, bool> visibilities = new(); //slot id -> is visible
 
         private readonly Dictionary<DBID, DBID> activeDisplaysChanges = new();
         private readonly Dictionary<DBID, DBID[]> drawOrderChanges = new();
@@ -50,8 +53,8 @@ namespace DragonBones
         private const string DISPLAY_INDEX_MARK = "_[*]_";
         
         private const string SLOT_MESH_POSTFIX = "MESH";
-        private const string DISPLAY_TO_CHILD_ARMATURE_CONNECTION_POSTFIX = "DISP_CA_CN";
-        private const string ARMATURE_ROOT_CONNECTION_POSTFIX = "ROOT_CN";
+        private const string CHILD_ARMATURE_DD_POSTFIX = "DISP_CA_CN";
+        private const string ENGINE_ROOT_POSTFIX = "ENGINE_ROOT";
 
         #region BUILDING
         public bool IsBuildIDValid(DBID buildID, bool throwError = true)
@@ -89,6 +92,7 @@ namespace DragonBones
         {
             DBID buildID = GenerateRootID(BUILD + "_"+ name);
             buildingRegistry.Add(buildID, new Dictionary<DBID, object>());
+            
             return buildID;
         }
         public DBID RegisterArmature(DBID buildID, Armature armature, IEngineArmatureRoot root)
@@ -106,7 +110,7 @@ namespace DragonBones
             }
             
             RegisterEntryToBuild(buildID, armature);
-            RegisterDataToBuild(buildID, PutPostfixInID(armature.ID, ARMATURE_ROOT_CONNECTION_POSTFIX), root);
+            RegisterDataToBuild(buildID, PutPostfixInID(armature.ID, ENGINE_ROOT_POSTFIX), root);
             
             return armature.ID;
         }
@@ -118,7 +122,7 @@ namespace DragonBones
             childArmature.SetID(AppendLeaf(slotID, CHILD_ARMATURE + "_" + childArmature.Name));
             
             RegisterEntryToBuild(buildID, childArmature);
-            RegisterDataToBuild(buildID, PutPostfixInID(displayDataID, DISPLAY_TO_CHILD_ARMATURE_CONNECTION_POSTFIX), childArmature.ID);
+            RegisterDataToBuild(buildID, PutPostfixInID(displayDataID, CHILD_ARMATURE_DD_POSTFIX), childArmature.ID);
             
             return childArmature.ID;
         }
@@ -128,6 +132,7 @@ namespace DragonBones
 
             bone.SetID(AppendLeaf(parentID, BONE + "_" + bone.name));
             RegisterEntryToBuild(buildID, bone);
+            
             return bone.ID;
         }
         public DBID RegisterSlot(DBID buildID, DBID boneID, Slot slot)
@@ -143,8 +148,8 @@ namespace DragonBones
             
             slot.SetID(AppendLeaf(boneID, SLOT + "_" + slot.Name));
             RegisterEntryToBuild(buildID, slot);
+            
             return slot.ID;
-
         }
         public DBID RegisterConstraint(DBID buildID, DBID armatureID, Constraint constraint)
         {
@@ -152,6 +157,7 @@ namespace DragonBones
 
             constraint.SetID(AppendLeaf(armatureID, CONSTRAINT + "_" + constraint.name));
             RegisterEntryToBuild(buildID, constraint);
+            
             return constraint.ID;
         }
         public DBID RegisterDisplay(DBID buildID, DBID slotID, DisplayData data, int index)
@@ -160,39 +166,112 @@ namespace DragonBones
             if (!IsSlot(slotID)) return INVALID_ID;
             
             DBID id = AppendLeaf(slotID, DISPLAY_DATA + DISPLAY_INDEX_MARK.Replace("*", index.ToString()) + data.Name);
-            buildingRegistry[buildID].Add(id, data);
+            RegisterDataToBuild(buildID, id, data);
             
             return id;
         }
         
         //buffers. only MUST be used in CompleteBuilding
-        private readonly List<Tuple<DBID, object>> activeRegistryBuffer = new();
-        private readonly List<Tuple<DBID, DisplayData>> displayDataBuffer = new();
-        private readonly List<DBID> armaturesBuffer = new(); //0 - armature; 1 - engine root; 2...n - content
+        //maybe we should do lock on active registry while adding stuff to it
+        private readonly List<Tuple<DBID, Tuple<DBID, DisplayData>>> displayDataBuffer = new();
+        private readonly List<Tuple<DBID, DBID>> armaturesBuffer = new(); //0 - armature; 1...n - content
+        private readonly Dictionary<DBID, int> lengths = new();
+        
         public void CompleteBuilding(DBID buildingID)
         {
             int armaturesBufferCurrent = 0;
+            int displayDataBufferCurrent = 0;
+            lengths.Clear();
+            
             foreach (KeyValuePair<DBID, object> entry in buildingRegistry[buildingID])
             {
-                if (IsArmature(entry.Key))
+                activeRegistry.Add(entry.Key, entry.Value);
+
+                if (entry.Key.ID.Contains(ENGINE_ROOT_POSTFIX) && entry.Value is IEngineArmatureRoot root)
+                {
+                    activeRoots.Add(root.ArmatureID, root);
+                    continue;
+                }
+                
+                if (!IsArmature(entry.Key) && (IsBone(entry.Key) || IsSlot(entry.Key)))
                 {
                     AddToArmaturesBuffer(entry.Key);
                     continue;
                 }
-                if (entry.Key.ID.Contains(ARMATURE_ROOT_CONNECTION_POSTFIX))
+
+                if (IsDisplayData(entry.Key))
                 {
-                    
+                    AddToDisplayDataBuffer(entry.Key, (DisplayData)entry.Value);
+                    continue;
+                }
+                
+                if (IsChildArmature(entry.Key))
+                {
+                    ChildArmature ca = (ChildArmature)entry.Value;
+                    displayDataToChildArmature.Add(ca.DisplayID, ca.ID);
                 }
             }
 
+            //processing armatures buffer
+            for (int i = 0; i < armaturesBufferCurrent; i++)
+            {
+                Tuple<DBID, DBID> current = armaturesBuffer[i];
+
+                if (armatureToContent.TryAdd(current.Item1, new DBID[lengths[current.Item1]]))
+                {
+                    lengths[current.Item1] = 0;
+                }
+
+                armatureToContent[current.Item1][lengths[current.Item1]] = current.Item2;
+            }
+            
+            //processing display data buffer
+            for (int i = 0; i < displayDataBufferCurrent; i++)
+            {
+                DBID slotID = displayDataBuffer[i].Item1;
+                DBID ddID = displayDataBuffer[i].Item2.Item1;
+                DisplayData data = displayDataBuffer[i].Item2.Item2;
+                
+                displayDataRegistry.Add(ddID, data);
+            }
+            
             buildingRegistry.Remove(buildingID);
-            MarkAsChanged();
+            MarkActiveAsChanged();
+            MarkRuntimeAsChanged();
 
             void AddToArmaturesBuffer(DBID id)
             {
-                if(armaturesBuffer.Count > armaturesBufferCurrent) armaturesBuffer[armaturesBufferCurrent] = id;
-                else armaturesBuffer.Add(id);
+                DBID rootID = GetArmatureOf(id);
+                if(armaturesBuffer.Count > armaturesBufferCurrent)
+                {
+                    armaturesBuffer[armaturesBufferCurrent] = Tuple.Create(rootID, id);
+                }
+                else
+                {
+                    armaturesBuffer.Add(Tuple.Create(rootID, id));
+                }
+
                 armaturesBufferCurrent++;
+                lengths.TryAdd(rootID, 0);
+                lengths[rootID]++;
+            }
+            void AddToDisplayDataBuffer(DBID ddID, DisplayData dd)
+            {
+                DBID slot = GetSlotOfDisplay(ddID);
+                Tuple<DBID, Tuple<DBID, DisplayData>> toBuffer = Tuple.Create(slot, Tuple.Create(ddID, dd));
+                
+                if(displayDataBuffer.Count > displayDataBufferCurrent)
+                {
+                    displayDataBuffer[displayDataBufferCurrent] = toBuffer;
+                }
+                else
+                {
+                    displayDataBuffer.Add(toBuffer);
+                }
+
+                displayDataBufferCurrent++;
+                lengths.TryAdd(slot, 0);
+                lengths[slot]++;
             }
         }
         
@@ -207,54 +286,79 @@ namespace DragonBones
         }
         #endregion
         #region RUNTIME
-
-        public bool HasMesh(DBID id)
-        {
-            return activeMeshes.ContainsKey(id);
-        }
-
+        public bool HasMesh(DBID id) => activeMeshes.ContainsKey(id);
         public DBMeshBuffer CreateMesh(DBID id)
         {
             activeMeshes.TryAdd(id, new DBMeshBuffer());
             return activeMeshes[id];
         }
-        
         public void UpdateMesh(DBID id, Mesh mesh, Material material)
         {
             activeMeshes.TryAdd(id, new DBMeshBuffer());
             activeMeshes[id].Material = material;
         }
         
-        public void SetActiveDisplayFor(DBID slotID, DBID displayID)
+        public void ChangeDisplayFor(DBID slotID, DBID displayID)
         {
-            activeDisplays[slotID] = displayID;
+            activeDisplaysChanges[slotID] = displayID;
+            MarkRuntimeAsChanged();
         }
-
-        public void SetActiveDisplayForByIndex(DBID slotID, int index)
+        public DBID ChangeDisplayForByIndex(DBID slotID, int index)
         {
             DBID[] ids = GetAllDisplaysDataOf(slotID);
             for (var i = 0; i < ids.Length; i++)
             { 
                 if (ids[i].Has(DISPLAY_INDEX_MARK.Replace("*", index.ToString())))
                 {
-                    SetActiveDisplayFor(slotID, ids[i]);
-                    return;
+                    ChangeDisplayFor(slotID, ids[i]);
+                    return ids[i];
                 }
             }
-        }
 
-        public void SortDrawOrder(DBID armatureID)
+            return INVALID_ID;
+        }
+        public void UpdateDrawOrder(DBID armatureID)
         {
             if(!armatureID.Has(ARMATURE)) return;
 
-            DBID[] sortedOrder = drawOrders[armatureID];
+            DBID[] slots = GetChildSlotsOf(armatureID);
             
-            if(drawOrders[armatureID].Length < 20) InsertionSort(ref sortedOrder);
-            else                                                   HeapSort(ref sortedOrder);
+            if(slots.Length < 20) InsertionSort(ref slots);
+            else                                                   HeapSort(ref slots);
 
-            drawOrders[armatureID] = sortedOrder;
+            drawOrderChanges[armatureID] = slots;
+            MarkRuntimeAsChanged();
         }
-        
+
+        public void SetVisibilityFor(DBID slotID, bool visibility)
+        {
+            if (visibilities[slotID] != visibility)
+            {
+                visibilitiesChanges[slotID] = visibility;
+                MarkRuntimeAsChanged();
+            }
+        }
+
+        public void CommitRuntimeChanges()
+        {
+            if(!RuntimeRegistryChanged) return;
+            
+            foreach (KeyValuePair<DBID, DBID> activeDisplaysChange in activeDisplaysChanges)
+            {
+                activeDisplays[activeDisplaysChange.Key] = activeDisplaysChange.Value;
+            }
+            
+            foreach (KeyValuePair<DBID, DBID[]> drawOrderChange in drawOrderChanges)
+            {
+                drawOrders[drawOrderChange.Key] = drawOrderChange.Value;
+            }
+            
+            foreach (KeyValuePair<DBID, bool> visibilityChange in visibilitiesChanges)
+            {
+                visibilities[visibilityChange.Key] = visibilityChange.Value;
+            }
+            MarkRuntimeAsChanged();
+        }
         
         private void HeapSort(ref DBID[] slots)
         {
@@ -436,7 +540,7 @@ namespace DragonBones
                 }
                 foreach (KeyValuePair<DBID, object> pair in activeRegistry)
                 {
-                    if(pair.Key.Has(parentID) && Is(pair.Key, hasCheck) && (includeChildArmatures || childArmaturesInParentsPath == CountInPath(pair.Key, CHILD_ARMATURE)))
+                    if(pair.Key.Has(parentID.ID + SEPARATOR) && Is(pair.Key, hasCheck) && (includeChildArmatures || childArmaturesInParentsPath == CountInPath(pair.Key, CHILD_ARMATURE)))
                     {
                         helpIDList.Add(pair.Key);
                     }
@@ -475,7 +579,7 @@ namespace DragonBones
                 }
                 foreach (KeyValuePair<DBID, object> pair in activeRegistry)
                 {
-                    if(pair.Key.Has(parentID) && DoesLeafHas(pair.Key, SLOT) && (includeChildArmatures || childArmaturesInParentsPath == CountInPath(pair.Key, CHILD_ARMATURE)))
+                    if(pair.Key.Has(parentID.ID + SEPARATOR) && DoesLeafHas(pair.Key, SLOT) && (includeChildArmatures || childArmaturesInParentsPath == CountInPath(pair.Key, CHILD_ARMATURE)))
                     {
                         helpIDList.Add(pair.Key);
                     }
@@ -490,7 +594,7 @@ namespace DragonBones
                 helpIDList.Clear();
                 foreach (KeyValuePair<DBID, DisplayData> pair in displayDataRegistry)
                 {
-                    if(pair.Key.Has(parentID) && DoesLeafHas(pair.Key, DISPLAY_DATA))
+                    if(pair.Key.Has(parentID.ID + SEPARATOR) && DoesLeafHas(pair.Key, DISPLAY_DATA))
                         helpIDList.Add(pair.Key);
                 }
                 return helpIDList.ToArray();   
@@ -503,7 +607,7 @@ namespace DragonBones
                 helpIDList.Clear();
                 foreach (KeyValuePair<DBID, object> pair in activeRegistry)
                 {
-                    if(pair.Key.Has(parentID) && pair.Key.Has(CHILD_ARMATURE))
+                    if(pair.Key.Has(parentID.ID + SEPARATOR) && pair.Key.Has(CHILD_ARMATURE))
                         helpIDList.Add(pair.Key);
                 }
                 return helpIDList.ToArray();   
@@ -522,7 +626,7 @@ namespace DragonBones
 
                 foreach (KeyValuePair<DBID, object> pair in activeRegistry)
                 {
-                    if(pair.Key.Has(parentID) && DoesLeafHas(pair.Key, BONE) && (includeChildArmatures || childArmaturesInParentsPath == CountInPath(pair.Key, CHILD_ARMATURE)))
+                    if(pair.Key.Has(parentID.ID + SEPARATOR) && DoesLeafHas(pair.Key, BONE) && (includeChildArmatures || childArmaturesInParentsPath == CountInPath(pair.Key, CHILD_ARMATURE)))
                     {
                         helpIDList.Add(pair.Key);
                     }
@@ -614,6 +718,34 @@ namespace DragonBones
                 current = GetParent(current);
             }
         }
+
+        /// <param name="id"></param>
+        /// <param name="callback"> DBID: current element; int: its index; bool: continue? </param>
+        private void GoToRootOf(DBID id, Func<DBID, int, bool> callback)
+        {
+            DBID current = id;
+            DBID[] all = new DBID[CountElements(current)];
+            
+            int i = 0;
+            while (!current.Invalid())
+            {
+                all[all.Length - i - 1] = current;
+                if(!callback.Invoke(current, i)) return;
+                
+                current = GetParent(current);
+            }
+        }
+        
+        private DBID MoveLeft(DBID id)
+        {
+            return new DBID(id.ID.Substring(0, id.ID.LastIndexOf(SEPARATOR)));
+        }
+
+        private DBID GetSlotOfDisplay(DBID id)
+        {
+            return MoveLeft(id);
+        }
+        
         private string GetLeaf(DBID id)
         {
             if (id.Invalid())
@@ -634,6 +766,27 @@ namespace DragonBones
             return new DBID(id.ID.Substring(0, id.ID.IndexOf(SEPARATOR)));
         }
 
+        private DBID GetArmatureOf(DBID id)
+        {
+            if (IsArmature(id))
+            {
+                return id;
+            }
+
+            DBID armatureID = INVALID_ID;
+            
+            GoToRootOf(id, (dbid, i) =>
+            {
+                if (IsArmature(dbid) || IsChildArmature(dbid))
+                {
+                    armatureID = dbid;
+                    return false;
+                }
+                return true;
+            });
+
+            return armatureID;
+        }
 
         private bool DoesLeafHas(DBID id, string key) => GetLeaf(id).Contains(key);
         private bool DoesLeafHas(DBID id, params string[] keys)
@@ -668,11 +821,11 @@ namespace DragonBones
             return false;
         }
 
-        public bool IsArmature(DBID id, bool throwError = false) => Is(id, ARMATURE, throwError) && !DoesLeafHasAny(id, CHILD_ARMATURE, ARMATURE_ROOT_CONNECTION_POSTFIX);
+        public bool IsArmature(DBID id, bool throwError = false) => Is(id, ARMATURE, throwError) && !DoesLeafHasAny(id, CHILD_ARMATURE, ENGINE_ROOT_POSTFIX);
         public bool IsBone(DBID id, bool throwError = false) => Is(id, BONE, throwError);
         public bool IsSlot(DBID id, bool throwError = false) => Is(id, SLOT, throwError) && !DoesLeafHas(id, SLOT_MESH_POSTFIX);
-        public bool IsChildArmature(DBID id, bool throwError = false) => Is(id, CHILD_ARMATURE, throwError) && !DoesLeafHas(id, DISPLAY_TO_CHILD_ARMATURE_CONNECTION_POSTFIX);
-        public bool IsDisplayData(DBID id, bool throwError = false) => Is(id, DISPLAY_DATA, throwError);
+        public bool IsChildArmature(DBID id, bool throwError = false) => Is(id, CHILD_ARMATURE, throwError) && !DoesLeafHas(id, CHILD_ARMATURE_DD_POSTFIX);
+        public bool IsDisplayData(DBID id, bool throwError = false) => Is(id, DISPLAY_DATA, throwError) && !DoesLeafHas(id, CHILD_ARMATURE_DD_POSTFIX);
         public bool IsConstraint(DBID id, bool throwError = false) => Is(id, CONSTRAINT, throwError);
 
         private DBID AppendLeaf(DBID parent, string leaf)
@@ -705,19 +858,21 @@ namespace DragonBones
         }
         private DBID GenerateRootID(string name)
         {
-            DBID newID = new(SEPARATOR + name + "_" + GetRandomID());
+            DBID newID = INVALID_ID;
+            
+            do
+            {
+                newID = new DBID(SEPARATOR + name + "_" + GetRandomID());
+            } while (activeRegistry.ContainsKey(newID));
+            
             return newID;
         }
+
+        private static long currentID = 5;
         private static string GetRandomID()
         {
-            string ID = "";
-            
-            ID += UnityEngine.Random.Range(0, 10);
-            ID += UnityEngine.Random.Range(0, 10);
-            ID += UnityEngine.Random.Range(0, 10);
-            ID += UnityEngine.Random.Range(0, 10);
-
-            return ID;
+            currentID++;
+            return currentID.ToString();
         }
         #endregion
         #region DEBUG

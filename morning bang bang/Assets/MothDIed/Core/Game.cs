@@ -118,9 +118,14 @@ namespace MothDIed
                     {
                         RunSystem.WhileOnLevel(RunSystem.Data.Level);
                     }
+
+                    if (AllowDebug)
+                    {
+                        debugger.Tick();
+                    }
                 }
 
-                await UniTask.WaitForFixedUpdate();
+                await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
 
                 while (!Application.isPlaying)
                 {

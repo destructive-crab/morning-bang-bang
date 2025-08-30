@@ -77,6 +77,8 @@ namespace DragonBones
             dataPackage.BuildID = DB.Kernel.Registry.StartBuilding(armature.Name);
             dataPackage.ArmatureID = DB.Kernel.Registry.RegisterArmature(dataPackage.BuildID, armature, armatureRoot);
             
+            armatureRoot.DBConnect(dataPackage.ArmatureID);
+            
             BuildBonesFor(dataPackage, armature);
             BuildSlotsFor(dataPackage, armature);
             //todo
@@ -84,19 +86,17 @@ namespace DragonBones
             
             DB.Kernel.Registry.CompleteBuilding(dataPackage.BuildID);
 
-            DBRegistry.DBID[] ids = DB.Kernel.Registry.GetChildSlotsOf(armature.ID);
+            DBRegistry.DBID[] ids = DB.Kernel.Registry.GetChildSlotsOf(armature.ID, true);
             
             foreach (DBRegistry.DBID id in ids)
             {
                 Slot slot = DB.Kernel.Registry.GetSlot(id);
                 
-                DB.Kernel.Registry.SetActiveDisplayForByIndex(slot.ID, slot.SlotData.DefaultDisplayIndex);
-                slot.DisplayID = new Dirty<DBRegistry.DBID>(DB.Registry.GetCurrentActiveDisplayOf(slot.ID));
+                slot.DisplayID.Set(DB.Kernel.Registry.ChangeDisplayForByIndex(slot.ID, slot.SlotData.DefaultDisplayIndex));
                 
                 slot.SlotReady();
             }
             
-
             armature.ArmatureReady();
             armature.Root.DBInit(armature);
             armature.InvalidUpdate(null, true);
@@ -145,7 +145,7 @@ namespace DragonBones
             Dictionary<string, List<DisplayData>> skinSlots = new Dictionary<string, List<DisplayData>>();
             
             //strange dictionary creation method
-            foreach (var key in defaultSkin.slotsAndTheirDisplays.Keys) { skinSlots.Add(key, defaultSkin.GetDisplays(key)); }
+            foreach (string key in defaultSkin.slotsAndTheirDisplays.Keys) { skinSlots.Add(key, defaultSkin.GetDisplays(key)); }
 
             if (currentSkin != defaultSkin)
             {

@@ -17,7 +17,8 @@ namespace banging_code
 
         protected override void StartGame()
         {
-            TODO();
+
+            sfkdsjfd();
         }
 
         private async void TODO()

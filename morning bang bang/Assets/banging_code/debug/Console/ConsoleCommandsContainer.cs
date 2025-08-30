@@ -93,5 +93,12 @@ namespace banging_code.debug.Console
             Game.QuitGame();
             return "";
         }
+
+        [ConsoleCommandKey("fps")]
+        public string FPS()
+        {
+            BangDebugger.Flags.ShowFPS = !BangDebugger.Flags.ShowFPS;
+            return $"Show FPS: {BangDebugger.Flags.ShowFPS}";
+        }
     }
 }

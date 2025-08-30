@@ -67,7 +67,7 @@ namespace DragonBones
 
             childPackage.BuildID = dataPackage.BuildID;
             
-            childArmature.InitializeChildArmature(forSlot);
+            childArmature.InitializeChildArmature(forSlot.ID, displayID, forSlot);
             childArmature.Initialize(childArmatureData.armature, forSlot.Armature.Root);
             
             childPackage.ArmatureID = DB.Registry.RegisterChildArmature(dataPackage.BuildID, forSlot.ID, displayID, childArmature);

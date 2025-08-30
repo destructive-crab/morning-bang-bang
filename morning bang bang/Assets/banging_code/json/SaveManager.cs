@@ -70,10 +70,10 @@ namespace banging_code.json
                 Directory.CreateDirectory(registry.DirectoryPath);
             }
 
-            if (!File.Exists(registry.FilePath))
-            {
-                File.Create(registry.FilePath);
-            }
+//            if (!File.Exists(registry.FilePath))
+//            {
+//                File.Create(registry.FilePath);
+//            }
             
             string content = GetSaveFileContent(registry);
             await File.WriteAllTextAsync(registry.FilePath, content);

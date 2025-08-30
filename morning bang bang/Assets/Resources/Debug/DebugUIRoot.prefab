@@ -1059,7 +1059,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2.0805054, y: 0}
+  m_AnchoredPosition: {x: 2.0805664, y: 0}
   m_SizeDelta: {x: -4.161, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9114474787229088682
@@ -1212,22 +1212,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &476457597750097679
-Transform:
+--- !u!224 &476457597750097679
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7378380415648388857}
-  serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -225.33847, y: -257.07336, z: -3.767507}
+  m_LocalPosition: {x: 0, y: 0, z: -3.767507}
   m_LocalScale: {x: 91.428566, y: 91.428566, z: 91.428566}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7733367113152165808}
   m_Father: {fileID: 4617064065510345430}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8080247818212468597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1277,8 +1281,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2.4646397, y: 2.8117402}
-  m_SizeDelta: {x: 1279.9999, y: 731.4285}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8014334781559755483
 GameObject:
@@ -1292,8 +1296,9 @@ GameObject:
   - component: {fileID: 251537913484494168}
   - component: {fileID: 1502213138847164179}
   - component: {fileID: 7771011032020764410}
+  - component: {fileID: 4595583992983436053}
   m_Layer: 5
-  m_Name: DebugUI
+  m_Name: DebugUIRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1383,6 +1388,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 2047
+--- !u!114 &4595583992983436053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8014334781559755483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e677bbd6486d264baa24c358af3c8af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8800510996250456570
 GameObject:
   m_ObjectHideFlags: 0
