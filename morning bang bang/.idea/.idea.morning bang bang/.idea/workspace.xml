@@ -5,35 +5,70 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4849ab8a-b017-404e-910e-1744aa022006" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/projectSettingsUpdater.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/projectSettingsUpdater.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ArmatureStructure.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ArmatureStructure.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Animation/AnimationPlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Animation/AnimationPlayer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Armature.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Armature.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Bone.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Bone.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ChildArmatures/ChildArmature.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ChildArmatures/ChildArmature.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ChildArmatures/IEngineChildArmature.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ChildArmatures/IEngineChildArmature.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Constraint.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Constraint.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/DeformVertices.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/DeformVertices.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/IEngineArmatureRoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/IEngineArmatureRoot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Slot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Slot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/TransformObject.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/TransformObject.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DB.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DB.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBMeshBuffer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBMeshBuffer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBRegistry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBRegistry.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/Dirty.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/Dirty.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/IRegistryEntry.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/IRegistryEntry.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/Poolables/DBObject.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/Poolables/DBObject.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Events/EventObject.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Events/EventObject.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Model/DBProjectData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Model/DBProjectData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Parsing/ObjectDataParser.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Parsing/ObjectDataParser.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/ArmatureRegistry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/ArmatureRegistry.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/Meshes/UnityArmatureMeshPart.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/Meshes/UnityArmatureMeshPart.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/Meshes/UnityArmatureMeshRoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/Meshes/UnityArmatureMeshRoot.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityArmatureRoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityArmatureRoot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityChildArmature.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityChildArmature.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityDBFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityDBFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/animation/WorldClock.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/animation/WorldClock.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Dev/DragonBonesArmatureStarter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Dev/DragonBonesArmatureStarter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityDBFactory.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/animation/AnimationState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/animation/AnimationState.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/animation/BaseTimelineState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/animation/BaseTimelineState.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/core/DBDataStorage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/core/DBDataStorage.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/model/AnimationConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/model/AnimationConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/model/AnimationData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/model/AnimationData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/model/ArmatureData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/model/ArmatureData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/model/DisplayData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/model/DisplayData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/unity/UnitySlot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/unity/UnitySlot.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/Game.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Debug/DebugUI.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/Debug/DebugUI.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/.#BangBoot.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/BangBoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/BangBoot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/common/audio.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/BangDebugger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/BangDebugger.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/BangingConsole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/BangingConsole.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommand.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandsContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleCommandsContainer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleInput.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/Console/ConsoleInput.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/FPS.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/FPS.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/json/SaveManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/json/SaveManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/content/commuter_basement_I/entities/bastard/art/sources/bastard_imp.kra.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/QualitySettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/QualitySettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/EditorUserSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Common/MonoProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Common/MonoProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Common/MonoProvider.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Common/MonoProvider.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Abstractions/IDependenciesProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Abstractions/IDependenciesProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Abstractions/IDependenciesProvider.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Abstractions/IDependenciesProvider.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Attributes/InjectAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Attributes/InjectAttribute.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Attributes/InjectAttribute.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Attributes/InjectAttribute.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Attributes/InjectRegionAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Attributes/InjectRegionAttribute.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Attributes/InjectRegionAttribute.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Attributes/InjectRegionAttribute.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Attributes/ProvideAttribute.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Attributes/ProvideAttribute.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Attributes/ProvideAttribute.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Attributes/ProvideAttribute.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/DIKernel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/DIKernel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/DIKernel.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/DIKernel.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Flags/InjectRegion.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Flags/InjectRegion.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Flags/InjectRegion.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Flags/InjectRegion.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Registration/DependenciesContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Registration/DependenciesContainer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Registration/DependenciesContainer.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Registration/DependenciesContainer.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Registration/Dependency.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Registration/Dependency.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Core/Registration/Dependency.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Core/Registration/Dependency.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Exceptions/DIProvideException.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Exceptions/DIProvideException.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/Exceptions/DIProvideException.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/Exceptions/DIProvideException.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/SceneModules/SceneAutoInjectModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/SceneModules/SceneAutoInjectModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/SceneModules/SceneAutoInjectModule.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/SceneModules/SceneAutoInjectModule.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/SceneModules/SceneDependenciesModule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/SceneModules/SceneDependenciesModule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/IndieInject/SceneModules/SceneDependenciesModule.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/DI/SceneModules/SceneDependenciesModule.cs.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -47,7 +82,9 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37cc348edc804f4cb176b63962c716e7177200/cf/97656bda/Time.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3ea01e77be99618395f448b16bd7cc2bd4248bd9e5d8474964b2d97f39c5d74/System.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/d44b17e136d09081da1e8fd0e8c83fde60e11818b9f2442d7ed8cb733fae895e/System.Collections.Generic.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/da6a1787df247a0274ec8fc4840f41df092ee13874f55f87a9db568acab1bd2/System.Reflection.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ArmatureStructure.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/DragonBones/Code/Model/DisplayData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/DragonBones/Code/Unity/Meshes/UnityArmatureMeshPart.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityEventDispatcher.cs" root0="FORCE_HIGHLIGHTING" />
@@ -113,7 +150,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {

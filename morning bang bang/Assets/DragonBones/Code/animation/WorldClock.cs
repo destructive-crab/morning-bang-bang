@@ -42,7 +42,7 @@ namespace DragonBones
             if (DB.Registry.ActiveRegistryChanged)
             {
                 DB.Registry.MarkActiveAsUnchanged();
-                DBRegistry.DBID[] armatures = DB.Registry.GetAllRootArmatures();
+                Armature[] armatures = DB.Registry.GetAllRootArmatures();
                 
                 if(animatables == null || animatables.Length != armatures.Length)
                 {
@@ -51,7 +51,7 @@ namespace DragonBones
 
                 for (int i = 0; i < armatures.Length; i++)
                 {
-                    animatables[i] = DB.Registry.GetArmature(armatures[i]);
+                    animatables[i] = armatures[i];
                 }
             }
             

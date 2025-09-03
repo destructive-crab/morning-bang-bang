@@ -4,14 +4,18 @@ using UnityEngine.Rendering;
 
 namespace DragonBones
 {
-    public class Bone : TransformObject, IRegistryEntry
+    public class Bone : TransformObject
     {
-        internal OffsetMode offsetMode;
-        internal readonly DBTransform animationPose = new DBTransform();
-        internal bool _transformDirty;
-        internal bool _childrenTransformDirty;
+        public BoneData boneData { get; internal set; }
+        public bool Visible { get; set; }
+        public string Name => boneData.Name;
+        public Bone ParentBone { get; private set; }
+        public OffsetMode offsetMode;
+        public readonly DBTransform animationPose = new DBTransform();
+        public bool _transformDirty;
+        public bool _childrenTransformDirty;
         private bool _localDirty;
-        internal bool _hasConstraint;
+        public bool _hasConstraint;
         private int _cachedFrameIndex;
         internal readonly BlendState _blendState = new BlendState();
         internal List<int> _cachedFrameIndices = new List<int>();
@@ -31,16 +35,16 @@ namespace DragonBones
             _cachedFrameIndex = -1;
             _blendState.Clear();
             boneData = null;
-            ParentID = DBRegistry.EMPTY_ID;
+            ParentBone = null;
             _cachedFrameIndices = null;
         }
         
-        private void _UpdateGlobalTransformMatrix(bool isCache)
+        private void UpdateGlobalTransformMatrix(bool isCache)
         {
             var boneData = this.boneData;
-            var parent = this.parent;
-            var flipX = Armature.flipX;
-            var flipY = Armature.flipY == DBKernel.IsNegativeYDown;
+            var parent = this.ParentBone;
+            var flipX = ParentArmature.flipX;
+            var flipY = ParentArmature.flipY == DBKernel.IsNegativeYDown;
             var rotation = 0.0f;
             var global = this.global;
             var inherit = parent != null;
@@ -244,7 +248,7 @@ namespace DragonBones
             }
         }
 
-        internal void InitData(BoneData data)
+        internal void ApplyData(BoneData data)
         {
             boneData = data;
             if (boneData == null)
@@ -255,18 +259,20 @@ namespace DragonBones
             origin = boneData.DBTransform;
         }
 
-        internal void BoneReady(DBRegistry.DBID armatureID, DBRegistry.DBID parentID)
+        internal void ApplyParentArmature(Armature armature)
         {
-            ArmatureID = armatureID;
-            ParentID = parentID;
+            ParentArmature = armature;
         }
 
-        public DBRegistry.DBID ParentID { get; protected set; }
-        public DBRegistry.DBID ArmatureID { get; protected set; }
+        internal void ApplyParentBone(Bone bone)
+        {
+            ParentBone = bone;
+        }
+
+        internal void BoneReady() { }
 
         internal void Update(int cacheFrameIndex, AnimationData currentStateAnimationData)
         {
-            if (Armature == null) Armature = DB.Registry.GetArmature(ArmatureID);
             _blendState.dirty = false;
 
             if (cacheFrameIndex >= 0 && _cachedFrameIndices != null)
@@ -289,9 +295,8 @@ namespace DragonBones
                     if (_hasConstraint)
                     {
                         // Update constraints.
-                        foreach (DBRegistry.DBID id in DB.Registry.GetAllChildEntries<Constraint>(Armature.ID))
+                        foreach (Constraint constraint in ParentArmature.Structure.Constraints)
                         {
-                            Constraint constraint = DB.Registry.GetEntry<Constraint>(id);
                             if (constraint._root == this)
                             {
                                 constraint.Update();
@@ -299,7 +304,7 @@ namespace DragonBones
                         }
                     }
 
-                    if (_transformDirty || (parent != null && parent._childrenTransformDirty))
+                    if (_transformDirty || (ParentBone != null && ParentBone._childrenTransformDirty))
                     {
                         // Dirty.
                         _transformDirty = true;
@@ -324,9 +329,8 @@ namespace DragonBones
                 if (_hasConstraint)
                 {
                     // Update constraints.
-                    foreach (DBRegistry.DBID id in DB.Registry.GetAllChildEntries<Constraint>(Armature.ID))
+                    foreach (Constraint constraint in ParentArmature.Structure.Constraints)
                     {
-                        Constraint constraint = DB.Registry.GetEntry<Constraint>(id);
                         if (constraint._root == this)
                         {
                             constraint.Update();
@@ -334,7 +338,7 @@ namespace DragonBones
                     }
                 }
 
-                if (_transformDirty || (parent != null && parent._childrenTransformDirty))
+                if (_transformDirty || (ParentBone != null && ParentBone._childrenTransformDirty))
                 {
                     // Dirty.
                     cacheFrameIndex = -1;
@@ -351,7 +355,7 @@ namespace DragonBones
                 var isCache = false;
                 if (_localDirty)
                 {
-                    _UpdateGlobalTransformMatrix(isCache);
+                    UpdateGlobalTransformMatrix(isCache);
                 }
             }
             else if (_childrenTransformDirty)
@@ -369,9 +373,9 @@ namespace DragonBones
             {
                 _localDirty = false;
 
-                if (_transformDirty || (parent != null && parent._childrenTransformDirty))
+                if (_transformDirty || (ParentBone != null && ParentBone._childrenTransformDirty))
                 {
-                    _UpdateGlobalTransformMatrix(true);
+                    UpdateGlobalTransformMatrix(true);
                 }
 
                 _transformDirty = true;
@@ -413,41 +417,10 @@ namespace DragonBones
             Bone ancestor = value;
             while (ancestor != this && ancestor != null)
             {
-                ancestor = ancestor.parent;
+                ancestor = ancestor.ParentBone;
             }
 
             return ancestor == this;
         }
-        /// <summary>
-        /// - The bone data.
-        /// </summary>
-        /// <version>DragonBones 4.5</version>
-        /// <language>en_US</language>
-        public BoneData boneData { get; internal set; }
-
-        /// <summary>
-        /// - The visible of all slots in the bone.
-        /// </summary>
-        /// <default>true</default>
-        /// <see cref="DBKernel.Slot.visible"/>
-        /// <version>DragonBones 3.0</version>
-        /// <language>en_US</language>
-        public bool Visible { get; set; }
-
-        /// <summary>
-        /// - The bone name.
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>en_US</language>
-        public string name => boneData.name;
-
-        /// <summary>
-        /// - The parent bone to which it belongs.
-        /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>en_US</language>
-        public Bone parent => DB.Registry.GetBone(ParentID);
-        public DBRegistry.DBID ID { get; private set; }
-        public void SetID(DBRegistry.DBID id) => ID = id;
     }
 }

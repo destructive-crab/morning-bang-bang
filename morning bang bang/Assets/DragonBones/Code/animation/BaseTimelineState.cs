@@ -177,7 +177,7 @@ namespace DragonBones
             this._frameRateR = 1.0f / this._frameRate;
             this._position = this._animationState._position;
             this._duration = this._animationState._duration;
-            this._DBProjectData = this._armature.ArmatureData.parent;
+            this._DBProjectData = this._armature.ArmatureData.belongsToProject;
             this._animationData = this._animationState.Animation;
 
             if (this._timelineData != null)

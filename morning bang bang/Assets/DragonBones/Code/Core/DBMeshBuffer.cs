@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace DragonBones
 {
-    public class DBMeshBuffer
+    public class DBMeshBuffer : DBObject
     {
         public int VertexCount => vertexBuffer.Length;
         public Mesh GeneratedMesh;
@@ -18,13 +18,27 @@ namespace DragonBones
 
         public Mesh GenerateMesh()
         {
-            GeneratedMesh = UnityDBFactory.GetEmptyMesh();
+            if(GeneratedMesh == null)
+            {
+                GeneratedMesh = UnityDBFactory.GetEmptyMesh();
+            }
+
             GeneratedMesh.vertices = vertexBuffer;
             GeneratedMesh.uv = uvBuffer;
             GeneratedMesh.colors32 = color32Buffer;
             GeneratedMesh.triangles = triangleBuffer;
 
             return GeneratedMesh;
+        }
+
+        public override void OnReleased()
+        {
+            vertexBuffer = null;
+            uvBuffer = null;
+            color32Buffer = null;
+            triangleBuffer = null;
+            
+            GeneratedMesh.Clear();
         }
     }
 }

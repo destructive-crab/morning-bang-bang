@@ -220,9 +220,9 @@ namespace DragonBones
         private void _UpdateTimelines()
         {
             { // Update constraint timelines.
-                foreach (DBRegistry.DBID constraintID in DB.Registry.GetAllChildEntries<Constraint>(_armature.ID))
+                foreach (Constraint constraint in _armature.Structure.Constraints)
                 {
-                    List<TimelineData> timelineDatas = Animation.GetConstraintTimelines(DB.Registry.GetEntry<Constraint>(constraintID).name);
+                    List<TimelineData> timelineDatas = Animation.GetConstraintTimelines(constraint.Name);
 
                     if (timelineDatas != null)
                     {
@@ -233,7 +233,7 @@ namespace DragonBones
                                 case TimelineType.IKConstraint:
                                 {
                                     var timeline = BorrowObject<IKConstraintTimelineState>();
-                                    timeline.constraint = DB.Registry.GetEntry<Constraint>(constraintID);
+                                    timeline.constraint = constraint;
                                     timeline.Init(_armature, this, timelineData);
                                     _constraintTimelines.Add(timeline);
                                     break;
@@ -244,7 +244,7 @@ namespace DragonBones
                     else if (resetToPose)
                     { // Pose timeline.
                         var timeline = BorrowObject<IKConstraintTimelineState>();
-                        timeline.constraint = DB.Registry.GetEntry<Constraint>(constraintID);
+                        timeline.constraint = constraint;
                         timeline.Init(_armature, this, null);
                         _constraintTimelines.Add(timeline);
                         _poseTimelines.Add(timeline);
@@ -261,7 +261,7 @@ namespace DragonBones
                 foreach (var timeline in _boneTimelines)
                 {
                     // Create bone timelines map.
-                    var timelineName = timeline.bone.name;
+                    var timelineName = timeline.bone.Name;
                     if (!(boneTimelines.ContainsKey(timelineName)))
                     {
                         boneTimelines[timelineName] = new List<BoneTimelineState>();
@@ -270,10 +270,9 @@ namespace DragonBones
                     boneTimelines[timelineName].Add(timeline);
                 }
 
-                foreach (DBRegistry.DBID boneID in DB.Registry.GetBones(_armature.ID))
+                foreach (Bone bone in _armature.Structure.Bones)
                 {
-                    Bone bone = DB.Registry.GetBone(boneID);
-                    string timelineName = bone.name;
+                    string timelineName = bone.Name;
                     if (!ContainsBoneMask(timelineName))
                     {
                         continue;
@@ -377,13 +376,11 @@ namespace DragonBones
                     slotTimelines[timelineName].Add(timeline);
                 }
 
-                foreach (DBRegistry.DBID slotID in DB.Registry.GetAllChildEntries<Slot>(_armature.ID))
+                foreach (Slot slot in _armature.Structure.Slots)
                 {
-                    Slot slot = DB.Registry.GetSlot(slotID);
+                    if(slot.IsDisplayingChildArmature()) continue;
                     
-                    if(slot.IsDisplayingChildArmature() || DB.Registry.GetParent(slotID).Invalid()) continue;
-                    
-                    string boneName = DB.Registry.GetBone(DB.Registry.GetParent(slotID)).name;
+                    string boneName = slot.ParentBone.Name;
                     if (!ContainsBoneMask(boneName))
                     {
                         continue;
@@ -462,9 +459,8 @@ namespace DragonBones
                                 _poseTimelines.Add(timeline);
                             }
 
-                            foreach (var displayDataID in DB.Registry.GetAllDisplaysDataOf(slotID))
+                            foreach (DisplayData displayData in _armature.Structure.GetDisplayData(slot))
                             {
-                                DisplayData displayData = DB.Registry.GetDisplayData(displayDataID);
                                 if (displayData.Type == DisplayType.Mesh)
                                 {
                                     int meshOffset = (displayData as MeshDisplayData).vertices.offset;
@@ -939,8 +935,8 @@ namespace DragonBones
         /// <language>en_US</language>
         public void AddBoneMask(string boneName, bool recursive = true)
         {
-            Bone currentBone = DB.Registry.GetBone(DB.Registry.SearchAtArmature(_armature.ID, boneName));
-            if (currentBone.Equals(DBRegistry.INVALID_ID))
+            Bone currentBone = _armature.Structure.GetBone(boneName);
+            if (currentBone == null)
             {
                 return;
             }
@@ -954,12 +950,11 @@ namespace DragonBones
             if (recursive)
             {
                 // Add recursive mixing.
-                foreach (DBRegistry.DBID boneID in DB.Registry.GetAllChildEntries<Bone>(_armature.ID))
+                foreach (Bone bone in _armature.Structure.Bones)
                 {
-                    Bone bone = DB.Registry.GetBone(boneID);
-                    if (_boneMask.IndexOf(bone.name) < 0 && currentBone.Contains(bone))
+                    if (_boneMask.IndexOf(bone.Name) < 0 && currentBone.Contains(bone))
                     {
-                        _boneMask.Add(bone.name);
+                        _boneMask.Add(bone.Name);
                     }
                 }
             }
@@ -983,36 +978,34 @@ namespace DragonBones
 
             if (recursive)
             {
-                Bone currentBone = DB.Registry.GetBone(DB.Registry.SearchAtArmature(_armature.ID, boneName));
+                Bone currentBone = _armature.Structure.GetBone(boneName);
                 if (currentBone != null)
                 {
-                    var bones = DB.Registry.GetBones(_armature.ID);
+                    Bone[] bones = _armature.Structure.Bones;
                     if (_boneMask.Count > 0)
                     {
                         // Remove recursive mixing.
-                        foreach (var boneID in bones)
+                        foreach (Bone bone in bones)
                         {
-                            var bone = DB.Registry.GetBone(boneID);
-                            if (_boneMask.Contains(bone.name) && currentBone.Contains(bone))
+                            if (_boneMask.Contains(bone.Name) && currentBone.Contains(bone))
                             {
-                                _boneMask.Remove(bone.name);
+                                _boneMask.Remove(bone.Name);
                             }
                         }
                     }
                     else
                     {
                         // Add unrecursive mixing.
-                        foreach (var boneID in bones)
+                        foreach (Bone bone in bones)
                         {
-                            Bone bone = DB.Registry.GetBone(boneID);
-                            if (boneID.Equals(currentBone.ID))
+                            if (currentBone == bone)
                             {
                                 continue;
                             }
 
                             if (!currentBone.Contains(bone))
                             {
-                                _boneMask.Add(bone.name);
+                                _boneMask.Add(bone.Name);
                             }
                         }
                     }

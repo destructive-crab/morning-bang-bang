@@ -146,12 +146,12 @@ namespace DragonBones
                 return;
             }
 
-            if (!this.boneTimelines.ContainsKey(bone.name))
+            if (!this.boneTimelines.ContainsKey(bone.Name))
             {
-                this.boneTimelines[bone.name] = new List<TimelineData>();
+                this.boneTimelines[bone.Name] = new List<TimelineData>();
             }
 
-            var timelines = this.boneTimelines[bone.name];
+            var timelines = this.boneTimelines[bone.Name];
             if (!timelines.Contains(tiemline))
             {
                 timelines.Add(tiemline);
@@ -165,12 +165,12 @@ namespace DragonBones
                 return;
             }
 
-            if (!this.slotTimelines.ContainsKey(slot.name))
+            if (!this.slotTimelines.ContainsKey(slot.Name))
             {
-                this.slotTimelines[slot.name] = new List<TimelineData>();
+                this.slotTimelines[slot.Name] = new List<TimelineData>();
             }
 
-            var timelines = this.slotTimelines[slot.name];
+            var timelines = this.slotTimelines[slot.Name];
             if (!timelines.Contains(timeline))
             {
                 timelines.Add(timeline);

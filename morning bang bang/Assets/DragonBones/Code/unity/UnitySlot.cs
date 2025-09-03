@@ -12,7 +12,7 @@ namespace DragonBones
 
         private bool _skewed;
 
-        public DBMeshBuffer MeshBufferBuffer => DB.Registry.GetMesh(ID);
+        public DBMeshBuffer MeshBufferBuffer { get; private set; }
 
         public UnityTextureAtlasData CurrentTextureAtlasData
         {
@@ -83,9 +83,9 @@ namespace DragonBones
 
         private bool CreateMeshBuffer()
         {
-            if (!DB.Registry.HasMesh(ID))
+            if (MeshBufferBuffer == null)
             {
-                DB.Registry.CreateMesh(ID);
+                MeshBufferBuffer = ArmatureRoot.MeshRoot.GetMeshFor(this);
             }
 
             if (IsDisplayingChildArmature())
@@ -117,7 +117,7 @@ namespace DragonBones
             BlendMode.MarkAsDirty();
             Color.MarkAsDirty();
             Visible.MarkAsDirty();
-            DB.Registry.GetMesh(ID).Material = currentTextureAtlas;
+            MeshBufferBuffer.Material = currentTextureAtlas;
 
             return true;
         }
@@ -127,7 +127,7 @@ namespace DragonBones
             int textureAtlasWidth = CurrentTextureAtlasData.width > 0.0f ? (int)CurrentTextureAtlasData.width : CurrentTextureAtlasData.texture.mainTexture.width;
             int textureAtlasHeight = CurrentTextureAtlasData.height > 0.0f ? (int)CurrentTextureAtlasData.height : CurrentTextureAtlasData.texture.mainTexture.height;
 
-            float textureScale = Armature.ArmatureData.scale * currentTextureData.parent.scale;
+            float textureScale = ParentArmature.ArmatureData.scale * currentTextureData.parent.scale;
             float sourceX = currentTextureData.region.x;
             float sourceY = currentTextureData.region.y;
             float sourceWidth = currentTextureData.region.width;
@@ -175,7 +175,7 @@ namespace DragonBones
             int textureAtlasWidth = CurrentTextureAtlasData.width > 0.0f ? (int)CurrentTextureAtlasData.width : CurrentTextureAtlasData.texture.mainTexture.width;
             int textureAtlasHeight = CurrentTextureAtlasData.height > 0.0f ? (int)CurrentTextureAtlasData.height : CurrentTextureAtlasData.texture.mainTexture.height;
 
-            float textureScale = Armature.ArmatureData.scale * currentTextureData.parent.scale;
+            float textureScale = ParentArmature.ArmatureData.scale * currentTextureData.parent.scale;
             float sourceX = currentTextureData.region.x;
             float sourceY = currentTextureData.region.y;
             float sourceWidth = currentTextureData.region.width;
@@ -254,7 +254,7 @@ namespace DragonBones
 
         protected override void EngineUpdateDisplay()
         {
-            ArmatureRoot = Armature.Root as UnityArmatureRoot;
+            ArmatureRoot = ParentArmature.Root as UnityArmatureRoot;
 
 
         }
@@ -268,7 +268,7 @@ namespace DragonBones
         {
             if (MeshBufferBuffer.GeneratedMesh == null || DeformVertices == null) { return; }
 
-            float scale = Armature.ArmatureData.scale;
+            float scale = ParentArmature.ArmatureData.scale;
             List<float> deformVertices = DeformVertices.vertices;
             List<Bone> bones = DeformVertices.bones;
             VerticesData verticesData = DeformVertices.verticesData;
@@ -438,8 +438,8 @@ namespace DragonBones
         private void UpdateGameObjectTransform(Transform transform)
         {
             //localPosition
-            bool flipX = Armature.flipX;
-            bool flipY = Armature.flipY;
+            bool flipX = ParentArmature.flipX;
+            bool flipY = ParentArmature.flipY;
 
             _helpVector3.x = global.x;
             _helpVector3.y = global.y;

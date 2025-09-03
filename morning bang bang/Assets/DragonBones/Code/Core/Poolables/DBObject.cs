@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MothDIed.Pool;
 
 namespace DragonBones
@@ -98,8 +99,8 @@ namespace DragonBones
         /// <language>en_US</language>
         public static T BorrowObject<T>() where T : DBObject, new()
         {
-            var type = typeof(T);
-            var pool = poolsMap.ContainsKey(type) ? poolsMap[type] : null;
+            Type type = typeof(T);
+            List<DBObject> pool = poolsMap.ContainsKey(type) ? poolsMap[type] : null;
             if (pool != null && pool.Count > 0)
             {
                 var index = pool.Count - 1;

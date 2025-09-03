@@ -9,15 +9,15 @@ namespace DragonBones
         
         public Material Material { get; set; }
         public Mesh OutputMesh { get; private set; }
-        public bool IsSingle => ids.Count == 1;
+        public bool IsSingle => buffers.Count == 1;
 
         //they are not kept with draw order
-        private readonly Dictionary<DBRegistry.DBID, CombineInstance> combinesStorage = new();
-        private List<DBRegistry.DBID> ids = new();
+        private readonly Dictionary<DBMeshBuffer, CombineInstance> combinesStorage = new();
+        private List<DBMeshBuffer> buffers = new();
 
         //actually used in combining and updating vertices. they are kept with draw order
         private CombineInstance[] combineInstances; //keep in mind that combine instance is a struct
-        private DBRegistry.DBID[] currentDrawOrder;
+        private DBMeshBuffer[] currentDrawOrder;
 
         public UnityArmatureMeshPart(Armature belongsTo)
         {
@@ -26,30 +26,29 @@ namespace DragonBones
 
         public override void OnReleased() { }
 
-        public void Init(DBRegistry.DBID[] slotIDs, Material material)
+        public void Init(DBMeshBuffer[] buffers, Material material)
         {
             Material = material;
-            
-            currentDrawOrder = slotIDs;
-            ids = new List<DBRegistry.DBID>(slotIDs);
+            this.buffers = new List<DBMeshBuffer>(buffers);
+            currentDrawOrder = buffers;
         }
 
         public Mesh Build()
         {
             OutputMesh = UnityDBFactory.GetEmptyMesh();
-            combineInstances = new CombineInstance[ids.Count];
+            combineInstances = new CombineInstance[buffers.Count];
             
-            for (int i = 0; i < ids.Count; i++)
+            for (int i = 0; i < buffers.Count; i++)
             {
                 CombineInstance combineInstance = new CombineInstance();
-                DB.Registry.GetMesh(ids[i]).GenerateMesh();
-                combineInstance.mesh = DB.Registry.GetMesh(ids[i]).GeneratedMesh;
+                buffers[i].GenerateMesh();
+                combineInstance.mesh = buffers[i].GeneratedMesh;
                 //todo rewrite
                 combineInstance.transform = ((UnityArmatureRoot)BelongsTo.Root).transform.localToWorldMatrix * 
                                             ((UnityArmatureRoot)BelongsTo.Root).transform.worldToLocalMatrix;
                 
-                combinesStorage.Add(ids[i], combineInstance);
-                combineInstances[i] = combinesStorage[ids[i]];
+                combinesStorage.Add(buffers[i], combineInstance);
+                combineInstances[i] = combinesStorage[buffers[i]];
             }
             
             OutputMesh.CombineMeshes(combineInstances);
@@ -62,9 +61,8 @@ namespace DragonBones
             int offset = 0;
             Vector3[] vertexBuffer = OutputMesh.vertices;
 
-            foreach (DBRegistry.DBID id in ids)
+            foreach (DBMeshBuffer buffer in buffers)
             {
-                DBMeshBuffer buffer = DB.Registry.GetMesh(id);
                 for (var i = 0; i < buffer.vertexBuffer.Length; i++)
                 {
                     vertexBuffer[i+offset] = buffer.vertexBuffer[i];
@@ -76,9 +74,9 @@ namespace DragonBones
             OutputMesh.vertices = vertexBuffer;
         }
 
-        public Mesh RebuildWithDifferentOrder(DBRegistry.DBID[] slotOrder)
+        public Mesh RebuildWithDifferentOrder(DBMeshBuffer[] newOrder)
         {
-            if (slotOrder.Length != combineInstances.Length)
+            if (newOrder.Length != combineInstances.Length)
             {
                 DBLogger.Warn("NEW SLOTS ORDER COUNT DOES NOT MATCH CURRENT SLOTS COUNT");
                 return OutputMesh;
@@ -89,20 +87,18 @@ namespace DragonBones
                 DBLogger.Warn("REBUILD FAILED. NEED TO BUILD A MESH FIRST");
                 return null;
             }
+
+            currentDrawOrder = newOrder;
             
-            for (int i = 0; i < slotOrder.Length; i++)
+            for (int i = 0; i < newOrder.Length; i++)
             {
-                DBRegistry.DBID slot = slotOrder[i];
+                DBMeshBuffer buffer = newOrder[i];
 
                 combineInstances[i] = new CombineInstance();
                 
-                DB.Registry.GetMesh(slot).GenerateMesh();
-                
-                combineInstances[i].mesh = DB.Registry.GetMesh(slot).GeneratedMesh;
-                
+                combineInstances[i].mesh = buffer.GeneratedMesh;
                 combineInstances[i].transform = ((UnityArmatureRoot)BelongsTo.Root).transform.localToWorldMatrix * 
                                             ((UnityArmatureRoot)BelongsTo.Root).transform.worldToLocalMatrix;
-
             }
             
             OutputMesh.Clear();
@@ -111,8 +107,8 @@ namespace DragonBones
             return OutputMesh;
         }
 
-        public bool Contains(DBRegistry.DBID id) => ids.Contains(id);
-        public void SendChange(ArmatureRegistry.RegistryChange change, DBRegistry.DBID slotName)
+        public bool Contains(DBMeshBuffer buffer) => buffers.Contains(buffer);
+        public void SendChange(ArmatureRegistry.RegistryChange change, DBMeshBuffer slotName)
         {
             switch (change)
             {

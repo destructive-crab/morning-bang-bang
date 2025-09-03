@@ -4,7 +4,7 @@ namespace DragonBones
 {
     /// <internal/>
     /// <private/>
-    public abstract class Constraint : DBObject, IRegistryEntry
+    public abstract class Constraint : DBObject
     {
         protected static readonly DBMatrix HelpDBMatrix = new DBMatrix();
         protected static readonly DBTransform HelpDBTransform = new DBTransform();
@@ -41,16 +41,9 @@ namespace DragonBones
         public abstract void Update();
         public abstract void InvalidUpdate();
 
-        public string name
+        public string Name
         {
             get { return _constraintData.name; }
-        }
-
-        public DBRegistry.DBID ID { get; private set; }
-
-        public void SetID(DBRegistry.DBID id)
-        {
-            ID = id;
         }
     }
     /// <internal/>
@@ -145,7 +138,7 @@ namespace DragonBones
                 var rY = dX * r;
 
                 var isPPR = false;
-                var parentParent = parent.parent;
+                var parentParent = parent.ParentBone;
                 if (parentParent != null)
                 {
                     var parentParentMatrix = parentParent.GlobalTransformDBMatrix;

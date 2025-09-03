@@ -94,7 +94,7 @@ namespace DragonBones
                 armatures[value.name].ReleaseThis();
             }
 
-            value.parent = this;
+            value.belongsToProject = this;
             armatures[value.name] = value;
             armatureNames.Add(value.name);
         }

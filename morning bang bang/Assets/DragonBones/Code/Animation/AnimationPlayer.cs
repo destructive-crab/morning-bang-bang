@@ -76,7 +76,7 @@ namespace DragonBones
             if (Armature.inheritAnimation && Armature is ChildArmature childArmature)
             {
                 // Inherit parent animation timeScale.
-                _inheritTimeScale = childArmature.Parent.Armature.AnimationPlayer._inheritTimeScale * timeScale;
+                _inheritTimeScale = childArmature.Parent.ParentArmature.AnimationPlayer._inheritTimeScale * timeScale;
             }
             else
             {
@@ -275,7 +275,7 @@ namespace DragonBones
             {
                 DBLogger.Assert(false,
                     "Non-existent animation.\n" +
-                    "DragonBones name: " + Armature.ArmatureData.parent.name +
+                    "DragonBones name: " + Armature.ArmatureData.belongsToProject.name +
                     "Armature name: " + Armature.Name +
                     "Animation name: " + animationName
                 );
@@ -392,11 +392,10 @@ namespace DragonBones
             }
 
             // Child armature play same name animation.
-            foreach (DBRegistry.DBID id in DB.Registry.GetAllChildEntries<ChildArmature>(Armature.ID))
+            foreach (ChildArmature childArmature in Armature.Structure.ChildArmatures)
             {
-                ChildArmature childArmature = DB.Registry.GetChildArmature(id);
-                
-                if (childArmature.inheritAnimation &&
+                if (childArmature.IsActive &&
+                    childArmature.inheritAnimation &&
                     childArmature.AnimationPlayer.HasAnimation(animationName) &&
                     childArmature.AnimationPlayer.GetState(animationName) == null)
                 {

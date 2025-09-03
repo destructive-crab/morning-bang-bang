@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace DragonBones
@@ -15,6 +14,11 @@ namespace DragonBones
         private readonly List<UnityArmatureMeshPart> parts = new();
         private readonly List<UnityChildArmature> childArmatures = new();
 
+        private bool meshesChanged = false;
+        private List<DBMeshBuffer> meshes;
+        private Dictionary<string, DBMeshBuffer> meshesMap;
+        
+        
         public Mesh OutputMesh;
         private Material[] materials;
         
@@ -28,6 +32,16 @@ namespace DragonBones
             renderer = meshRenderer;
         }
 
+        public DBMeshBuffer GetMeshFor(Slot slot)
+        {
+            DBMeshBuffer mesh = DBMeshBuffer.BorrowObject<DBMeshBuffer>();
+            
+            meshes.Add(mesh);
+            meshesMap.Add(slot.Name, mesh);
+
+            return mesh;
+        }
+       
         public void Update()
         {
             List<Vector3> vertices = new();
@@ -93,19 +107,17 @@ namespace DragonBones
 
         private void CollectParts()
         {
-            List<DBRegistry.DBID> currentPart = new();
+            List<DBMeshBuffer> currentPart = new();
             Material currentMaterial = null;
 
-            DBRegistry.DBID[] slots = DB.Registry.GetChildSlotsOf(BelongsTo.ID, true);
-            for (int i = 0; i < slots.Length; i++)
+            for (int i = 0; i < meshes.Count; i++)
             {
-                DBRegistry.DBID slotID = slots[i];
-
-                DBMeshBuffer meshBuffer = DB.Registry.GetMesh(slotID);
+                DBMeshBuffer meshBuffer = meshes[i];
+                
                 if(meshBuffer == null) continue;
                 if (meshBuffer.Material == currentMaterial || currentMaterial == null)
                 {
-                    currentPart.Add(slotID);
+                    currentPart.Add(meshBuffer);
                     currentMaterial = meshBuffer.Material;
                 }
                 else
@@ -131,23 +143,23 @@ namespace DragonBones
             }
         }
 
-        public UnityArmatureMeshPart GetPartWith(DBRegistry.DBID slotName)
+        public UnityArmatureMeshPart GetPartWith(DBMeshBuffer buffer)
         {
-            return parts.Find((part) => part.Contains(slotName));
+            return parts.Find((part) => part.Contains(buffer));
         }
 
-        public void SendChange(ArmatureRegistry.RegistryChange change, DBRegistry.DBID slotName)
+        public void SendChange(ArmatureRegistry.RegistryChange change)
         {
-            UnityArmatureMeshPart part = GetPartWith(slotName);
-
-            if (change == ArmatureRegistry.RegistryChange.DrawOrder && part.IsSingle && parts.Count != 1)
-            {
-                Combine();
-            }
-            else
-            {
-                part.SendChange(change, slotName);
-            }
+            // UnityArmatureMeshPart part = GetPartWith(slotName);
+            //
+            // if (change == ArmatureRegistry.RegistryChange.DrawOrder && part.IsSingle && parts.Count != 1)
+            // {
+            //     Combine();
+            // }
+            // else
+            // {
+            //     part.SendChange(change, slotName);
+            // }
             
             return;
             switch (change)

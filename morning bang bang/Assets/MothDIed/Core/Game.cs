@@ -84,7 +84,7 @@ namespace MothDIed
             InnerLoop();
         }
 
-        public async static void QuitGame()
+        public static async void QuitGame()
         { 
             await Settings.SaveSettings();
             await SaveManager.StartWritingFilesFromQueue();

@@ -4,7 +4,6 @@ using System.Reflection;
 using banging_code.debug;
 using MothDIed.ServiceLocators;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Scene = MothDIed.Scenes.Scene;
 
 namespace MothDIed.DI
@@ -118,7 +117,7 @@ namespace MothDIed.DI
 
         public void InjectWith(object toInject, params IServiceLocator[] serviceLocators)
         {
-            var type = toInject.GetType();
+            Type type = toInject.GetType();
 
             //if it is gameobject so we need to inject in all his components not in it
             if (TryInjectInGameObject(toInject, serviceLocators)) 

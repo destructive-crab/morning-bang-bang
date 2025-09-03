@@ -406,7 +406,7 @@ namespace DragonBones
                     DBLogger.Warn($"Auto search failed. No {nameof(ArmatureData)} with name {armatureName} found");
                 }
                 
-                dbProjectData = armatureData.parent;
+                dbProjectData = armatureData.belongsToProject;
             }
 
             //when data found, we can fill build data package

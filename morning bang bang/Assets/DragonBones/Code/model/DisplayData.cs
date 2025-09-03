@@ -2,8 +2,6 @@ using System.Collections.Generic;
 
 namespace DragonBones
 {
-    /// <internal/>
-    /// <private/>
     public class VerticesData
     {
         public bool isShared;
@@ -51,8 +49,6 @@ namespace DragonBones
         }
     }
 
-    /// <internal/>
-    /// <private/>
     public class ImageDisplayData : DisplayData
     {
         public readonly Point pivot = new Point();
@@ -110,8 +106,6 @@ namespace DragonBones
         }
     }
 
-    /// <internal/>
-    /// <private/>
     public class BoundingBoxDisplayData : DisplayData
     {
         public BoundingBoxData boundingBox = null; // Initial value.
@@ -130,8 +124,6 @@ namespace DragonBones
         }
     }
     
-    /// <internal/>
-    /// <private/>
     public class PathDisplayData : DisplayData
     {
         public bool closed;
@@ -151,8 +143,6 @@ namespace DragonBones
         }
     }
 
-    /// <internal/>
-    /// <private/>
     public class WeightData : DBObject
     {
         public int count;

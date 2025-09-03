@@ -2,16 +2,14 @@ namespace DragonBones
 {
     public class ChildArmature : Armature
     {
-        public DBRegistry.DBID SlotID;
-        public DBRegistry.DBID DisplayID;
+        public bool IsActive = false;
         
-        public Slot Parent { get; internal set; }
+        public ChildArmatureDisplayData DisplayData { get; private set; }
+        public Slot Parent { get; private set; }
 
-        public void InitializeChildArmature(DBRegistry.DBID slotID, DBRegistry.DBID displayID, Slot parent)
+        public void InitializeChildArmature(ChildArmatureDisplayData data, Slot parent)
         {
-            SlotID = slotID;
-            DisplayID = displayID;
-            
+            DisplayData = data;
             Parent = parent;
         }
 
@@ -20,6 +18,7 @@ namespace DragonBones
             base.OnReleased();
 
             Parent = null;
+            DisplayData = null;
         }
     }
 }

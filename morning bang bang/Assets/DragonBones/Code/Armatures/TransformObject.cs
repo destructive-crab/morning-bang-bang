@@ -48,7 +48,7 @@ namespace DragonBones
             this.userData = null;
 
             this._globalDirty = false;
-            this.Armature = null; 
+            this.ParentArmature = null; 
         }
         
         /// <summary>
@@ -77,8 +77,6 @@ namespace DragonBones
         /// <summary>
         /// - The armature to which it belongs.
         /// </summary>
-        /// <version>DragonBones 3.0</version>
-        /// <language>en_US</language>
-        public Armature Armature { get; internal set; }
+        public Armature ParentArmature { get; internal set; }
     }
 }

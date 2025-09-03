@@ -10,13 +10,13 @@ namespace DragonBones
         private static GameObject _gameObject;
         public static DBKernel Kernel { get; private set; }
         
-        public static UnityDBFactory Factory { get; private set; }
+        public static DBFactory Factory { get; private set; }
         public static UnityDataLoader UnityDataLoader { get; private set; }
         
         public static async UniTask InitializeDragonBones()
         {
             UnityDataLoader = new UnityDataLoader();
-            Factory = new UnityDBFactory();
+            Factory = new DBFactory();
 
             await Factory.InitializeFactory();
             

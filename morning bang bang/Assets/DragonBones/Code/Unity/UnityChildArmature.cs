@@ -9,7 +9,7 @@ namespace DragonBones
         public UnityArmatureRoot UnityRoot { get; private set; }
         public UnitySlot UnityParentSlot { get; private set; }
         
-        public Armature ParentArmature => Armature.Parent.Armature;
+        public Armature ParentArmature => Armature.Parent.ParentArmature;
         public Slot ParentSlot => Armature.Parent;
 
         public void DBInit(ChildArmature armature, ChildArmatureDisplayData childArmatureData)
@@ -17,7 +17,7 @@ namespace DragonBones
             Armature = armature;
             Data = childArmatureData;
 
-            EngineRoot = armature.Parent.Armature.Root;
+            EngineRoot = armature.Parent.ParentArmature.Root;
             UnityRoot = EngineRoot as UnityArmatureRoot;
             UnityParentSlot = ParentSlot as UnitySlot;
         }

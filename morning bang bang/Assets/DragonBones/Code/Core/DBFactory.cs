@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using DragonBones.Code.Debug;
+using Cysharp.Threading.Tasks;
+using MothDIed.Pool;
 using UnityEngine;
 
 namespace DragonBones
@@ -12,9 +13,8 @@ namespace DragonBones
         public DBProjectData DBProjectData;
         public ArmatureData ArmatureData;
         public SkinData Skin;
-        
-        public DBRegistry.DBID BuildID;
-        public DBRegistry.DBID ArmatureID;
+
+        public Armature Armature;
     }
     
     /// <summary>
@@ -25,10 +25,9 @@ namespace DragonBones
     /// <see cref="DBProjectData"/>, <see cref="TextureAtlasData"/>, <see cref="ArmatureData"/>, <see cref="Armature"/>
     /// <version>DragonBones 3.0</version>
     /// <language>en_US</language>
-    public abstract class DBFactory
+    public class DBFactory
     {
         protected static bool IsSupportMesh() => true;
-        public abstract void Clear(bool disposeData = true);
 
         /// <summary>
         /// - Create a armature from cached DragonBonesData instances and TextureAtlasData instances.
@@ -73,27 +72,22 @@ namespace DragonBones
             }
             
             armature.Initialize(dataPackage.ArmatureData, armatureRoot);
-            
-            dataPackage.BuildID = DB.Kernel.Registry.StartBuilding(armature.Name);
-            dataPackage.ArmatureID = DB.Kernel.Registry.RegisterArmature(dataPackage.BuildID, armature, armatureRoot);
-            
-            armatureRoot.DBConnect(dataPackage.ArmatureID);
+
+            dataPackage.Armature = armature;
+            armatureRoot.DBConnect(armature);
             
             BuildBonesFor(dataPackage, armature);
             BuildSlotsFor(dataPackage, armature);
             //todo
             BuildConstraintsFor(dataPackage, armature);
             
-            DB.Kernel.Registry.CompleteBuilding(dataPackage.BuildID);
-
-            DBRegistry.DBID[] ids = DB.Kernel.Registry.GetChildSlotsOf(armature.ID, true);
+            armature.Structure.CompleteBuilding();
             
-            foreach (DBRegistry.DBID id in ids)
+            DB.Kernel.Registry.Register(armature);
+
+            foreach (Slot slot in armature.Structure.Slots)
             {
-                Slot slot = DB.Kernel.Registry.GetSlot(id);
-                
-                slot.DisplayID.Set(DB.Kernel.Registry.ChangeDisplayForByIndex(slot.ID, slot.SlotData.DefaultDisplayIndex));
-                
+                slot.Display.Set(armature.Structure.GetDisplayByIndex(slot, slot.SlotData.DefaultDisplayIndex));
                 slot.SlotReady();
             }
             
@@ -105,13 +99,6 @@ namespace DragonBones
             return armature;
         }
 
-        protected abstract IEngineChildArmature BuildChildArmatureDisplay(BuildArmaturePackage dataPackage,
-            Slot forSlot, DBRegistry.DBID displayID, ChildArmatureDisplayData childArmatureData);
-
-        protected abstract IEngineArmatureRoot GetNewArmatureDisplayFor(Armature armature);
-
-        public abstract TextureAtlasData BuildTextureAtlasData(TextureAtlasData textureAtlasData, object textureAtlas);
-
         protected void BuildBonesFor(BuildArmaturePackage dataPackage, Armature armature)
         {
             List<BoneData> bones = dataPackage.ArmatureData.sortedBones;
@@ -121,17 +108,11 @@ namespace DragonBones
                 BoneData boneData = bones[i];
                 Bone bone = DBObject.BorrowObject<Bone>();
                 
-                bone.InitData(boneData);
-                
-                DBRegistry.DBID parent = dataPackage.ArmatureID;
-                
-                if (bone.boneData.parent != null && bone.boneData.parent.name != "")
-                {
-                    parent = DB.Kernel.Registry.SearchInBuild(dataPackage.BuildID, bone.boneData.parent.name);
-                }
-                
-                DB.Kernel.Registry.RegisterBone(dataPackage.BuildID, parent, bone);
-                bone.BoneReady(armature.ID, parent);
+                bone.ApplyData(boneData);
+                bone.ApplyParentArmature(dataPackage.Armature);
+                bone.ApplyParentBone(dataPackage.Armature.Structure.GetBone(boneData.parent.Name));
+               
+                bone.BoneReady();
             }
         }
 
@@ -158,84 +139,31 @@ namespace DragonBones
 
             foreach (SlotData slotData in dataPackage.ArmatureData.sortedSlots)
             {
-                List<DisplayData> displayDatas = skinSlots.ContainsKey(slotData.name) ? skinSlots[slotData.name] : null;
+                List<DisplayData> displayDatas = skinSlots.ContainsKey(slotData.Name) ? skinSlots[slotData.Name] : null;
                 BuildSlot(dataPackage, slotData, displayDatas, armature);
             }
         }
 
-        protected abstract Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData,
-            List<DisplayData> displayDatas, Armature armature);
-
         protected void BuildConstraintsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
             Dictionary<string, ConstraintData> constraints = dataPackage.ArmatureData.constraints;
-            foreach (var constraintData in constraints.Values)
+            foreach (ConstraintData constraintData in constraints.Values)
             {
                 // TODO more constraint type.
                 IKConstraint constraint = DBObject.BorrowObject<IKConstraint>();
 
-                Bone target = DB.Registry.SearchInBuildAndGetBone(dataPackage.BuildID, constraintData.target.name);
-                Bone bone = DB.Registry.SearchInBuildAndGetBone(dataPackage.BuildID, constraintData.bone.name);
-                Bone root = DB.Registry.SearchInBuildAndGetBone(dataPackage.BuildID, constraintData.root.name);
+                Bone target = armature.Structure.GetBone(constraintData.target.Name);
+                Bone bone = armature.Structure.GetBone(constraintData.bone.Name);
+                Bone root = armature.Structure.GetBone(constraintData.root.Name);
                 
                 constraint.Init(constraintData, armature, target, root, bone);
-
-                DB.Registry.RegisterConstraint(dataPackage.BuildID, armature.ID, constraint);
+                armature.Structure.RegisterConstraint(constraint);
             }
         }
 
         protected virtual Armature GetEmptyArmature()
         {
             return DBObject.BorrowObject<Armature>();
-        }
-
-        public virtual void ReplaceDisplay(Slot slot, DisplayData displayData, int displayIndex = -1)
-        {
-            /*if (displayIndex < 0)
-            {
-                displayIndex = slot.DisplayIndex;
-            }
-
-            if (displayIndex < 0)
-            {
-                displayIndex = 0;
-            }
-
-            slot.ReplaceDisplayData(displayData, displayIndex);
-
-            var displayList = slot.DisplayList; // Copy.
-            if (displayList.Count <= displayIndex)
-            {
-                displayList.ResizeList(displayIndex + 1);
-
-                for (int i = 0, l = displayList.Count; i < l; ++i)
-                {
-                    // Clean undefined.
-                    displayList[i] = null;
-                }
-            }
-
-            if (displayData != null)
-            {
-                var rawDisplayDatas = slot.AllDisplaysData;
-                DisplayData rawDisplayData = null;
-
-                if (rawDisplayDatas != null)
-                {
-                    if (displayIndex < rawDisplayDatas.Count)
-                    {
-                        rawDisplayData = rawDisplayDatas[displayIndex];
-                    }
-                }
-
-                displayList[displayIndex] = GetSlotDisplay(null, displayData, rawDisplayData, slot);
-            }
-            else
-            {
-                displayList[displayIndex] = null;
-            }
-
-            slot.DisplayList = displayList;*/
         }
         
         /// <summary>
@@ -458,6 +386,364 @@ namespace DragonBones
          //   }
 //
             return true;
+        }
+        
+        internal const string defaultShaderName = "Sprites/Default";
+        internal const string defaultUIShaderName = "UI/Default";
+        
+        private GameObjectPool<UnityArmatureRoot> unityArmatureDisplaysPool;
+
+        public async UniTask InitializeFactory()
+        {
+            unityArmatureDisplaysPool = InitializeNewDBGOPool<UnityArmatureRoot>(64, "Armature Roots");
+
+            await unityArmatureDisplaysPool.WarmAsync();
+        }
+
+        private GameObjectPool<TPool> InitializeNewDBGOPool<TPool>(ushort size, string name)
+            where TPool : Component
+        {
+            GameObjectPool<TPool> pool = new GameObjectPool<TPool>(new GameObjectPool<TPool>.Config<TPool>("Dragon Bones " + name + " Pool"));
+            
+            pool.PoolConfiguration
+                .SetSize(size)
+                .IsExpandable(true)
+                .IsPersistent(true)
+                .SetFabric(new PoolFabric(true, false))
+                .SetPrefab(null); //means pool will be filled with empty GO with UnityEngineArmatureDisplay component on them
+
+            return pool;
+        }
+
+        public void Clear(bool disposeData = true)
+        {
+            if (disposeData)
+            {
+                unityArmatureDisplaysPool.Dispose();
+            }
+        }
+        
+        public UnityArmatureRoot UnityCreateArmature(string armatureName, string dragonBonesName = "", UnityArmatureRoot root = null, string skinName = "", string textureAtlasName = "")
+        {
+            Armature armature = BuildArmature(armatureName, dragonBonesName, skinName, textureAtlasName, root);
+            return armature.Root as UnityArmatureRoot;
+        }
+
+        protected IEngineChildArmature BuildChildArmatureDisplay(BuildArmaturePackage dataPackage, Slot forSlot, ChildArmatureDisplayData displayData, ChildArmatureDisplayData childArmatureData)
+        {
+            UnityChildArmature display = DBObject.BorrowObject<UnityChildArmature>();
+            ChildArmature childArmature = DBObject.BorrowObject<ChildArmature>();
+
+            BuildArmaturePackage childPackage = new();
+            if (!DB.Kernel.DataStorage.FillBuildArmaturePackage(childPackage, childArmatureData.armature.belongsToProject.name, childArmatureData.armature.name, null, null))
+            {
+                DBLogger.Warn("No armature data: " + childArmatureData.armature.name);
+                return null;
+            }
+            childArmature.InitializeChildArmature(displayData, forSlot);
+            childArmature.Initialize(childArmatureData.armature, forSlot.ParentArmature.Root);
+            
+            BuildBonesFor(childPackage, childArmature);
+            BuildSlotsFor(childPackage, childArmature);
+            BuildConstraintsFor(childPackage, childArmature);
+            
+            childArmature.InvalidUpdate(null, true);
+            childArmature.AdvanceTime(0.0f); // Update armature pose.
+            
+            childArmature.ArmatureReady();
+            display.DBInit(childArmature, childArmatureData);
+            
+            return display;
+        }
+
+        protected IEngineArmatureRoot GetNewArmatureDisplayFor(Armature armature)
+        {
+            if (armature == null)
+            {
+                DBLogger.Warn($"No armature instance was provided for building display");
+                return null;
+            }
+            if (armature.Root != null)
+            {
+                DBLogger.Warn($"Armature ({armature.Name}) already has display");
+                return armature.Root;
+            }
+            
+            return unityArmatureDisplaysPool.Pick();
+        }
+
+        private readonly List<ChildArmature> childArmaturesBuffer = new();
+        protected Slot BuildSlot(BuildArmaturePackage dataPackage, SlotData slotData, List<DisplayData> displayDatas, Armature armature)
+        {
+            childArmaturesBuffer.Clear();
+            UnitySlot slot = DBObject.BorrowObject<UnitySlot>();
+            
+            slot.StartBuilding(slotData, armature);
+            slot.StarUnitySlotBuilding(armature.Root as UnityArmatureRoot);
+
+            slot.ApplyParentBone(armature.Structure.GetBone(slotData.parent.Name));
+
+            for (var i = 0; i < displayDatas.Count; i++)
+            {
+                DisplayData displayData = displayDatas[i];
+                
+                switch (displayData)
+                {
+                    case ImageDisplayData imageDisplayData:
+                        imageDisplayData.texture = DB.Kernel.DataStorage.GetTextureData(dataPackage.DataName, imageDisplayData.path);
+                        break;
+                    case MeshDisplayData meshDisplayData:
+                        meshDisplayData.texture = DB.Kernel.DataStorage.GetTextureData(dataPackage.DataName, meshDisplayData.path);
+                        break;
+                    case ChildArmatureDisplayData childArmatureDisplayData:
+                        childArmatureDisplayData.armature = DB.Kernel.DataStorage.GetArmatureData(childArmatureDisplayData.path, childArmatureDisplayData.BelongsToSkin.BelongsToArmature.belongsToProject.name);
+                        UnityChildArmature childArmature = BuildChildArmatureDisplay(dataPackage, slot, childArmatureDisplayData, childArmatureDisplayData) as UnityChildArmature;
+                       
+                        childArmaturesBuffer.Add(childArmature.Armature);
+                        
+                        childArmatureDisplayData.armature = childArmature.Armature.ArmatureData;
+                        break;
+                }
+            }
+            
+            armature.Structure.RegisterSlot(slot);
+            armature.Structure.RegisterDisplayData(slot, displayDatas.ToArray(), childArmaturesBuffer.ToArray());
+            
+            return slot;
+        }
+
+        public TextureAtlasData BuildTextureAtlasData(TextureAtlasData textureAtlasData, object textureAtlas)
+        {
+            if (textureAtlasData != null)
+            {
+                if (textureAtlas != null)
+                {
+                    ((UnityTextureAtlasData)textureAtlasData).uiTexture = (textureAtlas as UnityDragonBonesData.TextureAtlas).uiMaterial;
+                    ((UnityTextureAtlasData)textureAtlasData).texture = (textureAtlas as UnityDragonBonesData.TextureAtlas).material;
+                }
+            }
+            else
+            {
+                textureAtlasData = DBObject.BorrowObject<UnityTextureAtlasData>();
+            }
+
+            return textureAtlasData;
+        }
+
+        public static void RefreshTextureAtlas(UnityTextureAtlasData textureAtlasData, bool isUGUI)
+        {
+            Material material = null;
+            
+            switch (isUGUI)
+            {
+                case true when textureAtlasData.uiTexture == null:
+                {
+                    material = Resources.Load<Material>(textureAtlasData.imagePath + "_UI_Mat");
+
+                    if (material == null)
+                    {
+                        Texture2D textureAtlas = null;
+
+                        textureAtlas = Resources.Load<Texture2D>(textureAtlasData.imagePath);
+
+                        material = UnityDBFactory.Helper.GenerateMaterial(defaultUIShaderName, textureAtlas.name + "_UI_Mat", textureAtlas);
+                        
+                        if (textureAtlasData.width < 2)
+                        {
+                            textureAtlasData.width = (uint)textureAtlas.width;
+                        }
+
+                        if (textureAtlasData.height < 2)
+                        {
+                            textureAtlasData.height = (uint)textureAtlas.height;
+                        }
+
+                        textureAtlasData._disposeEnabled = true;
+                    }
+
+                    textureAtlasData.uiTexture = material;
+                    break;
+                }
+                case false when textureAtlasData.texture == null:
+                {
+                    material = Resources.Load<Material>(textureAtlasData.imagePath + "_Mat");
+
+                    if (material == null)
+                    {
+                        Texture2D textureAtlas = null;
+                        textureAtlas = Resources.Load<Texture2D>(textureAtlasData.imagePath);
+
+                        material = UnityDBFactory.Helper.GenerateMaterial(defaultShaderName, textureAtlas.name + "_Mat", textureAtlas);
+                        if (textureAtlasData.width < 2)
+                        {
+                            textureAtlasData.width = (uint)textureAtlas.width;
+                        }
+
+                        if (textureAtlasData.height < 2)
+                        {
+                            textureAtlasData.height = (uint)textureAtlas.height;
+                        }
+
+                        textureAtlasData._disposeEnabled = true;
+                    }
+
+                    textureAtlasData.texture = material;
+                    break;
+                }
+            }
+        }
+
+        public void RefreshAllTextureAtlas(UnityArmatureRoot unityArmature)
+        {
+            foreach (List<TextureAtlasData> textureAtlasDatas in DB.Kernel.DataStorage.GetAllTextureAtlases().Values)
+            {
+                foreach (var atlas in textureAtlasDatas)
+                {
+                    var unityAtlas = (UnityTextureAtlasData)atlas;
+                    RefreshTextureAtlas(unityAtlas, false);
+                }
+            }
+        }
+
+        public void ReplaceDisplay(Slot slot, DisplayData displayData, int displayIndex = -1)
+        {
+            //UGUI Display Object and Normal Display Object cannot be replaced with each other
+            if (displayData.Type == DisplayType.Image || displayData.Type == DisplayType.Mesh)
+            {
+                string dataName = displayData.BelongsToSkin.BelongsToArmature.belongsToProject.name;
+                TextureData textureData = DB.Kernel.DataStorage.GetTextureData(dataName, displayData.path);
+                if (textureData != null)
+                {
+                    var textureAtlasData = textureData.parent as UnityTextureAtlasData;
+
+                    var oldIsUGUI = false;
+
+                    if ((oldIsUGUI && textureAtlasData.uiTexture == null) ||
+                        (!oldIsUGUI && textureAtlasData.texture == null))
+                    {
+                        DBLogger.Warn(
+                            "ugui display object and normal display object cannot be replaced with each other");
+                        return;
+                    }
+                }
+            }
+
+            ReplaceDisplay(slot, displayData, displayIndex);
+        }
+
+        public void ReplaceSlotDisplay(
+            string dragonBonesName, string armatureName, string slotName, string displayName,
+            Slot slot, Texture2D texture, Material material = null,
+            bool isUGUI = false, int displayIndex = -1)
+        {
+            ArmatureData armatureData = DB.Kernel.DataStorage.GetArmatureData(armatureName, dragonBonesName);
+            
+            if (armatureData == null || armatureData.defaultSkin == null) { return; }
+
+            DisplayData previousDisplayData = armatureData.defaultSkin.GetDisplay(slotName, displayName);
+
+            if (previousDisplayData == null || !((previousDisplayData is ImageDisplayData) || (previousDisplayData is MeshDisplayData)))
+            {
+                return;
+            }
+
+            TextureData previousTextureData = null;
+            
+            if (previousDisplayData is ImageDisplayData) { previousTextureData = (previousDisplayData as ImageDisplayData).texture; }
+            else { previousTextureData = (previousDisplayData as MeshDisplayData).texture; }
+
+            UnityTextureData newTextureData = new UnityTextureData();
+            
+            newTextureData.CopyFrom(previousTextureData);
+            newTextureData.rotated = false;
+            newTextureData.region.x = 0.0f;
+            newTextureData.region.y = 0.0f;
+            newTextureData.region.width = texture.width;
+            newTextureData.region.height = texture.height;
+            newTextureData.frame = newTextureData.region;
+            newTextureData.name = previousTextureData.name;
+            newTextureData.parent = new UnityTextureAtlasData();
+            newTextureData.parent.width = (uint)texture.width;
+            newTextureData.parent.height = (uint)texture.height;
+            newTextureData.parent.scale = previousTextureData.parent.scale;
+
+            //
+            if (material == null)
+            {
+                if (isUGUI)
+                {
+                    material = UnityDBFactory.Helper.GenerateMaterial(defaultUIShaderName, texture.name + "_UI_Mat",
+                        texture);
+                }
+                else
+                {
+                    material = UnityDBFactory.Helper.GenerateMaterial(defaultShaderName, texture.name + "_Mat", texture);
+                }
+            }
+
+            if (isUGUI)
+            {
+                (newTextureData.parent as UnityTextureAtlasData).uiTexture = material;
+            }
+            else
+            {
+                (newTextureData.parent as UnityTextureAtlasData).texture = material;
+            }
+
+            material.mainTexture = texture;
+
+            DisplayData newDisplayData = null;
+            
+            if (previousDisplayData is ImageDisplayData)
+            {
+                newDisplayData = new ImageDisplayData();
+                newDisplayData.Type = previousDisplayData.Type;
+                newDisplayData.Name = previousDisplayData.Name;
+                newDisplayData.path = previousDisplayData.path;
+                newDisplayData.DBTransform.CopyFrom(previousDisplayData.DBTransform);
+                newDisplayData.BelongsToSkin = previousDisplayData.BelongsToSkin;
+                (newDisplayData as ImageDisplayData).pivot.CopyFrom((previousDisplayData as ImageDisplayData).pivot);
+                (newDisplayData as ImageDisplayData).texture = newTextureData;
+            }
+            else if (previousDisplayData is MeshDisplayData meshDisplayData)
+            {
+                newDisplayData = new MeshDisplayData();
+                newDisplayData.Type = previousDisplayData.Type;
+                newDisplayData.Name = previousDisplayData.Name;
+                newDisplayData.path = previousDisplayData.path;
+                newDisplayData.DBTransform.CopyFrom(previousDisplayData.DBTransform);
+                newDisplayData.BelongsToSkin = previousDisplayData.BelongsToSkin;
+                
+                ((MeshDisplayData)newDisplayData).texture = newTextureData;
+                ((MeshDisplayData)newDisplayData).vertices.inheritDeform = meshDisplayData.vertices.inheritDeform;
+                ((MeshDisplayData)newDisplayData).vertices.offset = meshDisplayData.vertices.offset;
+                ((MeshDisplayData)newDisplayData).vertices.data = meshDisplayData.vertices.data;
+                ((MeshDisplayData)newDisplayData).vertices.weight = meshDisplayData.vertices.weight;
+            }
+
+            ReplaceDisplay(slot, newDisplayData, displayIndex);
+        }
+
+        private static readonly Queue<Mesh> meshPool = new();
+
+        public static void ReleaseMesh(Mesh mesh)
+        {
+            if (mesh == null) return;
+            
+            mesh.Clear();
+            meshPool.Enqueue(mesh);
+        }
+            
+        public static Mesh GetEmptyMesh()
+        {
+            if (meshPool.TryPeek(out Mesh mesh)) return mesh;
+                
+            Mesh newMesh = new Mesh();
+                
+            newMesh.hideFlags = HideFlags.DontSaveInEditor | HideFlags.DontSaveInBuild;
+            newMesh.MarkDynamic();
+
+            return newMesh;
         }
     }
 }

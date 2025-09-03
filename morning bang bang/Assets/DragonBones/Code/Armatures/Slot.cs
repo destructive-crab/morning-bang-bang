@@ -1,17 +1,18 @@
 namespace DragonBones
 {
-    public abstract class Slot : TransformObject, IRegistryEntry
+    public abstract class Slot : TransformObject
     {
         public string displayController;
 
-        public Dirty<DBRegistry.DBID> DisplayID = new(DBRegistry.EMPTY_ID);
-        private DisplayData DisplayData => DB.Registry.GetDisplayData(DisplayID.V);
-        public bool HasVisibleDisplay => !DisplayID.V.Equals(DBRegistry.EMPTY_ID);
+        public readonly Dirty<DisplayData> Display = new();
+        private DisplayData DisplayData => Display.V;
+        public bool HasVisibleDisplay => !Display.Eq(null);
         
-        public string Name => SlotData.name;
+        public string Name => SlotData.Name;
+
+        public Bone ParentBone { get; private set; }
         
         public SlotData SlotData { get; internal set; }
-        public DBRegistry.DBID ParentID { get; protected set; }
         public BoundingBoxData BoundingBoxData { get; protected set; }
 
         public readonly Dirty<DBColor> Color = new(new DBColor());
@@ -31,12 +32,11 @@ namespace DragonBones
         public virtual void StartBuilding(SlotData data, Armature armature)
         {
             SlotData = data;
-            Armature = armature;
+            ParentArmature = armature;
         }
 
         public virtual void SlotReady()
         {
-            ParentID = DB.Registry.GetParent(ID);
             DrawOrder.Set(SlotData.zOrder);
             BlendMode.Set(SlotData.blendMode);
             Color.GetAndChange().CopyFrom(SlotData.DBColor);
@@ -46,13 +46,23 @@ namespace DragonBones
         #region Animation Loop 
         public void ProcessDirtyDisplay()
         {
-            if (DisplayID.IsDirty)
+            if (Display.IsDirty)
             {
+                if (Display.pV != null && Display.pV.Type == DisplayType.Armature)
+                {
+                    ParentArmature.Structure.GetChildArmature(Display.pV).IsActive = false;
+                }
+
+                if (Display.V.Type == DisplayType.Armature)
+                {
+                    ParentArmature.Structure.GetChildArmature(Display.V).IsActive = true;
+                }
+                
                 RefreshData();
                 UpdateDisplay();
                 if (TransformDirty) UpdateLocalMatrix();
                 
-                DisplayID.ResetDirty();
+                Display.ResetDirty();
             }
             if (!HasVisibleDisplay)
             {
@@ -69,7 +79,7 @@ namespace DragonBones
         
         public virtual void ProcessDirtyData()
         {
-            if (DB.Registry.GetBone(ParentID)._childrenTransformDirty) TransformDirty = true;
+            if (ParentBone._childrenTransformDirty) TransformDirty = true;
             
             if(Color.IsDirty) EngineUpdateColor();
             if(Visible.IsDirty)
@@ -134,7 +144,7 @@ namespace DragonBones
         private void UpdateGlobalTransformAndMatrix()
         {
             GlobalTransformDBMatrix.CopyFrom(LocalDBMatrix);
-            GlobalTransformDBMatrix.Concat(DB.Registry.GetBone(ParentID).GlobalTransformDBMatrix);
+            GlobalTransformDBMatrix.Concat(ParentBone.GlobalTransformDBMatrix);
 
             _globalDirty = true;
             UpdateGlobalTransform();
@@ -190,7 +200,7 @@ namespace DragonBones
                 if (currentVerticesData == null && TextureData != null)//it means that cVD null and TD not null can be provided only if it is image display 
                 {
                     ImageDisplayData imageDisplayData = DisplayData as ImageDisplayData;
-                    float scale = TextureData.parent.scale * Armature.ArmatureData.scale;
+                    float scale = TextureData.parent.scale * ParentArmature.ArmatureData.scale;
                     Rectangle frame = TextureData.frame;
 
                     PivotX = imageDisplayData.pivot.x;
@@ -260,7 +270,7 @@ namespace DragonBones
                         DeformVertices = BorrowObject<DeformVertices>();
                     }
 
-                    DeformVertices.Init(currentVerticesData, Armature);
+                    DeformVertices.Init(currentVerticesData, ParentArmature);
                 }
                 else if (DeformVertices != null && TextureData != prevTextureData)
                 {
@@ -268,7 +278,7 @@ namespace DragonBones
                     DeformVertices.verticesDirty = true;
                 }
 
-                DisplayID.MarkAsDirty(); //TODO: why i should do that?
+                Display.MarkAsDirty(); //TODO: why i should do that?
                 TransformDirty = true;
             }
         }
@@ -292,19 +302,17 @@ namespace DragonBones
         public void InvalidUpdate()
         {
             TransformDirty = true;
-            DisplayID.MarkAsDirty(); //TODO: again, why i should to that
+            Display.MarkAsDirty(); //TODO: again, why i should to that
         }
 
         public bool IsDisplayingChildArmature()
         {
-            return DisplayData!= null&& DisplayData.Type == DisplayType.Armature;
+            return DisplayData != null && DisplayData.Type == DisplayType.Armature;
         }
-
-        public DBRegistry.DBID ID { get; private set; }
-
-        public void SetID(DBRegistry.DBID id)
+        
+        public void ApplyParentBone(Bone bone)
         {
-            ID = id;
+            ParentBone = bone;
         }
     }
 }

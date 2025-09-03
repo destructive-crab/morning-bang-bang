@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace DragonBones
@@ -10,7 +9,6 @@ namespace DragonBones
 
         public readonly DBColor Color = new DBColor();
 
-        public DBRegistry.DBID ArmatureID { get; private set; }
         public Armature Armature { get; private set; }
         public AnimationPlayer AnimationPlayer => Armature != null ? Armature.AnimationPlayer : null;
         
@@ -18,9 +16,9 @@ namespace DragonBones
         
         public ArmatureRegistry Registry { get; private set; }
 
-        public void DBConnect(DBRegistry.DBID armatureID)
+        public void DBConnect(Armature armature)
         {
-            ArmatureID = armatureID;
+            Armature = armature;
         }
 
         public void DBInit(Armature armature)
@@ -34,7 +32,7 @@ namespace DragonBones
             if (Registry == null)
             {
                 //TODO
-                Registry = new ArmatureRegistry(Armature);
+                //Registry = new ArmatureRegistry(Armature);
             }
         }
         

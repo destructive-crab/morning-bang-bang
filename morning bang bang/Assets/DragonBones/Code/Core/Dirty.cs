@@ -4,7 +4,9 @@ namespace DragonBones
     {
         public bool IsDirty { get; private set; }
         public bool NotDirty => !IsDirty;
-        public TType V;
+        
+        public TType V { get; private set; }
+        public TType pV { get; private set; }
 
         public Dirty() { }
         public Dirty(TType initialValue) { Set(initialValue);}
@@ -14,7 +16,14 @@ namespace DragonBones
 
         public void Set(TType newValue)
         {
+            if (newValue.Equals(V))
+            {
+                return;
+            }
+
+            pV = V;
             V = newValue;
+            
             MarkAsDirty(); 
         }
 
@@ -22,6 +31,11 @@ namespace DragonBones
         {
             MarkAsDirty();
             return V;
+        }
+
+        public bool Eq(object o)
+        {
+            return V.Equals(o);
         }
     }
 }
