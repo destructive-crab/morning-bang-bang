@@ -259,15 +259,8 @@ namespace DragonBones
             origin = boneData.DBTransform;
         }
 
-        internal void ApplyParentArmature(Armature armature)
-        {
-            ParentArmature = armature;
-        }
-
-        internal void ApplyParentBone(Bone bone)
-        {
-            ParentBone = bone;
-        }
+        internal void ApplyParentArmature(Armature armature) => ParentArmature = armature;
+        internal void ApplyParentBone(Bone bone) => ParentBone = bone;
 
         internal void BoneReady() { }
 

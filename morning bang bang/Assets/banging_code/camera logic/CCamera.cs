@@ -23,12 +23,14 @@ namespace banging_code.camera_logic
 
         public void SetTarget(Transform target)
         {
+            if(Stopped) return;
             currentTarget = target;
             instance.ChillCamera.Follow = currentTarget;
         }
 
         public void EnterBangCamera(PolygonCollider2D roomCollider)
         {
+            if(Stopped) return;
             SwitchCamera(instance.BangCamera);
             current.Follow = currentTarget;
             current.GetComponent<CinemachineConfiner2D>().BoundingShape2D = roomCollider;
@@ -36,11 +38,13 @@ namespace banging_code.camera_logic
         
         public void EnterChillCamera()
         {
+            if(Stopped) return;
             SwitchCamera(instance.ChillCamera);
             current.Follow = currentTarget;
         }
         public async void Shake(float intensity, float time)
         {
+            if(Stopped) return;
             var shake = current.GetComponent<CinemachineBasicMultiChannelPerlin>();
 
             shake.AmplitudeGain = intensity;
@@ -54,6 +58,8 @@ namespace banging_code.camera_logic
         
         private void CreateInstance()
         {
+            if(Stopped) return;
+            
             if (instance != null) return;
             
             CCameraInstance prefab = Resources.Load<CCameraInstance>(PTH.CCameraInstance);
@@ -62,6 +68,7 @@ namespace banging_code.camera_logic
 
         public void EnterBuisnessCamera(params Transform[] targets)
         {
+            if(Stopped) return;
             SwitchCamera(instance.BuisnessCamera);
             CinemachineTargetGroup targetGroup = current.GetComponent<CinemachineTargetGroup>();
             targetGroup.Targets.Clear();

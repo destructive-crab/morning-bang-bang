@@ -118,7 +118,7 @@ namespace DragonBones
 
         public Armature()
         {
-            Structure = new ArmatureStructure();
+            Structure = new ArmatureStructure(this);
             AnimationPlayer = new AnimationPlayer(this);
         }
         
@@ -198,7 +198,7 @@ namespace DragonBones
             
             // Update animation.
             AnimationPlayer.AdvanceTime(passedTime);
-            UpdateBonesAndSlots();
+            UpdateBonesAndSlots(passedTime);
             
             if(Root.Armature == this) Root.DBUpdate();
             ProcessActions();
@@ -221,13 +221,14 @@ namespace DragonBones
             }
 
             if (!updateSlot) return;
+            
             foreach (Slot slot in Structure.Slots)
             {
                 slot.InvalidUpdate();
             }
         }
 
-        private void UpdateBonesAndSlots()
+        private void UpdateBonesAndSlots(float passedTime)
         {
             foreach (Bone bone in Structure.Bones)
             {
@@ -242,6 +243,11 @@ namespace DragonBones
                     slot.UpdateCache(AnimationPlayer.CurrentState.Animation, DB.Kernel.Cacher, AnimationPlayer.CurrentState.CurrentCacheFrameIndex);
                 }
                 slot.ProcessDirtyData();
+
+                if (slot.IsDisplayingChildArmature())
+                {
+                    Structure.GetChildArmature(slot.Display.V).AdvanceTime(passedTime);
+                }
             }
         }
 

@@ -15,5 +15,11 @@ namespace banging_code
         {
             return sceneName;
         }
+
+        public override void UpdateScene()
+        {
+            base.UpdateScene();
+            Modules.UpdateModules();
+        }
     }
 }

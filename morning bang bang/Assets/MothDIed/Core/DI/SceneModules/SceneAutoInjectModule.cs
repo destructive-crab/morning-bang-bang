@@ -8,6 +8,8 @@ namespace MothDIed.DI
     {
         public override void StartModule(Scene scene)
         {
+            base.StartModule(scene);
+            
             var all = GameObject.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
             foreach (var monoBehaviour in all)

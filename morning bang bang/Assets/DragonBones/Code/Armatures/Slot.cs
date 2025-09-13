@@ -138,7 +138,7 @@ namespace DragonBones
             BlendMode.MarkAsDirty();
             Color.MarkAsDirty();
 
-            EngineUpdateFrame();
+            EngineUpdateDisplay();
         }
 
         private void UpdateGlobalTransformAndMatrix()
@@ -278,7 +278,6 @@ namespace DragonBones
                     DeformVertices.verticesDirty = true;
                 }
 
-                Display.MarkAsDirty(); //TODO: why i should do that?
                 TransformDirty = true;
             }
         }
@@ -291,7 +290,6 @@ namespace DragonBones
         protected abstract void EngineUpdateColor();
         protected abstract void EngineUpdateBlendMode();
         protected abstract void EngineUpdateTransform();
-        protected abstract void EngineUpdateFrame();
         #endregion
 
         public void SetDrawOrder(int drawOrder)

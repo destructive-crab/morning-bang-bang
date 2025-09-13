@@ -1,3 +1,5 @@
+using System.IO;
+using System.Runtime.CompilerServices;
 using MothDIed;
 
 namespace banging_code.debug
@@ -11,34 +13,46 @@ namespace banging_code.debug
         private const string ECHO_WARNING = "echo_warning";
         
         //means push message
-        public static void PM(string message)
+        public static void PM(string message,
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0)
         {
 #if UNITY_EDITOR
             UnityEngine.Debug.Log(message);
             return;
 #endif
-            TryPrintInConsole(message, ECHO);
+            TryPrintInConsole(message, ECHO, file, member, line);
         }
 
-        public static void PERR(string error)
+        public static void PERR(string error,
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0)
         {
 #if UNITY_EDITOR
             UnityEngine.Debug.LogError(error);
             return;
 #endif
-            TryPrintInConsole(error, ECHO_ERROR);
+            TryPrintInConsole(error, ECHO_ERROR, file, member, line);
         }
 
-        public static void PW(string warning)
+        public static void PW(string warning,
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0)
         {
 #if UNITY_EDITOR
             UnityEngine.Debug.LogWarning(warning);
             return;
 #endif
-            TryPrintInConsole(warning, ECHO_WARNING);
+            TryPrintInConsole(warning, ECHO_WARNING, file, member, line);
         }
 
-        public static void AM(bool condition,  string message)
+        public static void AM(bool condition,  string message,
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0)
         {
             if(!condition) return;
             
@@ -46,10 +60,10 @@ namespace banging_code.debug
             UnityEngine.Debug.Log(message);
             return;
 #endif
-            TryPrintInConsole(message, ECHO);
+            TryPrintInConsole(message, ECHO, file, member, line);
         }
 
-        private static void TryPrintInConsole(string message, string command)
+        private static void TryPrintInConsole(string message, string command, string file = "", string member = "", int line = 0)
         {
             if (LGR.debugger == null && Game.TryGetDebugger(out BangDebugger debugger))
             {
@@ -59,6 +73,8 @@ namespace banging_code.debug
             {
                 return;
             }
+
+            message = Path.GetFileName(file) + $": {member}({line}): " + message;
 
             LGR.debugger.Console.InvokeCommand(true, command, message);
         }

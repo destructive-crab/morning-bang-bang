@@ -12,36 +12,48 @@ namespace DragonBones
         public void MarkActiveAsUnchanged() => ActiveRegistryChanged = false;
         public void MarkRuntimeAsUnchanged() => RuntimeRegistryChanged = false;
         
-        private readonly Dictionary<string, object> activeRegistry = new();
+        private readonly List<IEngineArmatureRoot> allRoots = new();
+        private readonly List<Armature> allArmatures = new();
+        private readonly List<ChildArmature> allChildArmatures = new();
         
-        //unity/
+        private readonly Dictionary<string, object> activeRegistry = new();
         private readonly Dictionary<string, IEngineArmatureRoot> activeRoots = new(); //armature id to root
         
-        private const string ARMATURE = "armature";
-
-        #region DEBUG
-        public void PrintCurrentState()
-        {
-            
-        }
-        #endregion
+        private const string SEPARATOR = "_";
 
         public void Register(Armature armature)
         {
             int hashCode = armature.GetHashCode();
-            string id = armature.Name + "_" + hashCode.ToString();
+            string id = armature.Name + SEPARATOR + hashCode.ToString();
             
             activeRegistry.Add(id, armature);
+
+            if (armature is ChildArmature ca)
+            {
+                allChildArmatures.Add(ca);
+            }
+            else
+            {
+                allArmatures.Add(armature);
+            }
+
+            ActiveRegistryChanged = true;
+        }
+
+        public void RegisterRoot(IEngineArmatureRoot root)
+        {
+            allRoots.Add(root);
         }
 
         public void CommitRuntimeChanges()
         {
-            throw new System.NotImplementedException();
+            ActiveRegistryChanged = true;
+            return;
         }
 
         public Armature[] GetAllRootArmatures()
         {
-            return null;
+            return allArmatures.ToArray();
         }
     }
 }

@@ -33,30 +33,24 @@ public class DragonBonesArmatureStarter : MonoBehaviour
                 unityEngineArmatureDisplay.AnimationPlayer.Play("run");
             }
         }        
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.J))
         {
             foreach (var unityEngineArmatureDisplay in armatures)
             {
                 unityEngineArmatureDisplay.AnimationPlayer.Play("idle");
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.KeypadEnter))
-        {
-            DB.Registry.PrintCurrentState();
-        }
     }
 
     private IEnumerator Spawn()
     {
-        for (int x = 0; x < 20; x++)
+        for (int x = 0; x < 30; x++)
         {
-            for (int y = 0; y < 10; y++)
+            for (int y = 0; y < 20; y++)
             {
-
                 UnityArmatureRoot a = null;
                 if(x%2 ==0) a = DB.Factory.UnityCreateArmature("rat_gun_side", "rat_gun"); 
-                else a= DB.Factory.UnityCreateArmature("rat_gun_up", "rat_gun");
+                else a= DB.Factory.UnityCreateArmature("rat_gun_down", "rat_gun");
 
                 a.transform.position = new Vector3(x, y, 0); 
 

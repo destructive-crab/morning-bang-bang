@@ -4,6 +4,7 @@ using banging_code;
 using banging_code.debug;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Debug = UnityEngine.Debug;
 
 namespace MothDIed.InputsHandling
 {
@@ -65,6 +66,9 @@ namespace MothDIed.InputsHandling
         //interface && hooks
         public static Vector3 MousePosition => Game.SceneSwitcher.CurrentScene.GetCamera().ScreenToWorldPoint(Input.mousePosition);
         public static Vector2 Movement { get; private set; }
+        
+        public static Vector2 DebugMovement => actionsMap.Debug.Movement.ReadValue<Vector2>();
+        public static float DebugYScroll => actionsMap.Debug.YScroll.ReadValue<float>();
 
         public static void Tick()
         {
@@ -85,6 +89,18 @@ namespace MothDIed.InputsHandling
 
         //parallel maps
         private static readonly List<InputActionMap> currentParallel = new();
+
+        public static string GetCurrentParallels()
+        {
+            string output = "";
+            
+            foreach (InputActionMap map in currentParallel)
+            {
+                output += map.name + " \n";
+            }
+
+            return output;
+        }
 
         private static void EnableParallelMap(InputActionMap map)
         {
@@ -109,26 +125,25 @@ namespace MothDIed.InputsHandling
         
         //mode system
         private static Dictionary<Mode, ModeSwitch> ModeSwitchers;
-        
-        private static Mode CurrentMode;
-        private static Mode PreviousMode;
-        private static Vector2 currentVelocity;
+
+        public static Mode CurrentMode { get; private set; }
+        public static Mode PreviousMode { get; private set; }
 
         // interface
         public static bool BackToPreviousMode()
         {
-            if (PreviousMode == CurrentMode) return false;
+            if (PreviousMode == CurrentMode || PreviousMode == Mode.None) return false;
             
             return SwitchTo(PreviousMode);
         }
 
         public static bool SwitchTo(Mode mode)
         {
-            if (mode == CurrentMode && !Enabled) return false;
-
+            if (mode == CurrentMode || !Enabled || mode == Mode.None) return false;
+            
             PreviousMode = CurrentMode;
             
-            ModeSwitchers[CurrentMode].Exit.Invoke();
+            if(CurrentMode != Mode.None) ModeSwitchers[CurrentMode].Exit.Invoke();
             
             CurrentMode = mode;
             
@@ -142,8 +157,9 @@ namespace MothDIed.InputsHandling
         {
             ModeSwitchers = new Dictionary<Mode, ModeSwitch>()
             {
+                //{Mode.None,   new ModeSwitch(Mode.None,   DisableInputs,   EnableInputs)},
                 {Mode.Player, new ModeSwitch(Mode.Player, EnterPlayerMode, ExitPlayerMode)},
-                {Mode.UI , new ModeSwitch(Mode.UI, EnterUIMode, ExitUIMode)}
+                {Mode.UI,     new ModeSwitch(Mode.UI,     EnterUIMode,     ExitUIMode)}
             };
         }
 
@@ -185,6 +201,7 @@ namespace MothDIed.InputsHandling
         }
         public enum Mode
         {
+            None,
             Player,
             UI
         }

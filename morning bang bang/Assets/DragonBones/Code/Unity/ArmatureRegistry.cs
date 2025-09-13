@@ -5,7 +5,7 @@ namespace DragonBones
 {
     public sealed class ArmatureRegistry
     {
-        public Armature BelongsTo;
+        public readonly UnityArmatureRoot BelongsTo;
         public enum RegistryChange
         {
             Visibility,
@@ -22,14 +22,14 @@ namespace DragonBones
         private readonly Dictionary<string, bool> visibilities = new();
         private readonly Dictionary<string, int> drawOrder = new();
 
-        public ArmatureRegistry(Armature belongsTo)
+        public ArmatureRegistry(UnityArmatureRoot belongsTo)
         {
             BelongsTo = belongsTo;
         }
 
         public Tuple<ValueTuple<RegistryChange, string>[], int> PullChanges(string id)
         {
-            UnitySlot unitySlot = BelongsTo.Structure.GetSlot(id) as UnitySlot;
+            UnitySlot unitySlot = BelongsTo.Armature.Structure.GetSlot(id) as UnitySlot;
 
             bufferSize = 0;
                 
@@ -68,7 +68,7 @@ namespace DragonBones
 
         public void CommitChanges()
         {
-            foreach (Slot slot in BelongsTo.Structure.Slots)
+            foreach (Slot slot in BelongsTo.Armature.Structure.Slots)
             {
                 visibilities[slot.Name] = slot.Visible.V;
                 currentDisplays[slot.Name] = slot.Display.V.Name;
@@ -83,5 +83,9 @@ namespace DragonBones
         private string GetSlotDisplayName(UnitySlot unitySlot) => currentDisplays[unitySlot.Name];
         public DisplayType GetState(string id) => states[id];
         public void SetState(string id, DisplayType state) => states[id] = state;
+
+        public void Clear()
+        {
+        }
     }
 }

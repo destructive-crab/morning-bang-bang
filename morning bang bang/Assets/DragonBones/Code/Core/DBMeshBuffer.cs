@@ -38,7 +38,10 @@ namespace DragonBones
             color32Buffer = null;
             triangleBuffer = null;
             
-            GeneratedMesh.Clear();
+            if(GeneratedMesh != null)
+            {
+                GeneratedMesh.Clear();
+            }
         }
     }
 }

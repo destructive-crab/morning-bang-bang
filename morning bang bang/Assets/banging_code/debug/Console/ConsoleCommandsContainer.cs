@@ -1,5 +1,11 @@
+using banging_code.camera_logic;
 using DragonBones;
 using MothDIed;
+using MothDIed.DI;
+using MothDIed.InputsHandling;
+using MothDIed.Optional.Extensions;
+using MothDIed.Scenes;
+using MothDIed.Scenes.SceneModules;
 using UnityEngine;
 
 namespace banging_code.debug.Console
@@ -83,7 +89,6 @@ namespace banging_code.debug.Console
         [ConsoleCommandKey("db_registry_state")]
         public string RegistryState()
         {
-            DB.Registry.PrintCurrentState();
             return "";
         }
 
@@ -99,6 +104,47 @@ namespace banging_code.debug.Console
         {
             BangDebugger.Flags.ShowFPS = !BangDebugger.Flags.ShowFPS;
             return $"Show FPS: {BangDebugger.Flags.ShowFPS}";
+        }
+        
+         [ConsoleCommandKey("recam")]
+         public string CameraRecontrollerSwitch()
+         {
+             Game.SceneSwitcher.CurrentScene.Modules.StartModule<CameraRecontroller>();
+             return $"Recontroller: {Game.SceneSwitcher.CurrentScene.Modules.Get<CameraRecontroller>().Active}";
+         }
+
+         [ConsoleCommandKey("show_inputs")]
+         public string InputLog()
+         {
+             string output = "";
+             output += "Enabled: " + InputService.Enabled + "\n";
+             output += "Current Mode: " + InputService.CurrentMode.ToString() + "\n";
+             output += "Previous Mode: " + InputService.PreviousMode.ToString() + "\n";
+             output += "Parallels: " + InputService.GetCurrentParallels() + "\n";
+             return output;
+         }
+    }
+
+    internal sealed class CameraRecontroller : SceneModule
+    {
+        public override void StartModule(Scene scene)
+        {
+            base.StartModule(scene);
+            
+            Game.SceneSwitcher.CurrentScene.Modules.StopModule<CCamera>();
+        }
+
+        public override void StopModule(Scene scene)
+        {
+            base.StopModule(scene);
+            
+            Game.SceneSwitcher.CurrentScene.Modules.StartModule<CCamera>();
+        }
+
+        public override void UpdateModule(Scene scene)
+        {
+            Camera.main.transform.AddPosition(InputService.DebugMovement * 0.1f);
+            Camera.main.orthographicSize += InputService.DebugYScroll / -120;
         }
     }
 }

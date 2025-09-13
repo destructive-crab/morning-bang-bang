@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using banging_code.debug;
 using DragonBones.Code.Debug;
 
@@ -10,6 +11,8 @@ namespace DragonBones
         public static ArmatureBuildLog BLog;
         private static List<ArmatureBuildLog> Logs = new();
 
+        private const string PREFIX = "[DB] ";
+        
         private const string CHILD_BUILD_LOG_MARK = "CHILD_BUILD_LOG_HERE:";
         public static ArmatureBuildLog StartNewArmatureBuildLog(string name)
         {
@@ -55,24 +58,36 @@ namespace DragonBones
             return resultLog;
         }
         
-        internal static void LogMessage(object message)
+        internal static void LogMessage(object message,
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0)
         {
-            LGR.PM("[DragonBones] " + message);
+            LGR.PM(PREFIX + message, file, member, line);
         }
         
-        internal static void Warn(object message)
+        internal static void Warn(object message,
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0)
         {
-            LGR.PW("[DragonBones] " + message);
+            LGR.PW(PREFIX + message, file, member, line);
         }
 
-        internal static void Assert(bool condition, string message)
+        internal static void Assert(bool condition, string message,
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0)
         {
-            LGR.AM(condition, "[DragonBones] " + message);
+            LGR.AM(condition, PREFIX + message, file, member, line);
         }
 
-        public static void Error(string error)
+        public static void Error(string error,
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0)
         {
-            LGR.PERR("[DragonBones] " + error);
+            LGR.PERR(PREFIX + error, file, member, line);
         }
     }
 }

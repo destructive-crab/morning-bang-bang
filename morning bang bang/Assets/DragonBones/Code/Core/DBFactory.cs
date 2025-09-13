@@ -15,6 +15,7 @@ namespace DragonBones
         public SkinData Skin;
 
         public Armature Armature;
+        public IEngineArmatureRoot Root;
     }
     
     /// <summary>
@@ -47,7 +48,7 @@ namespace DragonBones
         /// <see cref="DBProjectData"/>, <see cref="ArmatureData"/>
         /// <version>DragonBones 3.0</version>
         /// <language>en_US</language>
-        public virtual Armature BuildArmature(string armatureName, string dragonBonesName = "", string skinName = null, string textureAtlasName = null, IEngineArmatureRoot providedRoot = null)
+        public Armature BuildUnityRootArmature(string armatureName, string dragonBonesName = "", IEngineArmatureRoot providedRoot = null, string skinName = null, string textureAtlasName = null)
         {
             Armature armature = GetEmptyArmature();
             IEngineArmatureRoot armatureRoot = null;
@@ -63,18 +64,38 @@ namespace DragonBones
                 armatureRoot = providedRoot;
             }
             
+            armatureRoot.DBConnect(armature);
+            
+            BuildArmature(armature, armatureName, dragonBonesName, skinName, textureAtlasName, armatureRoot);
+            
+            foreach (ChildArmature childArmature in armature.Structure.ChildArmatures)
+            {
+                childArmature.ArmatureReady();
+                childArmature.InvalidUpdate(null, true);
+                childArmature.AdvanceTime(0.0f); // Update armature pose.
+            }
+            
+            armature.ArmatureReady();
+            armature.InvalidUpdate(null, true);
+            armature.AdvanceTime(0.0f); // Update armature pose.
+            
+            return armature;
+        }
+
+        public BuildArmaturePackage BuildArmature(Armature armature, string armatureName, string dragonBonesName, string skinName, string textureAtlasName, IEngineArmatureRoot armatureRoot)
+        {
             BuildArmaturePackage dataPackage = new BuildArmaturePackage();
             
             if (!DB.Kernel.DataStorage.FillBuildArmaturePackage(dataPackage, dragonBonesName, armatureName, skinName, textureAtlasName))
             {
                 DBLogger.Warn("No armature data: " + armatureName + ", " + (dragonBonesName != "" ? dragonBonesName : ""));
                 return null;
-            }
+            } 
             
             armature.Initialize(dataPackage.ArmatureData, armatureRoot);
 
             dataPackage.Armature = armature;
-            armatureRoot.DBConnect(armature);
+            dataPackage.Root = armatureRoot;
             
             BuildBonesFor(dataPackage, armature);
             BuildSlotsFor(dataPackage, armature);
@@ -84,21 +105,16 @@ namespace DragonBones
             armature.Structure.CompleteBuilding();
             
             DB.Kernel.Registry.Register(armature);
-
+ 
             foreach (Slot slot in armature.Structure.Slots)
             {
                 slot.Display.Set(armature.Structure.GetDisplayByIndex(slot, slot.SlotData.DefaultDisplayIndex));
                 slot.SlotReady();
             }
-            
-            armature.ArmatureReady();
-            armature.Root.DBInit(armature);
-            armature.InvalidUpdate(null, true);
-            armature.AdvanceTime(0.0f); // Update armature pose.
-            
-            return armature;
-        }
 
+            return dataPackage;
+        }
+        
         protected void BuildBonesFor(BuildArmaturePackage dataPackage, Armature armature)
         {
             List<BoneData> bones = dataPackage.ArmatureData.sortedBones;
@@ -110,12 +126,21 @@ namespace DragonBones
                 
                 bone.ApplyData(boneData);
                 bone.ApplyParentArmature(dataPackage.Armature);
-                bone.ApplyParentBone(dataPackage.Armature.Structure.GetBone(boneData.parent.Name));
-               
+                
+                if(boneData.parent != null)
+                {
+                    bone.ApplyParentBone(dataPackage.Armature.Structure.GetBone(boneData.parent.Name));
+                }
+                else if(armature is ChildArmature childArmature)
+                {
+                    bone.ApplyParentBone(childArmature.Parent.ParentBone);
+                }
+
+                armature.Structure.RegisterBone(bone);
+                
                 bone.BoneReady();
             }
         }
-
         protected void BuildSlotsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
             SkinData currentSkin = dataPackage.Skin;
@@ -143,7 +168,6 @@ namespace DragonBones
                 BuildSlot(dataPackage, slotData, displayDatas, armature);
             }
         }
-
         protected void BuildConstraintsFor(BuildArmaturePackage dataPackage, Armature armature)
         {
             Dictionary<string, ConstraintData> constraints = dataPackage.ArmatureData.constraints;
@@ -425,35 +449,17 @@ namespace DragonBones
         
         public UnityArmatureRoot UnityCreateArmature(string armatureName, string dragonBonesName = "", UnityArmatureRoot root = null, string skinName = "", string textureAtlasName = "")
         {
-            Armature armature = BuildArmature(armatureName, dragonBonesName, skinName, textureAtlasName, root);
+            Armature armature = BuildUnityRootArmature(armatureName, dragonBonesName, root, skinName, textureAtlasName);
             return armature.Root as UnityArmatureRoot;
         }
 
-        protected IEngineChildArmature BuildChildArmatureDisplay(BuildArmaturePackage dataPackage, Slot forSlot, ChildArmatureDisplayData displayData, ChildArmatureDisplayData childArmatureData)
+        protected ChildArmature BuildChildArmatureDisplay(BuildArmaturePackage dataPackage, Slot forSlot, ChildArmatureDisplayData displayData, ChildArmatureDisplayData childArmatureData)
         {
-            UnityChildArmature display = DBObject.BorrowObject<UnityChildArmature>();
             ChildArmature childArmature = DBObject.BorrowObject<ChildArmature>();
-
-            BuildArmaturePackage childPackage = new();
-            if (!DB.Kernel.DataStorage.FillBuildArmaturePackage(childPackage, childArmatureData.armature.belongsToProject.name, childArmatureData.armature.name, null, null))
-            {
-                DBLogger.Warn("No armature data: " + childArmatureData.armature.name);
-                return null;
-            }
-            childArmature.InitializeChildArmature(displayData, forSlot);
-            childArmature.Initialize(childArmatureData.armature, forSlot.ParentArmature.Root);
+            childArmature.InitializeChildArmature(childArmatureData, forSlot);
+            BuildArmature(childArmature, childArmatureData.armature.name, childArmatureData.armature.belongsToProject.name, null, null, dataPackage.Root);
             
-            BuildBonesFor(childPackage, childArmature);
-            BuildSlotsFor(childPackage, childArmature);
-            BuildConstraintsFor(childPackage, childArmature);
-            
-            childArmature.InvalidUpdate(null, true);
-            childArmature.AdvanceTime(0.0f); // Update armature pose.
-            
-            childArmature.ArmatureReady();
-            display.DBInit(childArmature, childArmatureData);
-            
-            return display;
+            return childArmature;
         }
 
         protected IEngineArmatureRoot GetNewArmatureDisplayFor(Armature armature)
@@ -479,7 +485,7 @@ namespace DragonBones
             UnitySlot slot = DBObject.BorrowObject<UnitySlot>();
             
             slot.StartBuilding(slotData, armature);
-            slot.StarUnitySlotBuilding(armature.Root as UnityArmatureRoot);
+            slot.StartUnitySlotBuilding(armature.Root as UnityArmatureRoot);
 
             slot.ApplyParentBone(armature.Structure.GetBone(slotData.parent.Name));
 
@@ -497,11 +503,11 @@ namespace DragonBones
                         break;
                     case ChildArmatureDisplayData childArmatureDisplayData:
                         childArmatureDisplayData.armature = DB.Kernel.DataStorage.GetArmatureData(childArmatureDisplayData.path, childArmatureDisplayData.BelongsToSkin.BelongsToArmature.belongsToProject.name);
-                        UnityChildArmature childArmature = BuildChildArmatureDisplay(dataPackage, slot, childArmatureDisplayData, childArmatureDisplayData) as UnityChildArmature;
+                        ChildArmature childArmature = BuildChildArmatureDisplay(dataPackage, slot, childArmatureDisplayData, childArmatureDisplayData);
                        
-                        childArmaturesBuffer.Add(childArmature.Armature);
+                        childArmaturesBuffer.Add(childArmature);
                         
-                        childArmatureDisplayData.armature = childArmature.Armature.ArmatureData;
+                        childArmatureDisplayData.armature = childArmature.ArmatureData;
                         break;
                 }
             }

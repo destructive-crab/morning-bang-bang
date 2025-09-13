@@ -8,20 +8,25 @@ namespace DragonBones
         public Slot[] Slots;
         public Constraint[] Constraints;
         
-        private Dictionary<string, Bone> bones;
-        private Dictionary<string, Slot> slots;
-        private Dictionary<string, Constraint> constraints;
+        private readonly Dictionary<string, Bone> bones = new();
+        private readonly Dictionary<string, Slot> slots = new();
+        private readonly Dictionary<string, Constraint> constraints = new();
 
-        private Dictionary<string, string> boneToSlot;
+        private readonly Dictionary<string, string> boneToSlot = new();
         
-        private Dictionary<Slot, DisplayData[]> displayData;
-        private Dictionary<Slot, DisplayData> activeDisplays;
-
-        private List<DBMeshBuffer> currentMeshes;
+        private readonly Dictionary<Slot, DisplayData[]> displayData = new();
+        private readonly Dictionary<Slot, DisplayData> activeDisplays = new();
 
         public ChildArmature[] ChildArmatures;
-        private Dictionary<DisplayData, ChildArmature> ChildArmaturesMap; 
-        
+        private readonly Dictionary<DisplayData, ChildArmature> ChildArmaturesMap = new();
+
+        private Armature BelongsTo;
+
+        public ArmatureStructure(Armature belongsTo)
+        {
+            BelongsTo = belongsTo;
+        }
+
         public Bone GetBone(string name)
         {
             if (bones.TryGetValue(name, out Bone bone))
@@ -79,12 +84,21 @@ namespace DragonBones
                 i++;
             }
            
-            Slots = new Slot[bones.Count];
+            Slots = new Slot[slots.Count];
 
             i = 0;
             foreach (KeyValuePair<string, Slot> pair in slots)
             {
                 Slots[i] = pair.Value;
+                i++;
+            }
+
+            Constraints = new Constraint[constraints.Count];
+
+            i = 0;
+            foreach (KeyValuePair<string, Constraint> pair in constraints)
+            {
+                Constraints[i] = pair.Value;
                 i++;
             }
         }
@@ -96,7 +110,7 @@ namespace DragonBones
 
         public DisplayData[] GetDisplayData(Slot slot)
         {
-            return null;
+            return displayData[slot];
         }
     }
 }

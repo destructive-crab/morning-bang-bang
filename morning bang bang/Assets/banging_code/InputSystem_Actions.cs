@@ -797,6 +797,24 @@ namespace banging_code
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""YScroll"",
+                    ""type"": ""Value"",
+                    ""id"": ""846654d0-962f-46ae-9e6c-160bad1c1634"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Movement"",
+                    ""type"": ""Value"",
+                    ""id"": ""e4b2ebef-8e0c-40a7-8a8f-61cb81f910cd"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -810,6 +828,94 @@ namespace banging_code
                     ""action"": ""ConsoleSwitch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""2D Vector"",
+                    ""id"": ""51452330-5230-48bb-9386-c37821e3cc7e"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""8f126f22-4b19-4458-9514-98131f5edc87"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""136f2008-095a-410c-9ca4-58febb544806"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""d4266846-0c2c-4660-b971-76261624fbda"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""cde95048-4710-40b5-8bfe-a231b38462c0"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Movement"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""af17df2e-e5d7-43eb-97d5-d98d7ed539b1"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""YScroll"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""741468fb-e211-45aa-a738-c03008126940"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""YScroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""8dc52850-71c4-4120-8603-3de4ee58bb6a"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""YScroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -902,6 +1008,8 @@ namespace banging_code
             // Debug
             m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
             m_Debug_ConsoleSwitch = m_Debug.FindAction("ConsoleSwitch", throwIfNotFound: true);
+            m_Debug_YScroll = m_Debug.FindAction("YScroll", throwIfNotFound: true);
+            m_Debug_Movement = m_Debug.FindAction("Movement", throwIfNotFound: true);
         }
 
         ~@InputActions()
@@ -1417,6 +1525,8 @@ namespace banging_code
         private readonly InputActionMap m_Debug;
         private List<IDebugActions> m_DebugActionsCallbackInterfaces = new List<IDebugActions>();
         private readonly InputAction m_Debug_ConsoleSwitch;
+        private readonly InputAction m_Debug_YScroll;
+        private readonly InputAction m_Debug_Movement;
         /// <summary>
         /// Provides access to input actions defined in input action map "Debug".
         /// </summary>
@@ -1432,6 +1542,14 @@ namespace banging_code
             /// Provides access to the underlying input action "Debug/ConsoleSwitch".
             /// </summary>
             public InputAction @ConsoleSwitch => m_Wrapper.m_Debug_ConsoleSwitch;
+            /// <summary>
+            /// Provides access to the underlying input action "Debug/YScroll".
+            /// </summary>
+            public InputAction @YScroll => m_Wrapper.m_Debug_YScroll;
+            /// <summary>
+            /// Provides access to the underlying input action "Debug/Movement".
+            /// </summary>
+            public InputAction @Movement => m_Wrapper.m_Debug_Movement;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1461,6 +1579,12 @@ namespace banging_code
                 @ConsoleSwitch.started += instance.OnConsoleSwitch;
                 @ConsoleSwitch.performed += instance.OnConsoleSwitch;
                 @ConsoleSwitch.canceled += instance.OnConsoleSwitch;
+                @YScroll.started += instance.OnYScroll;
+                @YScroll.performed += instance.OnYScroll;
+                @YScroll.canceled += instance.OnYScroll;
+                @Movement.started += instance.OnMovement;
+                @Movement.performed += instance.OnMovement;
+                @Movement.canceled += instance.OnMovement;
             }
 
             /// <summary>
@@ -1475,6 +1599,12 @@ namespace banging_code
                 @ConsoleSwitch.started -= instance.OnConsoleSwitch;
                 @ConsoleSwitch.performed -= instance.OnConsoleSwitch;
                 @ConsoleSwitch.canceled -= instance.OnConsoleSwitch;
+                @YScroll.started -= instance.OnYScroll;
+                @YScroll.performed -= instance.OnYScroll;
+                @YScroll.canceled -= instance.OnYScroll;
+                @Movement.started -= instance.OnMovement;
+                @Movement.performed -= instance.OnMovement;
+                @Movement.canceled -= instance.OnMovement;
             }
 
             /// <summary>
@@ -1723,6 +1853,20 @@ namespace banging_code
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnConsoleSwitch(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "YScroll" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnYScroll(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Movement" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnMovement(InputAction.CallbackContext context);
         }
     }
 }

@@ -108,7 +108,7 @@ namespace DragonBones
         }
 
         public bool Contains(DBMeshBuffer buffer) => buffers.Contains(buffer);
-        public void SendChange(ArmatureRegistry.RegistryChange change, DBMeshBuffer slotName)
+        public void SendChange(ArmatureRegistry.RegistryChange change, DBMeshBuffer buffer)
         {
             switch (change)
             {
@@ -117,18 +117,9 @@ namespace DragonBones
                 case ArmatureRegistry.RegistryChange.Display:
                     break;
                 case ArmatureRegistry.RegistryChange.DrawOrder:
-                    Sort();
                     RebuildWithDifferentOrder(currentDrawOrder);
                     break;
             }
-        }
-
-        private void Sort()
-        {
-//            for (int i = PartBeginning; i < PartBeginning+PartLength; i++)
-//            {
-//                currentDrawOrder[i - PartBeginning] = BelongsTo.Structure.GetAtDrawOrder(i);
-//            }
         }
     }
 }

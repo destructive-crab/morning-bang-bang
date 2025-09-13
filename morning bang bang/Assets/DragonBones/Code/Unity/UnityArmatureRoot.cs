@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 
 namespace DragonBones
 {
     [DisallowMultipleComponent]
+    [RequireComponent(typeof(MeshFilter))]
+    [RequireComponent(typeof(MeshRenderer))]
     public sealed class UnityArmatureRoot : UnityEventDispatcher, IEngineArmatureRoot
     {
         [HideInInspector] public bool CombineMeshes = true;
@@ -16,28 +19,21 @@ namespace DragonBones
         
         public ArmatureRegistry Registry { get; private set; }
 
+        private void Awake()
+        {
+            MeshRoot = new UnityArmatureMeshRoot(this, gameObject.GetComponent<MeshFilter>(), gameObject.GetComponent<MeshRenderer>());
+            Registry = new ArmatureRegistry(this);
+        }
+
         public void DBConnect(Armature armature)
         {
             Armature = armature;
         }
-
-        public void DBInit(Armature armature)
-        {
-            Armature = armature;
-
-            if (MeshRoot == null)
-            {
-                MeshRoot = new UnityArmatureMeshRoot(Armature, gameObject.AddComponent<MeshFilter>(), gameObject.AddComponent<MeshRenderer>());
-            }
-            if (Registry == null)
-            {
-                //TODO
-                //Registry = new ArmatureRegistry(Armature);
-            }
-        }
         
         public void DBClear()
         {
+            MeshRoot.Clear();
+            Registry.Clear();
             Armature?.Dispose();
             Armature = null;
             
@@ -51,26 +47,25 @@ namespace DragonBones
             if (CombineMeshes && !MeshRoot.IsCombined)
             {
                 MeshRoot.Combine();
-//                Registry.CommitChanges();
+                Registry.CommitChanges();
             }
 
-            //foreach (DBRegistry.DBID id in DB.Registry.GetChildSlotsOf(Armature.ID))
-            //{
-            //    Tuple<(ArmatureRegistry.RegistryChange, DBRegistry.DBID)[], int> changes = Registry.PullChanges(id);
-//
-            //    if(changes == null) continue;
-//
-            //    for(int i = 0; i < changes.Item2; i++)
-            //    {
-            //        MeshRoot.SendChange(changes.Item1[i].Item1, changes.Item1[i].Item2);
-            //    }
-            //}
-//
+            foreach (Slot slot in Armature.Structure.Slots)
+            {
+                Tuple<(ArmatureRegistry.RegistryChange, string)[], int> changes = Registry.PullChanges(slot.Name);
+
+                if(changes == null) continue;
+
+                for(int i = 0; i < changes.Item2; i++)
+                {
+                    MeshRoot.SendChange(changes.Item1[i].Item1, slot);
+                }
+            }
+
             //Registry.CommitChanges();
             
             if (MeshRoot.IsCombined) MeshRoot.Update();
         }
-
 
         private void BuildMeshes()
         {

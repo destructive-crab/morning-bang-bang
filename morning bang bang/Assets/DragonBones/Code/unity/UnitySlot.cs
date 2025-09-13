@@ -12,7 +12,7 @@ namespace DragonBones
 
         private bool _skewed;
 
-        public DBMeshBuffer MeshBufferBuffer { get; private set; }
+        public DBMeshBuffer MeshBuffer { get; private set; }
 
         public UnityTextureAtlasData CurrentTextureAtlasData
         {
@@ -32,7 +32,8 @@ namespace DragonBones
 
         public override void OnReleased()
         {
-            base.OnReleased();           
+            base.OnReleased();
+
             ArmatureRoot = null;
             _skewed = false;
             BlendMode.Set(DragonBones.BlendMode.Normal);
@@ -64,28 +65,22 @@ namespace DragonBones
             //}
         }
 
-        public void StarUnitySlotBuilding(UnityArmatureRoot unityArmatureRoot)
+        public void StartUnitySlotBuilding(UnityArmatureRoot unityArmatureRoot)
         {
+            Debug.Log(unityArmatureRoot.name);
             ArmatureRoot = unityArmatureRoot;
         }
 
         public override void SlotReady()
         {
             base.SlotReady();
-
-            EngineUpdateDisplay();
-        }
-
-        protected override void EngineUpdateFrame()
-        {
-            CreateMeshBuffer();
         }
 
         private bool CreateMeshBuffer()
         {
-            if (MeshBufferBuffer == null)
+            if (MeshBuffer == null)
             {
-                MeshBufferBuffer = ArmatureRoot.MeshRoot.GetMeshFor(this);
+                MeshBuffer = ArmatureRoot.MeshRoot.GetMeshFor(this);
             }
 
             if (IsDisplayingChildArmature())
@@ -117,7 +112,7 @@ namespace DragonBones
             BlendMode.MarkAsDirty();
             Color.MarkAsDirty();
             Visible.MarkAsDirty();
-            MeshBufferBuffer.Material = currentTextureAtlas;
+            MeshBuffer.Material = currentTextureAtlas;
 
             return true;
         }
@@ -148,26 +143,26 @@ namespace DragonBones
 
             int uvOffset = vertexOffset + vertexCount * 2;
 
-            MeshBufferBuffer.uvBuffer = new Vector2[vertexCount];
-            MeshBufferBuffer.rawVertexBuffer = new Vector3[vertexCount];
-            MeshBufferBuffer.vertexBuffer = new Vector3[vertexCount];
-            MeshBufferBuffer.triangleBuffer = new int[triangleCount * 3];
+            MeshBuffer.uvBuffer = new Vector2[vertexCount];
+            MeshBuffer.rawVertexBuffer = new Vector3[vertexCount];
+            MeshBuffer.vertexBuffer = new Vector3[vertexCount];
+            MeshBuffer.triangleBuffer = new int[triangleCount * 3];
 
             for (int i = 0, iV = vertexOffset, iU = uvOffset, l = vertexCount; i < l; ++i)
             {
-                MeshBufferBuffer.uvBuffer[i].x = (sourceX + floatArray[iU++] * sourceWidth) / textureAtlasWidth;
-                MeshBufferBuffer.uvBuffer[i].y = 1.0f - (sourceY + floatArray[iU++] * sourceHeight) / textureAtlasHeight;
+                MeshBuffer.uvBuffer[i].x = (sourceX + floatArray[iU++] * sourceWidth) / textureAtlasWidth;
+                MeshBuffer.uvBuffer[i].y = 1.0f - (sourceY + floatArray[iU++] * sourceHeight) / textureAtlasHeight;
 
-                MeshBufferBuffer.rawVertexBuffer[i].x = floatArray[iV++] * textureScale;
-                MeshBufferBuffer.rawVertexBuffer[i].y = floatArray[iV++] * textureScale;
+                MeshBuffer.rawVertexBuffer[i].x = floatArray[iV++] * textureScale;
+                MeshBuffer.rawVertexBuffer[i].y = floatArray[iV++] * textureScale;
 
-                MeshBufferBuffer.vertexBuffer[i].x = MeshBufferBuffer.rawVertexBuffer[i].x;
-                MeshBufferBuffer.vertexBuffer[i].y = MeshBufferBuffer.rawVertexBuffer[i].y;
+                MeshBuffer.vertexBuffer[i].x = MeshBuffer.rawVertexBuffer[i].x;
+                MeshBuffer.vertexBuffer[i].y = MeshBuffer.rawVertexBuffer[i].y;
             }
 
             for (int i = 0; i < triangleCount * 3; ++i)
             {
-                MeshBufferBuffer.triangleBuffer[i] = intArray[meshOffset + (int)BinaryOffset.MeshVertexIndices + i];
+                MeshBuffer.triangleBuffer[i] = intArray[meshOffset + (int)BinaryOffset.MeshVertexIndices + i];
             }
         }
         private void CreateRectangleMeshForImageDisplay(TextureData currentTextureData)
@@ -181,18 +176,18 @@ namespace DragonBones
             float sourceWidth = currentTextureData.region.width;
             float sourceHeight = currentTextureData.region.height;
 
-            if (MeshBufferBuffer.rawVertexBuffer == null || MeshBufferBuffer.rawVertexBuffer.Length != 4)
+            if (MeshBuffer.rawVertexBuffer == null || MeshBuffer.rawVertexBuffer.Length != 4)
             {
-                MeshBufferBuffer.rawVertexBuffer = new Vector3[4];
-                MeshBufferBuffer.vertexBuffer = new Vector3[4];
+                MeshBuffer.rawVertexBuffer = new Vector3[4];
+                MeshBuffer.vertexBuffer = new Vector3[4];
             }
 
-            if (MeshBufferBuffer.uvBuffer == null || MeshBufferBuffer.uvBuffer.Length != MeshBufferBuffer.rawVertexBuffer.Length)
+            if (MeshBuffer.uvBuffer == null || MeshBuffer.uvBuffer.Length != MeshBuffer.rawVertexBuffer.Length)
             {
-                MeshBufferBuffer.uvBuffer = new Vector2[MeshBufferBuffer.rawVertexBuffer.Length];
+                MeshBuffer.uvBuffer = new Vector2[MeshBuffer.rawVertexBuffer.Length];
             }
 
-            if(MeshBufferBuffer.color32Buffer == null) MeshBufferBuffer.color32Buffer = new Color32[MeshBufferBuffer.VertexCount];
+            if(MeshBuffer.color32Buffer == null) MeshBuffer.color32Buffer = new Color32[MeshBuffer.VertexCount];
 
             // Normal texture.
             for (int i = 0, l = 4; i < l; ++i)
@@ -231,32 +226,36 @@ namespace DragonBones
                     pivotX = scaleWidth - PivotX;
                     pivotY = scaleHeight - PivotY;
                     //uv
-                    MeshBufferBuffer.uvBuffer[i].x = (sourceX + (1.0f - v) * sourceWidth) / textureAtlasWidth;
-                    MeshBufferBuffer.uvBuffer[i].y = 1.0f - (sourceY + u * sourceHeight) / textureAtlasHeight;
+                    MeshBuffer.uvBuffer[i].x = (sourceX + (1.0f - v) * sourceWidth) / textureAtlasWidth;
+                    MeshBuffer.uvBuffer[i].y = 1.0f - (sourceY + u * sourceHeight) / textureAtlasHeight;
                 }
                 else
                 {
                     //uv
-                    MeshBufferBuffer.uvBuffer[i].x = (sourceX + u * sourceWidth) / textureAtlasWidth;
-                    MeshBufferBuffer.uvBuffer[i].y = 1.0f - (sourceY + v * sourceHeight) / textureAtlasHeight;
+                    MeshBuffer.uvBuffer[i].x = (sourceX + u * sourceWidth) / textureAtlasWidth;
+                    MeshBuffer.uvBuffer[i].y = 1.0f - (sourceY + v * sourceHeight) / textureAtlasHeight;
                 }
 
                 //vertices
-                MeshBufferBuffer.rawVertexBuffer[i].x = u * scaleWidth - pivotX;
-                MeshBufferBuffer.rawVertexBuffer[i].y = (1.0f - v) * scaleHeight - pivotY;
+                MeshBuffer.rawVertexBuffer[i].x = u * scaleWidth - pivotX;
+                MeshBuffer.rawVertexBuffer[i].y = (1.0f - v) * scaleHeight - pivotY;
 
-                MeshBufferBuffer.vertexBuffer[i].x = MeshBufferBuffer.rawVertexBuffer[i].x;
-                MeshBufferBuffer.vertexBuffer[i].y = MeshBufferBuffer.rawVertexBuffer[i].y;
+                MeshBuffer.vertexBuffer[i].x = MeshBuffer.rawVertexBuffer[i].x;
+                MeshBuffer.vertexBuffer[i].y = MeshBuffer.rawVertexBuffer[i].y;
             }
 
-            MeshBufferBuffer.triangleBuffer = TRIANGLES;
+            MeshBuffer.triangleBuffer = TRIANGLES;
         }
 
         protected override void EngineUpdateDisplay()
         {
-            ArmatureRoot = ParentArmature.Root as UnityArmatureRoot;
+            if(IsDisplayingChildArmature())
+            {
+                ArmatureRoot.MeshRoot.ReleaseMesh(this);
+                return;
+            }
 
-
+            CreateMeshBuffer();
         }
 
         protected override void EngineUpdateZOrder()
@@ -266,7 +265,7 @@ namespace DragonBones
 
         protected override void EngineUpdateDeformMesh()
         {
-            if (MeshBufferBuffer.GeneratedMesh == null || DeformVertices == null) { return; }
+            if (MeshBuffer.GeneratedMesh == null || DeformVertices == null) { return; }
 
             float scale = ParentArmature.ArmatureData.scale;
             List<float> deformVertices = DeformVertices.vertices;
@@ -280,7 +279,7 @@ namespace DragonBones
 
             short[] intArray = data.intArray;
             float[] floatArray = data.floatArray;
-            short vertextCount = intArray[verticesData.offset + (int)BinaryOffset.MeshVertexCount];
+            short vertexCount = intArray[verticesData.offset + (int)BinaryOffset.MeshVertexCount];
 
             if (weightData != null)
             {
@@ -291,7 +290,7 @@ namespace DragonBones
                 }
 
                 int iB = weightData.offset + (int)BinaryOffset.WeightBoneIndices + weightData.bones.Count, iV = weightFloatOffset, iF = 0;
-                for (int i = 0; i < vertextCount; ++i)
+                for (int i = 0; i < vertexCount; ++i)
                 {
                     short boneCount = intArray[iB++];
                     float xG = 0.0f, yG = 0.0f;
@@ -316,8 +315,8 @@ namespace DragonBones
                             yG += (matrix.b * xL + matrix.d * yL + matrix.ty) * weight;
                         }
                     }
-                    MeshBufferBuffer.vertexBuffer[i].x = xG;
-                    MeshBufferBuffer.vertexBuffer[i].y = yG;
+                    MeshBuffer.vertexBuffer[i].x = xG;
+                    MeshBuffer.vertexBuffer[i].y = yG;
                 }
             }
             else if (deformVertices.Count > 0)
@@ -333,16 +332,16 @@ namespace DragonBones
                 float rx = 0.0f;
                 float ry = 0.0f;
 
-                for (int i = 0, iV = 0, iF = 0, l = vertextCount; i < l; ++i)
+                for (int i = 0, iV = 0, iF = 0, l = vertexCount; i < l; ++i)
                 {
                     rx = (data.floatArray[vertexOffset + (iV++)] * scale + deformVertices[iF++]);
                     ry = (data.floatArray[vertexOffset + (iV++)] * scale + deformVertices[iF++]);
 
-                    MeshBufferBuffer.rawVertexBuffer[i].x = rx;
-                    MeshBufferBuffer.rawVertexBuffer[i].y = -ry;
+                    MeshBuffer.rawVertexBuffer[i].x = rx;
+                    MeshBuffer.rawVertexBuffer[i].y = -ry;
 
-                    MeshBufferBuffer.vertexBuffer[i].x = rx;
-                    MeshBufferBuffer.vertexBuffer[i].y = -ry;
+                    MeshBuffer.vertexBuffer[i].x = rx;
+                    MeshBuffer.vertexBuffer[i].y = -ry;
                 }
             }
         }
@@ -357,12 +356,12 @@ namespace DragonBones
                 DBColor proxyTrans = ArmatureRoot.Color;
 
                 return;
-                for (int i = 0, l = MeshBufferBuffer.vertexBuffer.Length; i < l; ++i)
+                for (int i = 0, l = MeshBuffer.vertexBuffer.Length; i < l; ++i)
                 {
-                    MeshBufferBuffer.color32Buffer[i].r = (byte)(Color.V.redMultiplier * proxyTrans.redMultiplier * 255);
-                    MeshBufferBuffer.color32Buffer[i].g = (byte)(Color.V.greenMultiplier * proxyTrans.greenMultiplier * 255);
-                    MeshBufferBuffer.color32Buffer[i].b = (byte)(Color.V.blueMultiplier * proxyTrans.blueMultiplier * 255);
-                    MeshBufferBuffer.color32Buffer[i].a = (byte)(Color.V.alphaMultiplier * proxyTrans.alphaMultiplier * 255);
+                    MeshBuffer.color32Buffer[i].r = (byte)(Color.V.redMultiplier * proxyTrans.redMultiplier * 255);
+                    MeshBuffer.color32Buffer[i].g = (byte)(Color.V.greenMultiplier * proxyTrans.greenMultiplier * 255);
+                    MeshBuffer.color32Buffer[i].b = (byte)(Color.V.blueMultiplier * proxyTrans.blueMultiplier * 255);
+                    MeshBuffer.color32Buffer[i].a = (byte)(Color.V.alphaMultiplier * proxyTrans.alphaMultiplier * 255);
                 }
             }
             else
@@ -398,7 +397,7 @@ namespace DragonBones
             UpdateMeshBufferTransform();
 
             return;
-            if (IsDisplayingChildArmature() && MeshBufferBuffer.GeneratedMesh== null)
+            if (IsDisplayingChildArmature() && MeshBuffer.GeneratedMesh== null)
             {
             }
             else
@@ -420,18 +419,18 @@ namespace DragonBones
             float vx = 0.0f;
             float vy = 0.0f;
 
-            if (MeshBufferBuffer == null || MeshBufferBuffer.vertexBuffer == null) return;
+            if (MeshBuffer == null || MeshBuffer.vertexBuffer == null) return;
 
-            for (int i = 0, l = MeshBufferBuffer.vertexBuffer.Length; i < l; i++)
+            for (int i = 0, l = MeshBuffer.vertexBuffer.Length; i < l; i++)
             {
-                rx = MeshBufferBuffer.rawVertexBuffer[i].x;
-                ry = -MeshBufferBuffer.rawVertexBuffer[i].y;
+                rx = MeshBuffer.rawVertexBuffer[i].x;
+                ry = -MeshBuffer.rawVertexBuffer[i].y;
 
                 vx = rx * a + ry * c + tx;
                 vy = rx * b + ry * d + ty;
 
-                MeshBufferBuffer.vertexBuffer[i].x = vx * 0.16f;
-                MeshBufferBuffer.vertexBuffer[i].y = vy * 0.16f;
+                MeshBuffer.vertexBuffer[i].x = vx * 0.16f;
+                MeshBuffer.vertexBuffer[i].y = vy * 0.16f;
             }
         }
 
@@ -518,21 +517,21 @@ namespace DragonBones
                     var x = 0.0f;
                     var y = 0.0f;
 
-                    for (int i = 0, l = MeshBufferBuffer.vertexBuffer.Length; i < l; ++i)
+                    for (int i = 0, l = MeshBuffer.vertexBuffer.Length; i < l; ++i)
                     {
-                        x = MeshBufferBuffer.rawVertexBuffer[i].x;
-                        y = MeshBufferBuffer.rawVertexBuffer[i].y;
+                        x = MeshBuffer.rawVertexBuffer[i].x;
+                        y = MeshBuffer.rawVertexBuffer[i].y;
 
                         if (isPositive)
                         {
-                            MeshBufferBuffer.vertexBuffer[i].x = x + y * sin;
+                            MeshBuffer.vertexBuffer[i].x = x + y * sin;
                         }
                         else
                         {
-                            MeshBufferBuffer.vertexBuffer[i].x = -x + y * sin;
+                            MeshBuffer.vertexBuffer[i].x = -x + y * sin;
                         }
 
-                        MeshBufferBuffer.vertexBuffer[i].y = y * cos;
+                        MeshBuffer.vertexBuffer[i].y = y * cos;
                     }
 
                     // if (this.CurrentUnityDisplay.MeshRenderer && this.CurrentUnityDisplay.MeshRenderer.enabled)

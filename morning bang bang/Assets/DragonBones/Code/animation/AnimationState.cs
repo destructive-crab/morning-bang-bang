@@ -557,8 +557,6 @@ namespace DragonBones
             }
         }
 
-        /// <internal/>
-        /// <private/>
         internal void Init(Armature armature, AnimationData animationData, AnimationConfig animationConfig)
         {
             if (_armature != null)

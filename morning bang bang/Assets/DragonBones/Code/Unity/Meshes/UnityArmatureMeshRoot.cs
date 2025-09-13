@@ -9,27 +9,28 @@ namespace DragonBones
     {
         public bool IsCombined { get; private set; } = false;
 
-        public readonly Armature BelongsTo;
+        public readonly UnityArmatureRoot BelongsTo;
+        public Armature Armature => BelongsTo.Armature;
 
         private readonly List<UnityArmatureMeshPart> parts = new();
-        private readonly List<UnityChildArmature> childArmatures = new();
 
         private bool meshesChanged = false;
-        private List<DBMeshBuffer> meshes;
-        private Dictionary<string, DBMeshBuffer> meshesMap;
+        private readonly List<DBMeshBuffer> meshes = new();
+        private readonly Dictionary<string, DBMeshBuffer> meshesMap = new();
         
         
         public Mesh OutputMesh;
         private Material[] materials;
         
-        private MeshFilter filter;
-        private MeshRenderer renderer;
+        private readonly MeshFilter filter;
+        private readonly MeshRenderer renderer;
         
-        public UnityArmatureMeshRoot(Armature belongsTo, MeshFilter meshFilter, MeshRenderer meshRenderer)
+        public UnityArmatureMeshRoot(UnityArmatureRoot belongsTo, MeshFilter meshFilter, MeshRenderer meshRenderer)
         {
             BelongsTo = belongsTo;
             filter = meshFilter;
             renderer = meshRenderer;
+            Debug.Log(filter);
         }
 
         public DBMeshBuffer GetMeshFor(Slot slot)
@@ -37,7 +38,7 @@ namespace DragonBones
             DBMeshBuffer mesh = DBMeshBuffer.BorrowObject<DBMeshBuffer>();
             
             meshes.Add(mesh);
-            meshesMap.Add(slot.Name, mesh);
+            meshesMap.Add(GetSlotID(slot), mesh);
 
             return mesh;
         }
@@ -122,7 +123,7 @@ namespace DragonBones
                 }
                 else
                 {
-                    parts.Add(new UnityArmatureMeshPart(BelongsTo));
+                    parts.Add(new UnityArmatureMeshPart(Armature));
                     parts.Last().Init(currentPart.ToArray(), currentMaterial);
                     currentPart.Clear();
                     currentMaterial = meshBuffer.Material;
@@ -132,7 +133,7 @@ namespace DragonBones
 
             if (currentPart.Count != 0)
             {
-                parts.Add(new UnityArmatureMeshPart(BelongsTo));
+                parts.Add(new UnityArmatureMeshPart(Armature));
                 parts.Last().Init(currentPart.ToArray(), currentMaterial);
                 currentPart.Clear();
             }
@@ -148,18 +149,23 @@ namespace DragonBones
             return parts.Find((part) => part.Contains(buffer));
         }
 
-        public void SendChange(ArmatureRegistry.RegistryChange change)
+        public void SendChange(ArmatureRegistry.RegistryChange change, Slot slot)
         {
-            // UnityArmatureMeshPart part = GetPartWith(slotName);
-            //
-            // if (change == ArmatureRegistry.RegistryChange.DrawOrder && part.IsSingle && parts.Count != 1)
-            // {
-            //     Combine();
-            // }
-            // else
-            // {
-            //     part.SendChange(change, slotName);
-            // }
+            string slotID = GetSlotID(slot);
+            
+            if (!meshesMap.ContainsKey(slotID)) return;
+            
+            UnityArmatureMeshPart part = GetPartWith(meshesMap[slotID]);
+            
+            if (change == ArmatureRegistry.RegistryChange.DrawOrder && part.IsSingle && parts.Count != 1)
+            {
+                //recombine
+                Combine();
+            }
+            else
+            {
+                part.SendChange(change, meshesMap[slotID]);
+            }
             
             return;
             switch (change)
@@ -174,6 +180,24 @@ namespace DragonBones
                 default:
                     throw new ArgumentOutOfRangeException(nameof(change), change, null);
             }
+        }
+
+        private static string GetSlotID(Slot slot)
+        {
+            return slot.Name + "_" + slot.GetHashCode();
+        }
+
+        public void ReleaseMesh(UnitySlot unitySlot)
+        {
+            string slotID = GetSlotID(unitySlot);
+            if(!meshesMap.ContainsKey(slotID))return;
+            meshes.Remove(meshesMap[slotID]);
+            meshesMap.Remove(slotID);
+        }
+
+        public void Clear()
+        {
+            
         }
     }
 }

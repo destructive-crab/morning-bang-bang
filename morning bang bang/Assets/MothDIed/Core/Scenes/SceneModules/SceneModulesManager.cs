@@ -36,9 +36,22 @@ namespace MothDIed.Scenes.SceneModules
         public void StopModule<TModule>()
             where TModule : SceneModule
         {
-            if (modules.TryGet<TModule>(out var module))
+            if (modules.TryGet<TModule>(out var module) && module.Active)
             {
                 module.StopModule(scene);
+            }
+        }
+
+        public void StartModule<TModule>()
+            where TModule : SceneModule, new()
+        {
+            if (modules.TryGet<TModule>(out TModule module) && module.Stopped)
+            {
+                module.StartModule(scene);
+            }
+            else if (module == null)
+            {
+                AddModule(new TModule()).StartModule(scene);
             }
         }
 
@@ -70,6 +83,7 @@ namespace MothDIed.Scenes.SceneModules
         {
             foreach (var module in modules.GetAll())
             {
+                if(module.Stopped) continue;
                 module.UpdateModule(scene);
             }
         }

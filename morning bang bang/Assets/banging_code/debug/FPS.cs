@@ -16,8 +16,7 @@ namespace banging_code.debug
         public void Tick()
         {
             Hidden = false;
-            LGR.PM(Time.deltaTime.ToString());
-            text.text = "FPS: " + (1f / Time.deltaTime).ToString();
+            text.text = "FPS: " + (Time.timeScale / Time.deltaTime).ToString();
         }
 
         public void Hide()
