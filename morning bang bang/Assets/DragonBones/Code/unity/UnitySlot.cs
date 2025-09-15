@@ -67,7 +67,6 @@ namespace DragonBones
 
         public void StartUnitySlotBuilding(UnityArmatureRoot unityArmatureRoot)
         {
-            Debug.Log(unityArmatureRoot.name);
             ArmatureRoot = unityArmatureRoot;
         }
 
@@ -81,6 +80,10 @@ namespace DragonBones
             if (MeshBuffer == null)
             {
                 MeshBuffer = ArmatureRoot.MeshRoot.GetMeshFor(this);
+            }
+            else
+            {
+                MeshBuffer.Clear();
             }
 
             if (IsDisplayingChildArmature())
@@ -546,6 +549,12 @@ namespace DragonBones
             _helpVector3.z = 1.0f;
 
             transform.localScale = _helpVector3;
+        }
+
+
+        public override string ToString()
+        {
+            return $"USlot {Name}";
         }
     }
 }

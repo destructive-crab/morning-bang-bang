@@ -7,6 +7,10 @@ namespace DragonBones
         public Bone[] Bones;
         public Slot[] Slots;
         public Constraint[] Constraints;
+
+        public Slot[] CurrentDrawOrder;
+
+        public bool IsCurrentDrawOrderOriginal { get; private set; } = true;
         
         private readonly Dictionary<string, Bone> bones = new();
         private readonly Dictionary<string, Slot> slots = new();
@@ -20,7 +24,7 @@ namespace DragonBones
         public ChildArmature[] ChildArmatures;
         private readonly Dictionary<DisplayData, ChildArmature> ChildArmaturesMap = new();
 
-        private Armature BelongsTo;
+        public Armature BelongsTo;
 
         public ArmatureStructure(Armature belongsTo)
         {
@@ -44,6 +48,8 @@ namespace DragonBones
 
         public DisplayData GetDisplayByIndex(Slot slot, int index)
         {
+            if (index == -1) return null;
+            
             return displayData[slot][index];
         }
         
@@ -93,6 +99,9 @@ namespace DragonBones
                 i++;
             }
 
+            CurrentDrawOrder = new Slot[slots.Count];
+            Slots.CopyTo(CurrentDrawOrder, 0);
+
             Constraints = new Constraint[constraints.Count];
 
             i = 0;
@@ -101,6 +110,7 @@ namespace DragonBones
                 Constraints[i] = pair.Value;
                 i++;
             }
+
         }
 
         public ChildArmature GetChildArmature(DisplayData data)
@@ -111,6 +121,32 @@ namespace DragonBones
         public DisplayData[] GetDisplayData(Slot slot)
         {
             return displayData[slot];
+        }
+
+        public void SortDrawOrder(short[] indices, int offset)
+        {
+            if (indices == null && !IsCurrentDrawOrderOriginal)
+            {
+                for (int index = 0; index < Slots.Length; index++)
+                {
+                    CurrentDrawOrder[index] = Slots[index];
+                    CurrentDrawOrder[index].SetDrawOrder(index);
+                }
+
+                IsCurrentDrawOrderOriginal = true;
+            }
+            else if(indices != null)
+            {
+                for (int i = 0; i < Slots.Length; i++)
+                {
+                    short index = indices[i+offset];
+                    
+                    CurrentDrawOrder[i] = Slots[index];
+                    CurrentDrawOrder[i].SetDrawOrder(i);
+                }
+
+                IsCurrentDrawOrderOriginal = false;
+            }
         }
     }
 }

@@ -62,7 +62,7 @@ namespace DragonBones
                 }
             }
 
-            //Registry.CommitChanges();
+            Registry.CommitChanges();
             
             if (MeshRoot.IsCombined) MeshRoot.Update();
         }

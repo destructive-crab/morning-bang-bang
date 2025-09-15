@@ -53,6 +53,16 @@ namespace DragonBones
                     ParentArmature.Structure.GetChildArmature(Display.pV).IsActive = false;
                 }
 
+                if (!HasVisibleDisplay)
+                {
+                    Visible.Set(false);
+                    return;
+                }  
+                else if(!Visible.V)
+                {
+                    Visible.Set(true);
+                }
+
                 if (Display.V.Type == DisplayType.Armature)
                 {
                     ParentArmature.Structure.GetChildArmature(Display.V).IsActive = true;
@@ -64,12 +74,6 @@ namespace DragonBones
                 
                 Display.ResetDirty();
             }
-            if (!HasVisibleDisplay)
-            {
-                Visible.Set(false);
-                return;
-            }
-            if(!Visible.V) Visible.Set(true);
         }
 
         public void UpdateCache(AnimationData animation, DBFrameCacher cacher, int frameIndex)
@@ -306,6 +310,16 @@ namespace DragonBones
         public bool IsDisplayingChildArmature()
         {
             return DisplayData != null && DisplayData.Type == DisplayType.Armature;
+        }
+
+        public bool WasDisplayingChildArmature()
+        {
+            return Display.pV != null && Display.pV.Type == DisplayType.Armature;
+        }
+
+        public bool WasInvisible()
+        {
+            return Display.pV == null && Display.V != null;
         }
         
         public void ApplyParentBone(Bone bone)

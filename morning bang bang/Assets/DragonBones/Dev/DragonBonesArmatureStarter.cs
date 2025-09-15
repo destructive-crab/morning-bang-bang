@@ -9,15 +9,6 @@ public class DragonBonesArmatureStarter : MonoBehaviour
     
     private void Start()
     {
-        DB.UnityDataLoader.LoadDragonBonesData("animations/mecha/mecha_1502b_ske");
-        DB.UnityDataLoader.LoadTextureAtlasData("animations/mecha/mecha_1502b_tex");
-        
-        DB.UnityDataLoader.LoadDragonBonesData("animations/mecha/skin_1502b_ske");
-        DB.UnityDataLoader.LoadTextureAtlasData("animations/mecha/skin_1502b_tex");
-        
-        DB.UnityDataLoader.LoadDragonBonesData("animations/mecha/weapon_1000_ske");
-        DB.UnityDataLoader.LoadTextureAtlasData("animations/mecha/weapon_1000_tex");
-
         DB.UnityDataLoader.LoadDragonBonesData("animations/rat_gun_ske");
         DB.UnityDataLoader.LoadTextureAtlasData("animations/rat_gun_tex");
         
@@ -44,9 +35,14 @@ public class DragonBonesArmatureStarter : MonoBehaviour
 
     private IEnumerator Spawn()
     {
-        for (int x = 0; x < 30; x++)
+        
+        var j = DB.Factory.UnityCreateArmature("rat_gun_down", "rat_gun");
+        armatures.Add(j);
+        yield break; 
+                
+        for (int x = 0; x < 20; x++)
         {
-            for (int y = 0; y < 20; y++)
+            for (int y = 0; y < 5; y++)
             {
                 UnityArmatureRoot a = null;
                 if(x%2 ==0) a = DB.Factory.UnityCreateArmature("rat_gun_side", "rat_gun"); 

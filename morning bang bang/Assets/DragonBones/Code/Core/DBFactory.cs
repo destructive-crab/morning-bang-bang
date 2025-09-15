@@ -105,9 +105,11 @@ namespace DragonBones
             armature.Structure.CompleteBuilding();
             
             DB.Kernel.Registry.Register(armature);
- 
-            foreach (Slot slot in armature.Structure.Slots)
+
+            for (var index = 0; index < armature.Structure.Slots.Length; index++)
             {
+                var slot = armature.Structure.Slots[index];
+                slot.DrawOrder.Set(index);
                 slot.Display.Set(armature.Structure.GetDisplayByIndex(slot, slot.SlotData.DefaultDisplayIndex));
                 slot.SlotReady();
             }

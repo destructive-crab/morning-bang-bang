@@ -14,10 +14,10 @@ namespace DragonBones
 
         private readonly List<UnityArmatureMeshPart> parts = new();
 
-        private bool meshesChanged = false;
         private readonly List<DBMeshBuffer> meshes = new();
         private readonly Dictionary<string, DBMeshBuffer> meshesMap = new();
-        
+
+        private DBMeshBuffer[] drawOrder;
         
         public Mesh OutputMesh;
         private Material[] materials;
@@ -30,13 +30,18 @@ namespace DragonBones
             BelongsTo = belongsTo;
             filter = meshFilter;
             renderer = meshRenderer;
-            Debug.Log(filter);
         }
 
         public DBMeshBuffer GetMeshFor(Slot slot)
         {
+            if (meshesMap.ContainsKey(GetSlotID(slot)))
+            {
+                return meshesMap[GetSlotID(slot)];
+            }
+            
             DBMeshBuffer mesh = DBMeshBuffer.BorrowObject<DBMeshBuffer>();
             
+            mesh.Init(slot as UnitySlot);
             meshes.Add(mesh);
             meshesMap.Add(GetSlotID(slot), mesh);
 
@@ -48,12 +53,39 @@ namespace DragonBones
             List<Vector3> vertices = new();
             List<Vector2> uvs = new();
             
-            foreach (UnityArmatureMeshPart meshPart in parts)
+            List<int[]> triangles = new();
+
+            bool updateTriangles = false;
+            
+            for (var index = 0; index < parts.Count; index++)
             {
+                UnityArmatureMeshPart meshPart = parts[index];
                 meshPart.UpdateVertices();
+                
+                if (meshPart.IsDirty)
+                {
+                    updateTriangles = true;
+                    meshPart.IsDirty = false;
+                }
                 
                 vertices.AddRange(meshPart.OutputMesh.vertices);
                 uvs.AddRange(meshPart.OutputMesh.uv);
+            }
+
+            if (updateTriangles)
+            {
+                OutputMesh.Clear();
+                OutputMesh.vertices = vertices.ToArray();
+                OutputMesh.uv = uvs.ToArray();
+            
+                UpdateTriangles(triangles);
+      
+                for (int i = 0; i < OutputMesh.subMeshCount; i++)
+                {
+                    OutputMesh.SetTriangles(triangles[i], i);
+                }               
+                OutputMesh.RecalculateBounds();
+                return;
             }
             
             OutputMesh.vertices = vertices.ToArray();
@@ -62,8 +94,28 @@ namespace DragonBones
             OutputMesh.RecalculateBounds();
         }
 
-        public void Combine()
+        private void UpdateTriangles(List<int[]> triangles)
         {
+            int offset = 0;
+            for (var index = 0; index < parts.Count; index++)
+            {
+                var meshPart = parts[index];
+                triangles.Add(meshPart.OutputMesh.triangles);
+
+                for (var i = 0; i < triangles.Last().Length; i++)
+                {
+                    triangles.Last()[i] += offset;
+                }
+
+                offset += OutputMesh.vertices.Length;
+            }
+            OutputMesh.subMeshCount = triangles.Count;
+        }
+
+        public void Combine(bool updateDrawOrder = true)
+        {
+            if(updateDrawOrder) BuildDrawOrder();
+            
             CollectParts();
             
             List<Vector3> vertices = new();
@@ -83,12 +135,19 @@ namespace DragonBones
                 uvs.AddRange(meshPart.OutputMesh.uv);
             }
 
-            OutputMesh = UnityDBFactory.GetEmptyMesh();
+            if(OutputMesh == null)
+            {
+                OutputMesh = UnityDBFactory.GetEmptyMesh();
+            }
+            else
+            {
+                OutputMesh.Clear();
+            }
 
             OutputMesh.vertices = vertices.ToArray();
             OutputMesh.uv = uvs.ToArray();
 
-            OutputMesh.subMeshCount= triangles.Count;
+            OutputMesh.subMeshCount = triangles.Count;
 
             materials = new Material[parts.Count];
             for (var i = 0; i < triangles.Count; i++)
@@ -108,14 +167,15 @@ namespace DragonBones
 
         private void CollectParts()
         {
+            parts.Clear();
+            
             List<DBMeshBuffer> currentPart = new();
             Material currentMaterial = null;
 
-            for (int i = 0; i < meshes.Count; i++)
+            for (int i = 0; i < drawOrder.Length; i++)
             {
-                DBMeshBuffer meshBuffer = meshes[i];
+                DBMeshBuffer meshBuffer = drawOrder[i];
                 
-                if(meshBuffer == null) continue;
                 if (meshBuffer.Material == currentMaterial || currentMaterial == null)
                 {
                     currentPart.Add(meshBuffer);
@@ -123,10 +183,14 @@ namespace DragonBones
                 }
                 else
                 {
+                    parts.Last().To = i;//prev part ends here
+                    
                     parts.Add(new UnityArmatureMeshPart(Armature));
-                    parts.Last().Init(currentPart.ToArray(), currentMaterial);
+                    parts.Last().From = i;
+                    parts.Last().Init(currentPart.ToArray(), currentMaterial, this);
                     currentPart.Clear();
                     currentMaterial = meshBuffer.Material;
+                    
                     i--;
                 }
             }
@@ -134,7 +198,8 @@ namespace DragonBones
             if (currentPart.Count != 0)
             {
                 parts.Add(new UnityArmatureMeshPart(Armature));
-                parts.Last().Init(currentPart.ToArray(), currentMaterial);
+                parts.Last().Init(currentPart.ToArray(), currentMaterial, this);
+                parts.Last().To = drawOrder.Length;
                 currentPart.Clear();
             }
             
@@ -155,30 +220,45 @@ namespace DragonBones
             
             if (!meshesMap.ContainsKey(slotID)) return;
             
+            DBMeshBuffer buffer = meshesMap[slotID];
             UnityArmatureMeshPart part = GetPartWith(meshesMap[slotID]);
             
             if (change == ArmatureRegistry.RegistryChange.DrawOrder && part.IsSingle && parts.Count != 1)
             {
                 //recombine
                 Combine();
+                return;
+            }
+            
+            if(change == ArmatureRegistry.RegistryChange.DrawOrder)
+            {
+                int previousDrawOrder = buffer.DrawOrder;
+ 
+                BuildDrawOrder();
+                
+                if(buffer.DrawOrder >= part.From && buffer.DrawOrder < part.To)
+                {
+                    part.RebuildWithDifferentOrder();
+                }
+                else
+                {
+                    Combine(false);
+                }
             }
             else
             {
-                part.SendChange(change, meshesMap[slotID]);
-            }
-            
-            return;
-            switch (change)
-            {
-                case ArmatureRegistry.RegistryChange.Visibility:
-                    
-                    break;
-                case ArmatureRegistry.RegistryChange.Display:
-                    break;
-                case ArmatureRegistry.RegistryChange.DrawOrder:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(change), change, null);
+                if(change == ArmatureRegistry.RegistryChange.Display)
+                {
+                    DBLogger.LogMessage("RECOMADJKASJD");
+                    if (slot.IsDisplayingChildArmature() || slot.WasDisplayingChildArmature() || slot.WasInvisible())
+                    {
+                        DBLogger.LogMessage("RECOMBIUNE");
+                        Combine(false);
+                        return;
+                    }
+                }
+
+                part.SendChange(change, buffer);
             }
         }
 
@@ -198,6 +278,69 @@ namespace DragonBones
         public void Clear()
         {
             
+        }
+
+        private void BuildDrawOrder()
+        {
+            drawOrder = new DBMeshBuffer[meshes.Count];
+            int offset = 0;
+
+            Dictionary<ArmatureStructure, int> continueOn = new();
+            ArmatureStructure currentStructure = BelongsTo.Armature.Structure;
+
+            while (currentStructure != null)
+            {
+                bool switchToNextLoopTrigger = false;
+                int i = 0;
+                if (continueOn.ContainsKey(currentStructure))
+                    i = continueOn[currentStructure];
+                
+                for (; i < currentStructure.CurrentDrawOrder.Length; i++)
+                {
+                    Slot slot = currentStructure.CurrentDrawOrder[i];
+                    
+                    if (slot.IsDisplayingChildArmature())
+                    {
+                        continueOn[currentStructure] = i+1;
+                        currentStructure = currentStructure.GetChildArmature(slot.Display.V).Structure;
+                        
+                        switchToNextLoopTrigger = true;
+                        
+                        break;
+                    }
+                    
+                    if (meshesMap.TryGetValue(GetSlotID(slot), out DBMeshBuffer buffer))
+                    {
+                        AddToDrawOrder(buffer);
+                    }                       
+                }
+
+                if (switchToNextLoopTrigger)
+                {
+                    continue;
+                }
+
+                if (currentStructure.BelongsTo is ChildArmature childArmature)
+                {
+                    currentStructure = childArmature.Parent.ParentArmature.Structure;
+                }
+                else
+                {
+                    break;
+                }
+            }    
+
+            void AddToDrawOrder(DBMeshBuffer buffer)
+            {
+                drawOrder[offset] = buffer;
+                buffer.DrawOrder = offset;
+                offset++;
+            }
+        }
+
+        public DBMeshBuffer GetAtDrawOrder(int i)
+        {
+            return drawOrder[i];
         }
     }
 }

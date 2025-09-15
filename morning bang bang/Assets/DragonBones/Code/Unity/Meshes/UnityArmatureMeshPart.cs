@@ -5,6 +5,11 @@ namespace DragonBones
 {
     public sealed class UnityArmatureMeshPart : DBObject
     {
+        public bool IsDirty = false;
+        
+        public int From;
+        public int To;
+        
         private Armature BelongsTo;
         
         public Material Material { get; set; }
@@ -17,7 +22,8 @@ namespace DragonBones
 
         //actually used in combining and updating vertices. they are kept with draw order
         private CombineInstance[] combineInstances; //keep in mind that combine instance is a struct
-        private DBMeshBuffer[] currentDrawOrder;
+        private List<DBMeshBuffer> currentDrawOrder;
+        private UnityArmatureMeshRoot meshRoot;
 
         public UnityArmatureMeshPart(Armature belongsTo)
         {
@@ -26,32 +32,48 @@ namespace DragonBones
 
         public override void OnReleased() { }
 
-        public void Init(DBMeshBuffer[] buffers, Material material)
+        public void Init(DBMeshBuffer[] buffers, Material material, UnityArmatureMeshRoot meshRoot)
         {
             Material = material;
             this.buffers = new List<DBMeshBuffer>(buffers);
-            currentDrawOrder = buffers;
+            
+            currentDrawOrder = new List<DBMeshBuffer>(buffers);
+            currentDrawOrder.Capacity = this.buffers.Count;
+            
+            this.meshRoot = meshRoot;
         }
 
         public Mesh Build()
         {
-            OutputMesh = UnityDBFactory.GetEmptyMesh();
-            combineInstances = new CombineInstance[buffers.Count];
-            
-            for (int i = 0; i < buffers.Count; i++)
+            if (OutputMesh != null)
             {
-                CombineInstance combineInstance = new CombineInstance();
-                buffers[i].GenerateMesh();
-                combineInstance.mesh = buffers[i].GeneratedMesh;
-                //todo rewrite
-                combineInstance.transform = ((UnityArmatureRoot)BelongsTo.Root).transform.localToWorldMatrix * 
-                                            ((UnityArmatureRoot)BelongsTo.Root).transform.worldToLocalMatrix;
+                OutputMesh.Clear();
+            }
+            else
+            {
+                OutputMesh = UnityDBFactory.GetEmptyMesh();
+            }
+
+            combineInstances = new CombineInstance[currentDrawOrder.Count];               
+            
+            for (int i = 0; i < currentDrawOrder.Count; i++)
+            {
+                combinesStorage.TryAdd(currentDrawOrder[i], new CombineInstance());
+
+                CombineInstance combineInstance = combinesStorage[currentDrawOrder[i]];
                 
-                combinesStorage.Add(buffers[i], combineInstance);
-                combineInstances[i] = combinesStorage[buffers[i]];
+                currentDrawOrder[i].GenerateMesh();
+                
+                combineInstance.mesh = currentDrawOrder[i].GeneratedMesh;
+                combineInstance.transform = meshRoot.BelongsTo.transform.localToWorldMatrix * 
+                                            meshRoot.BelongsTo.transform.worldToLocalMatrix;
+                
+                combineInstances[i] = combineInstance;
             }
             
             OutputMesh.CombineMeshes(combineInstances);
+            OutputMesh.RecalculateBounds();
+            IsDirty = true;
             
             return OutputMesh;
         }
@@ -61,7 +83,7 @@ namespace DragonBones
             int offset = 0;
             Vector3[] vertexBuffer = OutputMesh.vertices;
 
-            foreach (DBMeshBuffer buffer in buffers)
+            foreach (DBMeshBuffer buffer in currentDrawOrder)
             {
                 for (var i = 0; i < buffer.vertexBuffer.Length; i++)
                 {
@@ -74,31 +96,28 @@ namespace DragonBones
             OutputMesh.vertices = vertexBuffer;
         }
 
-        public Mesh RebuildWithDifferentOrder(DBMeshBuffer[] newOrder)
+        public Mesh RebuildWithDifferentOrder()
         {
-            if (newOrder.Length != combineInstances.Length)
-            {
-                DBLogger.Warn("NEW SLOTS ORDER COUNT DOES NOT MATCH CURRENT SLOTS COUNT");
-                return OutputMesh;
-            }
-
             if (OutputMesh == null)
             {
                 DBLogger.Warn("REBUILD FAILED. NEED TO BUILD A MESH FIRST");
                 return null;
             }
 
-            currentDrawOrder = newOrder;
-            
-            for (int i = 0; i < newOrder.Length; i++)
+            int currentLocal = 0;
+            for (int currentGlobal = From; currentGlobal < To; currentGlobal++)
             {
-                DBMeshBuffer buffer = newOrder[i];
-
-                combineInstances[i] = new CombineInstance();
+                DBMeshBuffer buffer = meshRoot.GetAtDrawOrder(currentGlobal);
                 
-                combineInstances[i].mesh = buffer.GeneratedMesh;
-                combineInstances[i].transform = ((UnityArmatureRoot)BelongsTo.Root).transform.localToWorldMatrix * 
-                                            ((UnityArmatureRoot)BelongsTo.Root).transform.worldToLocalMatrix;
+                if(!buffer.AttachedTo.Visible.V)
+                {
+                    continue;
+                }
+
+                currentDrawOrder[currentLocal] = buffer;
+
+                combineInstances[currentLocal].mesh = buffer.GeneratedMesh;
+                currentLocal++;
             }
             
             OutputMesh.Clear();
@@ -113,12 +132,64 @@ namespace DragonBones
             switch (change)
             {
                 case ArmatureRegistry.RegistryChange.Visibility:
+                    UpdateVisibilities();
+                    Build();
                     break;
                 case ArmatureRegistry.RegistryChange.Display:
+                    Build();
                     break;
                 case ArmatureRegistry.RegistryChange.DrawOrder:
-                    RebuildWithDifferentOrder(currentDrawOrder);
+                    RebuildWithDifferentOrder();
                     break;
+            }
+        }
+
+        private void UpdateDrawOrder()
+        {
+            currentDrawOrder.Sort(CompareBuffers);
+
+            for (var i = 0; i < currentDrawOrder.Count; i++)
+            {
+                DBMeshBuffer buffer = currentDrawOrder[i];
+                combineInstances[i] = combinesStorage[buffer];
+            }
+        }
+
+        private static int CompareBuffers(DBMeshBuffer x, DBMeshBuffer y)
+        {
+            if (x.AttachedTo.DrawOrder.V < y.AttachedTo.DrawOrder.V)
+            {
+                return 1;
+            }
+
+            if (x.AttachedTo.DrawOrder.V > y.AttachedTo.DrawOrder.V)
+            {
+                return -1;
+            }
+
+            return 0;
+        }
+
+        private void UpdateVisibilities()
+        {
+            bool added = false;
+            
+            for (var i = 0; i < buffers.Count; i++)
+            {
+                if (!buffers[i].AttachedTo.Visible.V)
+                {
+                    currentDrawOrder.Remove(buffers[i]);
+                }
+                else if (!currentDrawOrder.Contains(buffers[i]))
+                {
+                    currentDrawOrder.Add(buffers[i]);
+                    added = true;
+                }
+            }
+
+            if (added)
+            {
+                currentDrawOrder.Sort(CompareBuffers);
             }
         }
     }

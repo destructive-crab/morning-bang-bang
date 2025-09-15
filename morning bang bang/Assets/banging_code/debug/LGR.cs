@@ -1,5 +1,6 @@
 using System.IO;
 using System.Runtime.CompilerServices;
+using DragonBones;
 using MothDIed;
 
 namespace banging_code.debug
@@ -77,6 +78,22 @@ namespace banging_code.debug
             message = Path.GetFileName(file) + $": {member}({line}): " + message;
 
             LGR.debugger.Console.InvokeCommand(true, command, message);
+        }
+
+        public static void PARRAY(object[] array,
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0)
+        {
+            string output = "[";
+            foreach (object o in array)
+            {
+                output += o.ToString() + "; ";
+            }
+
+            output += "]";
+            
+            PM(output, file, member, line);
         }
     }
 }

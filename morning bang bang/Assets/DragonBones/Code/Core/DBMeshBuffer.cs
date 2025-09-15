@@ -4,6 +4,9 @@ namespace DragonBones
 {
     public class DBMeshBuffer : DBObject
     {
+        public UnitySlot AttachedTo { get; private set; }
+        public int DrawOrder;
+        
         public int VertexCount => vertexBuffer.Length;
         public Mesh GeneratedMesh;
         
@@ -16,6 +19,8 @@ namespace DragonBones
 
         public Material Material;
 
+        public void Init(UnitySlot slot) => AttachedTo = slot;
+        
         public Mesh GenerateMesh()
         {
             if(GeneratedMesh == null)
@@ -33,15 +38,30 @@ namespace DragonBones
 
         public override void OnReleased()
         {
+            AttachedTo = null;
             vertexBuffer = null;
             uvBuffer = null;
             color32Buffer = null;
             triangleBuffer = null;
+            rawVertexBuffer = null;
+            Material = null;
             
             if(GeneratedMesh != null)
             {
                 GeneratedMesh.Clear();
             }
+        }
+
+        public void Clear()
+        {
+            vertexBuffer = null;
+            uvBuffer = null;
+            color32Buffer = null;
+            triangleBuffer = null;
+            rawVertexBuffer = null;
+            Material = null;
+            
+            GeneratedMesh?.Clear();
         }
     }
 }

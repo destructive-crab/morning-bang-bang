@@ -16,7 +16,7 @@ namespace DragonBones
 
         public void Set(TType newValue)
         {
-            if (newValue.Equals(V))
+            if ((V == null && newValue == null) || (V != null && V.Equals(newValue)))
             {
                 return;
             }
@@ -35,7 +35,7 @@ namespace DragonBones
 
         public bool Eq(object o)
         {
-            return V.Equals(o);
+            return o == (object)V;
         }
     }
 }

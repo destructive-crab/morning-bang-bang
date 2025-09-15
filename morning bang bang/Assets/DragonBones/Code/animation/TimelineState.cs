@@ -298,14 +298,14 @@ namespace DragonBones
         {
             if (playState >= 0)
             {
-                var count = _frameArray[_frameOffset + 1];
+                short count = _frameArray[_frameOffset + 1];
                 if (count > 0)
                 {
-                    //armature.Structure.SortZOrder(_frameArray, (int)_frameOffset + 2);
+                    _armature.Structure.SortDrawOrder(_frameArray, (int)_frameOffset + 2);
                 }
                 else
                 {
-                    //_armature.Structure.SortZOrder(null, 0);
+                    _armature.Structure.SortDrawOrder(null, 0);
                 }
             }
         }
@@ -616,8 +616,8 @@ namespace DragonBones
             {
                 int displayIndex = _timelineData != null ? _frameArray[_frameOffset + 1] : slot.SlotData.DefaultDisplayIndex;
                 
-                //TODO
-                //slot.Displays.SwapDisplaysByIndex(displayIndex);
+                DBLogger.LogMessage("TIMELINE");
+                slot.Display.Set(_armature.Structure.GetDisplayByIndex(slot, displayIndex));
             }
         }
     }
