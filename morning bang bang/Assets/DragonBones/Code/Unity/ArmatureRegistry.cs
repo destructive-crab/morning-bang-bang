@@ -16,8 +16,6 @@ namespace DragonBones
         private readonly List<ValueTuple<RegistryChange, string>> changesBuffer = new();
         private int bufferSize = 0;
             
-        private readonly Dictionary<string, DisplayType> states = new();
-            
         private readonly Dictionary<string, DisplayData> currentDisplays = new();
         private readonly Dictionary<string, bool> visibilities = new();
         private readonly Dictionary<string, int> drawOrder = new();
@@ -27,6 +25,13 @@ namespace DragonBones
             BelongsTo = belongsTo;
         }
 
+        public void Clear()
+        {
+            currentDisplays.Clear();
+            visibilities.Clear();
+            drawOrder.Clear();
+        }
+        
         public Tuple<ValueTuple<RegistryChange, string>[], int> PullChanges(string id)
         {
             UnitySlot unitySlot = BelongsTo.Armature.Structure.GetSlot(id) as UnitySlot;
@@ -83,10 +88,6 @@ namespace DragonBones
         private bool GetVisibility(string id) => visibilities[id];
         private int GetDrawOrder(string id) => drawOrder[id];
         private DisplayData GetSlotDisplay(string id) => currentDisplays[id];
-        
-        public void Clear()
-        {
-            
-        }
+
     }
 }

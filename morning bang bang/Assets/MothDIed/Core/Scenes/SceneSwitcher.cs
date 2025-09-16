@@ -121,5 +121,11 @@ namespace MothDIed
 
             return false;
         }
+
+        public void MoveFromPersistentScene(GameObject gameObject)
+        {
+            gameObject.transform.parent = null;
+            SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetActiveScene());
+        }
     }
 }

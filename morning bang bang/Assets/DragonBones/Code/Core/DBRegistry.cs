@@ -1,59 +1,105 @@
+using System;
 using System.Collections.Generic;
 
 namespace DragonBones
 {
     public sealed class DBRegistry
     {
-        public bool ActiveRegistryChanged { get; private set; } = false;
-        public bool RuntimeRegistryChanged { get; private set; } = false;
+        public enum RegistryChange
+        {
+            Added,
+            Removed
+        }
         
-        private void MarkActiveAsChanged() => ActiveRegistryChanged = true;
-        private void MarkRuntimeAsChanged() => RuntimeRegistryChanged = true;
-        public void MarkActiveAsUnchanged() => ActiveRegistryChanged = false;
-        public void MarkRuntimeAsUnchanged() => RuntimeRegistryChanged = false;
+        //buffer
+        private readonly List<Tuple<RegistryChange, Armature>> changes = new();
+        public bool IsBufferEmpty() => changes.Count == 0;
         
-        private readonly List<IEngineArmatureRoot> allRoots = new();
+        //active lists
         private readonly List<Armature> allArmatures = new();
         private readonly List<ChildArmature> allChildArmatures = new();
         
-        private readonly Dictionary<string, object> activeRegistry = new();
-        private readonly Dictionary<string, IEngineArmatureRoot> activeRoots = new(); //armature id to root
+        private readonly List<Armature> activeRegistry = new();
         
+        //consts
         private const string SEPARATOR = "_";
 
-        public void Register(Armature armature)
+        public void BufferToAddition(Armature armature)
         {
-            int hashCode = armature.GetHashCode();
-            string id = armature.Name + SEPARATOR + hashCode.ToString();
+            if(armature == null || armature.ArmatureData == null) return;
             
-            activeRegistry.Add(id, armature);
+            changes.Add(Tuple.Create(RegistryChange.Added, armature));
 
-            if (armature is ChildArmature ca)
-            {
-                allChildArmatures.Add(ca);
-            }
-            else
-            {
-                allArmatures.Add(armature);
-            }
-
-            ActiveRegistryChanged = true;
+            IsBufferEmpty();
         }
 
-        public void RegisterRoot(IEngineArmatureRoot root)
+        public void BufferToRemoval(Armature armature)
         {
-            allRoots.Add(root);
+            if (armature == null || armature.ArmatureData == null) return;
+            
+            if (armature is ChildArmature)
+            {
+                DBLogger.Warn("Cannot buffer child armature");
+                return;
+            }
+            
+            changes.Add(Tuple.Create(RegistryChange.Removed, armature));
+        }
+        
+        private void RemoveFromRegistry(Armature armature)
+        {
+            foreach (ChildArmature childArmature in armature.Structure.ChildArmatures)
+            {
+                allChildArmatures.Remove(childArmature);
+                activeRegistry.Remove(armature);
+                childArmature.Dispose();
+            }
+            
+            activeRegistry.Remove(armature);
+            allArmatures.Remove(armature);
+            
+            armature.Dispose();
         }
 
         public void CommitRuntimeChanges()
         {
-            ActiveRegistryChanged = true;
-            return;
+            foreach (Tuple<RegistryChange,Armature> change in changes)
+            {
+                switch (change.Item1)
+                {
+                    case RegistryChange.Added:
+                        activeRegistry.Add(change.Item2);
+                        
+                        if (change.Item2 is ChildArmature ca)
+                        {
+                            allChildArmatures.Add(ca);
+                        }
+                        else
+                        {
+                            allArmatures.Add(change.Item2);
+                        }
+                        break;
+                    case RegistryChange.Removed:
+                        RemoveFromRegistry(change.Item2);
+                        break;
+                }
+            }
+            
+            changes.Clear(); 
         }
 
         public Armature[] GetAllRootArmatures()
         {
             return allArmatures.ToArray();
+        }
+
+        public void ProcessChangedRoots(Action<RegistryChange, Armature> process)
+        {
+            foreach (Tuple<RegistryChange, Armature> change in changes)
+            {
+                if(change.Item2 is ChildArmature) continue;
+                process.Invoke(change.Item1, change.Item2);
+            }
         }
     }
 }

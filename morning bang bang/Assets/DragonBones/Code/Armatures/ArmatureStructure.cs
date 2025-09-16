@@ -24,13 +24,33 @@ namespace DragonBones
         public ChildArmature[] ChildArmatures;
         private readonly Dictionary<DisplayData, ChildArmature> ChildArmaturesMap = new();
 
-        public Armature BelongsTo;
+        public readonly Armature BelongsTo;
 
         public ArmatureStructure(Armature belongsTo)
         {
             BelongsTo = belongsTo;
         }
 
+        public void Clear()
+        {
+            bones.Clear();
+            slots.Clear();
+            constraints.Clear();
+            
+            boneToSlot.Clear();
+            displayData.Clear();
+            activeDisplays.Clear();
+            
+            ChildArmatures = null;
+            ChildArmaturesMap.Clear();
+
+            Bones = null;
+            Slots = null;
+            Constraints = null;
+            
+            CurrentDrawOrder = null;
+        }
+        
         public Bone GetBone(string name)
         {
             if (bones.TryGetValue(name, out Bone bone))

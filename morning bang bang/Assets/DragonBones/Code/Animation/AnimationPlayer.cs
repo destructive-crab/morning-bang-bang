@@ -67,6 +67,8 @@ namespace DragonBones
 
         internal void AdvanceTime(float passedTime)
         {
+            if (!Armature.Root.MeshRoot.IsCombined && Armature.Root.CombineMeshes) return;
+            
             if (passedTime < 0.0f)
             {
                 // Only animationState can reverse play.
@@ -432,6 +434,8 @@ namespace DragonBones
         /// <language>en_US</language>
         public AnimationState Play(string animationName = null, int playTimes = -1)
         {
+            if (!Armature.Root.MeshRoot.IsCombined && Armature.Root.CombineMeshes) return null;
+            
             _animationConfig.Clear();
             _animationConfig.resetToPose = true;
             _animationConfig.playTimes = playTimes;

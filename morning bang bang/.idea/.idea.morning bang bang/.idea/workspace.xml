@@ -6,24 +6,20 @@
   <component name="ChangeListManager">
     <list default="true" id="4849ab8a-b017-404e-910e-1744aa022006" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.morning bang bang/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Animation/AnimationPlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Animation/AnimationPlayer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Armature.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Armature.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ArmatureStructure.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ArmatureStructure.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Slot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/Slot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ChildArmature.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Armatures/ChildArmature.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBFactory.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBMeshBuffer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBMeshBuffer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/Dirty.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/Dirty.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBRegistry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Core/DBRegistry.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/ArmatureRegistry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/ArmatureRegistry.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/Meshes/UnityArmatureMeshPart.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/Meshes/UnityArmatureMeshPart.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/Meshes/UnityArmatureMeshRoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/Meshes/UnityArmatureMeshRoot.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityArmatureRoot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/Unity/UnityArmatureRoot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/animation/TimelineState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/animation/TimelineState.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Code/unity/UnitySlot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Code/unity/UnitySlot.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/DragonBones/Dev/DragonBonesArmatureStarter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/DragonBones/Dev/DragonBonesArmatureStarter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/animations/rat_gun_ske.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/animations/rat_gun_ske.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/animations/rat_gun_tex.json" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/animations/rat_gun_tex.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/animations/rat_gun_tex.png" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/animations/rat_gun_tex.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/banging_code/debug/LGR.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/banging_code/debug/LGR.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/content/rat/dragon_bones/rat_gun/rat_gun.dbproj" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/content/rat/dragon_bones/rat_gun/rat_gun.dbproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Core/Scenes/SceneSwitcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Core/Scenes/SceneSwitcher.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MothDIed/Optional/Pool/GameObjectPool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MothDIed/Optional/Pool/GameObjectPool.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" beforeDir="false" afterPath="$PROJECT_DIR$/UserSettings/Layouts/CurrentMaximizeLayout.dwlt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

@@ -616,7 +616,6 @@ namespace DragonBones
             {
                 int displayIndex = _timelineData != null ? _frameArray[_frameOffset + 1] : slot.SlotData.DefaultDisplayIndex;
                 
-                DBLogger.LogMessage("TIMELINE");
                 slot.Display.Set(_armature.Structure.GetDisplayByIndex(slot, displayIndex));
             }
         }

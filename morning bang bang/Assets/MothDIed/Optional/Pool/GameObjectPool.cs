@@ -85,9 +85,14 @@ namespace MothDIed.Pool
             Available.RemoveAt(0);
             CurrentlyInUse.Add(instance);
             instance.gameObject.SetActive(true);
+
+            if (PoolConfiguration.MoveFromPersistentOnPick)
+            {
+                Game.SceneSwitcher.MoveFromPersistentScene(instance.gameObject);
+            }
             
             if(instance is IPoolable poolable) poolable.OnPicked();
-
+            
             return instance;
         }
 
@@ -100,6 +105,11 @@ namespace MothDIed.Pool
             CurrentlyInUse.Remove(instance);
             Available.Add(instance);
             instance.gameObject.SetActive(false);
+
+            if (PoolConfiguration.Persistent && PoolConfiguration.MoveFromPersistentOnPick)
+            {
+                instance.gameObject.transform.parent = Root.transform;
+            }
             
             return true;
         }
@@ -227,7 +237,13 @@ namespace MothDIed.Pool
             /// <summary>
             /// - If true, pool will be moved to persistent scene
             /// </summary>
-            public bool Persistent; 
+            public bool Persistent;
+
+            /// <summary>
+            /// - If true, when you pick object from pool, it will be moved to current scene.
+            /// On Release it will be moved back on persistent scene
+            /// </summary>
+            public bool MoveFromPersistentOnPick = true;
 
             /// <summary>
             /// - Custom fabric can be used in pool. By default pool will use PoolFabric

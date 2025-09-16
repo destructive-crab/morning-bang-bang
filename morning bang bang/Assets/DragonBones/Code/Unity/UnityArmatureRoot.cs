@@ -25,6 +25,9 @@ namespace DragonBones
             Registry = new ArmatureRegistry(this);
         }
 
+        //maybe we should not clear all stuff, maybe we want to store armature somewhere
+        private void OnDestroy() => DBClear();
+        
         public void DBConnect(Armature armature)
         {
             Armature = armature;
@@ -32,9 +35,10 @@ namespace DragonBones
         
         public void DBClear()
         {
+            
             MeshRoot.Clear();
             Registry.Clear();
-            Armature?.Dispose();
+            Armature.Dispose();
             Armature = null;
             
             Color.Identity();
@@ -66,18 +70,9 @@ namespace DragonBones
             
             if (MeshRoot.IsCombined) MeshRoot.Update();
         }
-
-        private void BuildMeshes()
-        {
-
-        }
-
-        //maybe we should not clear all stuff, maybe we want to store armature somewhere
-        private void OnDestroy() => DBClear();
         
         public void SetColor(DBColor value)
         {
-            return;
             Color.CopyFrom(value);
         }
     }

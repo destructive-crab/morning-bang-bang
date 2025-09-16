@@ -104,7 +104,7 @@ namespace DragonBones
             
             armature.Structure.CompleteBuilding();
             
-            DB.Kernel.Registry.Register(armature);
+            DB.Kernel.Registry.BufferToAddition(armature);
 
             for (var index = 0; index < armature.Structure.Slots.Length; index++)
             {

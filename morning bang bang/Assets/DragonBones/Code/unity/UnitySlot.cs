@@ -83,7 +83,7 @@ namespace DragonBones
             }
             else
             {
-                MeshBuffer.Clear();
+                MeshBuffer.ClearBuffer();
             }
 
             if (IsDisplayingChildArmature())

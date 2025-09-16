@@ -39,20 +39,10 @@ namespace DragonBones
         public override void OnReleased()
         {
             AttachedTo = null;
-            vertexBuffer = null;
-            uvBuffer = null;
-            color32Buffer = null;
-            triangleBuffer = null;
-            rawVertexBuffer = null;
-            Material = null;
-            
-            if(GeneratedMesh != null)
-            {
-                GeneratedMesh.Clear();
-            }
+            ClearBuffer();
         }
 
-        public void Clear()
+        public void ClearBuffer()
         {
             vertexBuffer = null;
             uvBuffer = null;
@@ -60,8 +50,9 @@ namespace DragonBones
             triangleBuffer = null;
             rawVertexBuffer = null;
             Material = null;
+            DrawOrder = -1;
             
-            GeneratedMesh?.Clear();
+            if(GeneratedMesh != null) GeneratedMesh.Clear();
         }
     }
 }

@@ -169,38 +169,45 @@ namespace DragonBones
         {
             parts.Clear();
             
-            List<DBMeshBuffer> currentPart = new();
+            List<DBMeshBuffer> compatatibleBuffers = new();
             Material currentMaterial = null;
 
+            
+            parts.Add(new UnityArmatureMeshPart());
+            parts.Last().SetRange(0, -1);
+            
             for (int i = 0; i < drawOrder.Length; i++)
             {
                 DBMeshBuffer meshBuffer = drawOrder[i];
                 
                 if (meshBuffer.Material == currentMaterial || currentMaterial == null)
                 {
-                    currentPart.Add(meshBuffer);
+                    compatatibleBuffers.Add(meshBuffer);
                     currentMaterial = meshBuffer.Material;
                 }
                 else
                 {
-                    parts.Last().To = i;//prev part ends here
+                    UnityArmatureMeshPart endedPart = parts.Last();
                     
-                    parts.Add(new UnityArmatureMeshPart(Armature));
-                    parts.Last().From = i;
-                    parts.Last().Init(currentPart.ToArray(), currentMaterial, this);
-                    currentPart.Clear();
+                    endedPart.Init(compatatibleBuffers.ToArray(), currentMaterial, this);
+                    endedPart.SetRange(parts.Last().From, i);//prev part ends here
+                    
+                    parts.Add(new UnityArmatureMeshPart());
+                    parts.Last().SetRange(i, -1);
+                    
+                    compatatibleBuffers.Clear();
+                    
                     currentMaterial = meshBuffer.Material;
                     
                     i--;
                 }
             }
 
-            if (currentPart.Count != 0)
+            if (compatatibleBuffers.Count != 0)
             {
-                parts.Add(new UnityArmatureMeshPart(Armature));
-                parts.Last().Init(currentPart.ToArray(), currentMaterial, this);
-                parts.Last().To = drawOrder.Length;
-                currentPart.Clear();
+                parts.Last().Init(compatatibleBuffers.ToArray(), currentMaterial, this);
+                parts.Last().SetRange(parts.Last().From, drawOrder.Length);
+                compatatibleBuffers.Clear();
             }
             
             foreach (UnityArmatureMeshPart part in parts)
@@ -249,10 +256,8 @@ namespace DragonBones
             {
                 if(change == ArmatureRegistry.RegistryChange.Display)
                 {
-                    DBLogger.LogMessage("RECOMADJKASJD");
                     if (slot.IsDisplayingChildArmature() || slot.WasDisplayingChildArmature() || slot.WasInvisible())
                     {
-                        DBLogger.LogMessage("RECOMBIUNE");
                         Combine(false);
                         return;
                     }
@@ -267,17 +272,40 @@ namespace DragonBones
             return slot.Name + "_" + slot.GetHashCode();
         }
 
-        public void ReleaseMesh(UnitySlot unitySlot)
+        public void ReleaseMesh(Slot slot)
         {
-            string slotID = GetSlotID(unitySlot);
-            if(!meshesMap.ContainsKey(slotID))return;
-            meshes.Remove(meshesMap[slotID]);
-            meshesMap.Remove(slotID);
+            string slotID = GetSlotID(slot);
+
+            if (meshesMap.TryGetValue(slotID, out DBMeshBuffer buffer))
+            {
+                meshesMap.Remove(slotID);
+                meshes.Remove(buffer);
+                
+                buffer.ReleaseThis();
+            }
         }
 
         public void Clear()
         {
+            foreach (DBMeshBuffer mesh in meshes)
+            {
+                mesh.ReleaseThis();
+            }
             
+            meshesMap.Clear();
+            meshes.Clear();
+
+            foreach (UnityArmatureMeshPart part in parts)
+            {
+                part.ReleaseThis();
+            }
+
+            drawOrder = null;
+            materials = null;
+            
+            OutputMesh.Clear();
+            
+            filter.mesh.Clear();
         }
 
         private void BuildDrawOrder()
@@ -338,9 +366,14 @@ namespace DragonBones
             }
         }
 
-        public DBMeshBuffer GetAtDrawOrder(int i)
+        public DBMeshBuffer GetAtDrawOrder(int order)
         {
-            return drawOrder[i];
+            if (order < 0 || order >= drawOrder.Length)
+            {
+                DBLogger.Error(order + " index outside of draw order");
+                return null;
+            }
+            return drawOrder[order];
         }
     }
 }

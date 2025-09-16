@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DragonBones
@@ -6,7 +7,7 @@ namespace DragonBones
     public sealed class WorldClock
     {
         public float Time { get; private set; } = 0.0f; //in seconds
-        private IAnimatable[] animatables;
+        private readonly List<IAnimatable> rootArmatures = new();
 
         public float TimeScale
         {
@@ -38,31 +39,38 @@ namespace DragonBones
             passedTime = Mathf.Abs(passedTime);
             Time += passedTime;
             
-            if (DB.Registry.ActiveRegistryChanged)
-            {
-                DB.Registry.MarkActiveAsUnchanged();
-                Armature[] armatures = DB.Registry.GetAllRootArmatures();
-                
-                if(animatables == null || animatables.Length != armatures.Length)
-                {
-                    animatables = new IAnimatable[armatures.Length];
-                }
-
-                for (int i = 0; i < armatures.Length; i++)
-                {
-                    animatables[i] = armatures[i];
-                }
-            }
+            ProcessRegistry();
             
-            if(animatables != null && animatables.Length > 0)
+            if(rootArmatures != null && rootArmatures.Count > 0)
             {
-                foreach (IAnimatable animatable in animatables)
+                foreach (IAnimatable armature in rootArmatures)
                 {
-                    animatable.AdvanceTime(passedTime);
+                    armature.AdvanceTime(passedTime);
                 }
             }
             
             DB.Registry.CommitRuntimeChanges();
+        }
+
+        private void ProcessRegistry()
+        {
+            if (!DB.Registry.IsBufferEmpty())
+            {
+                DB.Registry.ProcessChangedRoots((change, armature) =>
+                {
+                    switch (change)
+                    {
+                        case DBRegistry.RegistryChange.Added:
+                            rootArmatures.Add(armature);
+                            break;
+                        case DBRegistry.RegistryChange.Removed:
+                            rootArmatures.Remove(armature);
+                            break;
+                    }
+                });
+                
+                DB.Registry.CommitRuntimeChanges();
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ namespace DragonBones
         public readonly ArmatureStructure Structure;
         
         public ArmatureData ArmatureData { get; set; }
-        public IEngineArmatureRoot Root { get; private set; } = null;
+        public UnityArmatureRoot Root { get; private set; } = null;
         public IEventDispatcher<EventObject> ArmatureEventDispatcher => Root;
         
         /// <summary>
@@ -125,7 +125,7 @@ namespace DragonBones
         internal virtual void Initialize(ArmatureData armatureData, IEngineArmatureRoot engineRoot)
         {
             ArmatureData = armatureData;
-            Root = engineRoot;
+            Root = engineRoot as UnityArmatureRoot;
 
             AnimationPlayer.Init(ArmatureData.animations);
         }
@@ -159,7 +159,18 @@ namespace DragonBones
 
         public override void OnReleased()
         {
-            Root?.DBClear();
+            if(Root != null)
+                Root.DBClear();
+            
+            ClearArmature();
+        }
+
+        protected void ClearArmature()
+        {
+            DB.Registry.BufferToRemoval(this);
+            
+            Structure.Clear();
+            
             _replaceTextureAtlasData?.ReleaseThis();
 
             inheritAnimation = true;
@@ -181,8 +192,9 @@ namespace DragonBones
         {
             //
             if (lockArmatureUpdate) return;
+            if (!Root.isActiveAndEnabled) return;
             //
-            
+
             //asserts
             if (ArmatureData == null)
             {

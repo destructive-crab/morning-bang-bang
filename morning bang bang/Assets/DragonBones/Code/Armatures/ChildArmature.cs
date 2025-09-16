@@ -15,7 +15,7 @@ namespace DragonBones
 
         public override void OnReleased()
         {
-            base.OnReleased();
+            ClearArmature();
 
             Parent = null;
             DisplayData = null;

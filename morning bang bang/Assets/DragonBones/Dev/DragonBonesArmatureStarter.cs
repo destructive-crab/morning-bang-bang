@@ -35,11 +35,6 @@ public class DragonBonesArmatureStarter : MonoBehaviour
 
     private IEnumerator Spawn()
     {
-        
-        var j = DB.Factory.UnityCreateArmature("rat_gun_down", "rat_gun");
-        armatures.Add(j);
-        yield break; 
-                
         for (int x = 0; x < 20; x++)
         {
             for (int y = 0; y < 5; y++)
