@@ -1,9 +1,7 @@
 using Cysharp.Threading.Tasks;
-using DragonBones;
 using MothDIed;
 using MothDIed.InputsHandling;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace banging_code.debug
 {
@@ -55,7 +53,7 @@ namespace banging_code.debug
             if (container == null)
             {
                 container = new GameObject("[DEBUG GAME OBJECT CONTAINER]").transform;
-                Game.SceneSwitcher.MoveToPersistentScene(container.gameObject);
+                Game.G<SceneSwitcher>().MoveToPersistentScene(container.gameObject);
             }
 
             return container;
@@ -87,7 +85,7 @@ namespace banging_code.debug
              await instantiateOperation;
              DebugUIRoot = instantiateOperation.Result[0];
              
-             Game.MakeGameObjectPersistent(DebugUIRoot.gameObject);           
+             Game.G<SceneSwitcher>().MoveToPersistentScene(DebugUIRoot.gameObject);           
         }
     }
 }

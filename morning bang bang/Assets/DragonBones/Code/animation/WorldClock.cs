@@ -52,6 +52,11 @@ namespace DragonBones
             DB.Registry.CommitRuntimeChanges();
         }
 
+        private void ForceToClear()
+        {
+            rootArmatures.Clear();
+        }
+        
         private void ProcessRegistry()
         {
             if (!DB.Registry.IsBufferEmpty())

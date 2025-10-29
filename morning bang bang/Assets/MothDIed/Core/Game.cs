@@ -1,128 +1,80 @@
-using System;
-using banging_code.debug;
-using banging_code.json;
 using Cysharp.Threading.Tasks;
-using MothDIed.DI;
+using MothDIed.Debug;
+using MothDIed.ServiceLocators;
 using UnityEngine;
-using banging_code.pause;
-using banging_code.runs_system;
-using banging_code.settings;
-using DragonBones;
-using MohDIed.Audio;
-using MothDIed.Audio;
-using MothDIed.InputsHandling;
 
 namespace MothDIed
 {
     public static class Game
     {
+        public static bool AllowDebug { get; private set; }
         //STATE
         public static bool Awake { get; private set; } = false;
         public static bool IsBootstrapping { get; private set; } = true;
+
+        private static readonly GMModulesStorage modulesStorage = new();
         
-        //SERVICES 
-        //core
-        public static readonly SceneSwitcher SceneSwitcher = new();
-        public static readonly DIKernel DIKernel = new();
-        public static readonly GameSettings Settings = new();
-        public static readonly AudioSystem AudioSystem = new();
-        
-        //debug
-        public static BangDebugger GetDebugger()
+        public static async UniTask StartGame(bool allowDebug, GameStartPoint point)
         {
-            if (debugger.Awake && AllowDebug)
+            AllowDebug = allowDebug;
+            
+            point.BuildModules(modulesStorage);
+
+            string debugMessage = "";
+            
+            foreach (IGMModuleBoot boot in modulesStorage.boots)
             {
-                return debugger;
+                await boot.Boot();
+                debugMessage += $"Module {boot.ToString()} booted" + boot.ToString() + "\n";
             }
 
-            return null;
-        }
-
-        public static bool TryGetDebugger(out BangDebugger debugger)
-        {
-            debugger = Game.debugger;
-            return debugger.Awake && AllowDebug;
-        }
-
-        public static bool AllowDebug { get; private set; }
-        private static BangDebugger debugger;
-        
-        //other
-        public static readonly RunSystem RunSystem = new();
-        public static readonly PauseSystem PauseSystem = new();
-
-        public static async UniTask StartGame(GameStartArgs args)
-        { 
-            await Settings.LoadFromFile();
-            
-            InputService.Setup();
-            
-            await SceneSwitcher.CreatePersistentScene();
-
-            AllowDebug = Settings.Data.EnableDebugFeatures;
-            
             if (AllowDebug)
             {
-                debugger = new BangDebugger(args.DebuggerConfig); 
-                await debugger.SetupDebugger();
-            }
+                string bootModulesLog = debugMessage;
+                debugMessage = $"Game started with from {point.GetType().ToString()}({point.name}). ";
+                debugMessage += $"With {modulesStorage.Count} modules, including: ";
 
-            try
-            {
-                await DB.InitializeDragonBones();
+                foreach (object module in modulesStorage.all)
+                {
+                    debugMessage += module.ToString() + "; ";
+                }
             }
-            catch (Exception dragonBonesException)
-            {
-                LGR.PERR(dragonBonesException.ToString());
-            }
-
-            AudioSystem.Setup(args.AudioSystemConfig);
+            
+            
+            LogHistory.PushAsMessage(debugMessage);
             
             IsBootstrapping = false;
             Awake = true;
+            
+            point.Complete();
             
             InnerLoop();
         }
 
         public static async void QuitGame()
         { 
-            await Settings.SaveSettings();
-            await SaveManager.StartWritingFilesFromQueue();
+            Awake = false;
+            
+            foreach (IGMModuleQuit quit in modulesStorage.quits)
+            {
+                await quit.Quit();
+            }
             
             Application.Quit();
-        }
-
-        public static bool LoadSaves()
-        {
-            return RunSystem.SaveRun();
-        }
-        
-        public static void MakeGameObjectPersistent(GameObject gameObject)
-        {
-            SceneSwitcher.MoveToPersistentScene(gameObject);
         }
         
         private static async void InnerLoop()
         {
             while (Awake)
             {
-                if (SceneSwitcher.CurrentScene != null && SceneSwitcher.IsSceneLoaded)
+                if (G<SceneSwitcher>().CurrentScene != null && G<SceneSwitcher>().IsSceneLoaded)
                 {
-                    SceneSwitcher.CurrentScene?.UpdateScene();
-
-                    InputService.Tick();
-                    EventManager.Tick();
-                    DB.Kernel.AdvanceTime(Time.deltaTime);
-
-                    if (RunSystem.IsInRun && RunSystem.Data.Level != null && SceneSwitcher.IsSceneLoaded)
+                    foreach (IGMModuleTick tick in modulesStorage.ticks)
                     {
-                        RunSystem.WhileOnLevel(RunSystem.Data.Level);
+                        tick.Tick();
                     }
-
-                    if (AllowDebug)
-                    {
-                        debugger.Tick();
-                    }
+                    
+                    G<SceneSwitcher>().CurrentScene?.UpdateScene();
                 }
 
                 await UniTask.Yield(PlayerLoopTiming.LastPostLateUpdate);
@@ -134,12 +86,37 @@ namespace MothDIed
             }
         }
 
+        public static TModule G<TModule>() 
+            where TModule : class
+        {
+            return modulesStorage.Get<TModule>();
+        }
+        
+        public static bool TG<TModule>(out TModule module)
+            where TModule : class
+        {
+            module = modulesStorage.Get<TModule>();
+            return module != null;
+        }
+
+        public static IServiceLocator GetModulesLocator()
+        {
+            return modulesStorage;
+        }
     }
 
-    [Serializable]
-    public class GameStartArgs
+    public interface IGMModuleBoot
     {
-        public DebuggerConfig DebuggerConfig;
-        public AudioSystemConfig AudioSystemConfig;
+        public UniTask Boot();
+    }
+
+    public interface IGMModuleTick
+    {
+        public void Tick();
+    }
+
+    public interface IGMModuleQuit
+    {
+        public UniTask Quit();
     }
 }

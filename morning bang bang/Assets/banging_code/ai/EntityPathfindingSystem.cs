@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using banging_code.ai.pathfinding;
 using banging_code.ai.systems;
+using banging_code.runs_system;
 using Cysharp.Threading.Tasks;
 using MothDIed;
 using MothDIed.Scenes;
@@ -31,7 +32,7 @@ namespace banging_code.ai
 
         private async void UpdatePath()
         {
-            while (Game.RunSystem.IsInRun)
+            while (Game.G<RunSystem>().IsInRun)
             {
                 while (monoEntities.Count == 0)
                 {

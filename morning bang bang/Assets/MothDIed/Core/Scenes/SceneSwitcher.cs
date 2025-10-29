@@ -1,5 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
+using MothDIed.DI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Scene = MothDIed.Scenes.Scene;
@@ -49,7 +50,7 @@ namespace MothDIed
             if (CurrentScene != null)
             {
                 CurrentScene.DisposeScene();
-                Game.DIKernel.ClearSceneDependenciesContainer();
+                Game.G<DIKernel>().ClearSceneDependenciesContainer();
 
                 await SceneManager.UnloadSceneAsync(CurrentScene.GetSceneName());
             }
@@ -76,7 +77,7 @@ namespace MothDIed
             scene.InitModules();
             scene.PrepareScene();
 
-            Game.DIKernel.RegisterSceneDependencies(scene);
+            Game.G<DIKernel>().RegisterSceneDependencies(scene);
             
             LoadScene(scene.GetSceneName(), Complete);
             

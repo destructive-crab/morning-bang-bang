@@ -48,6 +48,8 @@ namespace DragonBones
         
         private void RemoveFromRegistry(Armature armature)
         {
+            if (armature == null) return; 
+            
             foreach (ChildArmature childArmature in armature.Structure.ChildArmatures)
             {
                 allChildArmatures.Remove(childArmature);
@@ -100,6 +102,13 @@ namespace DragonBones
                 if(change.Item2 is ChildArmature) continue;
                 process.Invoke(change.Item1, change.Item2);
             }
+        }
+
+        public void ClearAllArmatures()
+        {
+            allArmatures.Clear();
+            allChildArmatures.Clear();
+            activeRegistry.Clear();
         }
     }
 }

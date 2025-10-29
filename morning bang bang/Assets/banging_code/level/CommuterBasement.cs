@@ -2,7 +2,6 @@ using banging_code.ai;
 using banging_code.ai.pathfinding;
 using banging_code.common;
 using banging_code.camera_logic;
-using banging_code.items;
 using banging_code.level.random_gen;
 using banging_code.common.rooms;
 using banging_code.level.entity_locating;

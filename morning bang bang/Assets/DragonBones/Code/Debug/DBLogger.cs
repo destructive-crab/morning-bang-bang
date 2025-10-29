@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using banging_code.debug;
 using DragonBones.Code.Debug;
 
 namespace DragonBones
@@ -12,6 +12,7 @@ namespace DragonBones
         private static List<ArmatureBuildLog> Logs = new();
 
         private const string PREFIX = "[DB] ";
+        private static List<string> Log;
         
         private const string CHILD_BUILD_LOG_MARK = "CHILD_BUILD_LOG_HERE:";
         public static ArmatureBuildLog StartNewArmatureBuildLog(string name)
@@ -63,15 +64,22 @@ namespace DragonBones
             [CallerMemberName] string member = "",
             [CallerLineNumber] int line = 0)
         {
-            LGR.PM(PREFIX + message, file, member, line);
+            AddToLog(PREFIX + message, file, member, line);
         }
-        
+
+        private static void AddToLog(string message, string file, string member, int line)
+        {
+            message = Path.GetFileName(file) + $": {member}({line}): " + message;
+            
+            Log.Add(message);
+        }
+
         internal static void Warn(object message,
             [CallerFilePath] string file = "",
             [CallerMemberName] string member = "",
             [CallerLineNumber] int line = 0)
         {
-            LGR.PW(PREFIX + message, file, member, line);
+            AddToLog(PREFIX + message, file, member, line);
         }
 
         internal static void Assert(bool condition, string message,
@@ -79,7 +87,10 @@ namespace DragonBones
             [CallerMemberName] string member = "",
             [CallerLineNumber] int line = 0)
         {
-            LGR.AM(condition, PREFIX + message, file, member, line);
+            if(condition)
+            {
+                AddToLog(PREFIX + message, file, member, line);
+            }
         }
 
         public static void Error(string error,
@@ -87,7 +98,7 @@ namespace DragonBones
             [CallerMemberName] string member = "",
             [CallerLineNumber] int line = 0)
         {
-            LGR.PERR(PREFIX + error, file, member, line);
+            AddToLog(PREFIX + error, file, member, line);
         }
     }
 }

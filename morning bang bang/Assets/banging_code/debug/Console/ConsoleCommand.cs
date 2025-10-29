@@ -96,7 +96,7 @@ namespace banging_code.debug.Console
                 }
             }
             
-            return Callback.Invoke(Game.GetDebugger().Console.Container, args) as string;
+            return Callback.Invoke(Game.G<BangDebugger>().Console.Container, args) as string;
         }
 
         public string GetCommandPattern()

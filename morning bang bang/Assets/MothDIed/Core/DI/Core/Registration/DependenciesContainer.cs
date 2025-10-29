@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using banging_code.debug;
+using MothDIed.Debug;
 using MothDIed.ServiceLocators;
-using UnityEngine;
 
 namespace MothDIed.DI
 {
@@ -51,7 +50,7 @@ namespace MothDIed.DI
         {
             if (!dependencies.TryAdd(dependencyType, dependency))
             {
-                LGR.PERR($"{dependencyType} DEPENDENCY ALREADY REGISTERED");
+                LogHistory.PushAsError($"{dependencyType} DEPENDENCY ALREADY REGISTERED");
             }
         }
 
@@ -67,7 +66,7 @@ namespace MothDIed.DI
             {
                 if (dependencyPair.Value.IsSingleton)
                 {
-                    Game.DIKernel.InjectWithBase(dependencyPair.Value.GetInstance());
+                    Game.G<DIKernel>().InjectWithBase(dependencyPair.Value.GetInstance());
                 }
             }
         }

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using banging_code.common;
 using banging_code.common.rooms;
-using Unity.VisualScripting;
 
 namespace banging_code.level.random_gen
 {
@@ -21,10 +21,19 @@ namespace banging_code.level.random_gen
         public override BasicRoomTypes GetNext(BasicRoomTypes[] map, int current, int size)
         {
             List<BasicRoomTypes> candidates = new();
-            candidates.AddRange(Enum.GetValues(typeof(BasicRoomTypes)));
-           
-            candidates.Remove(BasicRoomTypes.Start);
-            candidates.Remove(BasicRoomTypes.Final);
+
+            for (int i = 1; i < 100; i++)
+            {
+                if (Enum.IsDefined(typeof(BasicRoomTypes), i))
+                {
+                    candidates.Add((BasicRoomTypes)i);
+                }
+                else
+                {
+                    candidates.Remove(candidates.Last());
+                    break;
+                }
+            }
             
             if (current == size - 1)
             {

@@ -20,15 +20,15 @@ namespace banging_code.pause
                 pauseMenu = scene.Fabric.Instantiate(GetPauseMenuPrefab(), Vector3.zero);
             }
             
-            InputService.OnPauseButtonPressed += Game.PauseSystem.SwitchPause;
+            InputService.OnPauseButtonPressed += Game.G<PauseSystem>().SwitchPause;
             
-            Game.PauseSystem.OnPauseSwitched += SwitchPause;
+            Game.G<PauseSystem>().OnPauseSwitched += SwitchPause;
         }
 
         public override void StopModule(Scene scene)
         {
-            InputService.OnPauseButtonPressed -= Game.PauseSystem.SwitchPause;
-            Game.PauseSystem.OnPauseSwitched -= SwitchPause;
+            InputService.OnPauseButtonPressed -= Game.G<PauseSystem>().SwitchPause;
+            Game.G<PauseSystem>().OnPauseSwitched -= SwitchPause;
         }
 
         public void SwitchPause(bool isPaused)

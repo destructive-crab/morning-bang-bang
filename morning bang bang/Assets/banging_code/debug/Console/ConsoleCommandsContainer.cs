@@ -1,5 +1,4 @@
 using banging_code.camera_logic;
-using DragonBones;
 using MothDIed;
 using MothDIed.DI;
 using MothDIed.InputsHandling;
@@ -18,7 +17,7 @@ namespace banging_code.debug.Console
         {
             string output = "";
 
-            foreach (ConsoleCommand consoleCommand in Game.GetDebugger().Console.CommandList)
+            foreach (ConsoleCommand consoleCommand in Game.G<BangDebugger>().Console.CommandList)
             {
                 output += "\n";
                 output += consoleCommand.GetCommandPattern() + ". " + consoleCommand.Description;
@@ -67,7 +66,7 @@ namespace banging_code.debug.Console
         [ConsoleCommandDescription("Draws map cells indicators")]
         public string DrawMap()
         {
-            Game.GetDebugger().Map.DrawMap();
+            Game.G<BangDebugger>().Map.DrawMap();
             return "Map drawn";
         }
         
@@ -75,7 +74,7 @@ namespace banging_code.debug.Console
         [ConsoleCommandDescription("Draws map cells indicators")]
         public string HideMap()
         {
-            Game.GetDebugger().Map.HideMap();
+            Game.G<BangDebugger>().Map.HideMap();
             return "Map hidden";
         }
 
@@ -109,8 +108,8 @@ namespace banging_code.debug.Console
          [ConsoleCommandKey("recam")]
          public string CameraRecontrollerSwitch()
          {
-             Game.SceneSwitcher.CurrentScene.Modules.StartModule<CameraRecontroller>();
-             return $"Recontroller: {Game.SceneSwitcher.CurrentScene.Modules.Get<CameraRecontroller>().Active}";
+             Game.G<SceneSwitcher>().CurrentScene.Modules.StartModule<CameraRecontroller>();
+             return $"Recontroller: {Game.G<SceneSwitcher>().CurrentScene.Modules.Get<CameraRecontroller>().Active}";
          }
 
          [ConsoleCommandKey("show_inputs")]
@@ -131,14 +130,14 @@ namespace banging_code.debug.Console
         {
             base.StartModule(scene);
             
-            Game.SceneSwitcher.CurrentScene.Modules.StopModule<CCamera>();
+            Game.G<SceneSwitcher>().CurrentScene.Modules.StopModule<CCamera>();
         }
 
         public override void StopModule(Scene scene)
         {
             base.StopModule(scene);
             
-            Game.SceneSwitcher.CurrentScene.Modules.StartModule<CCamera>();
+            Game.G<SceneSwitcher>().CurrentScene.Modules.StartModule<CCamera>();
         }
 
         public override void UpdateModule(Scene scene)

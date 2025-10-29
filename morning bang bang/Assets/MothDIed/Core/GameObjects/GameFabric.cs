@@ -18,7 +18,7 @@ namespace MothDIed.Scenes
 
         public void RefreshModules()
         {
-            modules = Game.SceneSwitcher.CurrentScene.Modules.GetAllOfType<GameFabricSceneModule>();
+            modules = Game.G<SceneSwitcher>().CurrentScene.Modules.GetAllOfType<GameFabricSceneModule>();
         }
 
         public UniTask<TObject> InstantiateAsync<TObject>(TObject original, Action<TObject> callback = null)

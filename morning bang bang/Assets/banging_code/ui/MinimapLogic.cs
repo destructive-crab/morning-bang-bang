@@ -1,6 +1,7 @@
 using banging_code.common;
 using banging_code.level;
 using banging_code.level.structure;
+using banging_code.runs_system;
 using MohDIed.Tilemaps;
 using MothDIed;
 using UnityEngine;
@@ -19,7 +20,7 @@ public class MinimapLogic : MonoBehaviour
 
     private void CreateMinimapLevelCopy()
     {
-        var minimapGrid = GameObject.Instantiate(Game.RunSystem.Data.Level.Hierarchy.LevelGrid);
+        var minimapGrid = GameObject.Instantiate(Game.G<RunSystem>().Data.Level.Hierarchy.LevelGrid);
         minimapGrid.name = "MINIMAP_LEVEL_COPY";
 
         foreach (Transform gridChild in minimapGrid.transform)
@@ -43,10 +44,10 @@ public class MinimapLogic : MonoBehaviour
 
     private void Update()
     {
-        if (Game.RunSystem.IsInRun)
+        if (Game.G<RunSystem>().IsInRun)
         {
-            transform.position = new Vector3(Game.RunSystem.Data.Level.PlayerInstance.transform.position.x,
-                        Game.RunSystem.Data.Level.PlayerInstance.transform.position.y, -100);    
+            transform.position = new Vector3(Game.G<RunSystem>().Data.Level.PlayerInstance.transform.position.x,
+                        Game.G<RunSystem>().Data.Level.PlayerInstance.transform.position.y, -100);    
         }
     }
 }

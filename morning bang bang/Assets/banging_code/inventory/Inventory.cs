@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using banging_code.items;
 using banging_code.level;
 using banging_code.player_logic;
+using banging_code.runs_system;
 using MothDIed;
 
 namespace banging_code.inventory
 {
     public class Inventory
     {
-        private List<PassiveItem> passiveItems = new List<PassiveItem>();
+        private readonly List<PassiveItem> passiveItems = new List<PassiveItem>();
         private MainItem currentMainItem;
 
         public MainItem Main => currentMainItem;
@@ -26,7 +27,7 @@ namespace banging_code.inventory
         public void AddPassiveItem(PassiveItem item)
         {
             passiveItems.Add(item);
-            item.OnPickedUp(this, Game.RunSystem.Data.Level.PlayerInstance);
+            item.OnPickedUp(this, Game.G<RunSystem>().Data.Level.PlayerInstance);
         }
 
         public void AddPassiveItem(string name)
@@ -38,7 +39,7 @@ namespace banging_code.inventory
         {
             if (newItem == null)
             {
-                Game.RunSystem.Data.Level.PlayerInstance.Systems.Get<PlayerHands>().EnableItem<EmptyHands>();
+                Game.G<RunSystem>().Data.Level.PlayerInstance.Systems.Get<PlayerHands>().EnableItem<EmptyHands>();
                 currentMainItem = null;
                 
                 return;
@@ -51,9 +52,9 @@ namespace banging_code.inventory
                 currentMainItem.OnDropped(null);
             }
             
-            newItem.OnPickedUp(this, Game.RunSystem.Data.Level.PlayerInstance);
+            newItem.OnPickedUp(this, Game.G<RunSystem>().Data.Level.PlayerInstance);
             currentMainItem = newItem;
-            currentMainItem.PutOnPlayerInstance(Game.RunSystem.Data.Level.PlayerInstance);
+            currentMainItem.PutOnPlayerInstance(Game.G<RunSystem>().Data.Level.PlayerInstance);
         }
 
         public void WhileOnLevel(LevelScene scene)

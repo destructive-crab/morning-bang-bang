@@ -27,14 +27,14 @@ namespace DragonBones
             }
         }
 
-        public UnityArmatureRoot ArmatureRoot { get; private set; }
+        public UnityArmatureRoot UnityArmatureRoot { get; private set; }
 
 
         public override void OnReleased()
         {
             base.OnReleased();
 
-            ArmatureRoot = null;
+            UnityArmatureRoot = null;
             _skewed = false;
             BlendMode.Set(DragonBones.BlendMode.Normal);
         }
@@ -67,7 +67,7 @@ namespace DragonBones
 
         public void StartUnitySlotBuilding(UnityArmatureRoot unityArmatureRoot)
         {
-            ArmatureRoot = unityArmatureRoot;
+            UnityArmatureRoot = unityArmatureRoot;
         }
 
         public override void SlotReady()
@@ -79,7 +79,7 @@ namespace DragonBones
         {
             if (MeshBuffer == null)
             {
-                MeshBuffer = ArmatureRoot.MeshRoot.GetMeshFor(this);
+                MeshBuffer = UnityArmatureRoot.MeshRoot.GetMeshFor(this);
             }
             else
             {
@@ -254,7 +254,7 @@ namespace DragonBones
         {
             if(IsDisplayingChildArmature())
             {
-                ArmatureRoot.MeshRoot.ReleaseMesh(this);
+                UnityArmatureRoot.MeshRoot.ReleaseMesh(this);
                 return;
             }
 
@@ -356,7 +356,7 @@ namespace DragonBones
         {
             if (!IsDisplayingChildArmature())
             {
-                DBColor proxyTrans = ArmatureRoot.Color;
+                DBColor proxyTrans = UnityArmatureRoot.Color;
 
                 return;
                 for (int i = 0, l = MeshBuffer.vertexBuffer.Length; i < l; ++i)

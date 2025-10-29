@@ -6,6 +6,7 @@ using MothDIed;
 using MothDIed.Core.GameObjects;
 using MothDIed.Scenes.SceneModules;
 using UnityEngine;
+using LGR = banging_code.debug.LGR;
 
 namespace banging_code.level.entity_locating
 {

@@ -23,7 +23,7 @@ namespace banging_code.runs_system
         {
             if(Data == null) return;
             
-            Game.SceneSwitcher.SwitchTo(level);
+            Game.G<SceneSwitcher>().SwitchTo(level);
         }
 
         public bool SaveRun()
@@ -42,7 +42,7 @@ namespace banging_code.runs_system
         
         public void Die()
         {
-            Game.RunSystem.Data.Level.PlayerInstance.gameObject.SetActive(false);
+            Game.G<RunSystem>().Data.Level.PlayerInstance.gameObject.SetActive(false);
             //Spawn deadbody
             GameObject.FindObjectOfType<DeathMenu>(true).gameObject.SetActive(true);
         }

@@ -9,5 +9,10 @@ namespace MothDIed.Audio
     {
         public AudioContainerPreset GlobalPreset;
         public AudioMixer MasterMixer;
+
+        public int MasterVolume;
+        public int MusicVolume;
+        public int SoundsVolume;
+        public int UIVolume;
     }
 }

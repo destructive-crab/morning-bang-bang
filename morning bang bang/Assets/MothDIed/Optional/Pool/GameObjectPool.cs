@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using MothDIed.Debug;
 using MothDIed.Scenes;
 using UnityEngine;
 
@@ -48,7 +49,7 @@ namespace MothDIed.Pool
             
             if(PoolConfiguration.Persistent)
             {
-                Game.MakeGameObjectPersistent(Root.gameObject);
+                Game.G<SceneSwitcher>().MoveToPersistentScene(Root.gameObject);
             }
 
             TryPopulateUntilPoolWillBeFull();
@@ -68,7 +69,7 @@ namespace MothDIed.Pool
             
             if(PoolConfiguration.Persistent)
             {
-                Game.MakeGameObjectPersistent(Root.gameObject);
+                Game.G<SceneSwitcher>().MoveToPersistentScene(Root.gameObject);
             }
 
             await TryPopulateUntilPoolWillBeFullAsync();
@@ -88,7 +89,7 @@ namespace MothDIed.Pool
 
             if (PoolConfiguration.MoveFromPersistentOnPick)
             {
-                Game.SceneSwitcher.MoveFromPersistentScene(instance.gameObject);
+                Game.G<SceneSwitcher>().MoveFromPersistentScene(instance.gameObject);
             }
             
             if(instance is IPoolable poolable) poolable.OnPicked();
@@ -198,13 +199,13 @@ namespace MothDIed.Pool
 #if UNITY_EDITOR
             if (PoolConfiguration.Fabric == null)
             {
-                Debug.LogError($"[GAME OBJECT POOL] NULL FABRIC WAS FOUND IN {PoolConfiguration.Name}");
+                LogHistory.PushAsError($"[GAME OBJECT POOL] NULL FABRIC WAS FOUND IN {PoolConfiguration.Name}");
                 return false;
             }
 
             if (PoolConfiguration.Size == 0)
             {
-                Debug.LogError($"[GAME OBJECT POOL] POOL SIZE CANNOT BE 0; {PoolConfiguration.Name}");
+                LogHistory.PushAsError($"[GAME OBJECT POOL] POOL SIZE CANNOT BE 0; {PoolConfiguration.Name}");
                 return false;               
             }
 #endif

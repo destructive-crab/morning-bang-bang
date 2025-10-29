@@ -8,7 +8,7 @@ namespace banging_code.runs_system
 {
     public class RunData
     {
-        public LevelScene Level => Game.SceneSwitcher.CurrentScene as LevelScene;
+        public LevelScene Level => Game.G<SceneSwitcher>().CurrentScene as LevelScene;
         public ItemsPool ItemsPool { get; private set; } = new();
         public Inventory Inventory { get; private set; } = new();
         public PlayerHealth PlayerHealth { get; private set; } = new();

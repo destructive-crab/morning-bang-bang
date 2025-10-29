@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace DragonBones
@@ -87,6 +88,10 @@ namespace DragonBones
             displayData.Add(slot, data);
 
             ChildArmatures = childArmatures;
+            if (ChildArmatures == null)
+            {
+                ChildArmatures = Array.Empty<ChildArmature>();
+            }
             
             foreach (ChildArmature childArmature in childArmatures)
             {

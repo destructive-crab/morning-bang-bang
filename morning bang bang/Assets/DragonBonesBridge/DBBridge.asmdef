@@ -1,0 +1,18 @@
+{
+    "name": "DBBridge",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3b8e589ba4dd5f74490752e21e34ed27",
+        "GUID:09b4bb52da0a70f479c9667f60971a9a",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

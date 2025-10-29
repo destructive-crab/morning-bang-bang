@@ -1,0 +1,23 @@
+{
+    "name": "MorningThriller",
+    "rootNamespace": "",
+    "references": [
+        "GUID:09b4bb52da0a70f479c9667f60971a9a",
+        "GUID:953bb3a7acf4faa4da1d2e832383ba36",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9",
+        "GUID:613783dc1674e844b87788ea74ede0f6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -132,9 +132,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1720075628}
   - component: {fileID: 1720075629}
-  - component: {fileID: 1720075630}
-  - component: {fileID: 1720075631}
-  - component: {fileID: 1720075632}
   m_Layer: 0
   m_Name: Game Start Point
   m_TagString: Untagged
@@ -164,64 +161,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1720075627}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41d72fea92d646b3af5f9d9d7e766bee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Arguments:
-    DebuggerConfig: {fileID: 0}
-    AudioSystemConfig: {fileID: 0}
-  coinPrefab: {fileID: 2594510312404701097, guid: da7057de31c48b24f9349d164bdc47cc, type: 3}
-  Args:
-    DebuggerConfig: {fileID: 11400000, guid: 91c1c652ef9883d48815d3ae1e94c682, type: 2}
-    AudioSystemConfig: {fileID: 11400000, guid: 8c0dd64c0c1195846842dc736eee999f, type: 2}
---- !u!114 &1720075630
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1720075627}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fca98ed315b24bdc8066b3516372b4ad, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Arguments:
-    DebuggerConfig: {fileID: 0}
-    AudioSystemConfig: {fileID: 0}
-  coinPrefab: {fileID: 2594510312404701097, guid: da7057de31c48b24f9349d164bdc47cc, type: 3}
---- !u!114 &1720075631
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1720075627}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4898a3f8401d4ab59a75dd75cb56a0c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Arguments:
-    DebuggerConfig: {fileID: 0}
-    AudioSystemConfig: {fileID: 0}
---- !u!114 &1720075632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1720075627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27632c8b6b809ee4db4260ed6e6577c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Arguments:
-    DebuggerConfig: {fileID: 11400000, guid: 91c1c652ef9883d48815d3ae1e94c682, type: 2}
-    AudioSystemConfig: {fileID: 11400000, guid: 8c0dd64c0c1195846842dc736eee999f, type: 2}
+  Config: {fileID: 11400000, guid: 91c1c652ef9883d48815d3ae1e94c682, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

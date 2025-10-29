@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using banging_code.debug;
-using UnityEngine;
+using MothDIed.Debug;
 
 namespace MothDIed.ServiceLocators
 {
@@ -67,7 +66,7 @@ namespace MothDIed.ServiceLocators
         {
             if (services == null)
             {
-                LGR.PW($"[SERVICE LOCATOR : REGISTER] TRYING TO REGISTER SERVICE {typeof(TService)} BUT INSTANCE IS NULL");
+                LogHistory.PushAsError($"[SERVICE LOCATOR : REGISTER] TRYING TO REGISTER SERVICE {typeof(TService)} BUT INSTANCE IS NULL");
                 return this;
             }
 

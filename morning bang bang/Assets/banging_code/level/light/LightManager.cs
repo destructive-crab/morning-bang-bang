@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using banging_code.common;
 using banging_code.common.rooms;
+using banging_code.runs_system;
 using MothDIed;
 using MothDIed.Scenes;
 using MothDIed.Scenes.SceneModules;
@@ -29,7 +30,7 @@ namespace banging_code.level.light
 
         public void CollectAllLightsFromLevel()
         {
-            foreach (Room room in Game.RunSystem.Data.Level.Hierarchy.Rooms)
+            foreach (Room room in Game.G<RunSystem>().Data.Level.Hierarchy.Rooms)
             {
                 var lights = room.GetComponentsInChildren<IControllableLight>();
 

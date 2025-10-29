@@ -1,4 +1,5 @@
 using banging_code.interactions;
+using banging_code.runs_system;
 using MothDIed;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace banging_code.items
 
         public void FromNew(string itemID)
         {
-            item = Game.RunSystem.Data.ItemsPool.GetNew(itemID);
+            item = Game.G<RunSystem>().Data.ItemsPool.GetNew(itemID);
             Reload();
         }
 
@@ -35,7 +36,7 @@ namespace banging_code.items
 
         public void Interact()
         {
-            Game.RunSystem.Data.Inventory.Add(item);
+            Game.G<RunSystem>().Data.Inventory.Add(item);
             Destroy(gameObject);
         }
 

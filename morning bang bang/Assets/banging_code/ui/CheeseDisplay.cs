@@ -1,4 +1,5 @@
 using System;
+using banging_code.runs_system;
 using MothDIed;
 using TMPro;
 using UnityEngine;
@@ -15,6 +16,6 @@ public class CheeseDisplay : MonoBehaviour
 
     private void Update()
     {
-        text.text = Game.RunSystem.Data.Cheese + "$";
+        text.text = Game.G<RunSystem>().Data.Cheese + "$";
     }
 }

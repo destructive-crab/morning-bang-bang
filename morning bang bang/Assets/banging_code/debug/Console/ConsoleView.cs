@@ -37,7 +37,7 @@ namespace banging_code.debug.Console
         {
             if(objects[0] is not string) return;
             
-            if (Game.TryGetDebugger(out var debugger))
+            if (Game.TG<BangDebugger>(out var debugger))
             {
                 debugger.Console.InvokeCommand(true, objects[0] as string, objects.Skip(1).ToArray());
             }
@@ -68,7 +68,7 @@ namespace banging_code.debug.Console
         {
             uiRoot.gameObject.SetActive(true);
             input.Enable();
-            output.Refresh(Game.GetDebugger().Console.OutputHistory);
+            output.Refresh(Game.G<BangDebugger>().Console.OutputHistory);
 
             CurrentState = State.Focused;
         }

@@ -3,7 +3,6 @@ using banging_code.camera_logic;
 using banging_code.health;
 using MothDIed;
 using MothDIed.DI;
-using Unity.Mathematics;
 using UnityEngine;
 
 #pragma warning disable CS4014
@@ -29,8 +28,8 @@ namespace banging_code.bullets
                 hitsHandler.Hit(GetHitData(), hitableBody);
             }
 
-            GameObject.Instantiate(hitEffect, transform.position, quaternion.identity);
-            Game.SceneSwitcher.CurrentScene.Fabric.Destroy(gameObject);
+            GameObject.Instantiate(hitEffect, transform.position, Quaternion.identity);
+            Game.G<SceneSwitcher>().CurrentScene.Fabric.Destroy(gameObject);
         }
 
         public void AddForce(Vector2 direction, int multiplier)

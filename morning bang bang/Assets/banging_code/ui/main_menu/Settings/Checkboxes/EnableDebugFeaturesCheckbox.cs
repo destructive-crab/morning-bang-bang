@@ -1,3 +1,4 @@
+using banging_code.settings;
 using MothDIed;
 using MothDIed.Audio;
 using UnityEngine;
@@ -43,7 +44,7 @@ namespace banging_code.ui.main_menu
 
         public void ResetToSettings()
         {
-            IsChecked = Game.Settings.Data.EnableDebugFeatures;
+            IsChecked = Game.G<GameSettings>().Data.EnableDebugFeatures;
             UpdateImage();
         }
     }

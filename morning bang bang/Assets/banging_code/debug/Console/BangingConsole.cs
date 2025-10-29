@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using banging_code.debug.Console;
-using Cysharp.Threading.Tasks;
-using MothDIed;
-using Unity.VisualScripting;
-using UnityEngine;
 
 public class BangingConsole 
 {
@@ -30,11 +26,11 @@ public class BangingConsole
     
     private void CollectCommandFromContainer()
     {
-        var allCommands = typeof(ConsoleCommandsContainer).GetMethods(BindingFlags.Public | BindingFlags.Instance);
+        MethodInfo[] allCommands = typeof(ConsoleCommandsContainer).GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
         foreach (MethodInfo commandBase in allCommands)
         {
-            if(!commandBase.HasAttribute(typeof(ConsoleCommandKeyAttribute))) return;
+            if(!commandBase.GetCustomAttributes(typeof(ConsoleCommandKeyAttribute), false).Any()) return;
             
             ConsoleCommand command = new ConsoleCommand(commandBase);
             commands.Add(command.Key, command);

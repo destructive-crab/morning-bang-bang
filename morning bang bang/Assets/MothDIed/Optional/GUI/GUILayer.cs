@@ -1,4 +1,5 @@
-using banging_code.debug;
+
+using MothDIed.Debug;
 
 namespace MothDIed.GUI
 {
@@ -6,7 +7,7 @@ namespace MothDIed.GUI
     {
         public override void MoveUnder(GUIElement guiElement)
         {
-            LGR.PW($"You tried to set parent to GUILayer. Parent -> {guiElement.name}; Layer -> {this.name}");
+            LogHistory.PushAsError($"You tried to set parent to GUILayer. Parent -> {guiElement.name}; Layer -> {this.name}");
         }
     }
 }

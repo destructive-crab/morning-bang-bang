@@ -50,7 +50,7 @@ namespace banging_code.ai
 
         protected void Die(Enemy enemy)
         {
-            Game.SceneSwitcher.CurrentScene.Fabric.Instantiate(deadBody, transform.position);
+            Game.G<SceneSwitcher>().CurrentScene.Fabric.Instantiate(deadBody, transform.position);
             Destroy(gameObject);
         }
 

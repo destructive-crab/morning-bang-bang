@@ -13,7 +13,7 @@ namespace MothDIed.GUI
         {
             GetComponent<Button>().onClick.AddListener(ReturnToPrevious);
 
-            if (Game.SceneSwitcher.CurrentScene.Modules.TryGetModule(out SceneGUIModule sceneGUI))
+            if (Game.G<SceneSwitcher>().CurrentScene.Modules.TryGetModule(out SceneGUIModule sceneGUI))
             {
                 this.sceneGUIModule = sceneGUI;
             }

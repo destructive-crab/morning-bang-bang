@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using banging_code.common;
 using banging_code.debug;
+using banging_code.runs_system;
 using MothDIed;
 using UnityEngine;
+using LGR = banging_code.debug.LGR;
 
 namespace banging_code.ai.pathfinding
 {
@@ -17,27 +19,27 @@ namespace banging_code.ai.pathfinding
             this.obstacleIDsToIgnore = obstacleIDsToIgnore;
         }
 
-        private static LevelMap LevelMap => Game.RunSystem.Data.Level.Map;
+        private static LevelMap LevelMap => Game.G<RunSystem>().Data.Level.Map;
 
-        private float DefineGCost(PathNode startPathNode, PathNode endPathNode) 
+        private float DefineGCost(PathNode startPathNode, PathNode endPathNode)
             => Vector2.Distance(new Vector2(startPathNode.X, startPathNode.Y), new Vector2(endPathNode.X, endPathNode.Y));
 
-        private int Heuristic(PathNode first, PathNode second) 
+        private int Heuristic(PathNode first, PathNode second)
             => Mathf.Abs(first.X - second.X) + Mathf.Abs(first.Y - second.Y);
 
         private bool CheckPointCollider(Vector2Int position)
         {
             var tile = LevelMap.Get(position.x, position.y);
-            
+
             return tile.IsWalkableExcludeDynamicObstacle && (tile.Other == null || tile.Other.ID == obstacleIDsToIgnore);
         }
 
         private List<PathNode> GetNeighbourPoints(PathNode pathNode, List<PathNode> ignoredPoints)
         {
             List<PathNode> neighbourPoints = new List<PathNode>();
-            
+
             LevelMap.CellData[] pointsToCheck;
-            
+
             if (LevelMap.HasAnyAround(pathNode.Cell.Position, (cell) => !cell.IsWalkableExcludeDynamicObstacle))
             {
                 pointsToCheck = LevelMap.GetConnections(pathNode.X, pathNode.Y);
@@ -46,17 +48,17 @@ namespace banging_code.ai.pathfinding
             {
                 pointsToCheck = LevelMap.GetConnectionsWithCorners(pathNode.X, pathNode.Y);
             }
-            
+
             foreach (LevelMap.CellData nextPoint in pointsToCheck)
             {
                 var node = new PathNode(nextPoint.Position.x, nextPoint.Position.y, nextPoint);
-                
+
                 if (CheckPointCollider(nextPoint.Position) && !ignoredPoints.Contains(node))
                 {
                     neighbourPoints.Add(node);
                 }
             }
-            
+
             return neighbourPoints;
         }
 
@@ -72,13 +74,13 @@ namespace banging_code.ai.pathfinding
             PathNode endPathNode = new PathNode(endCell.Position.x, endCell.Position.y, endCell);
 
             PathNode currentPathNode = startPathNode;
-            
+
             do
             {
                 if (currentPathNode.X == endPathNode.X && currentPathNode.Y == endPathNode.Y)
                 {
                     var resPath = RestorePath(currentPathNode, end);
-                    
+
                     return resPath;
                 }
 
@@ -113,7 +115,7 @@ namespace banging_code.ai.pathfinding
             List<Vector3> path = new List<Vector3>();
 
             if (endPathNode.PreviousPathNode == null) return null;
-            
+
             do
             {
                 path.Add(new Vector3(current.Cell.Center.x, current.Cell.Center.y, 0));
@@ -122,10 +124,10 @@ namespace banging_code.ai.pathfinding
 
             path.Reverse();
             path.Add(endPosition);
-            
+
             return new Path(path.ToArray());
-        } 
-        
+        }
+
         private class PathNode : IEquatable<PathNode>
         {
             public PathNode(int x, int y, LevelMap.CellData cell)
@@ -134,12 +136,12 @@ namespace banging_code.ai.pathfinding
                 this.Y = y;
                 Cell = cell;
             }
-            
+
             public PathNode PreviousPathNode { get; private set; }
             public LevelMap.CellData Cell;
 
             public float F => G + H;
-            
+
             public float G { get; private set; } = 0;
             public float H { get; private set; } = 0;
             public int X { get; private set; }
@@ -147,12 +149,12 @@ namespace banging_code.ai.pathfinding
 
             public void SetCosts(float g, float h)
             {
-                G = g; 
+                G = g;
                 H = h;
             }
-            
+
             public void SetPreviousPoint(PathNode startingPathNode) => PreviousPathNode = startingPathNode;
-            
+
             public void SetXY(Vector2Int point)
             {
                 X = point.x;
@@ -163,7 +165,7 @@ namespace banging_code.ai.pathfinding
             {
                 if (node == null)
                     return false;
-                
+
                 return node.X == this.X && node.Y == this.Y;
             }
         }
@@ -176,13 +178,13 @@ namespace banging_code.ai.pathfinding
                 return 0;
             }
         }
-        
+
         public struct PathfinderArgs
         {
-            
+
         }
 
-        public class Path 
+        public class Path
         {
             public readonly Vector3[] Points;
 
@@ -206,7 +208,7 @@ namespace banging_code.ai.pathfinding
                     Completed = true;
                     return Points.Last();
                 }
-                
+
                 return Points[CurrentIndex];
             }
         }

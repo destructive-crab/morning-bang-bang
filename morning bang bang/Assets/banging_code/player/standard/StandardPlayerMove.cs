@@ -1,6 +1,7 @@
 using System;
 using banging_code.common;
 using banging_code.player_logic.states;
+using banging_code.runs_system;
 using MothDIed;
 using MothDIed.DI;
 using MothDIed.InputsHandling;
@@ -20,7 +21,7 @@ namespace banging_code.player_logic.standard
         public override void FixedUpdate(PlayerRoot playerRoot)
         {
             animator.PlayRun(1);
-            rigidbody2D.velocity = InputService.Movement * Game.RunSystem.Data.Speed;
+            rigidbody2D.velocity = InputService.Movement * Game.G<RunSystem>().Data.Speed;
             Movement = InputService.Movement;
 
             if (Movement.x > 0) playerRoot.SetDirection(GameDirection.Right);

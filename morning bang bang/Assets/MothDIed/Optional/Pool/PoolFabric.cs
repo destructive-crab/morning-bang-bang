@@ -1,6 +1,7 @@
 using System;
-using banging_code;
 using Cysharp.Threading.Tasks;
+using MothDIed.Debug;
+using MothDIed.DI;
 using MothDIed.Scenes;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -51,26 +52,26 @@ namespace MothDIed.Pool
 
                 if (AutoInject)
                 {
-                    Game.DIKernel.InjectWithBase(instance);
+                    Game.G<DIKernel>().InjectWithBase(instance);
                 }
             }
             else
             {
-                if (Game.SceneSwitcher.IsSceneLoaded)
+                if (Game.G<SceneSwitcher>().IsSceneLoaded)
                 {
-                    UniTask<TObject> instantiateTask = Game.SceneSwitcher.CurrentScene.Fabric.InstantiateAsync(original, position, rotation, parent);
+                    UniTask<TObject> instantiateTask = Game.G<SceneSwitcher>().CurrentScene.Fabric.InstantiateAsync(original, position, rotation, parent);
                     await instantiateTask;
                     instance = await instantiateTask;
                     
-                    if (AutoInject && !Game.SceneSwitcher.CurrentScene.Modules.Contains<FabricAutoInjectModule>())
+                    if (AutoInject && !Game.G<SceneSwitcher>().CurrentScene.Modules.Contains<FabricAutoInjectModule>())
                     {
-                        Game.DIKernel.InjectWithBase(instance);
+                        Game.G<DIKernel>().InjectWithBase(instance);
                     }
                 }
                 else
                 {
 #if UNITY_EDITOR
-                    Debug.LogError("[POOL FABRIC : INSTANTIATE] TRYING TO USE POOL FABRIC WHEN SCENE IS NOT LOADED");
+                    LogHistory.PushAsError("[POOL FABRIC : INSTANTIATE] TRYING TO USE POOL FABRIC WHEN SCENE IS NOT LOADED");
 #endif
                     return null;
                 }
@@ -96,24 +97,24 @@ namespace MothDIed.Pool
 
                 if (AutoInject)
                 {
-                    Game.DIKernel.InjectWithBase(instance);
+                    Game.G<DIKernel>().InjectWithBase(instance);
                 }
             }
             else
             {
-                if (Game.SceneSwitcher.IsSceneLoaded)
+                if (Game.G<SceneSwitcher>().IsSceneLoaded)
                 {
-                    instance = Game.SceneSwitcher.CurrentScene.Fabric.Instantiate(original, position, rotation, parent);
+                    instance = Game.G<SceneSwitcher>().CurrentScene.Fabric.Instantiate(original, position, rotation, parent);
                     
-                    if (AutoInject && !Game.SceneSwitcher.CurrentScene.Modules.Contains<FabricAutoInjectModule>())
+                    if (AutoInject && !Game.G<SceneSwitcher>().CurrentScene.Modules.Contains<FabricAutoInjectModule>())
                     {
-                        Game.DIKernel.InjectWithBase(instance);
+                        Game.G<DIKernel>().InjectWithBase(instance);
                     }
                 }
                 else
                 {
 #if UNITY_EDITOR
-                    Debug.LogError("[POOL FABRIC : INSTANTIATE] TRYING TO USE POOL FABRIC WHEN SCENE IS NOT LOADED");
+                    LogHistory.PushAsError("[POOL FABRIC : INSTANTIATE] TRYING TO USE POOL FABRIC WHEN SCENE IS NOT LOADED");
 #endif
                     return null;
                 }
@@ -128,14 +129,14 @@ namespace MothDIed.Pool
             {
                 GameObject.Destroy(toDestroy);
             }
-            else if (Game.SceneSwitcher.IsSceneLoaded)
+            else if (Game.G<SceneSwitcher>().IsSceneLoaded)
             {
-                Game.SceneSwitcher.CurrentScene.Fabric.Destroy(toDestroy);
+                Game.G<SceneSwitcher>().CurrentScene.Fabric.Destroy(toDestroy);
             }
             else
             {
 #if UNITY_EDITOR
-                Debug.LogError("[POOL FABRIC : DESTROY] TRYING TO USE POOL FABRIC WHEN SCENE IS NOT LOADED");
+                LogHistory.PushAsError("[POOL FABRIC : DESTROY] TRYING TO USE POOL FABRIC WHEN SCENE IS NOT LOADED");
 #endif
             }
         }

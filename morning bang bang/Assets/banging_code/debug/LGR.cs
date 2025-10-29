@@ -1,13 +1,12 @@
 using System.IO;
 using System.Runtime.CompilerServices;
-using DragonBones;
 using MothDIed;
 
 namespace banging_code.debug
 {
     public static class LGR
     {
-        private static BangDebugger debugger;
+        private static BangDebugger bangDebugger;
 
         private const string ECHO = "echo";
         private const string ECHO_ERROR = "echo_error";
@@ -66,18 +65,18 @@ namespace banging_code.debug
 
         private static void TryPrintInConsole(string message, string command, string file = "", string member = "", int line = 0)
         {
-            if (LGR.debugger == null && Game.TryGetDebugger(out BangDebugger debugger))
+            if (LGR.bangDebugger == null && Game.TG(out BangDebugger debugger))
             {
-                LGR.debugger = debugger;
+                LGR.bangDebugger = debugger;
             }
-            else if(LGR.debugger == null)
+            else if(LGR.bangDebugger == null)
             {
                 return;
             }
 
             message = Path.GetFileName(file) + $": {member}({line}): " + message;
 
-            LGR.debugger.Console.InvokeCommand(true, command, message);
+            LGR.bangDebugger.Console.InvokeCommand(true, command, message);
         }
 
         public static void PARRAY(object[] array,

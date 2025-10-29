@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System;
 using banging_code.common;
 using banging_code.player_logic.states;
+using banging_code.runs_system;
 using MothDIed;
+using MothDIed.DI;
 using UnityEngine;
 
 namespace banging_code.player_logic
@@ -123,7 +125,7 @@ namespace banging_code.player_logic
                 CurrentState?.Exit(this);
                 CurrentState = state;
                 
-                Game.DIKernel.InjectWithBaseAnd(state, CachedComponents, Systems);
+                Game.G<DIKernel>().InjectWithBaseAnd(state, CachedComponents, Systems);
                 
                 CurrentState.Enter(this);
             }
@@ -134,13 +136,13 @@ namespace banging_code.player_logic
 
         public void Activate()
         {
-            for (var i = 0; i < Game.RunSystem.Data.Inventory.PassiveItems.Length; i++)
+            for (var i = 0; i < Game.G<RunSystem>().Data.Inventory.PassiveItems.Length; i++)
             {
-                var item = Game.RunSystem.Data.Inventory.PassiveItems[i];
+                var item = Game.G<RunSystem>().Data.Inventory.PassiveItems[i];
                 item.ApplyToPlayerInstance(this);
             }
 
-            var mainItem = Game.RunSystem.Data.Inventory.Main;
+            var mainItem = Game.G<RunSystem>().Data.Inventory.Main;
             
             if(mainItem != null)
             {

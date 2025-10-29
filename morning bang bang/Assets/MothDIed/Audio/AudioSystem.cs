@@ -1,8 +1,7 @@
-using System.Collections.Generic;
 using banging_code.common;
-using banging_code.debug;
 using MothDIed;
 using MothDIed.Audio;
+using MothDIed.Debug;
 using UnityEngine;
 
 namespace MohDIed.Audio
@@ -27,7 +26,7 @@ namespace MohDIed.Audio
            if (instance != null)
            {
 #if UNITY_EDITOR
-               Debug.LogError("MULTIPLE INSTANCES OF AUDIO SYSTEM DETECTED");
+               LogHistory.PushAsError("MULTIPLE INSTANCES OF AUDIO SYSTEM DETECTED");
 #endif
                return;
            }
@@ -39,10 +38,10 @@ namespace MohDIed.Audio
             AudioMixerHandler = new AudioMixerHandler(config.MasterMixer);
             GlobalContainer = CreateGlobalFromPreset(config.GlobalPreset);
             
-            AudioMixerHandler.SetVolumeForMaster(Game.Settings.Data.MasterVolume);
-            AudioMixerHandler.SetVolumeForMusic(Game.Settings.Data.MusicVolume);
-            AudioMixerHandler.SetVolumeForSounds(Game.Settings.Data.SoundsVolume);
-            AudioMixerHandler.SetVolumeForUI(Game.Settings.Data.UIVolume);
+            AudioMixerHandler.SetVolumeForMaster(config.MasterVolume);
+            AudioMixerHandler.SetVolumeForMusic(config.MusicVolume);
+            AudioMixerHandler.SetVolumeForSounds(config.SoundsVolume);
+            AudioMixerHandler.SetVolumeForUI(config.UIVolume);
         }
 
         private AudioContainer CreateGlobalFromPreset(AudioContainerPreset preset)
@@ -56,7 +55,7 @@ namespace MohDIed.Audio
             }
 
             var globalContainer = new GameObject($"[GLOBAL AUDIO CONTAINER - {preset.PresetName}]").AddComponent<AudioContainer>();
-            Game.SceneSwitcher.MoveToPersistentScene(globalContainer.gameObject);
+            Game.G<SceneSwitcher>().MoveToPersistentScene(globalContainer.gameObject);
             
             foreach (var audioData in preset.Audios)
             {

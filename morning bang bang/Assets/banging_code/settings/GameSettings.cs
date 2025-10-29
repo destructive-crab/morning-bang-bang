@@ -2,10 +2,11 @@ using System;
 using System.IO;
 using banging_code.json;
 using Cysharp.Threading.Tasks;
+using MothDIed;
 
 namespace banging_code.settings
 {
-    public sealed class GameSettings
+    public sealed class GameSettings : IGMModuleBoot
     {
         public GeneralSettingsData Data;
 
@@ -75,6 +76,11 @@ namespace banging_code.settings
 
             public override string GetSaveName() => SaveName;
             public override string GetDirectory() => "";
+        }
+
+        public async UniTask Boot()
+        {
+            if(Data == null) await LoadFromFile();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using banging_code.runs_system;
 using MohDIed.Tilemaps;
 using MothDIed;
 using UnityEngine;
@@ -23,17 +24,17 @@ namespace banging_code.debug
             debugGrid = new GameObject("[DEBUG GRID]").AddComponent<Grid>();
             mapTilemap = new GameObject("[DEBUG MAP TILEMAP]", typeof(TilemapRenderer)).GetComponent<Tilemap>();
             mapTilemap.transform.parent = debugGrid.transform;
-            Game.MakeGameObjectPersistent(debugGrid.gameObject);
+            Game.G<SceneSwitcher>().MoveToPersistentScene(debugGrid.gameObject);
             mapTilemap.GetComponent<TilemapRenderer>().sortingOrder = 10;
             mapTilemap.gameObject.SetActive(false);
         }
 
         public void DrawMap()
         {
-            if (!Game.RunSystem.IsInRun || Game.RunSystem.Data.Level == null) return;
+            if (!Game.G<RunSystem>().IsInRun || Game.G<RunSystem>().Data.Level == null) return;
             
             mapTilemap.gameObject.SetActive(true);
-            var allCells = Game.RunSystem.Data.Level.Map.All();
+            var allCells = Game.G<RunSystem>().Data.Level.Map.All();
             
             foreach (var cellData in allCells)
             {

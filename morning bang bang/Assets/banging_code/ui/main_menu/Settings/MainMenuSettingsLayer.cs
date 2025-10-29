@@ -1,4 +1,6 @@
+using banging_code.settings;
 using banging_code.ui.main_menu.Buttons;
+using MohDIed.Audio;
 using MothDIed;
 using MothDIed.GUI;
 
@@ -34,22 +36,22 @@ namespace banging_code.ui.main_menu
             base.OnShown();
             
             enableDebug.ResetToSettings();
-            masterSlider.Set(Game.AudioSystem.AudioMixerHandler.GetMasterVolume());
-            musicSlider.Set(Game.AudioSystem.AudioMixerHandler.GetMusicVolume());
-            soundsSlider.Set(Game.AudioSystem.AudioMixerHandler.GetSoundsVolume());
+            masterSlider.Set(Game.G<AudioSystem>().AudioMixerHandler.GetMasterVolume());
+            musicSlider.Set(Game.G<AudioSystem>().AudioMixerHandler.GetMusicVolume());
+            soundsSlider.Set(Game.G<AudioSystem>().AudioMixerHandler.GetSoundsVolume());
         }
 
         private void Update()
         {
-            bool hasChanges = enableDebug.IsChecked != Game.Settings.Data.EnableDebugFeatures;
+            bool hasChanges = enableDebug.IsChecked != Game.G<GameSettings>().Data.EnableDebugFeatures;
             
-            hasChanges = hasChanges || Game.Settings.Data.MasterVolume != masterSlider.Current();
-            hasChanges = hasChanges || Game.Settings.Data.MusicVolume != musicSlider.Current();
-            hasChanges = hasChanges || Game.Settings.Data.SoundsVolume != soundsSlider.Current();
+            hasChanges = hasChanges || Game.G<GameSettings>().Data.MasterVolume != masterSlider.Current();
+            hasChanges = hasChanges || Game.G<GameSettings>().Data.MusicVolume != musicSlider.Current();
+            hasChanges = hasChanges || Game.G<GameSettings>().Data.SoundsVolume != soundsSlider.Current();
             
-            Game.AudioSystem.AudioMixerHandler.SetVolumeForMaster(masterSlider.Current());
-            Game.AudioSystem.AudioMixerHandler.SetVolumeForMusic(musicSlider.Current());
-            Game.AudioSystem.AudioMixerHandler.SetVolumeForSounds(soundsSlider.Current());
+            Game.G<AudioSystem>().AudioMixerHandler.SetVolumeForMaster(masterSlider.Current());
+            Game.G<AudioSystem>().AudioMixerHandler.SetVolumeForMusic(musicSlider.Current());
+            Game.G<AudioSystem>().AudioMixerHandler.SetVolumeForSounds(soundsSlider.Current());
 
             applyChangesButton.interactable = hasChanges;
             revertChangesButton.interactable = hasChanges;
@@ -57,17 +59,17 @@ namespace banging_code.ui.main_menu
 
         public void ApplyChanges()
         {
-            Game.Settings.Data.EnableDebugFeatures = enableDebug.IsChecked;
-            Game.Settings.ApplyVolumes(masterSlider.Current(), musicSlider.Current(), soundsSlider.Current());
+            Game.G<GameSettings>().Data.EnableDebugFeatures = enableDebug.IsChecked;
+            Game.G<GameSettings>().ApplyVolumes(masterSlider.Current(), musicSlider.Current(), soundsSlider.Current());
         }
 
         public void RevertChanges()
         {
             enableDebug.ResetToSettings();
             
-            masterSlider.Set(Game.Settings.Data.MasterVolume);
-            musicSlider.Set(Game.Settings.Data.MusicVolume);
-            soundsSlider.Set(Game.Settings.Data.SoundsVolume);
+            masterSlider.Set(Game.G<GameSettings>().Data.MasterVolume);
+            musicSlider.Set(Game.G<GameSettings>().Data.MusicVolume);
+            soundsSlider.Set(Game.G<GameSettings>().Data.SoundsVolume);
         }
     }
 }

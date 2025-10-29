@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
-using banging_code.debug;
+using MothDIed.Debug;
+using MothDIed.DI;
 using MothDIed.ServiceLocators;
-using UnityEngine;
 
 namespace MothDIed.MonoSystems
 {
     public sealed class SystemsContainer : IServiceLocator
     {
         private MonoEntity owner;
+
+        public int Count => systems.Count;
 
         private readonly Dictionary<Type, List<MonoSystem>> systems = new();
 
@@ -27,7 +29,7 @@ namespace MothDIed.MonoSystems
             {
                 systemPair.Value.ForEach((system) =>
                 {
-                    Game.DIKernel.InjectWithBaseAnd(system, owner.CachedComponents, this, owner.Data);
+                    Game.G<DIKernel>().InjectWithBaseAnd(system, owner.CachedComponents, this, owner.Data);
                     system.ContainerStarted();
                     if(system.EnableOnStart())
                     {
@@ -125,7 +127,7 @@ namespace MothDIed.MonoSystems
                 if (systems.ContainsKey(extensionType))
                 {
 #if UNITY_EDITOR
-                    LGR.PW("YOU TRIED TO ADD MULTIPLE EXTENSIONS OF TYPE " + extensionType);
+                    LogHistory.PushAsError("YOU TRIED TO ADD MULTIPLE EXTENSIONS OF TYPE " + extensionType);
 #endif
                     return system;
                 }
@@ -138,7 +140,7 @@ namespace MothDIed.MonoSystems
             
             if (containerStarted)
             {
-                Game.DIKernel.InjectWithBaseAnd(system, owner.CachedComponents, this, owner.Data);
+                Game.G<DIKernel>().InjectWithBaseAnd(system, owner.CachedComponents, this, owner.Data);
                 
                 system.ContainerStarted();
                 if(system.EnableOnStart())

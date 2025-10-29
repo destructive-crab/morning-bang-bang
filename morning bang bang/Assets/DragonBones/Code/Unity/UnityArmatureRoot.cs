@@ -26,7 +26,7 @@ namespace DragonBones
         }
 
         //maybe we should not clear all stuff, maybe we want to store armature somewhere
-        private void OnDestroy() => DBClear();
+        private void OnDestroy() => DB.Registry.BufferToRemoval(Armature);
         
         public void DBConnect(Armature armature)
         {
@@ -35,10 +35,10 @@ namespace DragonBones
         
         public void DBClear()
         {
-            
             MeshRoot.Clear();
             Registry.Clear();
             Armature.Dispose();
+            
             Armature = null;
             
             Color.Identity();

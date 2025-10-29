@@ -160,8 +160,10 @@ namespace DragonBones
         public override void OnReleased()
         {
             if(Root != null)
+            {
                 Root.DBClear();
-            
+            }
+
             ClearArmature();
         }
 

@@ -1,4 +1,3 @@
-using System;
 using banging_code.common;
 using banging_code.player_logic;
 using Cysharp.Threading.Tasks;
@@ -7,6 +6,7 @@ using MothDIed.Scenes;
 using MothDIed.Scenes.SceneModules;
 using Unity.Cinemachine;
 using UnityEngine;
+using System;
 
 namespace banging_code.camera_logic
 {
@@ -16,6 +16,7 @@ namespace banging_code.camera_logic
         private Transform currentTarget;
 
         private CinemachineVirtualCameraBase current;
+        
         public override void PrepareModule(Scene scene)
         {
             CreateInstance();
@@ -23,7 +24,11 @@ namespace banging_code.camera_logic
 
         public void SetTarget(Transform target)
         {
-            if(Stopped) return;
+            if(Stopped)
+            {
+                return;
+            }
+
             currentTarget = target;
             instance.ChillCamera.Follow = currentTarget;
         }
@@ -31,6 +36,7 @@ namespace banging_code.camera_logic
         public void EnterBangCamera(PolygonCollider2D roomCollider)
         {
             if(Stopped) return;
+            
             SwitchCamera(instance.BangCamera);
             current.Follow = currentTarget;
             current.GetComponent<CinemachineConfiner2D>().BoundingShape2D = roomCollider;
@@ -45,6 +51,7 @@ namespace banging_code.camera_logic
         public async void Shake(float intensity, float time)
         {
             if(Stopped) return;
+            
             var shake = current.GetComponent<CinemachineBasicMultiChannelPerlin>();
 
             shake.AmplitudeGain = intensity;
@@ -58,24 +65,23 @@ namespace banging_code.camera_logic
         
         private void CreateInstance()
         {
-            if(Stopped) return;
-            
             if (instance != null) return;
             
             CCameraInstance prefab = Resources.Load<CCameraInstance>(PTH.CCameraInstance);
-            instance = Game.SceneSwitcher.CurrentScene.Fabric.Instantiate(prefab, Vector2.zero, null);
+            instance = Game.G<SceneSwitcher>().CurrentScene.Fabric.Instantiate(prefab, Vector2.zero, null);
         }
 
         public void EnterBuisnessCamera(params Transform[] targets)
         {
             if(Stopped) return;
+            
             SwitchCamera(instance.BuisnessCamera);
             CinemachineTargetGroup targetGroup = current.GetComponent<CinemachineTargetGroup>();
             targetGroup.Targets.Clear();
 
-            foreach (var target in targets)
+            foreach (Transform target in targets)
             {
-                var newTarget = new CinemachineTargetGroup.Target();
+                CinemachineTargetGroup.Target newTarget = new CinemachineTargetGroup.Target();
                 newTarget.Object = target;
 
                 if (target.GetComponent<PlayerRoot>()) newTarget.Weight = 0.2f;
@@ -86,7 +92,11 @@ namespace banging_code.camera_logic
 
         public void SwitchCamera(CinemachineVirtualCameraBase to)
         {
-            if(current != null) current.gameObject.SetActive(false);
+            if(current != null)
+            {
+                current.gameObject.SetActive(false);
+            }
+
             current = to;
             current.gameObject.SetActive(true);
         }

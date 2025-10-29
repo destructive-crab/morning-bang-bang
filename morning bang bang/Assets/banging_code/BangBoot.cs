@@ -1,30 +1,48 @@
-using System.Threading.Tasks;
+using banging_code.debug;
+using banging_code.pause;
+using banging_code.runs_system;
+using banging_code.settings;
 using banging_code.ui.main_menu;
+using Cysharp.Threading.Tasks;
 using MothDIed;
-using MothDIed.DI;
+using MothDIed.InputsHandling;
 
 namespace banging_code
 {
     public class BangBoot : GameStartPoint
     {
-        public Coin coinPrefab;
-        public GameStartArgs Args;
-
-        public override IDependenciesProvider[] GetProviders()
+        public DebuggerConfig Config;
+        private GameSettings settings;
+        
+        public override bool AllowDebug()
         {
-            return new IDependenciesProvider[] { new CoinPrefabProvider(coinPrefab) };
+            return settings.Data.EnableDebugFeatures;
         }
 
-        protected override void StartGame()
+        protected override async UniTask Prepare()
         {
-            TODO();
+            InputService.Setup();
+            settings = new GameSettings();
+            
+            await settings.LoadFromFile();
         }
 
-        private async void TODO()
+        public override UniTask BuildModules(GMModulesStorage modulesStorage)
         {
-            await Game.StartGame(Args);
+            base.BuildModules(modulesStorage);
+            
+            modulesStorage.AutoRegister<GameSettings>(settings);
+            modulesStorage.AutoRegister<BangDebugger>(new BangDebugger(Config));
+            modulesStorage.AutoRegister<RunSystem>(new RunSystem());
+            modulesStorage.AutoRegister<PauseSystem>(new PauseSystem());
+            
+            return UniTask.CompletedTask;
+        }
 
-            Game.SceneSwitcher.SwitchTo(new MainMenuScene());
+        public override void Complete()
+        {
+            base.Complete();
+            Game.G<SceneSwitcher>().SwitchTo(new MainMenuScene());
         }
     }
 }

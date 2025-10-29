@@ -7,9 +7,9 @@ namespace banging_code.pause
     {
         private void Start()
         {
-            if(!Game.PauseSystem.IsPaused) gameObject.SetActive(false);
+            if(!Game.G<PauseSystem>().IsPaused) gameObject.SetActive(false);
         }
 
-        public void ContinueButton() => Game.PauseSystem.Unpause();
+        public void ContinueButton() => Game.G<PauseSystem>().Unpause();
     }
 }

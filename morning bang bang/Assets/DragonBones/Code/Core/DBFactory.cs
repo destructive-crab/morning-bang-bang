@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using MothDIed;
 using MothDIed.Pool;
 using UnityEngine;
 
@@ -453,6 +454,11 @@ namespace DragonBones
         {
             Armature armature = BuildUnityRootArmature(armatureName, dragonBonesName, root, skinName, textureAtlasName);
             return armature.Root as UnityArmatureRoot;
+        }
+
+        public void UnityDestroyArmature(Armature armature)
+        {
+            Game.G<SceneSwitcher>().CurrentScene.Fabric.Destroy(armature.Root.gameObject);
         }
 
         protected ChildArmature BuildChildArmatureDisplay(BuildArmaturePackage dataPackage, Slot forSlot, ChildArmatureDisplayData displayData, ChildArmatureDisplayData childArmatureData)

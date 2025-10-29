@@ -7,14 +7,14 @@ namespace banging_code.debug
     public class DebugLinesDrawer
     {
         private readonly DebuggerConfig debuggerConfig;
-        private readonly BangDebugger debugger;
+        private readonly BangDebugger bangDebugger;
 
         private readonly GameObjectPool<LineRenderer> linesPool;
         
-        public DebugLinesDrawer(DebuggerConfig debuggerConfig, BangDebugger debugger)
+        public DebugLinesDrawer(DebuggerConfig debuggerConfig, BangDebugger bangDebugger)
         {
             this.debuggerConfig = debuggerConfig;
-            this.debugger = debugger;
+            this.bangDebugger = bangDebugger;
 
             GameObjectPool<LineRenderer>.Config<LineRenderer> poolConfig = new (debuggerConfig.LinePrefab);
             

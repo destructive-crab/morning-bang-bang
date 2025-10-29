@@ -15,7 +15,7 @@ public class ShowcasePuppySpawner : EntitySpawner
         
         foreach (var entitySpawnPoint in spawnPoints)
         {
-            spawned.Add(Game.SceneSwitcher.CurrentScene.Fabric.Instantiate(PuppyPrefab, entitySpawnPoint.transform.position, entitySpawnPoint.transform));
+            spawned.Add(Game.G<SceneSwitcher>().CurrentScene.Fabric.Instantiate(PuppyPrefab, entitySpawnPoint.transform.position, entitySpawnPoint.transform));
         }
 
         return spawned.ToArray();

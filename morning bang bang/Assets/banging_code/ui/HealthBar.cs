@@ -1,3 +1,4 @@
+using banging_code.runs_system;
 using MothDIed;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +11,7 @@ public class HealthBar : MonoBehaviour
     private void Awake()
     {
         bar = GetComponent<Image>();
-        Game.RunSystem.Data.PlayerHealth.OnChanged += OnHealthChanged;
+        Game.G<RunSystem>().Data.PlayerHealth.OnChanged += OnHealthChanged;
     }
 
     private void OnHealthChanged(int cur, int max)

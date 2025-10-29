@@ -31,7 +31,7 @@ namespace banging_code.ai.systems
         public override void Dispose()
         {
             base.Dispose();
-            if (Game.TryGetDebugger(out BangDebugger debugger))
+            if (Game.TG<BangDebugger>(out BangDebugger debugger))
             {
                 debugger.Lines.Clear(currentDebugLine);
             }
@@ -40,8 +40,8 @@ namespace banging_code.ai.systems
         public void UpdatePath()
         {
             path.Path = pathfinder.FindPath(Owner.transform.position, target.Target.Position);
-            
-            if (Game.TryGetDebugger(out BangDebugger debugger) && path != null && path.Path != null)
+
+            if (Game.TG<BangDebugger>(out BangDebugger debugger) && path != null && path.Path != null)
             {
                 debugger.Lines.Clear(currentDebugLine);
                 currentDebugLine = debugger.Lines.Draw("PATH", Color.magenta, 0.1f, path.Path.Points);

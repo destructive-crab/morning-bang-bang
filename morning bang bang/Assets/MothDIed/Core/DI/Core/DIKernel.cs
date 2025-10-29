@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using banging_code.debug;
+using MothDIed.Debug;
 using MothDIed.ServiceLocators;
 using UnityEngine;
 using Scene = MothDIed.Scenes.Scene;
@@ -78,7 +78,7 @@ namespace MothDIed.DI
 #if UNITY_EDITOR
                 if (method.ReturnType.IsSubclassOf(typeof(Component)) || method.ReturnType == typeof(GameObject))
                 {
-                    Debug.LogWarning($"It's not recommended to store GameObject instances with DI({method.ReturnType} in {provider})." +
+                    LogHistory.PushAsWarning($"It's not recommended to store GameObject instances with DI({method.ReturnType} in {provider})." +
                                      $" If you want to store prefabs, use special containers");
                 }
 #endif
@@ -93,11 +93,7 @@ namespace MothDIed.DI
 
         public void InjectWithBaseAnd(object toInject, params IServiceLocator[] serviceLocators)
         {
-            List<IServiceLocator> locators = new List<IServiceLocator>();
-            
-            if(coreContainer.Count > 0) locators.Add(coreContainer);
-            if(sceneContainer != null)  locators.Add(sceneContainer);
-            if(Game.SceneSwitcher.CurrentScene.Modules.Count > 0)  locators.Add(Game.SceneSwitcher.CurrentScene.Modules.IServiceLocator());
+            List<IServiceLocator> locators = GetBaseLocators();
 
             locators.AddRange(serviceLocators);
  
@@ -106,13 +102,20 @@ namespace MothDIed.DI
 
         public void InjectWithBase(object toInject)
         {
+            List<IServiceLocator> locators = GetBaseLocators();
+
+            InjectWith(toInject, locators.ToArray());
+        }
+
+        private List<IServiceLocator> GetBaseLocators()
+        {
             List<IServiceLocator> locators = new List<IServiceLocator>();
             
             if(coreContainer.Count > 0) locators.Add(coreContainer);
             if(sceneContainer != null)  locators.Add(sceneContainer);
-            if(Game.SceneSwitcher.IsSceneLoaded && Game.SceneSwitcher.CurrentScene.Modules.Count > 0)  locators.Add(Game.SceneSwitcher.CurrentScene.Modules.IServiceLocator());
-
-            InjectWith(toInject, locators.ToArray());
+            if(Game.GetModulesLocator().Count > 0) locators.Add(Game.GetModulesLocator());
+            if(Game.G<SceneSwitcher>().IsSceneLoaded && Game.G<SceneSwitcher>().CurrentScene.Modules.Count > 0)  locators.Add(Game.G<SceneSwitcher>().CurrentScene.Modules.IServiceLocator());
+            return locators;
         }
 
         public void InjectWith(object toInject, params IServiceLocator[] serviceLocators)
@@ -213,7 +216,7 @@ namespace MothDIed.DI
             {
                 var locator = locators[i];
                 
-                if (locator == null) { LGR.PERR($"[DI KERNEL : FIND IN] NULL LOCATOR FOUND. INDEX {i}"); }
+                if (locator == null) { LogHistory.PushAsError($"[DI KERNEL : FIND IN] NULL LOCATOR FOUND. INDEX {i}"); }
 
                 var possibleDependency = locator.GetBlind(type);
 
@@ -223,7 +226,7 @@ namespace MothDIed.DI
                 }
             }
 
-            Debug.LogError($"[DI KERNEL : FIND IN] NO DEPENDENCY OF TYPE {type.ToString()} WAS FOUND IN {locators.Length} DEPENDENCY LOCATORS");
+            LogHistory.PushAsError($"[DI KERNEL : FIND IN] NO DEPENDENCY OF TYPE {type.ToString()} WAS FOUND IN {locators.Length} DEPENDENCY LOCATORS");
             return null;
         }
 
