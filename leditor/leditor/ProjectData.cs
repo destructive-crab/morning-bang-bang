@@ -41,12 +41,12 @@ public class ProjectData
             {
                 Rectangle rec = new Rectangle(new Vector2(TILE_WIDTH * w, TILE_HEIGHT * h), TILE_WIDTH, TILE_HEIGHT);
                 
-                Image croppedImage = Raylib.ImageCopy(img);
-                Raylib.ImageCrop(ref croppedImage, rec);
+                Image croppedGuiImage = Raylib.ImageCopy(img);
+                Raylib.ImageCrop(ref croppedGuiImage, rec);
 
                 TextureData textureData = AddTexture(generalID + $"_{idIndex}", tilesetPath, rec);
 
-                Texture2D croppedTex = Raylib.LoadTextureFromImage(croppedImage);
+                Texture2D croppedTex = Raylib.LoadTextureFromImage(croppedGuiImage);
                 AssetsStorage.RegisterCrop(textureData.textureID, croppedTex);
                 
                 result.Add(textureData);
