@@ -25,7 +25,7 @@ namespace banging_code.player_logic
 
         public override void ContainerStarted()
         {
-            var armature = DBBridge.Create("rat_gun_up", "rat_gun", null);
+            ArmatureController armature = DBBridge.Create("rat_gun_up", "rat_gun");
         }
         
         public override void Update()

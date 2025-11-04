@@ -453,7 +453,7 @@ namespace DragonBones
         public UnityArmatureRoot UnityCreateArmature(string armatureName, string dragonBonesName = "", UnityArmatureRoot root = null, string skinName = "", string textureAtlasName = "")
         {
             Armature armature = BuildUnityRootArmature(armatureName, dragonBonesName, root, skinName, textureAtlasName);
-            return armature.Root as UnityArmatureRoot;
+            return armature.Root;
         }
 
         public void UnityDestroyArmature(Armature armature)

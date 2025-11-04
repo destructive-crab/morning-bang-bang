@@ -17,9 +17,19 @@ namespace DragonBonesBridge
             }
         }
         
-        public static UnityArmatureRoot Create(string armatureName, string projectName, ArmatureController armatureController)
+        public static ArmatureController Create(string armatureName, string projectName)
         {
-            return DB.Factory.UnityCreateArmature(armatureName, projectName, armatureController.Root);
+            UnityArmatureRoot root = DB.Factory.UnityCreateArmature(armatureName, projectName, null);
+            root.gameObject.AddComponent<ArmatureController>();
+
+            return root.gameObject.AddComponent<ArmatureController>();
+        }
+        
+        public static ArmatureController Edit(string armatureName, string projectName, ArmatureController controller)
+        {
+            UnityArmatureRoot root = DB.Factory.UnityCreateArmature(armatureName, projectName, controller.Root);
+
+            return controller;
         }
     }
 }
