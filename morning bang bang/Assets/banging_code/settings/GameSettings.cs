@@ -17,7 +17,6 @@ namespace banging_code.settings
             if (instance != null)
             {
                 throw new Exception("GAME SETTINGS OBJECT ALREADY EXISTS");
-                return;
             }
 
             instance = this;

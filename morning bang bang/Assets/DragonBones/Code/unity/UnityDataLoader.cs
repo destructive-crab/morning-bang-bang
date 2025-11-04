@@ -100,6 +100,8 @@ namespace DragonBones
                     }
 #endif
                 }
+                
+                DBLogger.LogMessage($"Data was loaded for {data.dataName}");
             }
 
             return dbProjectData;

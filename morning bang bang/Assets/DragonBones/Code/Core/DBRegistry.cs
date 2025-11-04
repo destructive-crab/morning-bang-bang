@@ -50,13 +50,16 @@ namespace DragonBones
         {
             if (armature == null) return; 
             
-            foreach (ChildArmature childArmature in armature.Structure.ChildArmatures)
+            if(armature.Structure.ChildArmatures != null)
             {
-                allChildArmatures.Remove(childArmature);
-                activeRegistry.Remove(armature);
-                childArmature.Dispose();
+                foreach (ChildArmature childArmature in armature.Structure.ChildArmatures)
+                {
+                    allChildArmatures.Remove(childArmature);
+                    activeRegistry.Remove(armature);
+                    childArmature.Dispose();
+                }
             }
-            
+
             activeRegistry.Remove(armature);
             allArmatures.Remove(armature);
             

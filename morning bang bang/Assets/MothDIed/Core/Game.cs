@@ -1,3 +1,4 @@
+using System;
 using Cysharp.Threading.Tasks;
 using MothDIed.Debug;
 using MothDIed.ServiceLocators;
@@ -72,6 +73,11 @@ namespace MothDIed
                     foreach (IGMModuleTick tick in modulesStorage.ticks)
                     {
                         tick.Tick();
+                    }
+
+                    foreach (Action onTick in modulesStorage.tickHooks)
+                    {
+                        onTick.Invoke();
                     }
                     
                     G<SceneSwitcher>().CurrentScene?.UpdateScene();

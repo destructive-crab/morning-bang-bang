@@ -15,10 +15,6 @@ namespace banging_code.player_logic.rat
     [RequireComponent(typeof(Collider2D))]
     public class RatPlayer : PlayerRoot
     {
-        public Transform sideRoot;
-        public Transform upRoot;
-        public Transform downRoot;
-
         public override ID EntityID { get; } = new("player", true);
 
         protected override void InitializeComponents()
@@ -38,16 +34,12 @@ namespace banging_code.player_logic.rat
         {
             //visuals
             Systems.AddSystem(new PlayerAnimator());
-            Systems.AddSystem(new Flipper(true));
-            Systems.AddSystem(new VelocityFlipper());
+//            Systems.AddSystem(new Flipper(true));
+//            Systems.AddSystem(new VelocityFlipper());
             
             //addons
             Systems.AddSystem(new Interactor());
             var hands = new PlayerHands();
-
-            hands.SetSideRoot(sideRoot);
-            hands.SetUpRoot(upRoot);
-            hands.SetDownRoot(downRoot);
             
             Systems.AddSystem(hands);
         }

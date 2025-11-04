@@ -24,11 +24,6 @@ namespace banging_code.camera_logic
 
         public void SetTarget(Transform target)
         {
-            if(Stopped)
-            {
-                return;
-            }
-
             currentTarget = target;
             instance.ChillCamera.Follow = currentTarget;
         }

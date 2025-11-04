@@ -36,6 +36,8 @@ namespace banging_code
             modulesStorage.AutoRegister<RunSystem>(new RunSystem());
             modulesStorage.AutoRegister<PauseSystem>(new PauseSystem());
             
+            modulesStorage.AutoRegister<DragonBonesMothDIedModule>(new DragonBonesMothDIedModule());
+            
             return UniTask.CompletedTask;
         }
 

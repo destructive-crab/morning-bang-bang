@@ -136,6 +136,10 @@ namespace DragonBones
                 i++;
             }
 
+            if (ChildArmatures == null)
+            {
+                ChildArmatures = Array.Empty<ChildArmature>();
+            }
         }
 
         public ChildArmature GetChildArmature(DisplayData data)

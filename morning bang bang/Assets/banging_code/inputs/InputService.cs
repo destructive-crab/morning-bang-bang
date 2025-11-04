@@ -65,15 +65,10 @@ namespace MothDIed.InputsHandling
 
         //interface && hooks
         public static Vector3 MousePosition => Game.G<SceneSwitcher>().CurrentScene.GetCamera().ScreenToWorldPoint(Input.mousePosition);
-        public static Vector2 Movement { get; private set; }
+        public static Vector2 Movement => actionsMap.Player.Move.ReadValue<Vector2>();
         
         public static Vector2 DebugMovement => actionsMap.Debug.Movement.ReadValue<Vector2>();
         public static float DebugYScroll => actionsMap.Debug.YScroll.ReadValue<float>();
-
-        public static void Tick()
-        {
-            Movement = actionsMap.Player.Move.ReadValue<Vector2>();
-        }
 
         public static event Action OnPlayerInteract;
         private static void OnInteract(InputAction.CallbackContext obj) => OnPlayerInteract?.Invoke();

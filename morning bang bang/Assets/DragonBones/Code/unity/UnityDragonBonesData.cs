@@ -3,6 +3,7 @@
 namespace DragonBones
 {
     [System.Serializable]
+    [CreateAssetMenu(menuName = "DragonBones", fileName = "Unity Dragon Bones Data")]
     public class UnityDragonBonesData : ScriptableObject
     {
         [System.Serializable]

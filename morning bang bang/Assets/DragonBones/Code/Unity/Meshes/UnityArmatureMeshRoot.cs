@@ -306,6 +306,7 @@ namespace DragonBones
             OutputMesh.Clear();
             
             filter.mesh.Clear();
+            IsCombined = false;
         }
 
         private void BuildDrawOrder()

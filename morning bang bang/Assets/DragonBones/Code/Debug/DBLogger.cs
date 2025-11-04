@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using DragonBones.Code.Debug;
+using UnityEngine;
 
 namespace DragonBones
 {
@@ -12,7 +13,7 @@ namespace DragonBones
         private static List<ArmatureBuildLog> Logs = new();
 
         private const string PREFIX = "[DB] ";
-        private static List<string> Log;
+        private static List<string> Log = new List<string>();
         
         private const string CHILD_BUILD_LOG_MARK = "CHILD_BUILD_LOG_HERE:";
         public static ArmatureBuildLog StartNewArmatureBuildLog(string name)
@@ -72,6 +73,10 @@ namespace DragonBones
             message = Path.GetFileName(file) + $": {member}({line}): " + message;
             
             Log.Add(message);
+            
+            #if UNITY_EDITOR
+            Debug.Log(message);
+            #endif
         }
 
         internal static void Warn(object message,

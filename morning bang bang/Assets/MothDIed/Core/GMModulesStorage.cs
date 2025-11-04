@@ -15,6 +15,8 @@ namespace MothDIed
         public List<IGMModuleTick> ticks = new();
         public List<IGMModuleQuit> quits = new();
 
+        public List<Action> tickHooks = new();
+        
         public TModule Get<TModule>()
             where TModule : class
         {
@@ -30,19 +32,15 @@ namespace MothDIed
             where TModule : class
         {
             if(map.ContainsKey(typeof(TModule))) return;
+ 
+            if(module is IGMModuleBoot boot)
+                boots.Add(boot);
             
-            switch (module)
-            {
-                case IGMModuleBoot boot:
-                    boots.Add(boot);
-                    break;
-                case IGMModuleTick tick:
-                    ticks.Add(tick);
-                    break;
-                case IGMModuleQuit quit:
-                    quits.Add(quit);
-                    break;
-            }
+            if(module is IGMModuleTick tick)
+                ticks.Add(tick);
+            
+            if(module is IGMModuleQuit quit)
+                quits.Add(quit);
 
             all.Add(module);
             map.Add(typeof(TModule), module);
@@ -51,6 +49,11 @@ namespace MothDIed
         public void RegisterBootable(IGMModuleBoot boot)
         {
             boots.Add(boot);
+        }
+
+        public void HookTick(Action onTick)
+        {
+            tickHooks.Add(onTick);
         }
 
         public bool Contains(Type serviceType)

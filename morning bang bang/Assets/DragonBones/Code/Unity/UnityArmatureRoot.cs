@@ -37,7 +37,7 @@ namespace DragonBones
         {
             MeshRoot.Clear();
             Registry.Clear();
-            Armature.Dispose();
+            Armature?.Dispose();
             
             Armature = null;
             

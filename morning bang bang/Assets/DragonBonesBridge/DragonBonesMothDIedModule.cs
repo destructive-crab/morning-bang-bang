@@ -1,21 +1,16 @@
 using Cysharp.Threading.Tasks;
 using DragonBones;
+using DragonBonesBridge;
 using MothDIed;
 using MothDIed.Scenes;
 using UnityEngine;
 
-public class DragonBonesMothDIedModule : IGMModuleBoot
+public class DragonBonesMothDIedModule : IGMModuleBoot, IGMModuleTick
 {
     public async UniTask Boot()
     {
         await DB.InitializeDragonBones();
-        UnityDragonBonesData[] allData = Resources.LoadAll<UnityDragonBonesData>("dbpreload/");
-        
-        foreach (UnityDragonBonesData data in allData)
-        {
-            DB.UnityDataLoader.LoadData(data);
-        }
-           
+        DBBridge.Preload();
         Game.G<SceneSwitcher>().OnSwitchingFromCurrent += DisposeArmatures;
 
         void DisposeArmatures(Scene obj)
@@ -27,5 +22,11 @@ public class DragonBonesMothDIedModule : IGMModuleBoot
                 
             DB.Registry.CommitRuntimeChanges();
         }
+    }
+
+    public void Tick()
+    {
+        Debug.Log("ADFJALKD");
+        DB.Kernel.AdvanceTime(Time.deltaTime);
     }
 }

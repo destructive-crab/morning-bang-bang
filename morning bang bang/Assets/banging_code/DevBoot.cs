@@ -10,24 +10,31 @@ namespace banging_code
 {
     public class DevBoot : GameStartPoint
     {
-        public Coin coinPrefab;
-
         public override bool AllowDebug()
         {
-            throw new System.NotImplementedException();
+            return true;
         }
 
-        public override IDependenciesProvider[] GetProviders()
+        public override UniTask BuildModules(GMModulesStorage modulesStorage)
         {
-            return new[] { new CoinPrefabProvider(coinPrefab) };
+            base.BuildModules(modulesStorage);
+            modulesStorage.AutoRegister<DragonBonesMothDIedModule>(new DragonBonesMothDIedModule());
+            return UniTask.CompletedTask;
         }
 
         protected override UniTask Prepare()
         {
             InputService.Setup();
+
             
-            Game.G<RunSystem>().StartDevRun();
             return UniTask.CompletedTask;
+        }
+
+        public override void Complete()
+        {
+            base.Complete();
+            
+            Game.G<SceneSwitcher>().SwitchTo(new CommonScene("TEST"));
         }
     }
 }

@@ -24,7 +24,7 @@ EditorBuildSettings:
     path: Assets/PERSISTENT SCENE.unity
     guid: 98ff09b2026edd04399a369a3ac9d091
   - enabled: 1
-    path: Assets/DragonBones/Dev/DBTEST.unity
-    guid: ff63212d19dca5d49b4cc8b79f7aa3b9
+    path: Assets/TEST.unity
+    guid: 7f2e2d3800abc2d428899a8e46a9c3c5
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

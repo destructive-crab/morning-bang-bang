@@ -68,14 +68,14 @@ namespace DragonBones
             armatureRoot.DBConnect(armature);
             
             BuildArmature(armature, armatureName, dragonBonesName, skinName, textureAtlasName, armatureRoot);
-            
+       
             foreach (ChildArmature childArmature in armature.Structure.ChildArmatures)
             {
                 childArmature.ArmatureReady();
                 childArmature.InvalidUpdate(null, true);
                 childArmature.AdvanceTime(0.0f); // Update armature pose.
             }
-            
+
             armature.ArmatureReady();
             armature.InvalidUpdate(null, true);
             armature.AdvanceTime(0.0f); // Update armature pose.
