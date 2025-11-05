@@ -1,16 +1,15 @@
-﻿using deGUISpace;
-using Raylib_cs;
-using rlImGui_cs;
+﻿using Raylib_cs;
 
 namespace leditor.root
 {
-    public sealed class LeditorRoot
+    public static class LeditorRoot
     {
         public static void Main()
-        { 
+        {
+            RaylibLogging.Setup();
+            
             Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);     
-            Raylib.InitWindow(deGUI.ORIGINAL_WIDTH, deGUI.ORIGINAL_HEIGHT, "leditor");
-            rlImGui.Setup(true);
+            Raylib.InitWindow(1080, 720, "leditor");
 
             Leditor leditor = new Leditor();
            
