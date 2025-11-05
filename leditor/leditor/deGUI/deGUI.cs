@@ -40,7 +40,6 @@ public static class deGUI
 
     public static RectGUIArea BindRect(int x, int y, int width, int height, Anchor anchor)
     {
-        Console.WriteLine(x + " " + y + " " + width + " " + height);
         return new RectGUIArea(anchor, x, y, width, height);
     }
 
@@ -111,14 +110,11 @@ public static class deGUI
 
         foreach (GUIElement root in roots)
         {
-            Console.WriteLine("START GRAPH");
             ProcessGraph(root);
         }
 
         void ProcessGraph(GUIElement root)
         {
-            Console.WriteLine($"MOVE GRAPH: {root}; {root.Active}");
-                if(root is GUIButton button1) Console.WriteLine(button1.Label);
             if (root.Active)
             { 
                 if(root.GUIArea != null)
@@ -128,7 +124,6 @@ public static class deGUI
 
                 foreach (GUIElement child in root.GUIElementChildren)
                 {
-                    if(child is GUIButton button) Console.WriteLine(button.Label);
                     ProcessGraph(child);
                 }
             }

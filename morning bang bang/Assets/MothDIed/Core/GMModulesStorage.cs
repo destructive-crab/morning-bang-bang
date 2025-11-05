@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using MothDIed.ServiceLocators;
 
 namespace MothDIed
@@ -16,6 +17,19 @@ namespace MothDIed
         public List<IGMModuleQuit> quits = new();
 
         public List<Action> tickHooks = new();
+
+        public async UniTask<string> Boot()
+        {
+            string output = "";
+            
+            foreach (IGMModuleBoot boot in boots)
+            {
+                await boot.Boot();
+                output += $"Module {boot.ToString()} booted" + boot.ToString() + "\n";
+            }
+
+            return output;
+        }
         
         public TModule Get<TModule>()
             where TModule : class

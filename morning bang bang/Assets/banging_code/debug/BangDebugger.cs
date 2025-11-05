@@ -1,11 +1,13 @@
+using System;
 using Cysharp.Threading.Tasks;
 using MothDIed;
+using MothDIed.Debug;
 using MothDIed.InputsHandling;
 using UnityEngine;
 
 namespace banging_code.debug
 {
-    public sealed class BangDebugger
+    public sealed class BangDebugger : IGMModuleBoot, IGMModuleTick
     {
         public static class Flags
         {
@@ -31,6 +33,8 @@ namespace banging_code.debug
             debuggerConfig = config;
         }
 
+        public UniTask Boot() => SetupDebugger();
+
         public void Tick()
         {
             if (BangDebugger.Flags.ShowFPS)
@@ -47,7 +51,7 @@ namespace banging_code.debug
                 FPS.Hide();
             }
         }
-        
+
         public Transform GetDebugGOContainer()
         {
             if (container == null)
@@ -58,6 +62,7 @@ namespace banging_code.debug
 
             return container;
         }
+
         public async UniTask SetupDebugger()
         {
             await InstantiatePersistentDebugUI();
@@ -71,8 +76,26 @@ namespace banging_code.debug
             Console = new BangingConsole();
             Console.Setup(DebugUIRoot.ConsoleView);
             
+            LogHistory.OnNew += MothDIedLogHistory;
+            
             InputService.EnableDebugInputs();
             Awake = true;
+        }
+
+        private void MothDIedLogHistory(LogHistory.Log logData)
+        {
+            switch (logData.Type)
+            {
+                case LogHistory.LogType.Message:
+                    LGR.PM(logData.Content);
+                    break;
+                case LogHistory.LogType.Warning:
+                    LGR.PW(logData.Content);
+                    break;
+                case LogHistory.LogType.Error:
+                    LGR.PERR(logData.Content);
+                    break;
+            }
         }
 
         private async UniTask InstantiatePersistentDebugUI()

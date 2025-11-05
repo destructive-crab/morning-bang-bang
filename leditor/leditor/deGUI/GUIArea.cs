@@ -35,11 +35,6 @@ public sealed class RectGUIArea
     {
         get
         {
-            if (WidthRaw == -1)
-            {
-                Console.WriteLine(Parent);
-            }
-            
             if (WidthRaw == deGUI.STRETCH)
             {
                 if(Parent == null)
@@ -48,7 +43,6 @@ public sealed class RectGUIArea
                 }
                 else
                 {
-                    Console.WriteLine(Parent.AdaptedHeight);
                     return Parent.AdaptedWidth;
                 }
             }

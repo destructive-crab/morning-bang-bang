@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using MothDIed.InputsHandling;
 using TMPro;
-using UnityEngine;
 
 namespace banging_code.debug.Console
 {

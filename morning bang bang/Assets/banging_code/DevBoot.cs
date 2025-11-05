@@ -15,9 +15,9 @@ namespace banging_code
             return true;
         }
 
-        public override UniTask BuildModules(GMModulesStorage modulesStorage)
+        public override UniTask BuildModules(GMModulesStorage modulesStorage, GMModulesStorage debugModules)
         {
-            base.BuildModules(modulesStorage);
+            base.BuildModules(modulesStorage, debugModules);
             modulesStorage.AutoRegister<DragonBonesMothDIedModule>(new DragonBonesMothDIedModule());
             return UniTask.CompletedTask;
         }

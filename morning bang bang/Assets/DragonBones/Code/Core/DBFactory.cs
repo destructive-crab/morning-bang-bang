@@ -532,7 +532,6 @@ namespace DragonBones
             {
                 if (textureAtlas != null)
                 {
-                    ((UnityTextureAtlasData)textureAtlasData).uiTexture = (textureAtlas as UnityDragonBonesData.TextureAtlas).uiMaterial;
                     ((UnityTextureAtlasData)textureAtlasData).texture = (textureAtlas as UnityDragonBonesData.TextureAtlas).material;
                 }
             }

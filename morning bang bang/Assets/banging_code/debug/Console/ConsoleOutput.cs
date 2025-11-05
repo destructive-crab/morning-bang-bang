@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TMPro;
 
 namespace banging_code.debug.Console

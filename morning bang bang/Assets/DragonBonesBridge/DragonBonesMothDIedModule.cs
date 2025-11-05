@@ -26,7 +26,6 @@ public class DragonBonesMothDIedModule : IGMModuleBoot, IGMModuleTick
 
     public void Tick()
     {
-        Debug.Log("ADFJALKD");
         DB.Kernel.AdvanceTime(Time.deltaTime);
     }
 }

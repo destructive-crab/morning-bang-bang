@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: rat_gun_Data
   m_EditorClassIdentifier: 
   dataName: rat_gun
-  dragonBonesJSON: {fileID: 4900000, guid: 990751c186407724db337ee99c5644b5, type: 3}
+  dragonBonesJSON: {fileID: 4900000, guid: 2b26ee3b68629954597e70eff389cd91, type: 3}
   textureAtlas:
-  - textureAtlasJSON: {fileID: 4900000, guid: 873533e62cc6e9744be42d5f65c3ba21, type: 3}
-    texture: {fileID: 2800000, guid: c2489305832e1db4890e7e655e8dca76, type: 3}
-    material: {fileID: 2100000, guid: ab770a169cd1db94a8c3b2cbe68df8a2, type: 2}
-    uiMaterial: {fileID: 0}
+  - textureAtlasJSON: {fileID: 4900000, guid: 73c9d2f992500fb449becbb50d5dd3bc, type: 3}
+    texture: {fileID: 2800000, guid: 76347f6a686b6534eb08bcda481f050f, type: 3}
+    material: {fileID: 2100000, guid: 3d403994830204f479edd50185b98cbe, type: 2}

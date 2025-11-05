@@ -12,7 +12,6 @@ namespace DragonBones
             public TextAsset textureAtlasJSON; 
             public Texture2D texture;
             public Material material;
-            public Material uiMaterial;
         }
 
         public string dataName;

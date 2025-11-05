@@ -27,12 +27,12 @@ namespace banging_code
             await settings.LoadFromFile();
         }
 
-        public override UniTask BuildModules(GMModulesStorage modulesStorage)
+        public override UniTask BuildModules(GMModulesStorage modulesStorage, GMModulesStorage debugStorage)
         {
-            base.BuildModules(modulesStorage);
+            base.BuildModules(modulesStorage, debugStorage);
             
             modulesStorage.AutoRegister<GameSettings>(settings);
-            modulesStorage.AutoRegister<BangDebugger>(new BangDebugger(Config));
+            debugStorage.AutoRegister<BangDebugger>(new BangDebugger(Config));
             modulesStorage.AutoRegister<RunSystem>(new RunSystem());
             modulesStorage.AutoRegister<PauseSystem>(new PauseSystem());
             

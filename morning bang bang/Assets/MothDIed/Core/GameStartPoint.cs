@@ -29,7 +29,7 @@ public abstract class GameStartPoint : MonoBehaviour
         return UniTask.CompletedTask;
     }
 
-    public virtual UniTask BuildModules(GMModulesStorage modulesStorage)
+    public virtual UniTask BuildModules(GMModulesStorage modulesStorage, GMModulesStorage debugStorage)
     {
         modulesStorage.AutoRegister<SceneSwitcher>(new SceneSwitcher());
         modulesStorage.AutoRegister<DIKernel>(new DIKernel());

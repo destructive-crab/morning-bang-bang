@@ -7,7 +7,7 @@ using Scene = MothDIed.Scenes.Scene;
 
 namespace MothDIed
 {
-    public class SceneSwitcher
+    public class SceneSwitcher : IGMModuleBoot
     {
         public bool IsSceneLoaded { get; private set; }
         public bool IsPersistentSceneLoaded { get; private set; }
@@ -19,8 +19,9 @@ namespace MothDIed
         public static event Action<Scene> OnLoaded; //new
 
         private static SceneSwitcher sceneSwitcher;
+
         private static UnityEngine.SceneManagement.Scene persistentScene;
-        
+
         public SceneSwitcher()
         {
             if (sceneSwitcher == null)
@@ -31,6 +32,11 @@ namespace MothDIed
             {
                 throw new Exception("MULTIPLE SCENE SWITCHER INSTANCES ARE NOT ALLOWED");
             }
+        }
+
+        public async UniTask Boot()
+        {
+            await CreatePersistentScene();
         }
 
         public async UniTask CreatePersistentScene()
@@ -95,7 +101,7 @@ namespace MothDIed
                 OnLoaded?.Invoke(scene);
             }
         }
-        
+
         public void LoadScene(string sceneName, Action onSceneLoadedCallback = null)
         {
             if (GetCurrentSceneName() == sceneName)
@@ -109,7 +115,7 @@ namespace MothDIed
             loadSceneOperation.completed += (_) => onSceneLoadedCallback?.Invoke();
         }
 
-        
+
         private static string GetCurrentSceneName() => SceneManager.GetActiveScene().name;
 
         public bool MoveToPersistentScene(GameObject gameObject)

@@ -68,7 +68,7 @@ namespace banging_code.debug.Console
         {
             uiRoot.gameObject.SetActive(true);
             input.Enable();
-            output.Refresh(Game.G<BangDebugger>().Console.OutputHistory);
+            output.Refresh(Game.GDb<BangDebugger>().Console.OutputHistory);
 
             CurrentState = State.Focused;
         }
