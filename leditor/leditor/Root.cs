@@ -6,6 +6,7 @@ namespace leditor.root
     {
         public static void Main()
         {
+            Logger.MinimumLevel = Logger.Level.Debug;
             RaylibLogging.Setup();
             
             Raylib.SetConfigFlags(ConfigFlags.ResizableWindow);     
