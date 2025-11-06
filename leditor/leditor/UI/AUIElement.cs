@@ -15,9 +15,11 @@ public abstract class AUIElement(UIHost host, Vector2 minimalSize)
         get => _rect; 
         set
         {
-            _rect = value;
-            _rect.Width = float.Max(MinimalSize.X, _rect.Width);
-            _rect.Height = float.Max(MinimalSize.X, _rect.Height);
+            _rect = new Rectangle(
+                value.X, value.Y,
+                float.Max(MinimalSize.X, value.Width),
+                float.Max(MinimalSize.X, value.Height)
+            );
             
             Host.RectUpdateQueue.Enqueue(this);
         }
