@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using leditor.root;
 using Raylib_cs;
 
@@ -9,37 +10,54 @@ public class UIHost(UIStyle style)
 {
     public AUIElement? Root;
 
-    private bool AssertRoot([MaybeNullWhen(false)] out AUIElement root)
-    {
+    private bool AssertRoot(
+        [MaybeNullWhen(false)] out AUIElement root,
+        [CallerFilePath] string filePath = "", 
+        [CallerLineNumber] int lineNumber = 0
+    ) {
         root = Root;
         
         if (root != null) return true;
         
-        Logger.Warn("UI Root in null!");
+        Logger.Warn("UI Root in null!", filePath, lineNumber);
         return false;
-
     }
-    
-    internal readonly Queue<AUIElement> RectUpdateQueue = [];
     
     public void SetSize(Vector2 size)
     {
-        if (!AssertRoot(out var root)) return;
-        
-        root.Rect = new Rectangle(Vector2.Zero, size);
-        while (RectUpdateQueue.TryDequeue(out var element))
-            element.OnRectUpdate();
+        if (AssertRoot(out var root))
+            root.Rect = new Rectangle(Vector2.Zero, size);
+    }
+    
+    internal Queue<Action> UpdateActionsQueue = [];
+    internal bool NeedLayoutUpdate;
+
+    private void ProcessUpdateActions()
+    {
+        while (UpdateActionsQueue.TryDequeue(out var action)) action();
+    }
+    
+    public void Update()
+    {
+        ProcessUpdateActions();
+
+        if (NeedLayoutUpdate && AssertRoot(out var root))
+        {
+            NeedLayoutUpdate = false;
+            root.UpdateLayout();
+            ProcessUpdateActions();
+        }
     }
 
-    internal readonly Queue<AUIElement> DrawQueue = [];
+    public readonly Stack<Action> DrawStack = [];
     
     public void Draw()
     {
         if (!AssertRoot(out var root)) return;
         
         root.Draw();
-        while (DrawQueue.TryDequeue(out var element))
-            element.Draw();
+        while (DrawStack.TryPop(out var draw))
+            draw();
     }
 
     public UIStyle Style = style;

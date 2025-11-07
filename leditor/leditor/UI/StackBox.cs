@@ -3,7 +3,7 @@ using Raylib_cs;
 
 namespace leditor.UI;
 
-public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = default) : AUIElement(host, GetMinSize(children.AsEnumerable(), padding))
+public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = default) : AUIBox(host, GetMinSize(children.AsEnumerable(), padding))
 {
     private static Vector2 GetMinSize(IEnumerable<AUIElement> children, UIPadding padding)
     {
@@ -22,6 +22,26 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
 
     private readonly List<AUIElement> _children = new(children);
 
+    public override IEnumerable<AUIElement> GetChildren()
+        => children;
+
+    public override void RemoveChild(AUIElement child)
+        => _children.Remove(child);
+
+    public override void UpdateMinimalSize()
+        => MinimalSize = GetMinSize(_children, _padding);
+    
+    public void AddChild(AUIElement child)
+    {
+        Host.NeedLayoutUpdate = true;
+        
+        _children.Add(child);
+        MinimalSize = new Vector2(
+            float.Min(MinimalSize.X, child.MinimalSize.X),
+            float.Min(MinimalSize.Y, child.MinimalSize.Y)
+        );
+    }
+
     private UIPadding _padding = padding;
 
     public UIPadding Padding
@@ -29,26 +49,15 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
         get => _padding;
         set
         {
+            _padding = value;
             MinimalSize = new Vector2(
                 MinimalSize.X + _padding.Left + _padding.Right - value.Left - value.Right,
                 MinimalSize.Y + _padding.Top + _padding.Bottom - value.Top - value.Bottom
             );
-            _padding = value;
-            
-            OnRectUpdate();
         }
     }
-
-    public void AddChild(AUIElement child)
-    {
-        _children.Add(child);
-        MinimalSize = new Vector2(
-            float.Min(MinimalSize.X, child.MinimalSize.X),
-            float.Min(MinimalSize.Y, child.MinimalSize.Y)
-        );
-    }
     
-    internal override void OnRectUpdate()
+    public override void UpdateLayout()
     {
         var rect = new Rectangle(
             Rect.X + Padding.Left, 
@@ -66,6 +75,6 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
     public override void Draw()
     {
         foreach (var child in _children)
-            Host.DrawQueue.Enqueue(child);
+            Host.DrawStack.Push(child.Draw);
     }
 }

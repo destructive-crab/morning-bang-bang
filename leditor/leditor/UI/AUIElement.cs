@@ -5,9 +5,27 @@ namespace leditor.UI;
 
 public abstract class AUIElement(UIHost host, Vector2 minimalSize)
 {
-    public UIHost Host = host;
+    public AUIBox? Parent;
 
-    public Vector2 MinimalSize { get; internal set; } = minimalSize;
+    public void Destroy()
+        => Parent?.RemoveChild(this);
+
+    protected readonly UIHost Host = host;
+    
+    private Vector2 _minimalSize = minimalSize;
+
+    public Vector2 MinimalSize
+    {
+        get => _minimalSize;
+        protected set
+        {
+            _minimalSize = value;
+            
+            Host.NeedLayoutUpdate = true;
+            if (Parent != null)
+                Host.UpdateActionsQueue.Enqueue(Parent.UpdateMinimalSize);
+        }
+    }
 
     private Rectangle _rect;
     public Rectangle Rect
@@ -21,11 +39,11 @@ public abstract class AUIElement(UIHost host, Vector2 minimalSize)
                 float.Max(MinimalSize.X, value.Height)
             );
             
-            Host.RectUpdateQueue.Enqueue(this);
+            Host.UpdateActionsQueue.Enqueue(UpdateLayout);
         }
-    }
+    } 
 
-    internal abstract void OnRectUpdate();
+    public abstract void UpdateLayout();
 
     public abstract void Draw();
 }

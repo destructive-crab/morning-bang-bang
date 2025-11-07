@@ -19,8 +19,8 @@ public class UILabel(UIHost host, string text = "") : AUIElement(host, GetMinima
             MinimalSize = GetMinimalSize(Host.Style, _text);
         }
     }
-    
-    internal override void OnRectUpdate() { }
+
+    public override void UpdateLayout() {}
 
     public override void Draw()
     {

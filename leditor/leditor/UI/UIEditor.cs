@@ -14,23 +14,25 @@ public class UIEditor
 
     public UIEditor()
     {
-        var root = new AnchorBox(_host);
+        var anchor = new AnchorBox(_host);
         
-        root.Children.Add(new AnchorBoxChild(
+        anchor.AddChild(new Anchor(
             new Rectangle(10, 10, 0, 0),
-            new Rectangle(),
-            new UILabel(_host, "Label...")
-        ));
+            new Rectangle()
+            ), new UILabel(_host, "Label...")
+        );
 
         var label = new UILabel(_host, "...and anchor!");
         
-        root.Children.Add(new AnchorBoxChild(
+        anchor.AddChild(new Anchor(
             new Rectangle(-label.MinimalSize.X / 2, -label.MinimalSize.Y - 10, 0, 0),
-            new Rectangle(.5f, 1, 0, 0),
-            label
-        ));
+            new Rectangle(.5f, 1, 0, 0)
+            ), label
+        );
+
+        var padding = new UIPadding(200, 200, 10, 10);
         
-        _host.Root = root;
+        _host.Root = new StackBox(_host, [anchor], padding);
         _host.SetSize(new Vector2(
             Raylib.GetRenderWidth(),
             Raylib.GetRenderHeight()
@@ -44,6 +46,8 @@ public class UIEditor
                 Raylib.GetRenderWidth(),
                 Raylib.GetRenderHeight()
             ));
+        
+        _host.Update();
     }
 
     public void Draw()
