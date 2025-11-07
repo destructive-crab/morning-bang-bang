@@ -9,17 +9,21 @@ public class UIEditor
     private UIHost _host = new(new UIStyle(
         Color.LightGray,
         Raylib.GetFontDefault(),
-        24
+        24, 2
     ));
+
+    private AxisBox _axisBox;
 
     public UIEditor()
     {
         var anchor = new AnchorBox(_host);
+
+        _axisBox = new AxisBox(_host, UIAxis.Vertical, [new UILabel(_host, "Label...")]);
         
         anchor.AddChild(new Anchor(
             new Rectangle(10, 10, 0, 0),
             new Rectangle()
-            ), new UILabel(_host, "Label...")
+            ), _axisBox
         );
 
         var label = new UILabel(_host, "...and anchor!");
@@ -42,10 +46,13 @@ public class UIEditor
     public void Update()
     {
         if (Raylib.IsWindowResized())
+        {
+            _axisBox.AddChild(new UILabel(_host, $"{Raylib.GetRenderWidth()} {Raylib.GetRenderHeight()}"));
             _host.SetSize(new Vector2(
                 Raylib.GetRenderWidth(),
                 Raylib.GetRenderHeight()
             ));
+        }
         
         _host.Update();
     }

@@ -34,6 +34,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, Vector2.Zero)
 
     public override void RemoveChild(AUIElement child)
     {
+        child.Parent = null;
         _children.Remove(
             _children.First(tuple => tuple.Item2 == child)
         );
@@ -41,6 +42,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, Vector2.Zero)
 
     public void AddChild(Anchor anchor, AUIElement child)
     {
+        child.Parent = this;
         Host.NeedLayoutUpdate = true;
         _children.Add((anchor, child));
     }
