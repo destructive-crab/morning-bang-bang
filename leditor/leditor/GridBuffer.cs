@@ -5,7 +5,7 @@ namespace leditor.root;
 
 public sealed class GridBuffer
 {
-    private readonly Dictionary<string, TileData> tiles = new();
+    public KeyValuePair<Vector2, string>[] Get => map.ToArray();
     private readonly Dictionary<Vector2, string> map = new();
     
     public const int CELL_SIZE = 80;
@@ -50,13 +50,24 @@ public sealed class GridBuffer
         
     }
     
-    public TileData GetTile(string id) => tiles[id];
-
     public void Foreach(Action<Vector2, string> tileID)
     {
         foreach (KeyValuePair<Vector2,string> pair in map)
         {
             tileID.Invoke(pair.Key, pair.Value);
+        }
+    }
+
+    public void Clear()
+    {
+        map.Clear();
+    }
+
+    public void Add(TilemapData data)
+    {
+        foreach (KeyValuePair<Vector2,string> pair in data.Get)
+        {
+            map[pair.Key] = pair.Value;
         }
     }
 }

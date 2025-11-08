@@ -30,6 +30,12 @@ public class GUIButton : GUIElement, IOnRightClick, IOnLeftClick, IOnPressed, IO
         PressedColor = pressedColor;
     }
 
+    public GUIButton(string label, RectGUIArea guiArea)
+    {
+        Label = label;
+        GUIArea = guiArea;
+    }
+    
     public GUIButton(Texture2D texture)
     {
         Texture = texture;
@@ -68,17 +74,17 @@ public class GUIButton : GUIElement, IOnRightClick, IOnLeftClick, IOnPressed, IO
 
     public GUIElement Parent { get; set; }
     
-    public void OnRightClick()
+    public virtual void OnRightClick()
     {
         RightCallbacks?.Invoke();
     }
 
-    public void OnLeftClick()
+    public virtual void OnLeftClick()
     {
         LeftCallbacks?.Invoke();
     }
 
-    public void LeftMouseButtonPress()
+    public virtual void LeftMouseButtonPress()
     {
         if(LeftCallbacks != null)
         {
@@ -86,7 +92,7 @@ public class GUIButton : GUIElement, IOnRightClick, IOnLeftClick, IOnPressed, IO
         }
     }
 
-    public void RightMouseButtonPress()
+    public virtual void RightMouseButtonPress()
     {
         if(RightCallbacks != null)
         {

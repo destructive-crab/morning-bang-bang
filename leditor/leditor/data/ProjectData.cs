@@ -6,17 +6,20 @@ namespace leditor.root;
 public class ProjectData
 {
     public TileData[] Tiles => tiles.ToArray();
+    public UnitData[] Units => units.ToArray();
     
     public readonly int TILE_HEIGHT = 512;
     public readonly int TILE_WIDTH = 512;
     
-    private List<TextureData> textures = new();
-    private List<TileData> tiles = new();
-    private List<TilemapData> tilemaps = new();
+    private readonly List<TextureData> textures = new();
+    private readonly List<TileData> tiles = new();
+    private readonly List<TilemapData> tilemaps = new();
+    public readonly List<UnitData> units = new();
 
-    private Dictionary<string, TextureData> texturesMap = new();
-    private Dictionary<string, TileData> tilesMap = new();
-    private Dictionary<string, TilemapData> tilemapsMap = new();
+    private readonly Dictionary<string, TextureData> texturesMap = new();
+    private readonly Dictionary<string, TileData> tilesMap = new();
+    private readonly Dictionary<string, TilemapData> tilemapsMap = new();
+    private readonly Dictionary<string, UnitData> unitsMap = new();
     
     public void AddTile(string tileID, TextureData data)
     {
@@ -24,6 +27,21 @@ public class ProjectData
         newTile.texture_id = data.textureID;
         tiles.Add(newTile);
         tilesMap.Add(tileID, newTile);
+    }
+
+    public void AddMap(string mapID, KeyValuePair<Vector2, string>[] tiles)
+    {
+        TilemapData tilemapData = new TilemapData(tiles);
+        tilemaps.Add(tilemapData);
+        tilemapsMap.Add(mapID, tilemapData);
+    }
+
+    public void AddUnit(string unitID, string mapID, string overrideID)
+    {
+        UnitData unit = new UnitData(unitID, mapID, overrideID);
+        
+        units.Add(unit);
+        unitsMap.Add(unitID, unit);
     }
 
     public TextureData[] CreateTilesFromTileset(string generalID, string tilesetPath)
@@ -92,8 +110,13 @@ public class ProjectData
         return tilesMap[id];
     }
 
-    public void GetTilemap(string id)
+    public TilemapData GetMap(string id)
     {
-        
+        return tilemapsMap[id];
+    }
+
+    public UnitData GetUnit(string id)
+    {
+        return unitsMap[id];
     }
 }

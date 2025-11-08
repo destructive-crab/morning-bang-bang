@@ -1,15 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "aO4WYwSiAya/khj6+BZSrsJTV8YpNdsiCVPXkR/Pl8QiUB6wTNRWdBdJ9Ale5A+IWraamPDs++5+7vllF2AQ1g==",
+  "dgSpecHash": "lZ+zeR9RM2WGqfDaHvGTUg9HNayXlHFOstxvoh2m9yXiXP8RiEBLAggy1oi2NEbmliozzX6Exd+UclPxNTDJPA==",
   "success": true,
   "projectFilePath": "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\leditor.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\destructive_crab\\.nuget\\packages\\imgui.net\\1.91.6.1\\imgui.net.1.91.6.1.nupkg.sha512",
-    "C:\\Users\\destructive_crab\\.nuget\\packages\\raylib-cs\\7.0.1\\raylib-cs.7.0.1.nupkg.sha512",
-    "C:\\Users\\destructive_crab\\.nuget\\packages\\rlimgui-cs\\3.2.0\\rlimgui-cs.3.2.0.nupkg.sha512",
-    "C:\\Users\\destructive_crab\\.nuget\\packages\\system.buffers\\4.5.1\\system.buffers.4.5.1.nupkg.sha512",
-    "C:\\Users\\destructive_crab\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
-    "C:\\Users\\destructive_crab\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+    "C:\\Users\\destructive_crab\\.nuget\\packages\\raylib-cs\\7.0.1\\raylib-cs.7.0.1.nupkg.sha512"
   ],
   "logs": []
 }

@@ -1,7 +1,6 @@
 using System.Numerics;
 using deGUISpace;
 using Raylib_cs;
-using rlImGui_cs;
 
 namespace leditor.root;
 
@@ -15,9 +14,18 @@ public sealed class Leditor
     private Vector2 pointingOn;
     
     //modules
-    private readonly Toolset       Toolset = new();
+
+    private readonly Toolset       Toolset;
     private readonly HotkeysSystem Hotkeys = new();
-    
+    private UnitSwitch    UnitSwitch;
+
+    public Leditor()
+    {
+        Toolset = new Toolset(this);
+        Toolset.BuildGUI();
+
+    }
+
     public void DoLoop()
     {
         camera = new Camera2D(new Vector2(0, 0), new Vector2(550, 450), 0, 0.1f);
@@ -36,26 +44,21 @@ public sealed class Leditor
             
             //drawing
             Raylib.BeginDrawing();
-            rlImGui.Begin();
-            {
-                Raylib.ClearBackground(new Color(19, 38, 35));
 
-                Raylib.BeginMode2D(camera);
-                
-                buffer.DrawTiles(project);
-                DrawGrid();
+            Raylib.ClearBackground(new Color(19, 38, 35));
 
-//                Toolset.DrawToolsetGUI(project);
-                
-                Raylib.EndMode2D();
-                
-                deGUI.Draw();
-                Hotkeys.Update();
-            }
-            rlImGui.End();
+            Raylib.BeginMode2D(camera);
+            
+            buffer.DrawTiles(project);
+            DrawGrid();
+
+            Raylib.EndMode2D();
+            
+            deGUI.Draw();
+            Hotkeys.Update();
+            
             Raylib.EndDrawing();
         }
-        rlImGui.Shutdown();
     }
 
     public void DrawGrid()
@@ -84,11 +87,14 @@ public sealed class Leditor
             Raylib.DrawLine(sx, y, ex, y, color);
         }
         
+        if(deGUI.HoveringSomething) return;
         Raylib.DrawRectangle((int)(pointingOn.X * GridBuffer.CELL_SIZE), (int)(pointingOn.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
     }
-    
+
     private void ProcessInputs()
     {
+        if(deGUI.HoveringSomething) return;
+        
         int w = Raylib.GetScreenWidth();
         int h = Raylib.GetScreenHeight();
         
@@ -149,8 +155,41 @@ public sealed class Leditor
         buffer.SetTile(new Vector2(3, 1), "wall_up_2");
         buffer.SetTile(new Vector2(4, 1), "wall_up_4");
         buffer.SetTile(new Vector2(5, 1), "wall_up_6");
-       
-        //anchor test
+        
+        project.AddMap("map_1", buffer.Get);
+
+        buffer.Clear();
+        
+        buffer.SetTile(new Vector2(3, 0), "wall_up_1");
+        buffer.SetTile(new Vector2(4, 1), "wall_up_3");
+        buffer.SetTile(new Vector2(5, 2), "wall_up_5");
+        buffer.SetTile(new Vector2(3, 3), "wall_up_2");
+        buffer.SetTile(new Vector2(4, 4), "wall_up_4");
+        buffer.SetTile(new Vector2(5, 5), "wall_up_6");
+        
+        project.AddMap("map_2", buffer.Get);
+        
+        buffer.Clear();
+        
+        buffer.SetTile(new Vector2(1, 0), "wall_up_1");
+        buffer.SetTile(new Vector2(1, 1), "wall_up_3");
+        buffer.SetTile(new Vector2(1, 2), "wall_up_5");
+        buffer.SetTile(new Vector2(1, 3), "wall_up_2");
+        buffer.SetTile(new Vector2(1, 4), "wall_up_4");
+        buffer.SetTile(new Vector2(1, 5), "wall_up_6");
+        
+        project.AddMap("map_3", buffer.Get);
+        
+        project.AddUnit("unit_1", "map_1", UnitData.NO_OVERRIDE);
+        project.AddUnit("unit_2", "map_2", UnitData.NO_OVERRIDE);
+        project.AddUnit("unit_3", "map_3", UnitData.NO_OVERRIDE);
+        
+        UnitSwitch = new UnitSwitch(this);
+        UnitSwitch.BuildGUI();
+
+        return;
+        
+       //anchor test
        // deGUI.ButtonManager.Push(Anchor.RightBottom, -100, -40, 160, 40, "RightBottom", LC, RC);
        // deGUI.ButtonManager.Push(Anchor.RightTop, -100, 40, 160, 40, "RIGHT TOP", LC, RC);
        // deGUI.ButtonManager.Push(Anchor.LeftTop, 100, 40, 160, 40, "TOP LEFT", LC, RC);

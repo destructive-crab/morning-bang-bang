@@ -1,65 +1,51 @@
 using System.Numerics;
-using ImGuiNET;
-using rlImGui_cs;
+using deGUISpace;
+using leditor.root.deGUILeditor;
 
 namespace leditor.root;
 
-public sealed class Toolset 
+public sealed class Toolset
 {
+    private Leditor leditor;
+    
     public Tool PreviousTool { get; private set; }
     public Tool CurrentTool { get; private set; }
 
     public readonly Tool[] All;
     
-    public Toolset()
+    public Toolset(Leditor leditor)
     {
+        this.leditor = leditor;
         All = new[] { (Tool)new Eraser(), new PaintTool() };
     }
 
     public void BuildGUI()
     {
-        
-    }
-    
-    public void DrawToolsetGUI(ProjectData project)
-    {
-        ImGui.Begin("Tools", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+        GUIGroup group = new GUIGroup(new RectGUIArea(Anchor.LeftTop, 0, 50, 100, -1));
+
+        for (var i = 0; i < All.Length; i++)
         {
-            ImGui.BeginMainMenuBar();
-
-            foreach (Tool tool in All)
-            {
-                if (ImGui.Button(tool.Name, new Vector2(60, 40)))
-                {
-                    PreviousTool = CurrentTool;
-                    CurrentTool = tool;
-                }
-            }
-            ImGui.EndMenuBar();
-
-            CurrentTool?.DrawToolMenu(project);
+            Tool tool = All[i];
+            ToolButton toolButton = new (tool.Name, new RectGUIArea(Anchor.CenterTop, 0, 10 + 40 * i, -1, 30));
+            toolButton.ApplyTool(tool, this);
+            
+            group.AddChild(toolButton);
         }
-        ImGui.End();
+        
+        deGUI.PushGUIElement(group);
+    }
+
+    public void SelectTool(Tool tool)
+    {
+        PreviousTool?.DisableGUIMenu(leditor.project);
+        CurrentTool = tool;
+        tool.EnableGUIMenu(leditor.project);
     }
 }
 
 internal sealed class PaintTool : Tool
 {
     public string selectedTile;
-
-    public override void DrawToolMenu(ProjectData project)
-    {
-        foreach (TileData tile in project.Tiles)
-        {
-            if (rlImGui.ImageButtonSize(tile.id, AssetsStorage.GetTexture(project.GetTexture(tile.texture_id)),
-                    new Vector2(40, 40)))
-            {
-                selectedTile = tile.id;
-            }
-        } 
-
-    }
-
     public override void OnClick(Vector2 position, GridBuffer buffer)
     {
         buffer.SetTile(position, selectedTile);
@@ -80,7 +66,8 @@ internal sealed class Eraser : Tool
 
 public abstract class Tool
 {
-    public virtual void DrawToolMenu(ProjectData project) {}
+    public virtual void EnableGUIMenu(ProjectData project) {}
+    public virtual void DisableGUIMenu(ProjectData project) {}
     public abstract void OnClick(Vector2 position, GridBuffer buffer);
     public abstract string Name { get; }
 }

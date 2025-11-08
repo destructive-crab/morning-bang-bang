@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Numerics;
 using Raylib_cs;
 
@@ -21,8 +20,10 @@ public enum Anchor
 
 public static class deGUI
 {
-    public const int ORIGINAL_WIDTH = 800;
-    public const int ORIGINAL_HEIGHT = 450;
+    public static bool HoveringSomething { get; private set; }
+    
+    public static int ORIGINAL_WIDTH = 1280;
+    public static int ORIGINAL_HEIGHT = 1040;
 
     public static int ScreenWidth { get; private set; } = ORIGINAL_WIDTH;
     public static int ScreenHeight { get; private set; } = ORIGINAL_HEIGHT;
@@ -247,6 +248,8 @@ public static class deGUI
                 }
             }
         }
+
+        HoveringSomething = hovering.Count != 0;
     }
 
     private static void DrawElement(GUIElement element)
