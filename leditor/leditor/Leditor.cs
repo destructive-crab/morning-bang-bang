@@ -1,3 +1,4 @@
+using System;
 using System.Numerics;
 using deGUISpace;
 using Raylib_cs;
@@ -107,6 +108,8 @@ public sealed class Leditor
 
         //other
         Vector2 worldPos = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), camera);
+        camera.Offset = Raylib.GetMousePosition();
+        camera.Target = worldPos;
 
         pointingOn = worldPos / GridBuffer.CELL_SIZE;
         
@@ -115,7 +118,7 @@ public sealed class Leditor
         else                  pointingOn.X = MathF.Floor(pointingOn.X);
         
         if (pointingOn.Y < 0) pointingOn.Y = MathF.Floor(pointingOn.Y);
-        else                  pointingOn.Y = MathF.Ceiling(pointingOn.Y);
+        else                  pointingOn.Y = MathF.Floor(pointingOn.Y);
 
         if (!area.Fits(mousePos.X, mousePos.Y))
         {

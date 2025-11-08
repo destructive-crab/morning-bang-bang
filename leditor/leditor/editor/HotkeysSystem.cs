@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Raylib_cs;
 
 namespace leditor.root;
