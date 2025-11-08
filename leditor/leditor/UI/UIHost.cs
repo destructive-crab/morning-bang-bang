@@ -9,6 +9,7 @@ namespace leditor.UI;
 public class UIHost(UIStyle style)
 {
     public AUIElement? Root;
+    public ClickAreasController Areas = new();
 
     private bool AssertRoot(
         [MaybeNullWhen(false)] out AUIElement root,
@@ -39,6 +40,7 @@ public class UIHost(UIStyle style)
     
     public void Update()
     {
+        Areas.Update();
         ProcessUpdateActions();
 
         if (NeedLayoutUpdate && AssertRoot(out var root))
@@ -60,5 +62,5 @@ public class UIHost(UIStyle style)
             draw();
     }
 
-    public UIStyle Style = style;
+    public readonly UIStyle Style = style;
 }

@@ -35,8 +35,9 @@ public class UIEditor
         );
 
         var padding = new UIPadding(200, 200, 10, 10);
-        
-        _host.Root = new StackBox(_host, [anchor], padding);
+        var stack = new StackBox(_host, [anchor], padding);
+        var subSplit = new SplitBox(_host, UIAxis.Vertical, stack, new UIRect(_host, Color.Green), PreserveSide.RightDown);
+        _host.Root = new SplitBox(_host, UIAxis.Horizontal, new UIRect(_host, Color.Red), subSplit);
         _host.SetSize(new Vector2(
             Raylib.GetRenderWidth(),
             Raylib.GetRenderHeight()

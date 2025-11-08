@@ -14,8 +14,8 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
             size.Y = float.Min(size.Y, child.MinimalSize.Y);
         }
 
-        size.X -= padding.Left + padding.Right;
-        size.Y -= padding.Top + padding.Bottom;
+        size.X += padding.Left + padding.Right;
+        size.Y += padding.Top + padding.Bottom;
         
         return size;
     }

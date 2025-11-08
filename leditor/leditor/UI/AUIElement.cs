@@ -7,9 +7,6 @@ public abstract class AUIElement(UIHost host, Vector2 minimalSize)
 {
     public AUIBox? Parent;
 
-    public void Destroy()
-        => Parent?.RemoveChild(this);
-
     protected readonly UIHost Host = host;
     
     private Vector2 _minimalSize = minimalSize;
@@ -36,7 +33,7 @@ public abstract class AUIElement(UIHost host, Vector2 minimalSize)
             _rect = new Rectangle(
                 value.X, value.Y,
                 float.Max(MinimalSize.X, value.Width),
-                float.Max(MinimalSize.X, value.Height)
+                float.Max(MinimalSize.Y, value.Height)
             );
             
             Host.UpdateActionsQueue.Enqueue(UpdateLayout);
@@ -46,4 +43,29 @@ public abstract class AUIElement(UIHost host, Vector2 minimalSize)
     public abstract void UpdateLayout();
 
     public abstract void Draw();
+
+    private readonly List<ClickArea> _areas = [];
+
+    protected void AddArea(ClickArea area)
+    {
+        _areas.Add(area);
+        Host.Areas.AddArea(area);
+    }
+
+    private void DestroyAreas()
+    {
+        foreach (var area in _areas)
+            Host.Areas.RemoveArea(area);
+        
+        _areas.Clear();
+    }
+    
+    public void Destroy()
+    {
+        Parent?.RemoveChild(this);
+        DestroyAreas();
+    }
+    
+    ~AUIElement()
+        => DestroyAreas();
 }
