@@ -53,7 +53,7 @@ public sealed class Leditor
             Raylib.BeginMode2D(camera);
             
             buffer.DrawTiles(project);
-            DrawGrid();
+            DrawGridLayout();
 
             Raylib.EndMode2D();
             
@@ -64,7 +64,7 @@ public sealed class Leditor
         }
     }
 
-    public void DrawGrid()
+    public void DrawGridLayout()
     {
         int sx = 0;
         int sy = GridBuffer.CELL_SIZE * 30;
@@ -89,31 +89,34 @@ public sealed class Leditor
         {
             Raylib.DrawLine(sx, y, ex, y, color);
         }
+
+        if (deGUI.HoveringSomething) return;
         
-        if(deGUI.HoveringSomething) return;
         Raylib.DrawRectangle((int)(pointingOn.X * GridBuffer.CELL_SIZE), (int)(pointingOn.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
     }
 
     private void ProcessInputs()
     {
-        if(deGUI.HoveringSomething) return;
-        
+        if (deGUI.HoveringSomething) return;
+
         int w = Raylib.GetScreenWidth();
         int h = Raylib.GetScreenHeight();
-        
-        Rectangle area = new Rectangle(new Vector2(w/2, h/2), w*0.85f, h*0.8f);
+
+        Rectangle area = new Rectangle(new Vector2(w / 2, h / 2), w * 0.85f, h * 0.8f);
         Vector2 mousePos = Raylib.GetMousePosition();
 
-        var color = Color.Green;
-        color.A = 50;
-        
         //other
         Vector2 worldPos = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), camera);
-        
+
         pointingOn = worldPos / GridBuffer.CELL_SIZE;
-        pointingOn.X = (int)(pointingOn.X);
-        pointingOn.Y = (int)(pointingOn.Y);
-            
+        
+        //idk why but x needs to be always floored
+        if (pointingOn.X < 0) pointingOn.X = MathF.Floor(pointingOn.X);
+        else                  pointingOn.X = MathF.Floor(pointingOn.X);
+        
+        if (pointingOn.Y < 0) pointingOn.Y = MathF.Floor(pointingOn.Y);
+        else                  pointingOn.Y = MathF.Ceiling(pointingOn.Y);
+
         if (!area.Fits(mousePos.X, mousePos.Y))
         {
             prevMousePos = Raylib.GetMousePosition();
