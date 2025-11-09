@@ -5,14 +5,12 @@ namespace leditor.root;
 
 public class UnitSwitch
 {
-    public Leditor Leditor;
-    private ProjectData Project => Leditor.project;
+    private ProjectData Project => App.LeditorInstance.project;
 
     private GUIGroup group;
     
-    public UnitSwitch(Leditor leditor)
+    public UnitSwitch()
     {
-        Leditor = leditor;
     }
 
     public void BuildGUI()
@@ -33,24 +31,16 @@ public class UnitSwitch
         
         deGUI.PushGUIElement(group);
     }
-
-    public void Show()
-    {
-        
-    }
-
-    public void Hide()
-    {
-        
-    }
-
+    
     public void SwitchTo(string id)
     {
         UnitData unit = Project.GetUnit(id);
-        TilemapData data = Leditor.project.GetMap(unit.MapID);
+        TilemapData data = App.LeditorInstance.project.GetMap(unit.MapID);
         
-        Leditor.buffer.Clear();
-        Leditor.buffer.Add(data);
-        Leditor.buffer.Add(data);
+        App.LeditorInstance.buffer.Clear();
+        App.LeditorInstance.buffer.AddAbove(data);
+        App.LeditorInstance.buffer.AddAbove(data);
+
+        App.LeditorInstance.FocusOnBufferCenter();
     }
 }

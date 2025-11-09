@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Raylib_cs;
 
@@ -8,6 +5,23 @@ namespace leditor.root;
 
 public sealed class GridBuffer
 {
+    public int BufferWidth  { get; private set; }
+    public int BufferHeight { get; private set; }
+    
+    public int MinX { get; private set; }
+    public int MinY { get; private set; }
+    public int MaxX { get; private set; }
+    public int MaxY { get; private set; }
+
+
+    public int WorldBufferWidth => BufferWidth * CELL_SIZE;
+    public int WorldBufferHeight => BufferHeight * CELL_SIZE;
+    
+    public int WorldMinX => MinX * CELL_SIZE;
+    public int WorldMinY => MinY * CELL_SIZE;
+    public int WorldMaxX => MaxX * CELL_SIZE;
+    public int WorldMaxY => MaxY * CELL_SIZE;
+    
     public KeyValuePair<Vector2, string>[] Get => map.ToArray();
     private readonly Dictionary<Vector2, string> map = new();
     
@@ -25,7 +39,6 @@ public sealed class GridBuffer
             DrawTile(texture, pos);
         }
     }
-
     private static void DrawTile(TextureData texture, Vector2 pos)
     {
         Texture2D tex = AssetsStorage.GetTexture(texture);
@@ -38,19 +51,18 @@ public sealed class GridBuffer
         if (id == null && map.ContainsKey(pos))
         {
             map.Remove(pos);
+            UpdateBufferRect();
+            
             return;
         }
-        else if (id == null)
+        
+        if (id == null)
         {
             return;
         }
 
         map[pos] = id;
-    }
-    
-    public void LoadFromTilemap(TilemapData tilemap)
-    {
-        
+        UpdateBufferRect();
     }
     
     public void Foreach(Action<Vector2, string> tileID)
@@ -64,13 +76,62 @@ public sealed class GridBuffer
     public void Clear()
     {
         map.Clear();
+        UpdateBufferRect();
     }
 
-    public void Add(TilemapData data)
+    public void AddAbove(TilemapData data)
     {
         foreach (KeyValuePair<Vector2,string> pair in data.Get)
         {
             map[pair.Key] = pair.Value;
         }
+        UpdateBufferRect();
+    }
+
+    public void UpdateBufferRect()
+    {
+        if (map.Count == 0)
+        {
+            MinX = 0;
+            MinY = 0;
+            MaxX = 0;
+            MaxY = 0;
+            BufferWidth = 0;
+            BufferHeight = 0;
+        }
+        
+        int minX = Int32.MaxValue;
+        int maxX = Int32.MinValue;
+        int minY = Int32.MaxValue;
+        int maxY = Int32.MinValue;
+        
+        foreach (KeyValuePair<Vector2,string> pair in map)
+        {
+            if (pair.Key.X < minX)
+            {
+                minX = (int)pair.Key.X;
+            }
+            else if (pair.Key.X > maxX)
+            {
+                maxX = (int)pair.Key.X;
+            }
+            
+            if (pair.Key.Y < minY)
+            {
+                minY = (int)pair.Key.Y;
+            }
+            else if (pair.Key.Y > maxY)
+            {
+                maxY = (int)pair.Key.Y;
+            }
+        }
+
+        MinX = minX;
+        MinY = minY;
+        MaxX = maxX + 1;
+        MaxY = maxY + 1;
+
+        BufferWidth = (int)MathF.Abs(MaxX - MinX);
+        BufferHeight = (int)MathF.Abs(MaxY - MinY);
     }
 }

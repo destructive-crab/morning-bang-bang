@@ -7,6 +7,9 @@ public class WindowHandler
 {
     public bool IsWindowCreated { get; private set; } = false;
     
+    public static int ORIGINAL_WIDTH = 1280;
+    public static int ORIGINAL_HEIGHT = 1040;
+    
     public void CreateWindow()
     {
         if(IsWindowCreated) return;
