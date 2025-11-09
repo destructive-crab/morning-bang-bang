@@ -78,7 +78,7 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
 
     public override void Draw()
     {
-        foreach (var child in _children)
+        foreach (var child in _children.AsEnumerable().Reverse())
             Host.DrawStack.Push(child.Draw);
     }
 }

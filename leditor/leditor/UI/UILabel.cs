@@ -6,7 +6,7 @@ namespace leditor.UI;
 public class UILabel(UIHost host, string text = "") : AUIElement(host, GetMinimalSize(host.Style, text))
 {
     private static Vector2 GetMinimalSize(UIStyle style, string text)
-        => Raylib.MeasureTextEx(style.Font, text, style.FontSize, 1);
+        => Raylib.MeasureTextEx(style.Font, text, style.FontSize, style.FontSpacing);
     
     private string _text = text;
 
@@ -27,7 +27,7 @@ public class UILabel(UIHost host, string text = "") : AUIElement(host, GetMinima
         var style = Host.Style;
         Raylib.DrawTextEx(
             style.Font, Text, Rect.Position, 
-            style.FontSize, 1, style.LabelColor
+            style.FontSize, style.FontSpacing, style.LabelColor
         );
     }
 }
