@@ -10,8 +10,8 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
         var size = Vector2.Zero;
         foreach (var child in children)
         {
-            size.X = float.Min(size.X, child.MinimalSize.X);
-            size.Y = float.Min(size.Y, child.MinimalSize.Y);
+            size.X = float.Max(size.X, child.MinimalSize.X);
+            size.Y = float.Max(size.Y, child.MinimalSize.Y);
         }
 
         size.X += padding.Left + padding.Right;
@@ -41,8 +41,8 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
         
         _children.Add(child);
         MinimalSize = new Vector2(
-            float.Min(MinimalSize.X, child.MinimalSize.X),
-            float.Min(MinimalSize.Y, child.MinimalSize.Y)
+            float.Max(MinimalSize.X, child.MinimalSize.X),
+            float.Max(MinimalSize.Y, child.MinimalSize.Y)
         );
     }
 

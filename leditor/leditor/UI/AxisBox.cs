@@ -65,20 +65,20 @@ public class AxisBox(UIHost host, UIAxis axis, AUIElement[] children):
         if (axis == UIAxis.Horizontal)
             foreach (var child in _children)
             {
-                position.X += child.MinimalSize.X + Host.Style.AxisBoxSpace;
                 child.Rect = new Rectangle(
                     position.X, position.Y,
                     child.MinimalSize.X, Rect.Height
                 );
+                position.X += child.MinimalSize.X + Host.Style.AxisBoxSpace;
             }
         else
             foreach (var child in _children)
             {
-                position.Y += child.MinimalSize.Y + Host.Style.AxisBoxSpace;
                 child.Rect = new Rectangle(
                     position.X, position.Y,
                     Rect.Width, child.MinimalSize.Y
                 );
+                position.Y += child.MinimalSize.Y + Host.Style.AxisBoxSpace;
             }
     }
     

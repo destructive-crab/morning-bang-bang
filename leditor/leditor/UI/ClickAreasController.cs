@@ -13,39 +13,9 @@ public class ClickArea(Rectangle rect, bool overlay = true)
     public Action? OnHover;
     public Action? OnUnhover;
     public MoveAction? OnMove;
-    
-    public bool IsHovered { get; private set; }
-    private bool _isGrabbed;
 
-    public void Update(Vector2 mousePosition)
-    {
-        var inner = mousePosition - Rect.Position;
-        var newIsHovered =
-            inner.X >= 0 && inner.X <= Rect.Width &&
-            inner.Y >= 0 && inner.Y <= Rect.Height;
-
-        if (newIsHovered)
-        {
-            if (!IsHovered)
-                OnHover?.Invoke();
-            
-            if (Raylib.IsMouseButtonPressed(MouseButton.Left))
-            {
-                _isGrabbed = true;
-                OnClick?.Invoke();
-            }
-        }
-        else if (IsHovered)
-            OnUnhover?.Invoke();
-
-        _isGrabbed = _isGrabbed&& Raylib.IsMouseButtonDown(MouseButton.Left);
-        var newPosition = Raylib.GetMousePosition();
-        if (_isGrabbed && mousePosition != newPosition)
-            OnMove?.Invoke(mousePosition, newPosition);
-            
-        IsHovered = newIsHovered;
-    }
-
+    public bool IsHovered;
+    public bool IsGrabbed;
 }
 
 public class ClickAreasController
@@ -56,13 +26,51 @@ public class ClickAreasController
     public void Update()
     {
         var newPosition = Raylib.GetMousePosition();
-        foreach (var area in _areas)
+        using var areaIter = _areas
+            .AsEnumerable()
+            .Reverse()
+            .GetEnumerator();
+        
+        while (areaIter.MoveNext())
         {
-            area.Update(_mousePosition);
+            var area = areaIter.Current;
+            var inner = _mousePosition - area.Rect.Position;
+            var newIsHovered =
+                inner.X >= 0 && inner.X <= area.Rect.Width &&
+                inner.Y >= 0 && inner.Y <= area.Rect.Height;
+
+            if (newIsHovered)
+            {
+                if (!area.IsHovered)
+                    area.OnHover?.Invoke();
+            
+                if (Raylib.IsMouseButtonPressed(MouseButton.Left))
+                {
+                    area.IsGrabbed = true;
+                    area.OnClick?.Invoke();
+                }
+            }
+            else if (area.IsHovered)
+                area.OnUnhover?.Invoke();
+
+            area.IsGrabbed = area.IsGrabbed&& Raylib.IsMouseButtonDown(MouseButton.Left);
+            if (area.IsGrabbed && _mousePosition != newPosition)
+                area.OnMove?.Invoke(_mousePosition, newPosition);
+            
+            area.IsHovered = newIsHovered;
+            
             if (area.IsHovered && area.Overlay)
                 break;
         }
-        
+
+        while (areaIter.MoveNext())
+        {
+            var area = areaIter.Current;
+            if (!area.IsHovered) continue;
+            area.IsHovered = false;
+            area.OnUnhover?.Invoke();
+        }
+
         _mousePosition = newPosition;
     }
 
