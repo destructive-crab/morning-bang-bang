@@ -1,4 +1,5 @@
 using System.Numerics;
+using leditor.root;
 
 namespace deGUISpace;
 
@@ -31,7 +32,7 @@ public class GUIUtil
             return res;
         }
         
-        return AnchorPosition(rectArea, 0, 0, deGUI.ScreenWidth, deGUI.ScreenHeight);
+        return AnchorPosition(rectArea, 0, 0, App.WindowHandler.Width, App.WindowHandler.Height);
     }
 
     public static Vector2 AnchorPosition(RectGUIArea rectArea, int startX, int startY, int w, int h)

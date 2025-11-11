@@ -1,7 +1,10 @@
-using System;
+using System.Drawing;
 using System.Numerics;
 using deGUISpace;
-using Raylib_cs;
+using SFML.Graphics;
+using SFML.System;
+using SFML.Window;
+using Color = SFML.Graphics.Color;
 
 namespace leditor.root;
 
@@ -10,12 +13,10 @@ public sealed class Leditor
     //data
     public ProjectData project;
     public GridBuffer buffer = new();
-    private Camera2D camera;
 
-    private Vector2 pointingOn;
+    private Vector2f pointingOn;
     
     //modules
-
     private readonly Toolset       Toolset;
     private readonly HotkeysSystem Hotkeys = new();
     private UnitSwitch             UnitSwitch;
@@ -40,29 +41,21 @@ public sealed class Leditor
 
     public void DoLoop()
     {
-        camera = new Camera2D(new Vector2(0, 0), new Vector2(550, 450), 0, 0.1f);
-        
-        while (!Raylib.WindowShouldClose())
+        while (App.WindowHandler.IsOpen)
         {
             //inputs
             ProcessInputs();
             
             //drawing
-            Raylib.BeginDrawing();
-
-            Raylib.ClearBackground(new Color(19, 38, 35));
-
-            Raylib.BeginMode2D(camera);
-            
-            buffer.DrawTiles(project);
-            DrawGridLayout();
-
-            Raylib.EndMode2D();
-            
-            deGUI.Draw();
-            Hotkeys.Update();
-            
-            Raylib.EndDrawing();
+            App.WindowHandler.BeginDrawing();
+            {
+                buffer.DrawTiles(project);
+                DrawGridLayout();
+                deGUI.Draw();
+                Hotkeys.Update();               
+                App.WindowHandler.ApplyView(App.WindowHandler.View);
+            }
+            App.WindowHandler.CompleteDrawing();
         }
     }
 
@@ -85,38 +78,37 @@ public sealed class Leditor
         
         for (; x <= ex; x += dx)
         {
-            Raylib.DrawLine(x, sy, x, ey, color);
+            App.WindowHandler.DrawLine(x, sy, x, ey, color);
         }
         for (; y <= ey; y += dy) 
         {
-            Raylib.DrawLine(sx, y, ex, y, color);
+            App.WindowHandler.DrawLine(sx, y, ex, y, color);
         }
 
         if (deGUI.HoveringSomething) return;
         if(pointingOn.X < buffer.MinX - 1 || pointingOn.X > buffer.MaxX) return;
         if(pointingOn.Y < buffer.MinY - 1 || pointingOn.Y > buffer.MaxY) return;
         
-        Raylib.DrawRectangle((int)(pointingOn.X * GridBuffer.CELL_SIZE), (int)(pointingOn.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
+        App.WindowHandler.DrawRectangle((int)(pointingOn.X * GridBuffer.CELL_SIZE), (int)(pointingOn.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
     }
 
     private void ProcessInputs()
     {
         if (deGUI.HoveringSomething) return;
 
-        int w = Raylib.GetScreenWidth();
-        int h = Raylib.GetScreenHeight();
+        int w = App.WindowHandler.Width;
+        int h = App.WindowHandler.Height;
 
-        Rectangle area = new Rectangle(new Vector2(w / 2, h / 2), w * 0.85f, h * 0.8f);
-        Vector2 mousePos = Raylib.GetMousePosition();
+        Rectangle area = new Rectangle(w / 2, h / 2, (int)(w * 0.85f), (int)(h * 0.8f));
+        Vector2i mousePos = Mouse.GetPosition();
 
         //other
-        Vector2 worldPos = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), camera);
-        camera.Offset = new Vector2(Raylib.GetScreenWidth() / 2f, Raylib.GetScreenHeight() / 2f);
+        Vector2f worldPos = App.InputsHandler.WorldMousePosition;
 
         pointingOn = worldPos / GridBuffer.CELL_SIZE;
         
-        Raylib.DrawLine(w/2, 0, w/2, h, Color.Green);
-        Raylib.DrawLine(0, h/2, w, h/2, Color.Green);
+        App.WindowHandler.DrawLine(w/2, 0, w/2, h, Color.Green);
+        App.WindowHandler.DrawLine(0, h/2, w, h/2, Color.Green);
         
         //idk why but x needs to be always floored
         if (pointingOn.X < 0) pointingOn.X = MathF.Floor(pointingOn.X);
@@ -125,51 +117,46 @@ public sealed class Leditor
         if (pointingOn.Y < 0) pointingOn.Y = MathF.Floor(pointingOn.Y);
         else                  pointingOn.Y = MathF.Floor(pointingOn.Y);
 
-        if (!area.Fits(mousePos.X, mousePos.Y))
-        {
-            prevMousePos = Raylib.GetMousePosition();
-            return;
-        }
-        
         //zoom
-        camera.Zoom = camera.Zoom + 0.05f * Raylib.GetMouseWheelMove();
-        
-        if (camera.Zoom > 4f) camera.Zoom = 4;
-        if (camera.Zoom < 0.2f) camera.Zoom = 0.2f;
+        View view = App.WindowHandler.View;
+        //view.Zoom(0.05f * App.InputsHandler.MouseWheelDelta);
+
+        //if (view.Size.X < 100) view.Size = new Vector2f(100, view.Size.Y);
+        //if (view.Size.X > 800) view.Size = new Vector2f(800, view.Size.Y);
         
         //move and tools
-        if (Raylib.IsMouseButtonDown(MouseButton.Right))
+        if (App.InputsHandler.IsRightMouseButtonPressed)
         {
-            Vector2 delta = prevMousePos - Raylib.GetMousePosition();
-            camera.Target += delta / camera.Zoom;
+            Vector2i delta = prevMousePos - Mouse.GetPosition();
+            view.Move((Vector2f)delta);
         }
-        else if(Raylib.IsMouseButtonPressed(MouseButton.Left))
+        else if(App.InputsHandler.IsLeftMouseButtonDown)
         {
-            Toolset.CurrentTool?.OnClick(pointingOn, buffer);
+            Toolset.CurrentTool?.OnClick(new Vector2(pointingOn.X, pointingOn.Y), buffer);
         }
 
-        if (camera.Target.X < buffer.WorldMinX - 300) camera.Target.X = buffer.WorldMinX - 300;
-        if (camera.Target.X > buffer.WorldMaxX + 300) camera.Target.X = buffer.WorldMaxX + 300;
-        if (camera.Target.Y < buffer.WorldMinY - 300) camera.Target.Y = buffer.WorldMinY - 300;
-        if (camera.Target.Y > buffer.WorldMaxY + 300) camera.Target.Y = buffer.WorldMaxY + 300;
-        
-        prevMousePos = Raylib.GetMousePosition();
+ //       if (view.Target.X < buffer.WorldMinX - 300) view.Target.X = buffer.WorldMinX - 300;
+ //       if (view.Target.X > buffer.WorldMaxX + 300) view.Target.X = buffer.WorldMaxX + 300;
+ //       if (view.Target.Y < buffer.WorldMinY - 300) view.Target.Y = buffer.WorldMinY - 300;
+ //       if (view.Target.Y > buffer.WorldMaxY + 300) view.Target.Y = buffer.WorldMaxY + 300;
+
+         prevMousePos = Mouse.GetPosition();
     }
 
-    private Vector2 prevMousePos;
+    private Vector2i prevMousePos;
 
     public void FocusOnBufferCenter()
     {
-        camera.Target = new Vector2(
+        App.WindowHandler.View.Center = new Vector2f(
             /* x */ buffer.WorldMinX + buffer.WorldBufferWidth  / 2f,
             /* y */ buffer.WorldMinY + buffer.WorldBufferHeight / 2f);
 
-        float xZoom = Raylib.GetScreenWidth()  / (float) (buffer.WorldBufferWidth  + 240);
-        float yZoom = Raylib.GetScreenHeight() / (float) (buffer.WorldBufferHeight + 240);
+        float xZoom = App.WindowHandler.Width  / (float) (buffer.WorldBufferWidth  + 240);
+        float yZoom = App.WindowHandler.Height / (float) (buffer.WorldBufferHeight + 240);
 
         Console.WriteLine(buffer.WorldBufferWidth + " " + buffer.WorldBufferHeight +" "+ xZoom + " " + yZoom);
         
-        if (xZoom < yZoom) camera.Zoom = xZoom;
-        else               camera.Zoom = yZoom;
+//        if (xZoom < yZoom) view.Zoom = xZoom;
+//        else               view.Zoom = yZoom;
     }
 }

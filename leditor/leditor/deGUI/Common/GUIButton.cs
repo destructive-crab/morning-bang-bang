@@ -1,5 +1,4 @@
-using System;
-using Raylib_cs;
+using SFML.Graphics;
 
 namespace deGUISpace;
 
@@ -10,11 +9,11 @@ public class GUIButton : GUIElement, IOnRightClick, IOnLeftClick, IOnPressed, IO
     //contents
     public string Label = "";
     
-    public Texture2D Texture;
+    public Texture Texture;
     public Color Color = Color.White;
     
     public Color DefaultColor = Color.White;
-    public Color PressedColor = Color.Gray;
+    public Color PressedColor = Color.Blue;
 
     //interactions
     private Action RightCallbacks;
@@ -37,7 +36,7 @@ public class GUIButton : GUIElement, IOnRightClick, IOnLeftClick, IOnPressed, IO
         GUIArea = guiArea;
     }
     
-    public GUIButton(Texture2D texture)
+    public GUIButton(Texture texture)
     {
         Texture = texture;
     }
@@ -47,13 +46,13 @@ public class GUIButton : GUIElement, IOnRightClick, IOnLeftClick, IOnPressed, IO
         Label = label;
     }
 
-    public GUIButton(string label, Texture2D texture)
+    public GUIButton(string label, Texture texture)
     {
         Label = label;
         Texture = texture;
     }
 
-    public GUIButton(string label, Texture2D texture, Action rightCallbacks, Action leftCallbacks, GUIElement parent)
+    public GUIButton(string label, Texture texture, Action rightCallbacks, Action leftCallbacks, GUIElement parent)
     {
         Label = label;
         Texture = texture;

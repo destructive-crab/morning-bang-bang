@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using Raylib_cs;
+using leditor.root;
+using SFML.Graphics;
+using SFML.System;
 
 namespace deGUISpace;
 
@@ -26,9 +28,6 @@ public static class deGUI
     
     public static int ORIGINAL_WIDTH = 1280;
     public static int ORIGINAL_HEIGHT = 1040;
-
-    public static int ScreenWidth { get; private set; } = ORIGINAL_WIDTH;
-    public static int ScreenHeight { get; private set; } = ORIGINAL_HEIGHT;
 
     public static GUIElement[] Elements => elements.ToArray();
     public const int STRETCH = -1;
@@ -73,7 +72,7 @@ public static class deGUI
         return button;
     }
 
-    public static GUIImage PushImage(Texture2D texture, Anchor anchor, int xOffset, int yOffset, int width, int height)
+    public static GUIImage PushImage(Texture texture, Anchor anchor, int xOffset, int yOffset, int width, int height)
     {
         GUIImage image = new GUIImage(new RectGUIArea(anchor, xOffset, yOffset, width, height), texture);
         
@@ -100,12 +99,9 @@ public static class deGUI
     
     public static void Draw()
     {
-        WCF = (float)Raylib.GetScreenWidth()  / ORIGINAL_WIDTH;
-        HCF = (float)Raylib.GetScreenHeight() / ORIGINAL_HEIGHT;
+        WCF = (float)App.WindowHandler.Width / ORIGINAL_WIDTH;
+        HCF = (float)App.WindowHandler.Height / ORIGINAL_HEIGHT;
 
-        ScreenWidth = Raylib.GetScreenWidth();
-        ScreenHeight = Raylib.GetScreenHeight();
-        
         if (MathF.Abs(1 - WCF) > MathF.Abs(1 - HCF)) SCALE_COFF = WCF;
         else SCALE_COFF = HCF;
 
@@ -144,7 +140,7 @@ public static class deGUI
     private static List<GUIElement> lastFramePressed = new();
     public static void ProcessInteractions(GUIElement[] elements)
     {
-        Vector2 mousePos = Raylib.GetMousePosition();
+        Vector2i mousePos = App.InputsHandler.MousePosition;
         List<GUIElement> hovering = new();
         List<GUIElement> unhovering = new();
         
@@ -170,8 +166,7 @@ public static class deGUI
             }
         }
 
-
-        if (Raylib.IsMouseButtonReleased(MouseButton.Left))
+        if (App.InputsHandler.IsLeftMouseButtonPressed)
         {
             foreach (var element in lastFramePressed)
             {
@@ -181,7 +176,7 @@ public static class deGUI
                 }
             }
         }
-        if (Raylib.IsMouseButtonReleased(MouseButton.Right))
+        if (App.InputsHandler.IsRightMouseButtonPressed)
         {
             foreach (var element in lastFramePressed)
             {
@@ -202,7 +197,7 @@ public static class deGUI
         
         lastFramePressed.Clear();
         
-        if (Raylib.IsMouseButtonDown(MouseButton.Left))
+        if (App.InputsHandler.IsLeftMouseButtonPressed)
         {
             foreach (GUIElement element in hovering)
             {
@@ -214,7 +209,7 @@ public static class deGUI
                 }
             }
         }
-        if (Raylib.IsMouseButtonDown(MouseButton.Right))
+        if (App.InputsHandler.IsRightMouseButtonPressed)
         {
             foreach (GUIElement element in hovering)
             {
@@ -227,7 +222,7 @@ public static class deGUI
             }
         }
         
-        if (Raylib.IsMouseButtonReleased(MouseButton.Left))
+        if (App.InputsHandler.IsLeftMouseButtonReleased)
         {
             foreach (GUIElement element in hovering)
             {
@@ -239,7 +234,7 @@ public static class deGUI
             }
         }
         
-        if (Raylib.IsMouseButtonReleased(MouseButton.Right))
+        if (App.InputsHandler.IsRightMouseButtonReleased)
         {
             foreach (GUIElement element in hovering)
             {
@@ -283,19 +278,19 @@ public static class deGUI
         int ex = x + xsc;
         int ey = y + ysc;
         
-        Raylib.DrawRectangle(x, y, xsc, ysc, rectangle.Color);
+        App.WindowHandler.DrawRectangle(x, y, xsc, ysc, rectangle.Color);
         
         //outline
         int t = rectangle.Outline;
 
         //top
-        Raylib.DrawLineEx(new Vector2(x, y), new Vector2(ex, y),rectangle.Outline, rectangle.OutlineColor);
-        //left
-        Raylib.DrawLineEx(new Vector2(x, y), new Vector2(x, ey), rectangle.Outline, rectangle.OutlineColor);
-        //bottom
-        Raylib.DrawLineEx(new Vector2(ex, ey), new Vector2(x, ey), rectangle.Outline, rectangle.OutlineColor);
-        //right
-        Raylib.DrawLineEx(new Vector2(ex, ey), new Vector2(ex, y), rectangle.Outline, rectangle.OutlineColor);
+ //       Raylib.DrawLineEx(new Vector2(x, y), new Vector2(ex, y),rectangle.Outline, rectangle.OutlineColor);
+ //       //left
+ //       Raylib.DrawLineEx(new Vector2(x, y), new Vector2(x, ey), rectangle.Outline, rectangle.OutlineColor);
+ //       //bottom
+ //       Raylib.DrawLineEx(new Vector2(ex, ey), new Vector2(x, ey), rectangle.Outline, rectangle.OutlineColor);
+ //       //right
+ //       Raylib.DrawLineEx(new Vector2(ex, ey), new Vector2(ex, y), rectangle.Outline, rectangle.OutlineColor);
     }
 
     private static void DrawImage(GUIImage image)
@@ -303,7 +298,7 @@ public static class deGUI
         Vector2 anchoredPosition = GUIUtil.AnchorPosition(image.GUIArea);
         Vector2 scale = new Vector2(GUIUtil.AdaptX(image.GUIArea.AdaptedWidth), GUIUtil.AdaptY(image.GUIArea.AdaptedHeight));
         
-        Raylib.DrawTextureEx(image.Texture, anchoredPosition, 0, scale.X, Color.White);
+        //Raylib.DrawTextureEx(image.Texture, anchoredPosition, 0, scale.X, Color.White);
     }
 
     private static void DrawButton(GUIButton button)
@@ -311,32 +306,14 @@ public static class deGUI
         Vector2 anchoredPosition = GUIUtil.AnchorPosition(button);
         Vector2 scale = new Vector2(button.GUIArea.AdaptedWidth, button.GUIArea.AdaptedHeight);
         
-        Raylib.DrawRectangle((int)anchoredPosition.X-3, (int)anchoredPosition.Y-3, (int)(scale.X + 6), (int)(scale.Y + 6), Color.Black);
-        Raylib.DrawRectangle((int)anchoredPosition.X, (int)anchoredPosition.Y, (int)scale.X, (int)scale.Y, button.Color);
+        App.WindowHandler.DrawRectangle((int)anchoredPosition.X-3, (int)anchoredPosition.Y-3, (int)(scale.X + 6), (int)(scale.Y + 6), Color.Black);
+        App.WindowHandler.DrawRectangle((int)anchoredPosition.X, (int)anchoredPosition.Y, (int)scale.X, (int)scale.Y, button.Color);
+
+        Text text = new Text(button.Label, App.GeneralFont);
+        text.CharacterSize = 20;
+        text.Position = new Vector2f(anchoredPosition.X, anchoredPosition.Y);
         
-        int count = button.Label.Length;
-
-        int fontSize = (int)(scale.Y - 10);
-
-        if (Raylib.MeasureText(button.Label, fontSize) >= scale.X)
-        {
-            fontSize = (int)(scale.X / count);
-
-            if (Raylib.MeasureText(button.Label, fontSize) >= scale.X)
-            {
-                return;
-            }
-            
-            if (fontSize >= scale.Y)
-            {
-                fontSize = (int)(scale.Y - 4);
-            }           
-        }
-
-        int posX = (int)anchoredPosition.X + (int)((scale.X - Raylib.MeasureText(button.Label, fontSize)) / 2);
-        int posY = (int)anchoredPosition.Y + (int)(scale.Y - fontSize) / 2;
-
-        Raylib.DrawText(button.Label, posX, posY, fontSize, Color.Black);
+        App.WindowHandler.Draw(text);
     }
 
 }

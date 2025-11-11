@@ -1,5 +1,3 @@
-using Raylib_cs;
-
 namespace leditor.root;
 
 public sealed class TextureData
@@ -7,7 +5,7 @@ public sealed class TextureData
     public readonly string textureID;
     public readonly string pathToTexture;
     
-    public readonly Rectangle rectangle;
+    public readonly Rect rectangle;
     public readonly bool isCropped;
 
     public TextureData(string id, string path)
@@ -18,7 +16,7 @@ public sealed class TextureData
         isCropped = false;
     }
     
-    public TextureData(string id, string path, Rectangle rectangle)
+    public TextureData(string id, string path, Rect rectangle)
     {
         textureID = id;
         pathToTexture = path;

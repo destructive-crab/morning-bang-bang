@@ -1,16 +1,16 @@
-using Raylib_cs;
+using SFML.Graphics;
 
 namespace deGUISpace;
 
 public class GUIImage : GUIElement
 {
     public RectGUIArea GUIArea;
-    public Texture2D Texture;
+    public Texture Texture;
 
     public GUIElement Parent { get; set; }
     public bool Active { get; private set; }
 
-    public GUIImage(RectGUIArea guiArea, Texture2D texture)
+    public GUIImage(RectGUIArea guiArea, Texture texture)
     {
         GUIArea = guiArea;
         Texture = texture;

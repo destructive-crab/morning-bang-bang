@@ -1,0 +1,81 @@
+using SFML.Graphics;
+using SFML.System;
+using SFML.Window;
+
+namespace leditor.root;
+
+public sealed class InputsHandler
+{
+    public float MouseWheelDelta { get; private set; }
+    
+    public bool IsRightMouseButtonPressed { get; private set; }
+    public bool IsLeftMouseButtonPressed { get; private set; }
+
+    public bool IsRightMouseButtonDown { get; private set; }
+    public bool IsLeftMouseButtonDown { get; private set; }
+    
+    public bool IsRightMouseButtonReleased { get; private set; }
+    public bool IsLeftMouseButtonReleased { get; private set; }
+    
+    public Vector2f WorldMousePosition => window.MapPixelToCoords(Mouse.GetPosition());
+    public Vector2i MousePosition => Mouse.GetPosition();
+    
+    private RenderWindow window;
+
+    public InputsHandler(RenderWindow window)
+    {
+        this.window = window;
+        
+        //bind events
+        window.MouseWheelScrolled += OnMouseWheelScrolled;
+        window.MouseButtonPressed += OnMouseButtonPressed;
+        window.MouseButtonReleased += OnMouseButtonReleased;
+
+        window.Closed += WindowOnClosed; 
+    }
+
+    private void WindowOnClosed(object? sender, EventArgs e)
+    {
+        window.Close();
+    }
+
+    private void OnMouseButtonPressed(object? sender, MouseButtonEventArgs e)
+    {
+        if (e.Button == Mouse.Button.Right)
+        {
+            if (IsRightMouseButtonPressed)
+            {
+                IsRightMouseButtonDown = true;
+            }
+
+            IsRightMouseButtonPressed = true;
+        }
+        else if (e.Button == Mouse.Button.Left)
+        {
+            IsLeftMouseButtonPressed = true;
+        }
+    }
+
+    private void OnMouseButtonReleased(object? sender, MouseButtonEventArgs e)
+    {
+        if (e.Button == Mouse.Button.Right)
+        {
+            IsRightMouseButtonPressed = false;
+        }
+        else if (e.Button == Mouse.Button.Left)
+        {
+            IsLeftMouseButtonPressed = true;
+        }
+    }
+
+    private void OnMouseWheelScrolled(object? sender, MouseWheelScrollEventArgs e)
+    {
+        MouseWheelDelta = e.Delta;
+    }
+
+    public void FinishInputs()
+    {
+        IsLeftMouseButtonReleased = false;
+        IsRightMouseButtonReleased = false;
+    }
+}

@@ -1,4 +1,6 @@
 using System.Numerics;
+using leditor.root;
+using SFML.System;
 
 namespace deGUISpace;
 
@@ -39,7 +41,7 @@ public sealed class RectGUIArea
             {
                 if(Parent == null)
                 {
-                    return deGUI.ScreenWidth;
+                    return App.WindowHandler.Width;
                 }
                 else
                 {
@@ -56,7 +58,7 @@ public sealed class RectGUIArea
         {
             if (HeightRaw == deGUI.STRETCH)
             {
-                if(Parent == null) return deGUI.ScreenHeight;
+                if(Parent == null) return App.WindowHandler.Height;
                 else
                 {
                     return Parent.AdaptedHeight;
@@ -74,7 +76,7 @@ public sealed class RectGUIArea
         return x > position.X && y > position.Y && x < endPosition.X && y < endPosition.Y;
     }
 
-    public bool Fit(Vector2 position) => Fit(position.X, position.Y);
+    public bool Fit(Vector2i position) => Fit(position.X, position.Y);
 
     public RectGUIArea(Anchor anchor, int startX, int startY, int width, int height) 
     {

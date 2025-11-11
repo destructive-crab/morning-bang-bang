@@ -1,6 +1,5 @@
-using System.Collections.Generic;
 using System.Numerics;
-using Raylib_cs;
+using SFML.Graphics;
 
 namespace leditor.root;
 
@@ -48,26 +47,21 @@ public class ProjectData
     public TextureData[] CreateTilesFromTileset(string generalID, string tilesetPath)
     {
         List<TextureData> result = new();
-        Image img = AssetsStorage.GetImage(tilesetPath);
+        Image img = AssetsStorage.GetImageAtPath(tilesetPath);
 
-        int setW = img.Width / TILE_WIDTH;
-        int setH = img.Height / TILE_HEIGHT;
+        int setW = (int)(img.Size.X / TILE_WIDTH);
+        int setH = (int)(img.Size.Y / TILE_HEIGHT);
 
         int idIndex = 1;
         for (int w = 0; w < setW; w++)
         {
             for (int h = 0; h < setH; h++)
             {
-                Rectangle rec = new Rectangle(new Vector2(TILE_WIDTH * w, TILE_HEIGHT * h), TILE_WIDTH, TILE_HEIGHT);
-                
-                Image croppedGuiImage = Raylib.ImageCopy(img);
-                Raylib.ImageCrop(ref croppedGuiImage, rec);
+                Rect rec = new Rect(TILE_WIDTH * w, TILE_HEIGHT * h, TILE_WIDTH, TILE_HEIGHT);
 
+                Image croppedGuiImage = new Image(img);
                 TextureData textureData = AddTexture(generalID + $"_{idIndex}", tilesetPath, rec);
 
-                Texture2D croppedTex = Raylib.LoadTextureFromImage(croppedGuiImage);
-                AssetsStorage.RegisterCrop(textureData.textureID, croppedTex);
-                
                 result.Add(textureData);
                 AddTile(generalID + $"_{idIndex}", textureData);
                 
@@ -87,7 +81,7 @@ public class ProjectData
         return newTexture;
     }
     
-    public TextureData AddTexture(string id, string texturePath, Rectangle rectangle)
+    public TextureData AddTexture(string id, string texturePath, Rect rectangle)
     {
         TextureData newTexture = new TextureData(id, texturePath, rectangle);
         textures.Add(newTexture);

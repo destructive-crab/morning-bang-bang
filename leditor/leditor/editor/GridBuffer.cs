@@ -1,5 +1,6 @@
 using System.Numerics;
-using Raylib_cs;
+using SFML.Graphics;
+using SFML.System;
 
 namespace leditor.root;
 
@@ -31,7 +32,7 @@ public sealed class GridBuffer
     {
         foreach (KeyValuePair<Vector2, string> mapPair in map)
         {
-            Vector2 pos = mapPair.Key;
+            Vector2f pos = new Vector2f(mapPair.Key.X, mapPair.Key.Y);
             
             TileData tile = project.GetTile(mapPair.Value);
             TextureData texture = project.GetTexture(tile.texture_id);
@@ -39,11 +40,17 @@ public sealed class GridBuffer
             DrawTile(texture, pos);
         }
     }
-    private static void DrawTile(TextureData texture, Vector2 pos)
+    private static void DrawTile(TextureData textureData, Vector2f pos)
     {
-        Texture2D tex = AssetsStorage.GetTexture(texture);
+        Image image = AssetsStorage.GetImage(textureData);
+        Texture tex = new Texture(image);
         
-        Raylib.DrawTextureEx(tex, pos * CELL_SIZE, 0, (float)CELL_SIZE/tex.Width, Color.White);
+        Sprite sprite = new Sprite(tex);
+        sprite.Position = pos;
+        sprite.TextureRect = new IntRect(new Vector2i(textureData.rectangle.StartX, textureData.rectangle.StartY),
+            new Vector2i(textureData.rectangle.Width, textureData.rectangle.Height));
+        
+        App.WindowHandler.Draw(sprite);
     }
 
     public void SetTile(Vector2 pos, string id)

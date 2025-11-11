@@ -1,55 +1,32 @@
-using System.Collections.Generic;
-using Raylib_cs;
+using SFML.Graphics;
 
 namespace leditor.root;
 
 public static class AssetsStorage
 {
-    private static readonly Dictionary<string, Raylib_cs.Texture2D> cache_tex   = new();
-    private static readonly Dictionary<string, Raylib_cs.Image>     cache_img   = new();
-    private static readonly Dictionary<string, Raylib_cs.Texture2D> cache_crops = new();
+    private static readonly Dictionary<string, SFML.Graphics.Image> cache_img   = new();
 
-    public static void RegisterCrop(string id, Texture2D tex)
-    {
-        cache_crops.Add(id, tex);
-    }
 
-    public static Texture2D GetCrop(string id)
+    public static void RegisterImage(string id, Image img)
     {
-        return cache_crops[id];
+        cache_img.Add(id, img);
     }
     
-    public static Image GetImage(string path)
+    public static Image GetImageAtPath(string path)
     {
-        if (cache_tex.ContainsKey(path))
+        if (cache_img.ContainsKey(path))
         {
             return cache_img[path];
         }
 
-        Image img = Raylib.LoadImage(path); 
-        cache_img.Add(path, img);
+        Image img = new Image(path);
+        
+        RegisterImage(path, img);
         return img;
     }
-    
-    public static Texture2D GetRawTexture(string path)
-    {
-        if (cache_tex.ContainsKey(path))
-        {
-            return cache_tex[path];
-        }
 
-        Texture2D tex = Raylib.LoadTexture(path); 
-        cache_tex.Add(path, tex);
-        return tex;
-    }
-
-    public static Texture2D GetTexture(TextureData data)
+    public static Image GetImage(TextureData data)
     {
-        if (data.isCropped)
-        {
-            return cache_crops[data.textureID];
-        }
-        
-        return GetRawTexture(data.pathToTexture);
+        return GetImageAtPath(data.pathToTexture);
     }
 }
