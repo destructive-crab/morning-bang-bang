@@ -1,29 +1,43 @@
-using System.Numerics;
-using Raylib_cs;
-
+using SFML.Graphics;
+using SFML.System;
 namespace leditor.UI;
 
-public class UIImage(UIHost host, Texture2D image, Rectangle? source = null, Color? color = null) : 
-    AUIElement(host, source?.Size ?? new Vector2(image.Width, image.Height))
+public class UIImage(UIHost host, Texture image, IntRect? source = null, Color? color = null) : 
+    AUIElement(host, new Vector2f(source?.Size.X ?? (int)image.Size.X, source?.Size.Y ?? (int)image.Size.Y))
 {
-    public Texture2D Image = image;
-    public Color Color = color ?? Color.White;
-
-
-    private Rectangle _source = source ?? new Rectangle(Vector2.Zero, image.Width, image.Height);
-
-    public Rectangle Source
+    private readonly Sprite _sprite = new()
     {
-        get => _source;
+        Texture = image,
+        TextureRect = source ?? new IntRect(0, 0, (int)image.Size.X, (int)image.Size.Y)
+    };
+    
+    public Texture Image
+    {
+        get => _sprite.Texture;
+        set {
+            _sprite.Texture = value;
+            MinimalSize = _sprite.GetLocalBounds().Size;
+        }
+    }
+    
+    public Color Color
+    {
+        get => _sprite.Color;
+        set => _sprite.Color = value;
+    }
+
+    public IntRect Source
+    {
+        get => _sprite.TextureRect;
         set
         {
-            _source = value;
-            MinimalSize = _source.Size;
+            _sprite.TextureRect = value;
+            MinimalSize = _sprite.GetLocalBounds().Size;
         }
     }
     
     public override void UpdateLayout() {}
 
-    public override void Draw()
-        => Raylib.DrawTextureRec(Image, _source, Rect.Position, Color);
+    public override void Draw(RenderTarget target)
+        => target.Draw(_sprite);
 }

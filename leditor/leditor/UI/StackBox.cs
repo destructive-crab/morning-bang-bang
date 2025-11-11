@@ -1,13 +1,13 @@
-using System.Numerics;
-using Raylib_cs;
+using SFML.Graphics;
+using SFML.System;
 
 namespace leditor.UI;
 
 public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = default) : AUIBox(host, GetMinSize(children.AsEnumerable(), padding))
 {
-    private static Vector2 GetMinSize(IEnumerable<AUIElement> children, UIPadding padding)
+    private static Vector2f GetMinSize(IEnumerable<AUIElement> children, UIPadding padding)
     {
-        var size = Vector2.Zero;
+        var size = new Vector2f();
         foreach (var child in children)
         {
             size.X = float.Max(size.X, child.MinimalSize.X);
@@ -40,7 +40,7 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
         Host.NeedLayoutUpdate = true;
         
         _children.Add(child);
-        MinimalSize = new Vector2(
+        MinimalSize = new Vector2f(
             float.Max(MinimalSize.X, child.MinimalSize.X),
             float.Max(MinimalSize.Y, child.MinimalSize.Y)
         );
@@ -54,7 +54,7 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
         set
         {
             _padding = value;
-            MinimalSize = new Vector2(
+            MinimalSize = new Vector2f(
                 MinimalSize.X + _padding.Left + _padding.Right - value.Left - value.Right,
                 MinimalSize.Y + _padding.Top + _padding.Bottom - value.Top - value.Bottom
             );
@@ -63,9 +63,9 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
     
     public override void UpdateLayout()
     {
-        var rect = new Rectangle(
-            Rect.X + Padding.Left, 
-            Rect.Y + Padding.Top,
+        var rect = new FloatRect(
+            Rect.Left + Padding.Left, 
+            Rect.Top + Padding.Top,
             Rect.Width - Padding.Left - Padding.Right, 
             Rect.Height - Padding.Bottom - Padding.Top
         );
@@ -76,7 +76,7 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
         }
     }
 
-    public override void Draw()
+    public override void Draw(RenderTarget target)
     {
         foreach (var child in _children.AsEnumerable().Reverse())
             Host.DrawStack.Push(child.Draw);

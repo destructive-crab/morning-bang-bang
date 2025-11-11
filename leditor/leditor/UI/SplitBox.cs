@@ -1,6 +1,5 @@
-using System.Numerics;
-using leditor.root;
-using Raylib_cs;
+using SFML.Graphics;
+using SFML.System;
 
 namespace leditor.UI;
 
@@ -12,15 +11,15 @@ public enum PreserveSide
 
 public class SplitBox: AUIBox
 {
-    private static Vector2 GetMinimalSize(UIStyle style, UIAxis axis, AUIElement? first, AUIElement? second)
+    private static Vector2f GetMinimalSize(UIStyle style, UIAxis axis, AUIElement? first, AUIElement? second)
     {
         if (axis == UIAxis.Horizontal)
-            return new Vector2(
+            return new Vector2f(
                 (first?.MinimalSize.X ?? 0) + (second?.MinimalSize.X ?? 0) + style.SplitSeparatorThickness,
                 float.Max(first?.MinimalSize.Y ?? 0, second?.MinimalSize.Y ?? 0)
             );
         
-        return new Vector2(
+        return new Vector2f(
             float.Max(first?.MinimalSize.X ?? 0, second?.MinimalSize.X ?? 0),
             (first?.MinimalSize.Y ?? 0) + (second?.MinimalSize.Y ?? 0) + style.SplitSeparatorThickness
         );
@@ -35,6 +34,8 @@ public class SplitBox: AUIBox
 
     private AUIElement? _first;
     private AUIElement? _second;
+
+    private RectangleShape _separator;
     
     public SplitBox(UIHost host, UIAxis axis, AUIElement? first, AUIElement? second, PreserveSide preserve = PreserveSide.LeftUp):
         base(host, GetMinimalSize(host.Style, axis, first, second))
@@ -52,20 +53,25 @@ public class SplitBox: AUIBox
         _axisSize = _distance + Host.Style.SplitSeparatorThickness;
 
         _area = new ClickArea(
-            new Rectangle(
-                Vector2.Zero, 
-                host.Style.SplitSeparatorThickness * (axis == UIAxis.Horizontal ? Vector2.UnitX : Vector2.UnitY)
+            new FloatRect(
+                new Vector2f(), 
+                host.Style.SplitSeparatorThickness * (axis == UIAxis.Horizontal ? new Vector2f(1, 0) : new Vector2f(0, 1))
             ), false);
         _area.OnMove = OnMove;
+        
+        _separator = new RectangleShape(_area.Rect.Size);
+        _separator.Position = _area.Rect.Position;
+        _separator.FillColor = Host.Style.SplitSeparatorColor;
+        
         AddArea(_area);
     }
 
-    private void OnMove(Vector2 oldPosition, Vector2 newPosition)
+    private void OnMove(Vector2f oldPosition, Vector2f newPosition)
     {
         if (_axis == UIAxis.Horizontal)
-            _distance = newPosition.X - Rect.X;
+            _distance = newPosition.X - Rect.Left;
         else
-            _distance = newPosition.Y - Rect.Y;
+            _distance = newPosition.Y - Rect.Top;
 
         _distance -= (float)Host.Style.SplitSeparatorThickness / 2;
         
@@ -100,16 +106,16 @@ public class SplitBox: AUIBox
             );
             
             if (_first != null)
-                _first.Rect = new Rectangle(Rect.Position, _distance, Rect.Height);
+                _first.Rect = new FloatRect(Rect.Position.X, Rect.Position.Y, _distance, Rect.Height);
             
             if (_second != null)
-                _second.Rect = new Rectangle(
-                    Rect.X + _distance + Host.Style.SplitSeparatorThickness, Rect.Y, 
+                _second.Rect = new FloatRect(
+                    Rect.Left + _distance + Host.Style.SplitSeparatorThickness, Rect.Top, 
                     Rect.Width - _distance - Host.Style.SplitSeparatorThickness, Rect.Height
                 );
             
-            _area.Rect.X = Rect.X + _distance;
-            _area.Rect.Y = Rect.Y;
+            _area.Rect.Left = Rect.Left + _distance;
+            _area.Rect.Top = Rect.Top;
             _area.Rect.Height = Rect.Height;
             _axisSize = Rect.Width;
         } else {
@@ -122,24 +128,27 @@ public class SplitBox: AUIBox
             );
 
             if (_first != null)
-                _first.Rect = new Rectangle(Rect.Position, Rect.Width, _distance);
+                _first.Rect = new FloatRect(Rect.Position.X, Rect.Position.Y, Rect.Width, _distance);
             
             if (_second != null)
-                _second.Rect = new Rectangle(
-                    Rect.X, Rect.Y + _distance + Host.Style.SplitSeparatorThickness, 
+                _second.Rect = new FloatRect(
+                    Rect.Left, Rect.Top + _distance + Host.Style.SplitSeparatorThickness, 
                     Rect.Width, Rect.Height - _distance - Host.Style.SplitSeparatorThickness
                 );
             
-            _area.Rect.X = Rect.X;
-            _area.Rect.Y = Rect.Y + _distance;
+            _area.Rect.Left = Rect.Left;
+            _area.Rect.Top = Rect.Top + _distance;
             _area.Rect.Width = Rect.Width;
             _axisSize = Rect.Height;
         }
+        
+        _separator.Position = _area.Rect.Position;
+        _separator.Size = _area.Rect.Size;
     }
 
-    public override void Draw()
+    public override void Draw(RenderTarget target)
     {
-        Raylib.DrawRectangleRec(_area.Rect, Host.Style.SplitSeparatorColor);
+        target.Draw(_separator);
 
         if (_second != null)
             Host.DrawStack.Push(_second.Draw);

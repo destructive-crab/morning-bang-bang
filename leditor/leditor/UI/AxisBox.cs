@@ -1,5 +1,5 @@
-using System.Numerics;
-using Raylib_cs;
+using SFML.Graphics;
+using SFML.System;
 
 namespace leditor.UI;
 
@@ -11,9 +11,9 @@ public enum UIAxis
 public class AxisBox(UIHost host, UIAxis axis, AUIElement[] children): 
     AUIBox(host, CalculateSize(host.Style, axis, children))
 {
-    private static Vector2 CalculateSize(UIStyle style, UIAxis axis, IEnumerable<AUIElement> children)
+    private static Vector2f CalculateSize(UIStyle style, UIAxis axis, IEnumerable<AUIElement> children)
     {
-        var size = Vector2.Zero;
+        var size = new Vector2f(0, 0);
 
         if (axis == UIAxis.Horizontal)
         {
@@ -65,7 +65,7 @@ public class AxisBox(UIHost host, UIAxis axis, AUIElement[] children):
         if (axis == UIAxis.Horizontal)
             foreach (var child in _children)
             {
-                child.Rect = new Rectangle(
+                child.Rect = new FloatRect(
                     position.X, position.Y,
                     child.MinimalSize.X, Rect.Height
                 );
@@ -74,7 +74,7 @@ public class AxisBox(UIHost host, UIAxis axis, AUIElement[] children):
         else
             foreach (var child in _children)
             {
-                child.Rect = new Rectangle(
+                child.Rect = new FloatRect(
                     position.X, position.Y,
                     Rect.Width, child.MinimalSize.Y
                 );
@@ -82,7 +82,7 @@ public class AxisBox(UIHost host, UIAxis axis, AUIElement[] children):
             }
     }
     
-    public override void Draw()
+    public override void Draw(RenderTarget target)
     {
         foreach (var child in _children)
             Host.DrawStack.Push(child.Draw);

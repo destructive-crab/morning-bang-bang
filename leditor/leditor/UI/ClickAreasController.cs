@@ -1,12 +1,13 @@
-using System.Numerics;
-using Raylib_cs;
+using SFML.Graphics;
+using SFML.System;
+using SFML.Window;
 
 namespace leditor.UI;
 
-public delegate void MoveAction(Vector2 oldPosition, Vector2 newPosition);
-public class ClickArea(Rectangle rect, bool overlay = true)
+public delegate void MoveAction(Vector2f oldPosition, Vector2f newPosition);
+public class ClickArea(FloatRect rect, bool overlay = true)
 {
-    public Rectangle Rect = rect;
+    public FloatRect Rect = rect;
     public bool Overlay = overlay;
     
     public Action? OnClick;
@@ -21,11 +22,16 @@ public class ClickArea(Rectangle rect, bool overlay = true)
 public class ClickAreasController
 {
     private readonly List<ClickArea> _areas = [];
-    private Vector2 _mousePosition = Vector2.One;
+    private Vector2f _mousePosition = new(1, 1);
+    private bool _isPressedOld;
 
-    public void Update()
+    public void Update(RenderWindow window)
     {
-        var newPosition = Raylib.GetMousePosition();
+        var isPressed = Mouse.IsButtonPressed(Mouse.Button.Left);
+        var isClicked = isPressed && !_isPressedOld;
+        
+        var newPositionInts = Mouse.GetPosition(window);
+        var newPosition = new Vector2f(newPositionInts.X, newPositionInts.Y);
         using var areaIter = _areas
             .AsEnumerable()
             .Reverse()
@@ -44,7 +50,7 @@ public class ClickAreasController
                 if (!area.IsHovered)
                     area.OnHover?.Invoke();
             
-                if (Raylib.IsMouseButtonPressed(MouseButton.Left))
+                if (isClicked)
                 {
                     area.IsGrabbed = true;
                     area.OnClick?.Invoke();
@@ -53,7 +59,7 @@ public class ClickAreasController
             else if (area.IsHovered)
                 area.OnUnhover?.Invoke();
 
-            area.IsGrabbed = area.IsGrabbed&& Raylib.IsMouseButtonDown(MouseButton.Left);
+            area.IsGrabbed = area.IsGrabbed && isPressed;
             if (area.IsGrabbed && _mousePosition != newPosition)
                 area.OnMove?.Invoke(_mousePosition, newPosition);
             
@@ -72,6 +78,7 @@ public class ClickAreasController
         }
 
         _mousePosition = newPosition;
+        _isPressedOld = isPressed;
     }
 
     public void AddArea(ClickArea area)

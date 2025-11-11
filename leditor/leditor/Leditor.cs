@@ -1,22 +1,47 @@
 using leditor.UI;
-using Raylib_cs;
+using SFML.Graphics;
+using SFML.Window;
 
 namespace leditor.root;
 
 public sealed class Leditor
 {
-    private UIEditor _ui = new UIEditor();
-    
-    public void DoLoop()
+    private RenderWindow _window = new(new VideoMode(1080, 720), "LEditor");
+    private UIEditor _ui;
+
+    public Leditor()
     {
-        while (!Raylib.WindowShouldClose())
+        _ui = new UIEditor(_window);
+        
+        _window.SetFramerateLimit(60);
+        _window.Closed += WindowOnClosed;
+        _window.Resized += _ui.OnResize;
+    }
+
+    private void WindowOnClosed(object? sender, EventArgs e)
+    {
+        _window.Close();
+    }
+
+    public void Run()
+    {
+        while (_window.IsOpen)
         {
-            _ui.Update();
+            _window.DispatchEvents();
             
-            Raylib.BeginDrawing();
-            Raylib.ClearBackground(Color.Black);
-            _ui.Draw();
-            Raylib.EndDrawing();
+            _ui.Update(_window);
+               
+            _window.Clear(Color.Black);
+            _ui.Draw(_window);
+            _window.Display();
         }
+    }
+
+    public static void Main()
+    {
+        Logger.MinimumLevel = Logger.Level.Debug;
+        
+        var editor = new Leditor();
+        editor.Run();
     }
 }

@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using leditor.root;
-using Raylib_cs;
+using SFML.Graphics;
+using SFML.System;
 
 namespace leditor.UI;
 
@@ -24,10 +24,10 @@ public class UIHost(UIStyle style)
         return false;
     }
     
-    public void SetSize(Vector2 size)
+    public void SetSize(Vector2f size)
     {
         if (AssertRoot(out var root))
-            root.Rect = new Rectangle(Vector2.Zero, size);
+            root.Rect = new FloatRect(new Vector2f(0,0), size);
     }
     
     internal Queue<Action> UpdateActionsQueue = [];
@@ -38,9 +38,9 @@ public class UIHost(UIStyle style)
         while (UpdateActionsQueue.TryDequeue(out var action)) action();
     }
     
-    public void Update()
+    public void Update(RenderWindow window)
     {
-        Areas.Update();
+        Areas.Update(window);
         ProcessUpdateActions();
 
         if (NeedLayoutUpdate && AssertRoot(out var root))
@@ -50,16 +50,17 @@ public class UIHost(UIStyle style)
             ProcessUpdateActions();
         }
     }
-
-    public readonly Stack<Action> DrawStack = [];
     
-    public void Draw()
+    public delegate void DrawAction(RenderTarget target);
+    public readonly Stack<DrawAction> DrawStack = [];
+    
+    public void Draw(RenderTarget target)
     {
         if (!AssertRoot(out var root)) return;
         
-        root.Draw();
+        root.Draw(target);
         while (DrawStack.TryPop(out var draw))
-            draw();
+            draw(target);
     }
 
     public readonly UIStyle Style = style;

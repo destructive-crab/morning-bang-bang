@@ -1,8 +1,8 @@
-using System.Numerics;
+using SFML.System;
 
 namespace leditor.UI;
 
-public abstract class AUIBox(UIHost host, Vector2 minimalSize) : AUIElement(host, minimalSize)
+public abstract class AUIBox(UIHost host, Vector2f minimalSize) : AUIElement(host, minimalSize)
 {
     public abstract IEnumerable<AUIElement> GetChildren();
     

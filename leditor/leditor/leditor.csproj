@@ -9,8 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Raylib-cs" Version="7.0.1" />
-      <PackageReference Include="rlImgui-cs" Version="3.2.0" />
+      <PackageReference Include="SFML.Net" Version="2.6.1" />
     </ItemGroup>
 
 </Project>

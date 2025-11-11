@@ -1,17 +1,17 @@
-using System.Numerics;
-using Raylib_cs;
+using SFML.Graphics;
+using SFML.System;
 
 namespace leditor.UI;
 
-public abstract class AUIElement(UIHost host, Vector2 minimalSize)
+public abstract class AUIElement(UIHost host, Vector2f minimalSize)
 {
     public AUIBox? Parent;
 
     protected readonly UIHost Host = host;
     
-    private Vector2 _minimalSize = minimalSize;
+    private Vector2f _minimalSize = minimalSize;
 
-    public Vector2 MinimalSize
+    public Vector2f MinimalSize
     {
         get => _minimalSize;
         protected set
@@ -24,14 +24,14 @@ public abstract class AUIElement(UIHost host, Vector2 minimalSize)
         }
     }
 
-    private Rectangle _rect;
-    public Rectangle Rect
+    private FloatRect _rect;
+    public FloatRect Rect
     {
         get => _rect; 
         set
         {
-            _rect = new Rectangle(
-                value.X, value.Y,
+            _rect = new FloatRect(
+                value.Left, value.Top,
                 float.Max(MinimalSize.X, value.Width),
                 float.Max(MinimalSize.Y, value.Height)
             );
@@ -42,7 +42,7 @@ public abstract class AUIElement(UIHost host, Vector2 minimalSize)
 
     public abstract void UpdateLayout();
 
-    public abstract void Draw();
+    public abstract void Draw(RenderTarget target);
 
     private readonly List<ClickArea> _areas = [];
 

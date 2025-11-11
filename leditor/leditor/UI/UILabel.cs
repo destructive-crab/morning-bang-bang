@@ -1,33 +1,42 @@
-using System.Numerics;
-using Raylib_cs;
+using SFML.Graphics;
+using SFML.System;
 
 namespace leditor.UI;
 
-public class UILabel(UIHost host, string text = "") : AUIElement(host, GetMinimalSize(host.Style, text))
+public class UILabel : AUIElement
 {
-    private static Vector2 GetMinimalSize(UIStyle style, string text)
-        => Raylib.MeasureTextEx(style.Font, text, style.FontSize, style.FontSpacing);
+    private static Vector2f MakeText(UIStyle style, string text, out Text textObj)
+    {
+        textObj = new Text(text, style.Font);
+        textObj.CharacterSize = style.FontSize;
+        
+        return textObj.GetLocalBounds().Size;
+    }
     
-    private string _text = text;
+    public UILabel(UIHost host, string text = "") : 
+        base(host, MakeText(host.Style, text, out var textObj))
+    {
+        _textObj = textObj;
+    }
 
+    private Text _textObj;
     public string Text
     {
-        get => _text;
+        get => _textObj.DisplayedString;
         set
         {
-            _text = value;
-            MinimalSize = GetMinimalSize(Host.Style, _text);
+            _textObj.DisplayedString = value;
+            MinimalSize = _textObj.GetLocalBounds().Size;
         }
     }
 
-    public override void UpdateLayout() {}
-
-    public override void Draw()
+    public override void UpdateLayout()
     {
-        var style = Host.Style;
-        Raylib.DrawTextEx(
-            style.Font, Text, Rect.Position, 
-            style.FontSize, style.FontSpacing, style.LabelColor
-        );
+        _textObj.Position = Rect.Position;
+    }
+
+    public override void Draw(RenderTarget target)
+    {
+        target.Draw(_textObj);
     }
 }

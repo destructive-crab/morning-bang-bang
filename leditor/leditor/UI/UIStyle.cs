@@ -1,37 +1,45 @@
-using System.Numerics;
-using Raylib_cs;
+using SFML.Graphics;
+using SFML.System;
 
 namespace leditor.UI;
 
 public class UIStyle()
 {
+    private static Font PrepareFont()
+    {
+        var font = new Font("./Autistic.ttf");
+        
+        font.SetSmooth(false);
+
+        return font;
+    }
+    
     // Text
-    public readonly Font Font = Raylib.GetFontDefault();
-    public readonly int FontSize = 24;
-    public readonly int FontSpacing = 1;
+    public readonly Font Font = PrepareFont();
+    public readonly uint FontSize = 16;
     
     // Label
-    public readonly Color LabelColor = Color.LightGray;
+    public readonly Color LabelColor = Color.Green;
     
     // AxisBox
     public readonly int AxisBoxSpace = 2;
     
     // SplitBox
     public readonly int SplitSeparatorThickness = 5;
-    public readonly Color SplitSeparatorColor = Color.Beige;
+    public readonly Color SplitSeparatorColor = Color.Cyan;
     
     // Button
-    public readonly Vector2 ButtonSpace = Vector2.One * 6;
+    public readonly Vector2f ButtonSpace = new(6, 3);
     public readonly ButtonStateStyle NormalButton = new()
     {
-        TextOffset = Vector2.One * 3,
-        TextColor = Color.LightGray,
-        BgColor = Color.DarkGray
+        TextOffset = new Vector2f(3, 0),
+        TextColor = Color.Black,
+        BgColor = Color.White
     };
     public readonly ButtonStateStyle HoveredButton = new()
     {
-        TextOffset = Vector2.One * 3,
+        TextOffset = new Vector2f(3, 0),
         TextColor = Color.White,
-        BgColor = Color.Gray
+        BgColor = Color.Black
     };
 }
