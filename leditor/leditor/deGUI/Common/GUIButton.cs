@@ -13,7 +13,7 @@ public class GUIButton : GUIElement, IOnRightClick, IOnLeftClick, IOnPressed, IO
     public Color Color = Color.White;
     
     public Color DefaultColor = Color.White;
-    public Color PressedColor = Color.Blue;
+    public Color PressedColor = new Color(128, 128, 128);
 
     //interactions
     private Action RightCallbacks;

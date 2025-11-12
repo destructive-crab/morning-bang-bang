@@ -25,14 +25,14 @@ public sealed class GridBuffer
     
     public KeyValuePair<Vector2, string>[] Get => map.ToArray();
     private readonly Dictionary<Vector2, string> map = new();
-    
+
     public const int CELL_SIZE = 80;
 
     public void DrawTiles(ProjectData project)
     {
         foreach (KeyValuePair<Vector2, string> mapPair in map)
         {
-            Vector2f pos = new Vector2f(mapPair.Key.X, mapPair.Key.Y);
+            Vector2f pos = new Vector2f(mapPair.Key.X * CELL_SIZE, mapPair.Key.Y * CELL_SIZE);
             
             TileData tile = project.GetTile(mapPair.Value);
             TextureData texture = project.GetTexture(tile.texture_id);
@@ -40,15 +40,18 @@ public sealed class GridBuffer
             DrawTile(texture, pos);
         }
     }
+
     private static void DrawTile(TextureData textureData, Vector2f pos)
     {
         Image image = AssetsStorage.GetImage(textureData);
         Texture tex = new Texture(image);
         
         Sprite sprite = new Sprite(tex);
-        sprite.Position = pos;
         sprite.TextureRect = new IntRect(new Vector2i(textureData.rectangle.StartX, textureData.rectangle.StartY),
             new Vector2i(textureData.rectangle.Width, textureData.rectangle.Height));
+        
+        sprite.Scale = new Vector2f((float)CELL_SIZE / sprite.TextureRect.Width, (float)CELL_SIZE / sprite.TextureRect.Height);
+        sprite.Position = pos;
         
         App.WindowHandler.Draw(sprite);
     }

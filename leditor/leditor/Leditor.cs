@@ -51,9 +51,15 @@ public sealed class Leditor
             {
                 buffer.DrawTiles(project);
                 DrawGridLayout();
-                deGUI.Draw();
-                Hotkeys.Update();               
-                App.WindowHandler.ApplyView(App.WindowHandler.View);
+                
+                App.WindowHandler.BeginGUIMode();
+                {
+                    deGUI.Draw();
+                }
+                App.WindowHandler.CompleteGUIMode();
+                
+                Hotkeys.Update();
+
             }
             App.WindowHandler.CompleteDrawing();
         }

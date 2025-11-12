@@ -17,8 +17,8 @@ public sealed class InputsHandler
     public bool IsRightMouseButtonReleased { get; private set; }
     public bool IsLeftMouseButtonReleased { get; private set; }
     
-    public Vector2f WorldMousePosition => window.MapPixelToCoords(Mouse.GetPosition());
-    public Vector2i MousePosition => Mouse.GetPosition();
+    public Vector2f WorldMousePosition => window.MapPixelToCoords(Mouse.GetPosition(window));
+    public Vector2i MousePosition => Mouse.GetPosition(window);
     
     private RenderWindow window;
 
@@ -43,7 +43,7 @@ public sealed class InputsHandler
     {
         if (e.Button == Mouse.Button.Right)
         {
-            if (IsRightMouseButtonPressed)
+            if (!IsRightMouseButtonPressed)
             {
                 IsRightMouseButtonDown = true;
             }
@@ -52,6 +52,11 @@ public sealed class InputsHandler
         }
         else if (e.Button == Mouse.Button.Left)
         {
+            if (!IsLeftMouseButtonPressed)
+            {
+                IsLeftMouseButtonDown = true;
+            }
+
             IsLeftMouseButtonPressed = true;
         }
     }
@@ -60,11 +65,13 @@ public sealed class InputsHandler
     {
         if (e.Button == Mouse.Button.Right)
         {
+            IsRightMouseButtonReleased = true;
             IsRightMouseButtonPressed = false;
         }
         else if (e.Button == Mouse.Button.Left)
         {
-            IsLeftMouseButtonPressed = true;
+            IsLeftMouseButtonReleased = true;
+            IsLeftMouseButtonPressed = false;
         }
     }
 
@@ -77,5 +84,7 @@ public sealed class InputsHandler
     {
         IsLeftMouseButtonReleased = false;
         IsRightMouseButtonReleased = false;
+        IsLeftMouseButtonDown = false;
+        IsRightMouseButtonDown = false;
     }
 }

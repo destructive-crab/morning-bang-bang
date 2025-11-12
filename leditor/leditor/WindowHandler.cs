@@ -19,7 +19,7 @@ public class WindowHandler
     public static int ORIGINAL_WIDTH = 1280;
     public static int ORIGINAL_HEIGHT = 1040;
 
-    private RenderWindow window;
+    public RenderWindow window;
     
     public void CreateWindow()
     {
@@ -42,6 +42,18 @@ public class WindowHandler
     public void ApplyView(View view)
     {
         window.SetView(view);
+    }
+
+    public void BeginGUIMode()
+    {
+        window.SetView(window.DefaultView);
+    }
+    
+    public void CompleteGUIMode()
+    {
+        App.WindowHandler.View.Size = new Vector2f(App.WindowHandler.Width, App.WindowHandler.Height);
+        
+        window.SetView(View);
     }
     
     public void DrawLine(int startX, int startY, int endX, int endY, Color color)

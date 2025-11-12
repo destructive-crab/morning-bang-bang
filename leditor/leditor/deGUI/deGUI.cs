@@ -310,7 +310,8 @@ public static class deGUI
         App.WindowHandler.DrawRectangle((int)anchoredPosition.X, (int)anchoredPosition.Y, (int)scale.X, (int)scale.Y, button.Color);
 
         Text text = new Text(button.Label, App.GeneralFont);
-        text.CharacterSize = 20;
+        text.CharacterSize = 18;
+        text.FillColor = Color.Black;
         text.Position = new Vector2f(anchoredPosition.X, anchoredPosition.Y);
         
         App.WindowHandler.Draw(text);
