@@ -26,11 +26,10 @@ namespace leditor.root
             LeditorInstance.DoLoop();
         }
         
-        
         private static ProjectData InitTestProject()
         {
-            var project = new ProjectData();
-            var buffer = new GridBuffer();
+            ProjectData project = new ProjectData();
+            GridBuffer buffer = new GridBuffer();
                     
             TextureData tex = project.AddTexture("red", "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\tests\\red.png");
             project.AddTile("red", tex);
@@ -73,7 +72,6 @@ namespace leditor.root
             project.AddUnit("unit_2", "map_2", UnitData.NO_OVERRIDE);
             project.AddUnit("unit_3", "map_3", UnitData.NO_OVERRIDE);
             
-    
             return project;
         }
     

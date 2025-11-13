@@ -8,6 +8,11 @@ namespace leditor.root;
 
 public class WindowHandler
 {
+    public int ViewWidth;
+    public int ViewHeight;
+
+    public float Zoom = 1;
+    
     public View View { get; private set; }
     public InputsHandler InputsHandler { get; private set; }
     
@@ -39,11 +44,6 @@ public class WindowHandler
         IsWindowCreated = true;
     }
 
-    public void ApplyView(View view)
-    {
-        window.SetView(view);
-    }
-
     public void BeginGUIMode()
     {
         window.SetView(window.DefaultView);
@@ -51,7 +51,7 @@ public class WindowHandler
     
     public void CompleteGUIMode()
     {
-        App.WindowHandler.View.Size = new Vector2f(App.WindowHandler.Width, App.WindowHandler.Height);
+        View.Size = new Vector2f(ViewWidth * Zoom, ViewHeight * Zoom);
         
         window.SetView(View);
     }
@@ -78,16 +78,25 @@ public class WindowHandler
     {
         window.Draw(drawable);
     }
+
+    public void BeginFrame()
+    {
+        window.DispatchEvents();
+    }
     
     public void BeginDrawing()
     {
-        window.DispatchEvents();
-        window.Clear(Color.Blue);
+        window.Clear(new Color(19, 38, 35));
     }
 
     public void CompleteDrawing()
     {
+        
         window.Display();
+    }
+
+    public void CompleteFrame()
+    {
         App.InputsHandler.FinishInputs();
     }
     

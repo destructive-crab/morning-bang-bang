@@ -4,17 +4,18 @@ using deGUISpace;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+
 using Color = SFML.Graphics.Color;
 
 namespace leditor.root;
 
 public sealed class Leditor
 {
+    private Vector2f pointingOnCell;
+    
     //data
     public ProjectData project;
     public GridBuffer buffer = new();
-
-    private Vector2f pointingOn;
     
     //modules
     private readonly Toolset       Toolset;
@@ -22,6 +23,8 @@ public sealed class Leditor
     private UnitSwitch             UnitSwitch;
 
     private ProjectHandler projectHandler;
+
+    private float currentZoom = 0;
 
     public Leditor(ProjectData project)
     {
@@ -44,24 +47,27 @@ public sealed class Leditor
         while (App.WindowHandler.IsOpen)
         {
             //inputs
-            ProcessInputs();
             
-            //drawing
-            App.WindowHandler.BeginDrawing();
+            App.WindowHandler.BeginFrame();
             {
-                buffer.DrawTiles(project);
-                DrawGridLayout();
-                
-                App.WindowHandler.BeginGUIMode();
-                {
-                    deGUI.Draw();
-                }
-                App.WindowHandler.CompleteGUIMode();
-                
+                ProcessInputs();
                 Hotkeys.Update();
-
+                
+                //drawing
+                App.WindowHandler.BeginDrawing();
+                {
+                    buffer.DrawTiles(project);
+                    DrawGridLayout();
+                            
+                    App.WindowHandler.BeginGUIMode();
+                    {
+                        deGUI.Draw();
+                    }
+                    App.WindowHandler.CompleteGUIMode();
+                }
+                App.WindowHandler.CompleteDrawing();   
             }
-            App.WindowHandler.CompleteDrawing();
+            App.WindowHandler.CompleteFrame();
         }
     }
 
@@ -92,10 +98,10 @@ public sealed class Leditor
         }
 
         if (deGUI.HoveringSomething) return;
-        if(pointingOn.X < buffer.MinX - 1 || pointingOn.X > buffer.MaxX) return;
-        if(pointingOn.Y < buffer.MinY - 1 || pointingOn.Y > buffer.MaxY) return;
+        if(pointingOnCell.X < buffer.MinX - 1 || pointingOnCell.X > buffer.MaxX) return;
+        if(pointingOnCell.Y < buffer.MinY - 1 || pointingOnCell.Y > buffer.MaxY) return;
         
-        App.WindowHandler.DrawRectangle((int)(pointingOn.X * GridBuffer.CELL_SIZE), (int)(pointingOn.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
+        App.WindowHandler.DrawRectangle((int)(pointingOnCell.X * GridBuffer.CELL_SIZE), (int)(pointingOnCell.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
     }
 
     private void ProcessInputs()
@@ -111,34 +117,41 @@ public sealed class Leditor
         //other
         Vector2f worldPos = App.InputsHandler.WorldMousePosition;
 
-        pointingOn = worldPos / GridBuffer.CELL_SIZE;
+        pointingOnCell = worldPos / GridBuffer.CELL_SIZE;
         
         App.WindowHandler.DrawLine(w/2, 0, w/2, h, Color.Green);
         App.WindowHandler.DrawLine(0, h/2, w, h/2, Color.Green);
         
         //idk why but x needs to be always floored
-        if (pointingOn.X < 0) pointingOn.X = MathF.Floor(pointingOn.X);
-        else                  pointingOn.X = MathF.Floor(pointingOn.X);
+        if (pointingOnCell.X < 0) pointingOnCell.X = MathF.Floor(pointingOnCell.X);
+        else                      pointingOnCell.X = MathF.Floor(pointingOnCell.X);
         
-        if (pointingOn.Y < 0) pointingOn.Y = MathF.Floor(pointingOn.Y);
-        else                  pointingOn.Y = MathF.Floor(pointingOn.Y);
+        if (pointingOnCell.Y < 0) pointingOnCell.Y = MathF.Floor(pointingOnCell.Y);
+        else                      pointingOnCell.Y = MathF.Floor(pointingOnCell.Y);
 
         //zoom
         View view = App.WindowHandler.View;
-        //view.Zoom(0.05f * App.InputsHandler.MouseWheelDelta);
 
-        //if (view.Size.X < 100) view.Size = new Vector2f(100, view.Size.Y);
-        //if (view.Size.X > 800) view.Size = new Vector2f(800, view.Size.Y);
+        if (buffer.BufferHeight == 0 || buffer.BufferWidth == 0)
+        {
+            view.Size = new Vector2f(App.WindowHandler.Width, App.WindowHandler.Height);
+        }
+
+        App.WindowHandler.Zoom += App.InputsHandler.MouseWheelDelta / -10;
         
         //move and tools
         if (App.InputsHandler.IsRightMouseButtonPressed)
         {
-            Vector2i delta = prevMousePos - Mouse.GetPosition();
-            view.Move((Vector2f)delta);
+            Vector2f delta = (Vector2f)(prevMousePos - App.InputsHandler.MousePosition);
+            
+            delta.X *= (view.Size.X / w);
+            delta.Y *= (view.Size.Y / h);
+            
+            view.Move(delta);
         }
         else if(App.InputsHandler.IsLeftMouseButtonDown)
         {
-            Toolset.CurrentTool?.OnClick(new Vector2(pointingOn.X, pointingOn.Y), buffer);
+            Toolset.CurrentTool?.OnClick(new Vector2(pointingOnCell.X, pointingOnCell.Y), buffer);
         }
 
  //       if (view.Target.X < buffer.WorldMinX - 300) view.Target.X = buffer.WorldMinX - 300;
@@ -146,7 +159,7 @@ public sealed class Leditor
  //       if (view.Target.Y < buffer.WorldMinY - 300) view.Target.Y = buffer.WorldMinY - 300;
  //       if (view.Target.Y > buffer.WorldMaxY + 300) view.Target.Y = buffer.WorldMaxY + 300;
 
-         prevMousePos = Mouse.GetPosition();
+        prevMousePos = App.InputsHandler.MousePosition;
     }
 
     private Vector2i prevMousePos;
@@ -160,9 +173,17 @@ public sealed class Leditor
         float xZoom = App.WindowHandler.Width  / (float) (buffer.WorldBufferWidth  + 240);
         float yZoom = App.WindowHandler.Height / (float) (buffer.WorldBufferHeight + 240);
 
-        Console.WriteLine(buffer.WorldBufferWidth + " " + buffer.WorldBufferHeight +" "+ xZoom + " " + yZoom);
-        
-//        if (xZoom < yZoom) view.Zoom = xZoom;
-//        else               view.Zoom = yZoom;
+        float ratio = App.WindowHandler.Width / (float)App.WindowHandler.Height;
+            
+        if (buffer.BufferWidth > buffer.BufferHeight)
+        {
+            App.WindowHandler.ViewWidth = buffer.WorldBufferWidth + 340;
+            App.WindowHandler.ViewHeight = (int)((buffer.WorldBufferWidth + 340) * (1f/ratio));
+        }
+        else
+        {
+            App.WindowHandler.ViewWidth = (int)((buffer.WorldBufferHeight + 340) * ratio);
+            App.WindowHandler.ViewHeight = (buffer.WorldBufferHeight + 340);
+        }
     }
 }

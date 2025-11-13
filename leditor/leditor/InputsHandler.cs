@@ -22,6 +22,8 @@ public sealed class InputsHandler
     
     private RenderWindow window;
 
+    private readonly List<Keyboard.Key> keysDown = new();
+
     public InputsHandler(RenderWindow window)
     {
         this.window = window;
@@ -30,8 +32,21 @@ public sealed class InputsHandler
         window.MouseWheelScrolled += OnMouseWheelScrolled;
         window.MouseButtonPressed += OnMouseButtonPressed;
         window.MouseButtonReleased += OnMouseButtonReleased;
+        
+        window.KeyPressed += OnKeyPressed;
 
         window.Closed += WindowOnClosed; 
+    }
+
+    public bool IsKeyDown(Keyboard.Key key)
+    {
+        return keysDown.Contains(key);
+    }
+    
+    private void OnKeyPressed(object? sender, KeyEventArgs e)
+    {
+        keysDown.Add(e.Code);
+        Console.WriteLine(e.Code);
     }
 
     private void WindowOnClosed(object? sender, EventArgs e)
@@ -84,7 +99,12 @@ public sealed class InputsHandler
     {
         IsLeftMouseButtonReleased = false;
         IsRightMouseButtonReleased = false;
+        
         IsLeftMouseButtonDown = false;
         IsRightMouseButtonDown = false;
+
+        MouseWheelDelta = 0;
+        
+        keysDown.Clear();
     }
 }

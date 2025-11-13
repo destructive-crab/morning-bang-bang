@@ -1,3 +1,5 @@
+using SFML.Graphics;
+
 namespace leditor.root;
 
 public struct Rect
@@ -14,5 +16,10 @@ public struct Rect
         StartY = startY;
         Width = width;
         Height = height;
+    }
+
+    public IntRect ToIntRect()
+    {
+        return new IntRect(StartX, StartY, Width, Height);
     }
 }

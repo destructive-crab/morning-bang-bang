@@ -14,7 +14,6 @@ public sealed class GridBuffer
     public int MaxX { get; private set; }
     public int MaxY { get; private set; }
 
-
     public int WorldBufferWidth => BufferWidth * CELL_SIZE;
     public int WorldBufferHeight => BufferHeight * CELL_SIZE;
     
@@ -28,6 +27,11 @@ public sealed class GridBuffer
 
     public const int CELL_SIZE = 80;
 
+    public void InitTest()
+    {
+
+    }
+    
     public void DrawTiles(ProjectData project)
     {
         foreach (KeyValuePair<Vector2, string> mapPair in map)
@@ -43,14 +47,11 @@ public sealed class GridBuffer
 
     private static void DrawTile(TextureData textureData, Vector2f pos)
     {
-        Image image = AssetsStorage.GetImage(textureData);
-        Texture tex = new Texture(image);
-        
+        Texture tex = RenderCacher.GetTexture(textureData.pathToTexture);
+
         Sprite sprite = new Sprite(tex);
-        sprite.TextureRect = new IntRect(new Vector2i(textureData.rectangle.StartX, textureData.rectangle.StartY),
-            new Vector2i(textureData.rectangle.Width, textureData.rectangle.Height));
-        
-        sprite.Scale = new Vector2f((float)CELL_SIZE / sprite.TextureRect.Width, (float)CELL_SIZE / sprite.TextureRect.Height);
+        sprite.TextureRect = textureData.rectangle.ToIntRect();
+        sprite.Scale =new Vector2f((float)CELL_SIZE / sprite.TextureRect.Width, (float)CELL_SIZE / sprite.TextureRect.Height);
         sprite.Position = pos;
         
         App.WindowHandler.Draw(sprite);
