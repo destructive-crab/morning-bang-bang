@@ -10,7 +10,9 @@ public class UIHost(UIStyle style)
 {
     public AUIElement? Root;
     public ClickAreasController Areas = new();
-
+    public View View;
+    public Vector2f Size;
+    
     private bool AssertRoot(
         [MaybeNullWhen(false)] out AUIElement root,
         [CallerFilePath] string filePath = "", 
@@ -26,6 +28,7 @@ public class UIHost(UIStyle style)
     
     public void SetSize(Vector2f size)
     {
+        Size = size;
         if (AssertRoot(out var root))
             root.Rect = new FloatRect(new Vector2f(0,0), size);
     }
@@ -57,10 +60,14 @@ public class UIHost(UIStyle style)
     public void Draw(RenderTarget target)
     {
         if (!AssertRoot(out var root)) return;
+
+        View = new View(target.GetView());
         
         root.Draw(target);
         while (DrawStack.TryPop(out var draw))
             draw(target);
+        
+        target.SetView(View);
     }
 
     public readonly UIStyle Style = style;

@@ -45,9 +45,24 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
     public abstract void Draw(RenderTarget target);
 
     private readonly List<ClickArea> _areas = [];
+    protected ClickAreaView? ClickView;
+    public void SetClickView(ClickAreaView? view)
+    {
+        ClickView = view;
+        foreach (var clickArea in _areas)
+            clickArea.View = ClickView;
+        
+        OnClickViewUpdate();
+    }
+
+    protected virtual void OnClickViewUpdate()
+    {
+        
+    }
 
     protected void AddArea(ClickArea area)
     {
+        area.View = ClickView;
         _areas.Add(area);
         Host.Areas.AddArea(area);
     }

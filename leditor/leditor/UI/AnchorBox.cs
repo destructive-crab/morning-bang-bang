@@ -41,6 +41,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
 
     public void AddChild(Anchor anchor, AUIElement child)
     {
+        child.SetClickView(ClickView);
         child.Parent = this;
         Host.NeedLayoutUpdate = true;
         _children.Add((anchor, child));

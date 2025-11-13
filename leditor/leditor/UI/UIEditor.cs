@@ -33,17 +33,17 @@ public class UIEditor
         );
 
         var buttonsChildren = new List<AUIElement>();
-        for (var i = 1; i < 20; i++)
+        for (var i = 1; i <= 100; i++)
         {
             var msg = $"Thanks for click! {i}";
-            buttonsChildren.Add(new UIButton(_host, $"Click me! {i}", () => Logger.Info(msg)));
+            buttonsChildren.Add(new UIButton(_host, $"Click me! {i}    LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG", () => Logger.Info(msg)));
         }
         
         var buttons = new AxisBox(_host, UIAxis.Vertical, buttonsChildren.ToArray());
-        //var scroll = new ScrollBox(_host, buttons);
+        var scroll = new ScrollBox(_host, buttons);
         
-        var subSplit = new SplitBox(_host, UIAxis.Vertical, anchor, new UIRect(_host, Color.Green), PreserveSide.RightDown);
-        _host.Root = new SplitBox(_host, UIAxis.Horizontal, subSplit, new StackBox(_host, [new UIRect(_host, Color.Red), buttons]), PreserveSide.RightDown);
+        var subSplit = new SplitBox(_host, UIAxis.Vertical, anchor, new StackBox(_host, [new UIRect(_host, Color.Green), scroll]), PreserveSide.RightDown);
+        _host.Root = new SplitBox(_host, UIAxis.Horizontal, subSplit, new StackBox(_host, [new UIRect(_host, Color.Red)]), PreserveSide.RightDown);
         _host.SetSize(new Vector2f(window.Size.X, window.Size.Y));
     }
 

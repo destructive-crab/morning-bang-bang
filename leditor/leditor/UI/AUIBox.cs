@@ -9,4 +9,10 @@ public abstract class AUIBox(UIHost host, Vector2f minimalSize) : AUIElement(hos
     public abstract void RemoveChild(AUIElement child);
     
     public abstract void UpdateMinimalSize();
+
+    protected override void OnClickViewUpdate()
+    {
+        foreach (var child in GetChildren())
+            child.SetClickView(ClickView);
+    }
 }

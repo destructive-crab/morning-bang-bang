@@ -36,6 +36,7 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
     
     public void AddChild(AUIElement child)
     {
+        child.SetClickView(ClickView);
         child.Parent = this;
         Host.NeedLayoutUpdate = true;
         

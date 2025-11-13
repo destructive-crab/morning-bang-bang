@@ -42,4 +42,8 @@ public class UIStyle()
         TextColor = Color.White,
         BgColor = Color.Black
     };
+    
+    //ScrollBox
+    public readonly float ScrollerThickness = 12;
+    public readonly Color ScrollerColor = Color.Cyan;
 }

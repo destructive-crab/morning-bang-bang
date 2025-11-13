@@ -1,20 +1,142 @@
-/*using System.Numerics;
-using Raylib_cs;
 using SFML.Graphics;
+using SFML.System;
+using SFML.Window;
 
 namespace leditor.UI;
 
-public class ScrollBox(UIHost host, AUIElement? child) : AUIBox(host, Vector2.Zero)
+class Scroller
 {
-    private AUIElement? _child = child;
+    public RectangleShape Shape;
 
+    public ClickArea Area;
+    public FloatRect Limits;
+    public Action<Vector2f> OnUpdate;
+
+    public Scroller(Action<Vector2f> onUpdate, FloatRect limits, Vector2f size, Color color)
+    {
+        Shape = new RectangleShape
+        {
+            FillColor = color,
+            Size = size
+        };
+        Area = new ClickArea(new FloatRect(limits.Left, limits.Top, size.X, size.Y))
+        {
+            OnMove = OnMove
+        };
+        Limits = limits;
+        OnUpdate = onUpdate;
+    }
+
+    private void OnMove(Vector2f oldPos, Vector2f newPos)
+    {
+        var pos = new Vector2f(
+            float.Clamp(newPos.X - Area.Rect.Width / 2, Limits.Left, Limits.Left + Limits.Width),
+            float.Clamp(newPos.Y - Area.Rect.Height / 2, Limits.Top, Limits.Top + Limits.Height)
+        );
+
+        Shape.Position = pos;
+        Area.Rect.Left = pos.X;
+        Area.Rect.Top = pos.Y;
+
+        if (Limits.Width != 0)
+        {
+            pos.X -= Limits.Left;
+            pos.X /= Limits.Width;
+        }
+        else pos.X = 0;
+        
+        if (Limits.Height != 0)
+        {
+            pos.Y -= Limits.Top;
+            pos.Y /= Limits.Height;
+        }
+        else pos.Y = 0;
+
+        OnUpdate(pos);
+    }
+
+    public void SetPosition(Vector2f pos)
+    {
+        Shape.Position = pos;
+        Area.Rect.Left = pos.X;
+        Area.Rect.Top = pos.Y;
+    }
+    
+    public void SetSize(Vector2f size)
+    {
+        Shape.Size = size;
+        Area.Rect.Width = size.X;
+        Area.Rect.Height = size.Y;
+    }
+}
+
+public class ScrollBox : AUIBox
+{
+    private AUIElement? _child;
+    private View _view = new();
+
+    private Vector2f _difference;
+    private Vector2f _scroll;
+
+    private Scroller _scrollerY;
+    private Scroller _scrollerX;
+
+    private ClickAreaView _clickView = new(new FloatRect());
+
+    public ScrollBox(UIHost host, AUIElement? child) : base(host, new Vector2f(host.Style.ScrollerThickness * 2, host.Style.ScrollerThickness * 2))
+    {
+        _child = child;
+        if (_child != null)
+            _child.SetClickView(_clickView);
+
+        _scrollerX = new Scroller(OnScrollX, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
+        AddArea(_scrollerX.Area);
+        
+        _scrollerY = new Scroller(OnScrollY, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
+        AddArea(_scrollerY.Area);
+    }
+
+    protected override void OnClickViewUpdate()
+    {
+        throw new InvalidOperationException();
+    }
+
+    private void OnScrollX(Vector2f vec)
+    {
+        SetScroll(new Vector2f(vec.X, _scroll.Y));
+    }
+    
+    private void OnScrollY(Vector2f vec)
+    {
+        SetScroll(new Vector2f(_scroll.X, vec.Y));
+    }
+
+    private void SetScroll(Vector2f scroll)
+    {
+        _scroll = new Vector2f(
+            float.Clamp(scroll.X, 0, 1),
+            float.Clamp(scroll.Y, 0, 1)
+        );
+
+        if (Child != null)
+            Child.Rect = new FloatRect (
+            Rect.Left - _scroll.X * _difference.X , 
+            Rect.Top - _scroll.Y * _difference.Y,
+            Rect.Width - Host.Style.ScrollerThickness,
+            Rect.Height - Host.Style.ScrollerThickness
+        );
+    }
+    
     public AUIElement? Child
     {
         get => _child;
         set
         {
             _child = value;
-            UpdateLayout();
+            if (_child == null) return;
+            
+            _child.SetClickView(_clickView);
+            _child.Rect = Rect;
         }
     }
 
@@ -25,41 +147,72 @@ public class ScrollBox(UIHost host, AUIElement? child) : AUIBox(host, Vector2.Ze
     {
         if (_child == child)
             _child = null;
-        UpdateLayout();
     }
     
     public override void UpdateMinimalSize() {}
-
-    private RenderTexture2D _renderTexture = Raylib.LoadRenderTexture(
-        (int)(child?.MinimalSize.X ?? 0), 
-        (int)(child?.MinimalSize.Y ?? 0)
-    );
+    
     
     public override void UpdateLayout()
     {
         if (_child == null) return;
+
+        var size = new Vector2f(Rect.Width - Host.Style.ScrollerThickness, Rect.Height - Host.Style.ScrollerThickness);
+        _child.Rect = new FloatRect (
+            Rect.Left - _scroll.X * _difference.X, 
+            Rect.Top - _scroll.Y * _difference.Y,
+            size.X, size.Y
+        );
         
-        _child.Rect = new Rectangle(Vector2.Zero, Rect.Size);
-        _renderTexture = Raylib.LoadRenderTexture((int)Rect.X, (int)Rect.Y);
+        _difference = new Vector2f(
+            float.Max(0, _child.Rect.Width - size.X),
+            float.Max(0, _child.Rect.Height - size.Y)
+        );
+
+        _clickView.Rect = Rect;
+        
+        _view.Size = Rect.Size;
+        _view.Center = Rect.Position + Rect.Size / 2;
+        _view.Viewport = new FloatRect(
+            Rect.Left / Host.Size.X,
+            
+            Rect.Top / Host.Size.Y,
+            Rect.Width / Host.Size.X,
+            Rect.Height / Host.Size.Y
+        );
+
+        var limits = new FloatRect(
+            Rect.Left + Rect.Width - Host.Style.ScrollerThickness,
+            Rect.Top,
+            0,
+            float.Max(0, Rect.Height - Host.Style.ScrollerThickness * 2)
+        );
+        _scrollerY.SetPosition(new Vector2f(limits.Left, limits.Top + _scroll.Y * limits.Height));
+        _scrollerY.Limits = limits;
+        
+        limits = new FloatRect(
+            Rect.Left,
+            Rect.Top + Rect.Height - Host.Style.ScrollerThickness,
+            float.Max(0, Rect.Width - Host.Style.ScrollerThickness * 2),
+            0
+        );
+        _scrollerX.SetPosition(new Vector2f(limits.Left + _scroll.X * limits.Width, limits.Top));
+        _scrollerX.Limits = limits;
     }
 
-    private void BeginDraw()
+    private void FinishDraw(RenderTarget target)
     {
-        Raylib.BeginTextureMode(_renderTexture);
-    }
-    
-    private void EndDraw()
-    {
-        Raylib.EndTextureMode();
-        Raylib.DrawTextureV(_renderTexture.Texture, Rect.Position, Color.White);
+        target.Draw(_scrollerX.Shape);
+        target.Draw(_scrollerY.Shape);
+        target.SetView(Host.View);
     }
     
     public override void Draw(RenderTarget target)
     {
         if (_child == null) return;
-
-        BeginDraw();
-        Host.DrawStack.Push(EndDraw);
+        
+        target.SetView(_view);
+        
+        Host.DrawStack.Push(FinishDraw);
         Host.DrawStack.Push(_child.Draw);
     }
-}*/
+}

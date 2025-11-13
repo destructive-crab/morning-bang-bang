@@ -4,9 +4,16 @@ using SFML.Window;
 
 namespace leditor.UI;
 
+public class ClickAreaView(FloatRect rect)
+{
+    public FloatRect Rect;
+}
+
 public delegate void MoveAction(Vector2f oldPosition, Vector2f newPosition);
 public class ClickArea(FloatRect rect, bool overlay = true)
 {
+    public ClickAreaView? View;
+    
     public FloatRect Rect = rect;
     public bool Overlay = overlay;
     
@@ -40,8 +47,19 @@ public class ClickAreasController
         while (areaIter.MoveNext())
         {
             var area = areaIter.Current;
+
+            var inView = true;
+            if (area.View != null)
+            {
+                var rect = area.View.Rect;
+                var inner2 = _mousePosition - rect.Position;
+                inView = 
+                    inner2.X >= 0 && inner2.X <= rect.Width &&
+                    inner2.Y >= 0 && inner2.Y <= rect.Height;
+            }
+            
             var inner = _mousePosition - area.Rect.Position;
-            var newIsHovered =
+            var newIsHovered = inView &&
                 inner.X >= 0 && inner.X <= area.Rect.Width &&
                 inner.Y >= 0 && inner.Y <= area.Rect.Height;
 
