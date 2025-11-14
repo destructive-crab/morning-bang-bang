@@ -10,7 +10,7 @@ public class UIHost(UIStyle style)
 {
     public AUIElement? Root;
     public ClickAreasController Areas = new();
-    public View View;
+    public View View = new();
     public Vector2f Size;
     
     private bool AssertRoot(
@@ -28,13 +28,14 @@ public class UIHost(UIStyle style)
     
     public void SetSize(Vector2f size)
     {
+        View.Size = size;
+        View.Center = size / 2;
         Size = size;
         if (AssertRoot(out var root))
             root.Rect = new FloatRect(new Vector2f(0,0), size);
     }
     
     internal Queue<Action> UpdateActionsQueue = [];
-    internal bool NeedLayoutUpdate;
 
     private void ProcessUpdateActions()
     {
@@ -45,13 +46,6 @@ public class UIHost(UIStyle style)
     {
         Areas.Update(window);
         ProcessUpdateActions();
-
-        if (NeedLayoutUpdate && AssertRoot(out var root))
-        {
-            NeedLayoutUpdate = false;
-            root.UpdateLayout();
-            ProcessUpdateActions();
-        }
     }
     
     public delegate void DrawAction(RenderTarget target);
@@ -61,13 +55,11 @@ public class UIHost(UIStyle style)
     {
         if (!AssertRoot(out var root)) return;
 
-        View = new View(target.GetView());
-        
+        target.SetView(View);
         root.Draw(target);
         while (DrawStack.TryPop(out var draw))
             draw(target);
         
-        target.SetView(View);
     }
 
     public readonly UIStyle Style = style;

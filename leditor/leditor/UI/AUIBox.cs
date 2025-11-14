@@ -7,12 +7,21 @@ public abstract class AUIBox(UIHost host, Vector2f minimalSize) : AUIElement(hos
     public abstract IEnumerable<AUIElement> GetChildren();
     
     public abstract void RemoveChild(AUIElement child);
-    
-    public abstract void UpdateMinimalSize();
+
+    protected abstract void UpdateMinimalSize();
 
     protected override void OnClickViewUpdate()
     {
         foreach (var child in GetChildren())
             child.SetClickView(ClickView);
+    }
+
+    public void OnChildUpdate()
+    {
+        var size = MinimalSize;
+        UpdateMinimalSize();
+        
+        if (size == MinimalSize)
+            Host.UpdateActionsQueue.Enqueue(UpdateLayout);
     }
 }

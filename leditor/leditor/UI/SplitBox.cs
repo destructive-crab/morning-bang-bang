@@ -77,8 +77,8 @@ public class SplitBox: AUIBox
         
         UpdateLayout();
     }
-    
-    public override void UpdateMinimalSize()
+
+    protected override void UpdateMinimalSize()
         => MinimalSize = GetMinimalSize(Host.Style, _axis, _first, _second);
     
     public override IEnumerable<AUIElement> GetChildren()

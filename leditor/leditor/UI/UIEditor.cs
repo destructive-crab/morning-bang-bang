@@ -9,11 +9,9 @@ public class UIEditor
 {
     private UIHost _host = new(new UIStyle());
     private AxisBox _axisBox;
-    private RenderWindow _window;
     
-    public UIEditor(RenderWindow window)
+    public UIEditor(Vector2f size)
     {
-        _window = window;
         var anchor = new AnchorBox(_host);
 
         _axisBox = new AxisBox(_host, UIAxis.Vertical, [new UILabel(_host, "Label...")]);
@@ -44,15 +42,13 @@ public class UIEditor
         
         var subSplit = new SplitBox(_host, UIAxis.Vertical, anchor, new StackBox(_host, [new UIRect(_host, Color.Green), scroll]), PreserveSide.RightDown);
         _host.Root = new SplitBox(_host, UIAxis.Horizontal, subSplit, new StackBox(_host, [new UIRect(_host, Color.Red)]), PreserveSide.RightDown);
-        _host.SetSize(new Vector2f(window.Size.X, window.Size.Y));
+        _host.SetSize(size);
     }
 
-    public void OnResize(object? sender, SizeEventArgs args)
+    public void OnResize(Vector2f size)
     {
-        var size = new Vector2f(args.Width, args.Height);
-        _window.SetView(new View(size / 2, size));
-        _axisBox.AddChild(new UILabel(_host, $"{args.Width} {args.Height}"));
-        _host.SetSize(new Vector2f(args.Width, args.Height));
+        _axisBox.AddChild(new UILabel(_host, $"{size.X} {size.Y}"));
+        _host.SetSize(size);
     }
     
     public void Update(RenderWindow window)

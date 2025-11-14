@@ -18,9 +18,8 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
         {
             _minimalSize = value;
             
-            Host.NeedLayoutUpdate = true;
             if (Parent != null)
-                Host.UpdateActionsQueue.Enqueue(Parent.UpdateMinimalSize);
+                Host.UpdateActionsQueue.Enqueue(Parent.OnChildUpdate);
         }
     }
 

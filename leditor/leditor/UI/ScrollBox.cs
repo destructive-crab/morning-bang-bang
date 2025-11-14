@@ -148,8 +148,8 @@ public class ScrollBox : AUIBox
         if (_child == child)
             _child = null;
     }
-    
-    public override void UpdateMinimalSize() {}
+
+    protected override void UpdateMinimalSize() {}
     
     
     public override void UpdateLayout()

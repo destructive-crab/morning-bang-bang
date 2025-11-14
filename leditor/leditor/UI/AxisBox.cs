@@ -36,8 +36,8 @@ public class AxisBox(UIHost host, UIAxis axis, AUIElement[] children):
 
         return size;
     }
-    
-    public override void UpdateMinimalSize()
+
+    protected override void UpdateMinimalSize()
         => MinimalSize = CalculateSize(Host.Style, axis, _children);
 
     private readonly List<AUIElement> _children = new(children);

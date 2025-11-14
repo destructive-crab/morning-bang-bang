@@ -43,11 +43,10 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
     {
         child.SetClickView(ClickView);
         child.Parent = this;
-        Host.NeedLayoutUpdate = true;
         _children.Add((anchor, child));
     }
-    
-    public override void UpdateMinimalSize() { }
+
+    protected override void UpdateMinimalSize() { }
 
     public override void Draw(RenderTarget target)
     {

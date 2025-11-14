@@ -31,14 +31,13 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
         _children.Remove(child);
     }
 
-    public override void UpdateMinimalSize()
+    protected override void UpdateMinimalSize()
         => MinimalSize = GetMinSize(_children, _padding);
     
     public void AddChild(AUIElement child)
     {
         child.SetClickView(ClickView);
         child.Parent = this;
-        Host.NeedLayoutUpdate = true;
         
         _children.Add(child);
         MinimalSize = new Vector2f(
