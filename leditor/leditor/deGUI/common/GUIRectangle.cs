@@ -14,4 +14,12 @@ public class GUIRectangle : GUIElement
         Color = color;
         OutlineColor = outlineColor;
     }
+    
+    public GUIRectangle(Color color, int outline, Color outlineColor, RectGUIArea area)
+    {
+        Outline = outline;
+        Color = color;
+        OutlineColor = outlineColor;
+        GUIArea = area;
+    }
 }

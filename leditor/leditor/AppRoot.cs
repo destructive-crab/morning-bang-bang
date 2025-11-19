@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices;
 using deGUISpace;
 using Newtonsoft.Json;
 using SFML.Graphics;
@@ -12,6 +13,7 @@ namespace leditor.root
         public static InputsHandler InputsHandler => WindowHandler.InputsHandler;
         public static Leditor LeditorInstance { get; private set; }
         public static WindowHandler WindowHandler { get; private set; }
+
         
         public static void Main()
         {
@@ -23,14 +25,18 @@ namespace leditor.root
 
             string output = InitTestProject().Export();
             
-            LeditorInstance = new Leditor(ProjectData.Import(output));
+            File.WriteAllText("C:\\Users\\destructive_crab\\Desktop\\text.lep", output);
             
+            LeditorInstance = new Leditor();
+
             LeditorInstance.Initialize();
             LeditorInstance.DoLoop();
         }
         
         private static ProjectData InitTestProject()
         {
+            
+            
             ProjectData project = new ProjectData();
             GridBuffer buffer = new GridBuffer();
                     

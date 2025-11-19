@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Numerics;
 using leditor.root;
 using SFML.Graphics;
@@ -45,6 +43,11 @@ public static class deGUI
         return new RectGUIArea(anchor, x, y, width, height);
     }
 
+    public static bool IsRoot(GUIElement guiElement)
+    {
+        return guiElement.Parent == null;
+    }
+
     public static void PushGUIElement(GUIElement element)
     {
         if (element == null)
@@ -57,6 +60,16 @@ public static class deGUI
         if (element.Parent == null)
         {
             MarkAsRoot(element);
+        }
+    }
+
+    public static void RemoveGUIElement(GUIElement element)
+    {
+        elements.Remove(element);
+            
+        if (IsRoot(element))
+        {
+            roots.Remove(element);
         }
     }
     

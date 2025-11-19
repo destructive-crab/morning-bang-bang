@@ -29,7 +29,7 @@ public abstract class GUIElement
         }
     }
 
-    public void AddChild(GUIElement element)
+    public GUIElement AddChild(GUIElement element)
     {
         children.Add(element);
 
@@ -37,6 +37,8 @@ public abstract class GUIElement
         {
             element.SetParent(this);
         }
+
+        return element;
     }
 
     public void RemoveChild(GUIElement element)

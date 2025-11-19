@@ -26,11 +26,6 @@ public sealed class GridBuffer
     private readonly Dictionary<Vector2, string> map = new();
 
     public const int CELL_SIZE = 80;
-
-    public void InitTest()
-    {
-
-    }
     
     public void DrawTiles(ProjectData project)
     {

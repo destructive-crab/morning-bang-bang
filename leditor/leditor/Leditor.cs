@@ -15,34 +15,25 @@ public sealed class Leditor
     private Vector2f pointingOnCell;
     
     //data
-    public ProjectData project;
+    public ProjectData project => ProjectEnvironment.Project;
     public GridBuffer buffer = new();
-    
-    //modules
-    private readonly Toolset       Toolset;
-    private readonly HotkeysSystem Hotkeys = new();
-    private UnitSwitch             UnitSwitch;
-    public EditorCommandsSystem    Commands;
 
-    private ProjectHandler projectHandler;
+    private readonly HotkeysSystem Hotkeys = new();
+    public EditorCommandsSystem    Commands;
+    public MainMenu MainMenu = new();
+
+    public ProjectEnvironment ProjectEnvironment { get; private set; } = new();
 
     private float currentZoom = 0;
 
-    public Leditor(ProjectData project)
+    public Leditor()
     {
-        this.project = project;
-        
-        Toolset = new Toolset();
-        
-        UnitSwitch = new UnitSwitch();
         Commands = new EditorCommandsSystem();
         Commands.BuildGUI();
     }
 
     public void Initialize()
     {
-        Toolset.BuildGUI();
-        UnitSwitch.BuildGUI();
         FocusOnBufferCenter();
     }
 
@@ -50,18 +41,29 @@ public sealed class Leditor
     {
         while (App.WindowHandler.IsOpen)
         {
-            //inputs
-            
             App.WindowHandler.BeginFrame();
             {
-                ProcessInputs();
+                ProcessBufferInputs();
                 Hotkeys.Update();
                 
                 //drawing
                 App.WindowHandler.BeginDrawing();
                 {
-                    buffer.DrawTiles(project);
-                    DrawGridLayout();
+                    if (project != null)
+                    {
+                       buffer.DrawTiles(project);
+                       DrawGridLayout();                       
+                    }
+                    else
+                    {
+                        MainMenu.Open();
+                        if (MainMenu.SelectedProject != String.Empty)
+                        {
+                            ProjectEnvironment.OpenProjectAtPath(MainMenu.SelectedProject);
+                            ProjectEnvironment.InitializeEnvironment();
+                            MainMenu.Close();
+                        }
+                    }
                             
                     App.WindowHandler.BeginGUIMode();
                     {
@@ -109,8 +111,9 @@ public sealed class Leditor
         App.WindowHandler.DrawRectangle((int)(pointingOnCell.X * GridBuffer.CELL_SIZE), (int)(pointingOnCell.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
     }
 
-    private void ProcessInputs()
+    private void ProcessBufferInputs()
     {
+        if(ProjectEnvironment.Project == null) return;
         if (App.WindowHandler.InputsHandler.IsKeyDown(Keyboard.Key.Space))
         {
             Commands.OpenInvokeMenu();
@@ -161,7 +164,7 @@ public sealed class Leditor
         }
         else if(App.InputsHandler.IsLeftMouseButtonDown)
         {
-            Toolset.CurrentTool?.OnClick(new Vector2(pointingOnCell.X, pointingOnCell.Y), buffer);
+            ProjectEnvironment.Toolset.CurrentTool?.OnClick(new Vector2(pointingOnCell.X, pointingOnCell.Y), buffer);
         }
 
  //       if (view.Target.X < buffer.WorldMinX - 300) view.Target.X = buffer.WorldMinX - 300;

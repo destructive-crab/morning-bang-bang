@@ -31,6 +31,15 @@ public class UnitSwitch
         
         deGUI.PushGUIElement(group);
     }
+
+    public void DeleteGUI()
+    {
+        deGUI.RemoveFromRoots(group);
+        foreach (GUIElement guiElement in group.GUIElementChildren)
+        {
+            group.RemoveChild(guiElement);
+        }
+    }
     
     public void SwitchTo(string id)
     {
