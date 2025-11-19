@@ -4,9 +4,13 @@ public sealed class TileData
 {
     public const string EMPTY = "empty";
     
-    public readonly string id;
+    public string id;
     public string texture_id;
-        
+
+    public TileData()
+    {
+    }
+
     public TileData(string id)
     {
         this.id = id;

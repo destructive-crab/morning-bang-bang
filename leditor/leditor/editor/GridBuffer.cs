@@ -92,9 +92,9 @@ public sealed class GridBuffer
 
     public void AddAbove(TilemapData data)
     {
-        foreach (KeyValuePair<Vector2,string> pair in data.Get)
+        foreach (var pair in data.Get)
         {
-            map[pair.Key] = pair.Value;
+            map[new Vector2(pair.x, pair.y)] = pair.tile_id;
         }
         UpdateBufferRect();
     }

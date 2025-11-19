@@ -166,7 +166,7 @@ public static class deGUI
             }
         }
 
-        if (App.InputsHandler.IsLeftMouseButtonPressed)
+        if (App.InputsHandler.IsLeftMouseButtonReleased)
         {
             foreach (var element in lastFramePressed)
             {

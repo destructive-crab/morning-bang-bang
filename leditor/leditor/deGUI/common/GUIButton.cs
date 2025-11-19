@@ -10,10 +10,10 @@ public class GUIButton : GUIElement, IOnRightClick, IOnLeftClick, IOnPressed, IO
     public string Label = "";
     
     public Texture Texture;
-    public Color Color = Color.White;
+    public Color Color = new(190, 4, 90);
     
-    public Color DefaultColor = Color.White;
-    public Color PressedColor = new Color(128, 128, 128);
+    public Color DefaultColor = new(190, 4, 90);
+    public Color PressedColor = new(140, 140, 160);
 
     //interactions
     private Action RightCallbacks;

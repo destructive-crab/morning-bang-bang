@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Numerics;
 using deGUISpace;
+using leditor.actions;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -21,6 +22,7 @@ public sealed class Leditor
     private readonly Toolset       Toolset;
     private readonly HotkeysSystem Hotkeys = new();
     private UnitSwitch             UnitSwitch;
+    public EditorCommandsSystem    Commands;
 
     private ProjectHandler projectHandler;
 
@@ -33,6 +35,8 @@ public sealed class Leditor
         Toolset = new Toolset();
         
         UnitSwitch = new UnitSwitch();
+        Commands = new EditorCommandsSystem();
+        Commands.BuildGUI();
     }
 
     public void Initialize()
@@ -98,6 +102,7 @@ public sealed class Leditor
         }
 
         if (deGUI.HoveringSomething) return;
+        
         if(pointingOnCell.X < buffer.MinX - 1 || pointingOnCell.X > buffer.MaxX) return;
         if(pointingOnCell.Y < buffer.MinY - 1 || pointingOnCell.Y > buffer.MaxY) return;
         
@@ -106,6 +111,11 @@ public sealed class Leditor
 
     private void ProcessInputs()
     {
+        if (App.WindowHandler.InputsHandler.IsKeyDown(Keyboard.Key.Space))
+        {
+            Commands.OpenInvokeMenu();
+        }
+        
         if (deGUI.HoveringSomething) return;
 
         int w = App.WindowHandler.Width;

@@ -1,19 +1,30 @@
+using Newtonsoft.Json;
+
 namespace leditor.root;
 
+[JsonObject(MemberSerialization.OptIn)]
 public sealed class TextureData
 {
-    public readonly string textureID;
-    public readonly string pathToTexture;
+    [JsonProperty] public string textureID;
+    [JsonProperty] public string pathToTexture;
     
-    public readonly Rect rectangle;
-    public readonly bool isCropped;
+    [JsonProperty] public int StartX;
+    [JsonProperty] public int StartY;
+    
+    [JsonProperty] public int Width;
+    [JsonProperty] public int Height;
+    
+    public Rect rectangle => new Rect(StartX, StartY, Width, Height);
 
+    public TextureData()
+    {
+        
+    }
+    
     public TextureData(string id, string path)
     {
         textureID = id;
         pathToTexture = path;
-
-        isCropped = false;
     }
     
     public TextureData(string id, string path, Rect rectangle)
@@ -21,7 +32,9 @@ public sealed class TextureData
         textureID = id;
         pathToTexture = path;
 
-        isCropped = true;
-        this.rectangle = rectangle;
+        StartX = rectangle.StartX;
+        StartY = rectangle.StartY;
+        Width = rectangle.Width;
+        Height = rectangle.Height;
     }
 }

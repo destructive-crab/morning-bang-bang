@@ -1,47 +1,123 @@
 using System.Numerics;
+using leditor.root.export;
+using Newtonsoft.Json;
 using SFML.Graphics;
 
 namespace leditor.root;
 
-public class ProjectData
+public sealed class ProjectData
 {
+    public TextureData[] Textures => textures.ToArray();
     public TileData[] Tiles => tiles.ToArray();
+    public TilemapData[] Tilemaps => tilemaps.ToArray();
     public UnitData[] Units => units.ToArray();
-    
+
     public readonly int TILE_HEIGHT = 512;
+
     public readonly int TILE_WIDTH = 512;
-    
+
     private readonly List<TextureData> textures = new();
+
     private readonly List<TileData> tiles = new();
+
     private readonly List<TilemapData> tilemaps = new();
-    public readonly List<UnitData> units = new();
+
+    private readonly List<UnitData> units = new();
 
     private readonly Dictionary<string, TextureData> texturesMap = new();
+
     private readonly Dictionary<string, TileData> tilesMap = new();
+
     private readonly Dictionary<string, TilemapData> tilemapsMap = new();
+
     private readonly Dictionary<string, UnitData> unitsMap = new();
-    
+
+    public string Export()
+    {
+        ProjectDataExportRepresentation representation = new(Tilemaps, Tiles, Units, Textures);
+        
+        string output = JsonConvert.SerializeObject(representation);
+
+        return output;
+    }
+    public static ProjectData Import(string text)
+    {
+        ProjectDataExportRepresentation? representation = JsonConvert.DeserializeObject<ProjectDataExportRepresentation>(text);
+        ProjectData projectData = new();
+
+        if (representation != null)
+        {
+            Console.WriteLine("STARTING IMPORT");
+            foreach (TextureData texture in representation.Textures)
+            {
+                projectData.AddTexture(texture);
+                Console.WriteLine($"IMPORT TEXTURE {texture.textureID}");
+            }
+
+            foreach (TileData tile in representation.Tiles)
+            {
+                projectData.AddTile(tile);
+                Console.WriteLine($"IMPORT TILE {tile.id}");
+            }
+            
+            foreach (TilemapData tilemap in representation.Tilemaps)
+            {
+                projectData.AddMap(tilemap);
+                tilemap.Refresh();
+                Console.WriteLine($"IMPORT MAP {tilemap.id}");
+            }
+            
+            foreach (UnitData unit in representation.Units)
+            {
+                projectData.AddUnit(unit);
+                Console.WriteLine($"IMPORT UNIT {unit.UnitID}");
+            }
+        }
+        else
+        {
+            LGR.PERR("CAN NOT IMPORT PROJECT");
+            Console.WriteLine("CAN NOT IMPORT PROJECT");
+        }
+
+        return projectData;
+    }
+
     public void AddTile(string tileID, TextureData data)
     {
         TileData newTile = new TileData(tileID);
         newTile.texture_id = data.textureID;
-        tiles.Add(newTile);
-        tilesMap.Add(tileID, newTile);
+        AddTile(newTile);
+    }
+
+    private void AddTile(TileData tileData)
+    {
+        tiles.Add(tileData);
+        tilesMap.Add(tileData.id, tileData);
     }
 
     public void AddMap(string mapID, KeyValuePair<Vector2, string>[] tiles)
     {
-        TilemapData tilemapData = new TilemapData(tiles);
+        TilemapData tilemapData = new TilemapData(mapID, tiles);
+        
+        AddMap(tilemapData);
+    }
+
+    public void AddMap(TilemapData tilemapData)
+    {
         tilemaps.Add(tilemapData);
-        tilemapsMap.Add(mapID, tilemapData);
+        tilemapsMap.Add(tilemapData.id, tilemapData);
     }
 
     public void AddUnit(string unitID, string mapID, string overrideID)
     {
         UnitData unit = new UnitData(unitID, mapID, overrideID);
-        
-        units.Add(unit);
-        unitsMap.Add(unitID, unit);
+        AddUnit(unit);
+    }
+
+    private void AddUnit(UnitData unitData)
+    {
+        units.Add(unitData);
+        unitsMap.Add(unitData.UnitID, unitData);
     }
 
     public TextureData[] CreateTilesFromTileset(string generalID, string tilesetPath)
@@ -113,5 +189,11 @@ public class ProjectData
     public UnitData GetUnit(string id)
     {
         return unitsMap[id];
+    }
+
+    public void AddTexture(TextureData textureData)
+    {
+        textures.Add(textureData);
+        texturesMap.Add(textureData.textureID, textureData);
     }
 }

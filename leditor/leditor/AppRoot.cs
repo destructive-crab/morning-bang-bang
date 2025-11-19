@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using deGUISpace;
+using Newtonsoft.Json;
 using SFML.Graphics;
 
 namespace leditor.root
@@ -19,9 +20,11 @@ namespace leditor.root
             
             WindowHandler = new WindowHandler();
             WindowHandler.CreateWindow();
+
+            string output = InitTestProject().Export();
             
-            LeditorInstance = new Leditor(InitTestProject());
-           
+            LeditorInstance = new Leditor(ProjectData.Import(output));
+            
             LeditorInstance.Initialize();
             LeditorInstance.DoLoop();
         }

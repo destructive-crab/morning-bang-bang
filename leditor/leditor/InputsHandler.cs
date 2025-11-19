@@ -46,7 +46,6 @@ public sealed class InputsHandler
     private void OnKeyPressed(object? sender, KeyEventArgs e)
     {
         keysDown.Add(e.Code);
-        Console.WriteLine(e.Code);
     }
 
     private void WindowOnClosed(object? sender, EventArgs e)

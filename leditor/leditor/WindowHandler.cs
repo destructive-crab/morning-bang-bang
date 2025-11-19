@@ -86,7 +86,7 @@ public class WindowHandler
     
     public void BeginDrawing()
     {
-        window.Clear(new Color(19, 38, 35));
+        window.Clear(new Color(31, 29, 43));
     }
 
     public void CompleteDrawing()
