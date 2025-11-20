@@ -19,7 +19,7 @@ public class UIStyle()
     public readonly uint FontSize = 16;
     
     // Label
-    public readonly Color LabelColor = Color.Green;
+    public readonly Color LabelColor = Color.White;
     
     // AxisBox
     public readonly int AxisBoxSpace = 2;

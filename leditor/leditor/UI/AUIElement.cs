@@ -1,5 +1,6 @@
 using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 
 namespace leditor.UI;
 
@@ -54,10 +55,7 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
         OnClickViewUpdate();
     }
 
-    protected virtual void OnClickViewUpdate()
-    {
-        
-    }
+    protected virtual void OnClickViewUpdate() { }
 
     protected void AddArea(ClickArea area)
     {
@@ -79,6 +77,12 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
         Parent?.RemoveChild(this);
         DestroyAreas();
     }
+
+    public virtual void Deactivate() {}
+    public virtual void OnTextEntered(string text) { }
+    public virtual void OnKeyPressed(Keyboard.Key key) {}
+    
+    public virtual void OnMouseClick(Vector2f pos) {}
     
     ~AUIElement()
         => DestroyAreas();

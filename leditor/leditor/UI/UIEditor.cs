@@ -7,14 +7,14 @@ namespace leditor.UI;
 
 public class UIEditor
 {
-    private UIHost _host = new(new UIStyle());
+    public readonly UIHost Host = new(new UIStyle());
     private AxisBox _axisBox;
     
     public UIEditor(Vector2f size)
     {
-        var anchor = new AnchorBox(_host);
+        var anchor = new AnchorBox(Host);
 
-        _axisBox = new AxisBox(_host, UIAxis.Vertical, [new UILabel(_host, "Label...")]);
+        _axisBox = new AxisBox(Host, UIAxis.Vertical, [new UILabel(Host, "Label...")]);
         
         anchor.AddChild(new Anchor(
             new FloatRect(10, 10, 0, 0),
@@ -22,7 +22,7 @@ public class UIEditor
             ), _axisBox
         );
 
-        var label = new UILabel(_host, "...and anchor!");
+        var label = new UILabel(Host, "...and anchor!");
         
         anchor.AddChild(new Anchor(
             new FloatRect(-label.MinimalSize.X / 2, -label.MinimalSize.Y - 10, 0, 0),
@@ -34,30 +34,51 @@ public class UIEditor
         for (var i = 1; i <= 100; i++)
         {
             var msg = $"Thanks for click! {i}";
-            buttonsChildren.Add(new UIButton(_host, $"Click me! {i}    LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG", () => Logger.Info(msg)));
+            buttonsChildren.Add(new UIButton(Host, $"Click me! {i}    LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG", () => Logger.Info(msg)));
         }
         
-        var buttons = new AxisBox(_host, UIAxis.Vertical, buttonsChildren.ToArray());
-        var scroll = new ScrollBox(_host, buttons);
+        var buttons = new AxisBox(Host, UIAxis.Vertical, buttonsChildren.ToArray());
+        var scroll = new ScrollBox(Host, buttons);
+
         
-        var subSplit = new SplitBox(_host, UIAxis.Vertical, anchor, new StackBox(_host, [new UIRect(_host, Color.Green), scroll]), PreserveSide.RightDown);
-        _host.Root = new SplitBox(_host, UIAxis.Horizontal, subSplit, new StackBox(_host, [new UIRect(_host, Color.Red)]), PreserveSide.RightDown);
-        _host.SetSize(size);
+        var entryVar = new UIVar<string>("Linked entry");
+
+        entryVar.OnSet += val => Logger.Debug(val);
+        
+        var onlyIntVar = new UIVar<string>("0");
+
+        var lastValue = "0";
+        onlyIntVar.OnSet += newString =>
+        {
+            if (int.TryParse(newString, out _))
+                lastValue = newString;
+            else onlyIntVar.Value = lastValue;
+        };
+        
+        var right = new AxisBox(Host, UIAxis.Vertical, [
+            new UIEntry(Host, entryVar), 
+            new UIEntry(Host, entryVar), 
+            new UIEntry(Host, onlyIntVar)
+        ]);
+        
+        var subSplit = new SplitBox(Host, UIAxis.Vertical, anchor, new StackBox(Host, [new UIRect(Host, Color.Green), scroll]), PreserveSide.RightDown);
+        Host.Root = new SplitBox(Host, UIAxis.Horizontal, subSplit, new StackBox(Host, [new UIRect(Host, Color.Red), right]), PreserveSide.RightDown);
+        Host.SetSize(size);
     }
 
     public void OnResize(Vector2f size)
     {
-        _axisBox.AddChild(new UILabel(_host, $"{size.X} {size.Y}"));
-        _host.SetSize(size);
+        _axisBox.AddChild(new UILabel(Host, $"{size.X} {size.Y}"));
+        Host.SetSize(size);
     }
     
     public void Update(RenderWindow window)
     {
-        _host.Update(window);
+        Host.Update(window);
     }
 
     public void Draw(RenderWindow window)
     {
-        _host.Draw(window);
+        Host.Draw(window);
     }
 }

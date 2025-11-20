@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using leditor.root;
 using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 
 namespace leditor.UI;
 
@@ -39,7 +40,8 @@ public class UIHost(UIStyle style)
 
     private void ProcessUpdateActions()
     {
-        while (UpdateActionsQueue.TryDequeue(out var action)) action();
+        while (UpdateActionsQueue.TryDequeue(out var action)) 
+            action();
     }
     
     public void Update(RenderWindow window)
@@ -63,4 +65,21 @@ public class UIHost(UIStyle style)
     }
 
     public readonly UIStyle Style = style;
+    
+    private AUIElement? _active;
+
+    public void SetActive(AUIElement? element)
+    {
+        _active?.Deactivate();
+        _active = element;
+    }
+
+    public void OnTextEntered(string text)
+        => _active?.OnTextEntered(text);
+
+    public void OnKeyPressed(Keyboard.Key key)
+        => _active?.OnKeyPressed(key);
+    
+    public void OnMouseClick(Vector2f pos)
+        => _active?.OnMouseClick(pos);
 }
