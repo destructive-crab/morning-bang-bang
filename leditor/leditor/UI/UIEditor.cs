@@ -62,7 +62,7 @@ public class UIEditor
         ]);
         
         var subSplit = new SplitBox(Host, UIAxis.Vertical, anchor, new StackBox(Host, [new UIRect(Host, Color.Green), scroll]), PreserveSide.RightDown);
-        Host.Root = new SplitBox(Host, UIAxis.Horizontal, subSplit, new StackBox(Host, [new UIRect(Host, Color.Red), right]), PreserveSide.RightDown);
+        Host.Root = new SplitBox(Host, UIAxis.Horizontal, new StackBox(Host, [new UIRect(Host, Color.Red), right]), subSplit, PreserveSide.RightDown);
         Host.SetSize(size);
     }
 

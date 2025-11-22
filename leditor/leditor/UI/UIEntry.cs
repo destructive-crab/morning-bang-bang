@@ -34,7 +34,7 @@ public class UIEntry : AUIElement
         }
     }
 
-    public UIEntry(UIHost host, UIVar<string> var) : base(host, new Vector2f(host.Style.FontSize + 4, host.Style.FontSize + 2))
+    public UIEntry(UIHost host, UIVar<string> var) : base(host, new Vector2f(host.Style.FontSize + 4, host.Style.FontSize + 3))
     {
         Var = var;
         _text = new Text
@@ -67,6 +67,7 @@ public class UIEntry : AUIElement
     {
         UpdateVar(_text.DisplayedString);
         _active = false;
+        CursorPosition = 0;
     }
 
     public override void OnTextEntered(string text)
@@ -143,7 +144,6 @@ public class UIEntry : AUIElement
         if (_origValue == val) return;
         
         _text.DisplayedString = val;
-        CursorPosition = val.Length;
     }
 
     public override void OnMouseClick(Vector2f pos)
@@ -153,19 +153,29 @@ public class UIEntry : AUIElement
         Host.SetActive(null);
     }
 
+    private float _xOffset;
+    
     private void UpdateCursor()
     {
         _cursorPosition = int.Clamp(_cursorPosition, 0, _text.DisplayedString.Length);
         
         var sub = _text.DisplayedString[.._cursorPosition];
-        var position = Rect.Position + new Vector2f(1, 1);
+        var position = new Vector2f();
 
         foreach (var symbl in sub)
             position.X += _text.Font
                 .GetGlyph(symbl, _text.CharacterSize, false, 0)
                 .Advance * _text.LetterSpacing;
 
-        _cursor.Position = position;
+        _cursor.Position = position + Rect.Position + new Vector2f(1, 1);
+
+        var inner = position.X - _xOffset;
+        if (inner < 0)
+            _xOffset = position.X;
+        else if (inner > Rect.Width - 2)
+            _xOffset = position.X - (Rect.Width - 2);
+        
+        _view.Center = Rect.Position + Rect.Size / 2 + new Vector2f(_xOffset, 0);
     }
     
     public override void UpdateLayout()
@@ -188,17 +198,20 @@ public class UIEntry : AUIElement
         _area.Rect = Rect;
     }
 
+    private View _origView = new();
+    
     public override void Draw(RenderTarget target)
     {
-        var origView = target.GetView();
+        target.Draw(_rectangle);
+
+        Utils.CopyView(target.GetView(), _origView);
         target.SetView(_view);
         
-        target.Draw(_rectangle);
         target.Draw(_text);
         
         if (_active)
             target.Draw(_cursor);
         
-        target.SetView(origView);
+        target.SetView(_origView);
     }
 }

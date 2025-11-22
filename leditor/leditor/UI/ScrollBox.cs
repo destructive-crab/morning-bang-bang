@@ -26,7 +26,7 @@ class Scroller
         Limits = limits;
         OnUpdate = onUpdate;
     }
-
+    
     private void OnMove(Vector2f oldPos, Vector2f newPos)
     {
         var pos = new Vector2f(
@@ -180,22 +180,28 @@ public class ScrollBox : AUIBox
             Rect.Height / Host.Size.Y
         );
 
+        var inner = Rect.Size - new Vector2f(Host.Style.ScrollerThickness, Host.Style.ScrollerThickness);
+
+        var len = float.Min(1, inner.Y / _child.Rect.Height) * inner.Y;
         var limits = new FloatRect(
             Rect.Left + Rect.Width - Host.Style.ScrollerThickness,
             Rect.Top,
             0,
-            float.Max(0, Rect.Height - Host.Style.ScrollerThickness * 2)
+            inner.Y - len
         );
         _scrollerY.SetPosition(new Vector2f(limits.Left, limits.Top + _scroll.Y * limits.Height));
+        _scrollerY.SetSize(new Vector2f(Host.Style.ScrollerThickness, len));
         _scrollerY.Limits = limits;
         
+        len = float.Min(1, inner.X / _child.Rect.Width) * inner.X;
         limits = new FloatRect(
             Rect.Left,
             Rect.Top + Rect.Height - Host.Style.ScrollerThickness,
-            float.Max(0, Rect.Width - Host.Style.ScrollerThickness * 2),
+            inner.X - len, 
             0
         );
         _scrollerX.SetPosition(new Vector2f(limits.Left + _scroll.X * limits.Width, limits.Top));
+        _scrollerX.SetSize(new Vector2f(len, Host.Style.ScrollerThickness));
         _scrollerX.Limits = limits;
     }
 
