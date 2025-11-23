@@ -20,7 +20,7 @@ public class UIStyle()
     public readonly Color LabelColor = new(0xdee2e6FF);
     
     // AxisBox
-    public readonly int AxisBoxSpace = 2;
+    public readonly int AxisBoxSpace = 3;
     
     // SplitBox
     public readonly int SplitSeparatorThickness = 4;

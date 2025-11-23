@@ -31,17 +31,33 @@ public sealed class Leditor
         _host.Root = _ui.Root;
         
         _host.SetSize(Utils.VecU2F(_window.Size));
+
+        var options1 = new AxisBox(_host, UIAxis.Vertical, [
+            new UILabel(_host, "Tool 1"),
+            new UIButton(_host, "Button 1")
+        ]);
+        var options2 = new AxisBox(_host, UIAxis.Vertical, [
+            new UILabel(_host, "Tool 2"),
+            new UIEntry(_host, new UIVar<string>("Entry")),
+            new UIButton(_host, "Button 1"),
+            new UIButton(_host, "Button 2")
+        ]);
         
-        _ui.AddTool(() => Logger.Info("Бум бум шакатака 1"), new Texture("./assets/tests/floor.png"));
-        _ui.AddTool(() => Logger.Info("Бум бум шакатака 2"), new Texture("./assets/tests/red.png"));
-        _ui.AddTool(() => Logger.Info("Бум бум шакатака 3"), new Texture("./assets/tests/wall_up.png"));
+        _ui.AddTool(() => _ui.ShowToolOptions(options1), new Texture("./assets/tests/floor.png"));
+        _ui.AddTool(() => _ui.ShowToolOptions(options2), new Texture("./assets/tests/red.png"));
+        _ui.AddTool(() => _ui.CloseToolOptions(), new Texture("./assets/tests/wall_up.png"));
+        
+        var popup = new AxisBox(_host, UIAxis.Vertical, [
+            new UILabel(_host, "Test!"),
+            new UIButton(_host, "Close", _ui.ClosePopup)
+        ]);
         
         _ui.AddToolPanelCategory("File", new Dictionary<string, Action?>
         { 
-            ["Бум Бум Бум Бум Бум Бум"] = () => Logger.Info("Бум бум шакатака 3"), 
-            ["Бум Бум2 Бум Бум2 Бум Бум2"] = () => Logger.Info("Бум бум шакатака 3"), 
-            ["Бум Бум3 Бум Бум3 Бум Бум3"] = () => Logger.Info("Бум бум шакатака 3")
+            ["Test"] = () => _ui.ShowPopup(popup), 
+            ["Exit"] = () => _window.Close()
         });
+        
     }
 
     public void Run()

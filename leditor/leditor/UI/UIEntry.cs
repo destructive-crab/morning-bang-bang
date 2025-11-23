@@ -12,7 +12,7 @@ public class UIEntry : AUIElement
     private View _view = new();
     private RectangleShape _rectangle = new()
     {
-        FillColor = Color.White
+        FillColor = new Color(0x495057FF)
     };
 
     private ClickArea _area = new(new FloatRect());
@@ -34,14 +34,15 @@ public class UIEntry : AUIElement
         }
     }
 
-    public UIEntry(UIHost host, UIVar<string> var) : base(host, new Vector2f(host.Style.FontSize + 4, host.Style.FontSize + 3))
+    public UIEntry(UIHost host, UIVar<string> var) : base(host, host.Fabric.MakeTextOut("X", out var text) + new Vector2f(4, 4))
     {
+        text.DisplayedString = var.Value;
         Var = var;
-        _text = host.Fabric.MakeText("");
+        _text = text;
         _cursor = new RectangleShape
         {
             Size = new Vector2f(1, host.Style.FontSize),
-            FillColor = Color.Black
+            FillColor = host.Style.LabelColor
         };
 
         _area.OnClick += OnAreaClicked;
@@ -158,10 +159,14 @@ public class UIEntry : AUIElement
         var sub = _text.DisplayedString[.._cursorPosition];
         var position = new Vector2f();
 
+        var prevSymbl = 0u;
         foreach (var symbl in sub)
-            position.X += _text.Font
-                .GetGlyph(symbl, _text.CharacterSize, false, 0)
-                .Advance * _text.LetterSpacing;
+        {   
+            position.X += 
+                _text.Font.GetGlyph(symbl, _text.CharacterSize, true, _text.OutlineThickness).Advance + 
+                _text.Font.GetBoldKerning(prevSymbl, symbl, _text.CharacterSize);
+            prevSymbl = symbl;
+        }
 
         _cursor.Position = position + Rect.Position + new Vector2f(1, 1);
 

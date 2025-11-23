@@ -3,9 +3,9 @@ using SFML.System;
 
 namespace leditor.UI;
 
-public class UIClickArea(UIHost host, Vector2f minimalSize = default) : AUIElement(host, minimalSize)
+public class UIClickArea(UIHost host, ClickArea area, Vector2f minimalSize = default) : AUIElement(host, minimalSize)
 {
-    public ClickArea Area = new(default);
+    public ClickArea Area = area;
 
     public override void UpdateLayout()
         => Area.Rect = Rect;

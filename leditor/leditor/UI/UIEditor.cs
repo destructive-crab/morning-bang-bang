@@ -48,13 +48,16 @@ public class UIEditor
         var leftSpace = new StackBox(host, [
             new UILimit(host, new Vector2f(120, 120)),
             new UIRect(host, new Color(0x343a40FF)),
-            new ScrollBox(host, new StackBox(host, [new UILabel(host, "Hello!")], padding))
+            new ScrollBox(host, new StackBox(host, [new UILabel(host, "Nothing here")], padding))
         ]);
+        
+        _noneToolOptions = new StackBox(host, [new UILabel(host, "None selected.")], centerX: true, centerY: true);
+        _toolOptionsContainer = new SingleBox(host, _noneToolOptions);
         
         var bottomSpace = new StackBox(host, [
             new UILimit(host, new Vector2f(120, 120)),
             new UIRect(host, new Color(0x343a40FF)),
-            new ScrollBox(host, new StackBox(host, [new UILabel(host, "Hello!")], padding))
+            new ScrollBox(host, new StackBox(host, [_toolOptionsContainer], padding))
         ]);
         
         var center = new SplitBox(host, UIAxis.Horizontal, 
@@ -65,6 +68,26 @@ public class UIEditor
         Root.AddChild(topBarAnchor, topBar);
         Root.AddChild(toolsBarAnchor, toolsBar);
         Root.AddChild(centerAnchor, center);
+
+        var overlayAnchor = new Anchor
+        {
+            Relative = new FloatRect(0, 0, 1, 1)
+        };
+        Root.AddChild(overlayAnchor, new UIClickArea(host, _overlayArea));
+        
+        _popupContainer = new SingleBox(host);
+        _popupRoot = new SingleBox(host, 
+            new StackBox(host, [
+                new UIRect(host, new Color(0x000000AA)),
+                new UIClickArea(host, new ClickArea(default)),
+                new StackBox(host, [new StackBox(host, [
+                    new UIRect(host, new Color(0x343a40FF)),
+                    new StackBox(host, [_popupContainer], padding)
+                ])], centerX: true, centerY: true)
+            ]), true
+            );
+        
+        Root.AddChild(overlayAnchor, _popupRoot);
     }
 
     private UIHost _host;
@@ -81,7 +104,6 @@ public class UIEditor
 
     public void EnableOverlay(Action action)
     {
-        _overlayArea.Rect = Root.Rect;
         _overlayArea.OnClick = action;
         _overlayArea.Overlay = true;
     }
@@ -97,13 +119,41 @@ public class UIEditor
         var category = new ToolPanelCategory(this, _host, title, actions);
         _topBar.AddChild(category.Button);
     }
+
+    private SingleBox _popupRoot;
+    private SingleBox _popupContainer;
+
+    public void ShowPopup(AUIElement popup)
+    {
+        _popupContainer.Child = popup;
+        _popupRoot.Hide = false;
+    }
+
+    public void ClosePopup()
+    {
+        _popupRoot.Hide = true;
+        _popupContainer.Child = null;
+    }
+
+    private SingleBox _toolOptionsContainer;
+    private StackBox _noneToolOptions;
+    
+    public void ShowToolOptions(AUIElement toolOptions)
+    {
+        _toolOptionsContainer.Child = toolOptions;
+    }
+
+    public void CloseToolOptions()
+    {
+        _toolOptionsContainer.Child = _noneToolOptions;
+    }
 }
 
 class ToolPanelCategory
 {
-    private UIEditor _editor;
-    private AUIElement _menu;
-    public UIButton Button;
+    private readonly UIEditor _editor;
+    private readonly AUIElement _menu;
+    public readonly UIButton Button;
 
     public ToolPanelCategory(UIEditor editor, UIHost host, string title, Dictionary<string, Action?> actions)
     {
@@ -112,7 +162,11 @@ class ToolPanelCategory
             new UIRect(host, new Color(0x495057FF)),
             new AxisBox(host, UIAxis.Vertical,
                 actions.AsEnumerable()
-                    .Select(pair => new UIButton(host, pair.Key, pair.Value))
+                    .Select(pair => new UIButton(host, pair.Key, () =>
+                    {
+                        Hide();
+                        pair.Value?.Invoke();
+                    }))
                     .ToArray<AUIElement>()
             )
         ]);
@@ -123,6 +177,10 @@ class ToolPanelCategory
     private void Show()
     {
         var anchor = new Anchor();
+        anchor.BaseRect.Top = Button.Rect.Top + Button.Rect.Height;
+
+        var maxLeft = float.Max(0, _editor.Root.Rect.Left + _editor.Root.Rect.Width - _menu.MinimalSize.X);
+        anchor.BaseRect.Left = float.Min(Button.Rect.Left, maxLeft);
         
         _editor.EnableOverlay(Hide);
         _editor.Root.AddChild(anchor, _menu);

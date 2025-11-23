@@ -86,6 +86,8 @@ public class ScrollBox : AUIBox
     public ScrollBox(UIHost host, AUIElement? child) : base(host, new Vector2f(host.Style.ScrollerThickness * 2, host.Style.ScrollerThickness * 2))
     {
         Child = child;
+        if (_child != null)
+            _child.Parent = this;
 
         _scrollerX = new Scroller(OnScrollX, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
         _scrollerY = new Scroller(OnScrollY, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
@@ -143,7 +145,8 @@ public class ScrollBox : AUIBox
         {
             _child = value;
             if (_child == null) return;
-            
+
+            _child.Parent = this;
             _child.Rect = Rect;
         }
     }
@@ -154,7 +157,10 @@ public class ScrollBox : AUIBox
     public override void RemoveChild(AUIElement child)
     {
         if (_child == child)
+        {
+            _child.Parent = null;
             _child = null;
+        }
     }
 
     protected override void UpdateMinimalSize() {}
