@@ -4,16 +4,9 @@ using SFML.Window;
 
 namespace leditor.UI;
 
-public class ClickAreaView(FloatRect rect)
-{
-    public FloatRect Rect;
-}
-
 public delegate void MoveAction(Vector2f oldPosition, Vector2f newPosition);
 public class ClickArea(FloatRect rect, bool overlay = true)
 {
-    public ClickAreaView? View;
-    
     public FloatRect Rect = rect;
     public bool Overlay = overlay;
     
@@ -28,80 +21,77 @@ public class ClickArea(FloatRect rect, bool overlay = true)
 
 public class ClickAreasController
 {
-    private readonly List<ClickArea> _areas = [];
-    private Vector2f _mousePosition = new(1, 1);
+    private Vector2f _mousePositionOld = new(1, 1);
+    private Vector2f _mousePosition;
+    
     private bool _isPressedOld;
+    private bool _isPressed;
+    private bool _isClicked;
 
-    public void Update(RenderWindow window)
+    private bool _inView;
+    private Stack<bool> _inViewStack = new();
+
+    private bool _isOverlayed;
+
+    public void Begin(Vector2f mousePosition)
     {
-        var isPressed = Mouse.IsButtonPressed(Mouse.Button.Left);
-        var isClicked = isPressed && !_isPressedOld;
+        _isOverlayed = false;
+        _inView = true;
+        _isPressed = Mouse.IsButtonPressed(Mouse.Button.Left);
+        _isClicked = _isPressed && !_isPressedOld;
         
-        var newPositionInts = Mouse.GetPosition(window);
-        var newPosition = new Vector2f(newPositionInts.X, newPositionInts.Y);
-        using var areaIter = _areas
-            .AsEnumerable()
-            .Reverse()
-            .GetEnumerator();
-        
-        while (areaIter.MoveNext())
-        {
-            var area = areaIter.Current;
-
-            var inView = true;
-            if (area.View != null)
-            {
-                var rect = area.View.Rect;
-                var inner2 = _mousePosition - rect.Position;
-                inView = 
-                    inner2.X >= 0 && inner2.X <= rect.Width &&
-                    inner2.Y >= 0 && inner2.Y <= rect.Height;
-            }
-            
-            var inner = _mousePosition - area.Rect.Position;
-            var newIsHovered = inView &&
-                inner.X >= 0 && inner.X <= area.Rect.Width &&
-                inner.Y >= 0 && inner.Y <= area.Rect.Height;
-
-            if (newIsHovered)
-            {
-                if (!area.IsHovered)
-                    area.OnHover?.Invoke();
-            
-                if (isClicked)
-                {
-                    area.IsGrabbed = true;
-                    area.OnClick?.Invoke();
-                }
-            }
-            else if (area.IsHovered)
-                area.OnUnhover?.Invoke();
-
-            area.IsGrabbed = area.IsGrabbed && isPressed;
-            if (area.IsGrabbed && _mousePosition != newPosition)
-                area.OnMove?.Invoke(_mousePosition, newPosition);
-            
-            area.IsHovered = newIsHovered;
-            
-            if (area.IsHovered && area.Overlay)
-                break;
-        }
-
-        while (areaIter.MoveNext())
-        {
-            var area = areaIter.Current;
-            if (!area.IsHovered) continue;
-            area.IsHovered = false;
-            area.OnUnhover?.Invoke();
-        }
-
-        _mousePosition = newPosition;
-        _isPressedOld = isPressed;
+        _mousePosition = mousePosition;
+    }
+    
+    public void End()
+    {
+        _mousePositionOld = _mousePosition;
+        _isPressedOld = _isPressed;
     }
 
-    public void AddArea(ClickArea area)
-        => _areas.Add(area);
+    public void SetViewport(FloatRect rect)
+    {
+        _inViewStack.Push(_inView);
+        _inView = Utils.PointInRect(rect, _mousePositionOld);
+    }
 
-    public void RemoveArea(ClickArea area)
-        => _areas.Remove(area);
+    public void PopViewport()
+    {
+        _inView = _inViewStack.Pop();
+    }
+
+    public void Process(ClickArea area)
+    {
+        if (_isOverlayed || !_inView)
+        {
+            if (!area.IsHovered) return;
+            area.IsHovered = false;
+            area.OnUnhover?.Invoke();
+            
+            return;
+        }
+        
+        var newIsHovered = Utils.PointInRect(area.Rect, _mousePositionOld);
+        
+        if (newIsHovered)
+        {
+            if (!area.IsHovered)
+                area.OnHover?.Invoke();
+            
+            if (_isClicked)
+            {
+                area.IsGrabbed = true;
+                area.OnClick?.Invoke();
+            }
+        }
+        else if (area.IsHovered)
+            area.OnUnhover?.Invoke();
+
+        area.IsGrabbed = area.IsGrabbed && _isPressed;
+        if (area.IsGrabbed && _mousePositionOld != _mousePosition)
+            area.OnMove?.Invoke(_mousePositionOld, _mousePosition);
+            
+        area.IsHovered = newIsHovered;
+        _isOverlayed = area.IsHovered && area.Overlay;
+    }
 }

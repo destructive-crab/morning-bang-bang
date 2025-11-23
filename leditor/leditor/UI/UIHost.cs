@@ -7,12 +7,14 @@ using SFML.Window;
 
 namespace leditor.UI;
 
-public class UIHost(UIStyle style)
+public class UIHost
 {
     public AUIElement? Root;
     public ClickAreasController Areas = new();
     public View View = new();
     public Vector2f Size;
+
+    public UIFabric Fabric;
     
     private bool AssertRoot(
         [MaybeNullWhen(false)] out AUIElement root,
@@ -44,9 +46,18 @@ public class UIHost(UIStyle style)
             action();
     }
     
+    public readonly Stack<Action> ClickHandlersStack = [];
+    
     public void Update(RenderWindow window)
     {
-        Areas.Update(window);
+        if (!AssertRoot(out var root)) return;
+        
+        Areas.Begin(Utils.VecI2F(Mouse.GetPosition(window)));
+        root.ProcessClicks();
+        while (ClickHandlersStack.TryPop(out var action))
+            action();
+        Areas.End();
+        
         ProcessUpdateActions();
     }
     
@@ -64,9 +75,15 @@ public class UIHost(UIStyle style)
         
     }
 
-    public readonly UIStyle Style = style;
+    public readonly UIStyle Style;
     
     private AUIElement? _active;
+
+    public UIHost(UIStyle style)
+    {
+        Style = style;
+        Fabric = new UIFabric(this);
+    }
 
     public void SetActive(AUIElement? element)
     {

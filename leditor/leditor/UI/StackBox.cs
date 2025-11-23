@@ -3,7 +3,7 @@ using SFML.System;
 
 namespace leditor.UI;
 
-public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = default) : AUIBox(host, GetMinSize(children.AsEnumerable(), padding))
+public class StackBox : AUIBox
 {
     private static Vector2f GetMinSize(IEnumerable<AUIElement> children, UIPadding padding)
     {
@@ -20,10 +20,10 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
         return size;
     }
 
-    private readonly List<AUIElement> _children = new(children);
+    private readonly List<AUIElement> _children;
 
     public override IEnumerable<AUIElement> GetChildren()
-        => children;
+        => _children;
 
     public override void RemoveChild(AUIElement child)
     {
@@ -36,7 +36,6 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
     
     public void AddChild(AUIElement child)
     {
-        child.SetClickView(ClickView);
         child.Parent = this;
         
         _children.Add(child);
@@ -46,7 +45,18 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
         );
     }
 
-    private UIPadding _padding = padding;
+    private UIPadding _padding;
+
+    public StackBox(UIHost host, AUIElement[] children, UIPadding padding = default, bool centerX = false, bool centerY = false) : base(host, GetMinSize(children.AsEnumerable(), padding))
+    {
+        _centerX = centerX;
+        _centerY = centerY;
+        _children = new List<AUIElement>(children);
+        _padding = padding;
+
+        foreach (var child in _children)
+            child.Parent = this;
+    }
 
     public UIPadding Padding
     {
@@ -63,16 +73,29 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
     
     public override void UpdateLayout()
     {
-        var rect = new FloatRect(
+        var baseRect = new FloatRect(
             Rect.Left + Padding.Left, 
             Rect.Top + Padding.Top,
             Rect.Width - Padding.Left - Padding.Right, 
             Rect.Height - Padding.Bottom - Padding.Top
         );
-        
+
+        baseRect.Left += baseRect.Width / 2;
+        baseRect.Top += baseRect.Height / 2;
+
         foreach (var child in _children)
         {
-            child.Rect = rect;
+            if (_centerX)
+                baseRect.Width = child.MinimalSize.X;
+            if (_centerY)
+                baseRect.Height = child.MinimalSize.Y;
+
+            child.Rect = new FloatRect(
+                baseRect.Left - baseRect.Width / 2,
+                baseRect.Top - baseRect.Height / 2,
+                baseRect.Width,
+                baseRect.Height
+            );
         }
     }
 
@@ -80,5 +103,28 @@ public class StackBox(UIHost host, AUIElement[] children, UIPadding padding = de
     {
         foreach (var child in _children.AsEnumerable().Reverse())
             Host.DrawStack.Push(child.Draw);
+    }
+
+    private bool _centerX;
+    private bool _centerY;
+
+    public bool CenterX
+    {
+        get => _centerX;
+        set
+        {
+            _centerX = value;
+            UpdateLayout();
+        }
+    }
+    
+    public bool CenterY
+    {
+        get => _centerY;
+        set
+        {
+            _centerY = value;
+            UpdateLayout();
+        }
     }
 }

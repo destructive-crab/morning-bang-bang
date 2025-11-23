@@ -81,24 +81,33 @@ public class ScrollBox : AUIBox
     private Scroller _scrollerY;
     private Scroller _scrollerX;
 
-    private ClickAreaView _clickView = new(new FloatRect());
+    private FloatRect _clickView;
 
     public ScrollBox(UIHost host, AUIElement? child) : base(host, new Vector2f(host.Style.ScrollerThickness * 2, host.Style.ScrollerThickness * 2))
     {
-        _child = child;
-        if (_child != null)
-            _child.SetClickView(_clickView);
+        Child = child;
 
         _scrollerX = new Scroller(OnScrollX, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
-        AddArea(_scrollerX.Area);
-        
         _scrollerY = new Scroller(OnScrollY, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
-        AddArea(_scrollerY.Area);
     }
 
-    protected override void OnClickViewUpdate()
+    public override void ProcessClicks()
     {
-        throw new InvalidOperationException();
+        if (_child != null)
+        {
+            Host.ClickHandlersStack.Push(
+                () => Host.Areas.PopViewport()
+            );
+            
+            Host.ClickHandlersStack.Push(_child.ProcessClicks);
+            
+            Host.ClickHandlersStack.Push(
+                () => Host.Areas.SetViewport(_clickView)
+            );
+        }
+            
+        Host.Areas.Process(_scrollerX.Area);
+        Host.Areas.Process(_scrollerY.Area);
     }
 
     private void OnScrollX(Vector2f vec)
@@ -135,7 +144,6 @@ public class ScrollBox : AUIBox
             _child = value;
             if (_child == null) return;
             
-            _child.SetClickView(_clickView);
             _child.Rect = Rect;
         }
     }
@@ -168,7 +176,7 @@ public class ScrollBox : AUIBox
             float.Max(0, _child.Rect.Height - size.Y)
         );
 
-        _clickView.Rect = Rect;
+        _clickView = Rect;
         
         _view.Size = Rect.Size;
         _view.Center = Rect.Position + Rect.Size / 2;

@@ -8,8 +8,8 @@ public enum UIAxis
     Vertical, Horizontal
 }
 
-public class AxisBox(UIHost host, UIAxis axis, AUIElement[] children): 
-    AUIBox(host, CalculateSize(host.Style, axis, children))
+public class AxisBox : 
+    AUIBox
 {
     private static Vector2f CalculateSize(UIStyle style, UIAxis axis, IEnumerable<AUIElement> children)
     {
@@ -38,9 +38,18 @@ public class AxisBox(UIHost host, UIAxis axis, AUIElement[] children):
     }
 
     protected override void UpdateMinimalSize()
-        => MinimalSize = CalculateSize(Host.Style, axis, _children);
+        => MinimalSize = CalculateSize(Host.Style, _axis, _children);
 
-    private readonly List<AUIElement> _children = new(children);
+    private readonly List<AUIElement> _children;
+    private readonly UIAxis _axis;
+
+    public AxisBox(UIHost host, UIAxis axis, AUIElement[] children) : base(host, CalculateSize(host.Style, axis, children))
+    {
+        foreach (var child in children)
+            child.Parent = this;
+        _axis = axis;
+        _children = new List<AUIElement>(children);
+    }
 
     public override IEnumerable<AUIElement> GetChildren()
         => _children;
@@ -62,7 +71,7 @@ public class AxisBox(UIHost host, UIAxis axis, AUIElement[] children):
     public override void UpdateLayout()
     {
         var position = Rect.Position;
-        if (axis == UIAxis.Horizontal)
+        if (_axis == UIAxis.Horizontal)
             foreach (var child in _children)
             {
                 child.Rect = new FloatRect(

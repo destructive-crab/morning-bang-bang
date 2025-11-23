@@ -44,6 +44,12 @@ public class SplitBox: AUIBox
         _axis = axis;
         _first = first;
         _second = second;
+
+        if (_first != null)
+            _first.Parent = this;
+        
+        if (_second != null)
+            _second.Parent = this;
         
         if (axis == UIAxis.Horizontal)
             _distance = first?.MinimalSize.X ?? 0;
@@ -62,8 +68,15 @@ public class SplitBox: AUIBox
         _separator = new RectangleShape(_area.Rect.Size);
         _separator.Position = _area.Rect.Position;
         _separator.FillColor = Host.Style.SplitSeparatorColor;
-        
-        AddArea(_area);
+    }
+    
+    public override void ProcessClicks()
+    {
+        if (_first != null)
+            Host.ClickHandlersStack.Push(_first.ProcessClicks);
+        if (_second != null)
+            Host.ClickHandlersStack.Push(_second.ProcessClicks);
+        Host.Areas.Process(_area);
     }
 
     private void OnMove(Vector2f oldPosition, Vector2f newPosition)

@@ -1,3 +1,4 @@
+using leditor.root;
 using SFML.Graphics;
 using SFML.System;
 
@@ -25,7 +26,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
             child.Rect = rect;
         }
     }
-
+    
     public override IEnumerable<AUIElement> GetChildren()
         => _children
             .Select(tuple => tuple.Item2)
@@ -37,20 +38,21 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
         _children.Remove(
             _children.First(tuple => tuple.Item2 == child)
         );
+        UpdateLayout();
     }
 
     public void AddChild(Anchor anchor, AUIElement child)
     {
-        child.SetClickView(ClickView);
         child.Parent = this;
         _children.Add((anchor, child));
+        UpdateLayout();
     }
 
     protected override void UpdateMinimalSize() { }
 
     public override void Draw(RenderTarget target)
     {
-        foreach (var child in _children)
+        foreach (var child in _children.AsEnumerable().Reverse())
             Host.DrawStack.Push(child.Item2.Draw);
     }
 }

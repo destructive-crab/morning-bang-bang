@@ -9,6 +9,7 @@ public class UILabel : AUIElement
     {
         textObj = new Text(text, style.Font);
         textObj.CharacterSize = style.FontSize;
+        textObj.Style = SFML.Graphics.Text.Styles.Bold;
         
         return textObj.GetLocalBounds().Size;
     }

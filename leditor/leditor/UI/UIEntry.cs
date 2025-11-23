@@ -37,13 +37,7 @@ public class UIEntry : AUIElement
     public UIEntry(UIHost host, UIVar<string> var) : base(host, new Vector2f(host.Style.FontSize + 4, host.Style.FontSize + 3))
     {
         Var = var;
-        _text = new Text
-        {
-            Font = host.Style.Font,
-            DisplayedString = var.Value,
-            FillColor = Color.Black,
-            CharacterSize = host.Style.FontSize
-        };
+        _text = host.Fabric.MakeText("");
         _cursor = new RectangleShape
         {
             Size = new Vector2f(1, host.Style.FontSize),
@@ -51,10 +45,12 @@ public class UIEntry : AUIElement
         };
 
         _area.OnClick += OnAreaClicked;
-        AddArea(_area);
 
         Var.OnSet += OnVarUpdate;
     }
+
+    public override void ProcessClicks()
+        => Host.Areas.Process(_area);
 
     private void OnAreaClicked()
     {

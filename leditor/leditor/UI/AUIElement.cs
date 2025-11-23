@@ -44,38 +44,12 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
 
     public abstract void Draw(RenderTarget target);
 
-    private readonly List<ClickArea> _areas = [];
-    protected ClickAreaView? ClickView;
-    public void SetClickView(ClickAreaView? view)
-    {
-        ClickView = view;
-        foreach (var clickArea in _areas)
-            clickArea.View = ClickView;
-        
-        OnClickViewUpdate();
-    }
-
-    protected virtual void OnClickViewUpdate() { }
-
-    protected void AddArea(ClickArea area)
-    {
-        area.View = ClickView;
-        _areas.Add(area);
-        Host.Areas.AddArea(area);
-    }
-
-    private void DestroyAreas()
-    {
-        foreach (var area in _areas)
-            Host.Areas.RemoveArea(area);
-        
-        _areas.Clear();
-    }
+    public virtual void ProcessClicks() {}
     
     public void Destroy()
     {
         Parent?.RemoveChild(this);
-        DestroyAreas();
+        Parent = null;
     }
 
     public virtual void Deactivate() {}
@@ -83,7 +57,5 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
     public virtual void OnKeyPressed(Keyboard.Key key) {}
     
     public virtual void OnMouseClick(Vector2f pos) {}
-    
-    ~AUIElement()
-        => DestroyAreas();
+
 }

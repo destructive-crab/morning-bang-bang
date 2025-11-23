@@ -1,84 +1,136 @@
+
 using leditor.root;
+using Microsoft.VisualBasic;
 using SFML.Graphics;
 using SFML.System;
-using SFML.Window;
 
 namespace leditor.UI;
 
 public class UIEditor
 {
-    public readonly UIHost Host = new(new UIStyle());
-    private AxisBox _axisBox;
+    public AnchorBox Root;
     
-    public UIEditor(Vector2f size)
+    public UIEditor(UIHost host)
     {
-        var anchor = new AnchorBox(Host);
+        _host = host;
+        Root = new AnchorBox(host);
 
-        _axisBox = new AxisBox(Host, UIAxis.Vertical, [new UILabel(Host, "Label...")]);
-        
-        anchor.AddChild(new Anchor(
-            new FloatRect(10, 10, 0, 0),
-            new FloatRect()
-            ), _axisBox
+        var topBarAnchor = new Anchor(
+            new FloatRect(0, 0, 0, 24),
+            new FloatRect(0, 0, 1, 0)
         );
 
-        var label = new UILabel(Host, "...and anchor!");
+        _topBar = new AxisBox(_host, UIAxis.Horizontal, []);
         
-        anchor.AddChild(new Anchor(
-            new FloatRect(-label.MinimalSize.X / 2, -label.MinimalSize.Y - 10, 0, 0),
-            new FloatRect(.5f, 1, 0, 0)
-            ), label
+        var topBar = new StackBox(host, [
+            new UIRect(host, new Color(0x495057FF)),
+            _topBar
+        ]);
+
+        var toolsBarAnchor = new Anchor(
+            new FloatRect(-24, 24, 24, -24),
+            new FloatRect(1, 0, 0, 1)
         );
 
-        var buttonsChildren = new List<AUIElement>();
-        for (var i = 1; i <= 100; i++)
-        {
-            var msg = $"Thanks for click! {i}";
-            buttonsChildren.Add(new UIButton(Host, $"Click me! {i}    LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG", () => Logger.Info(msg)));
-        }
-        
-        var buttons = new AxisBox(Host, UIAxis.Vertical, buttonsChildren.ToArray());
-        var scroll = new ScrollBox(Host, buttons);
-
-        
-        var entryVar = new UIVar<string>("Linked entry");
-
-        entryVar.OnSet += val => Logger.Debug(val);
-        
-        var onlyIntVar = new UIVar<string>("0");
-
-        var lastValue = "0";
-        onlyIntVar.OnSet += newString =>
-        {
-            if (int.TryParse(newString, out _))
-                lastValue = newString;
-            else onlyIntVar.Value = lastValue;
-        };
-        
-        var right = new AxisBox(Host, UIAxis.Vertical, [
-            new UIEntry(Host, entryVar), 
-            new UIEntry(Host, entryVar), 
-            new UIEntry(Host, onlyIntVar)
+        _rightBar = new AxisBox(host, UIAxis.Vertical, []);
+        var toolsBar = new StackBox(host, [
+            new UIRect(host, new Color(0x495057FF)),
+            _rightBar
         ]);
         
-        var subSplit = new SplitBox(Host, UIAxis.Vertical, anchor, new StackBox(Host, [new UIRect(Host, Color.Green), scroll]), PreserveSide.RightDown);
-        Host.Root = new SplitBox(Host, UIAxis.Horizontal, new StackBox(Host, [new UIRect(Host, Color.Red), right]), subSplit, PreserveSide.RightDown);
-        Host.SetSize(size);
+        var centerAnchor = new Anchor(
+            new FloatRect(0, 24, -24, -24),
+            new FloatRect(0, 0, 1, 1)
+        );
+
+        var padding = new UIPadding(4, 4, 4, 4);
+        
+        var leftSpace = new StackBox(host, [
+            new UILimit(host, new Vector2f(120, 120)),
+            new UIRect(host, new Color(0x343a40FF)),
+            new ScrollBox(host, new StackBox(host, [new UILabel(host, "Hello!")], padding))
+        ]);
+        
+        var bottomSpace = new StackBox(host, [
+            new UILimit(host, new Vector2f(120, 120)),
+            new UIRect(host, new Color(0x343a40FF)),
+            new ScrollBox(host, new StackBox(host, [new UILabel(host, "Hello!")], padding))
+        ]);
+        
+        var center = new SplitBox(host, UIAxis.Horizontal, 
+            leftSpace,
+            new SplitBox(host, UIAxis.Vertical, new UIWorld(host), bottomSpace, PreserveSide.RightDown)
+        );
+        
+        Root.AddChild(topBarAnchor, topBar);
+        Root.AddChild(toolsBarAnchor, toolsBar);
+        Root.AddChild(centerAnchor, center);
     }
 
-    public void OnResize(Vector2f size)
+    private UIHost _host;
+    private AxisBox _rightBar;
+    
+    public void AddTool(Action onSelect, Texture texture)
     {
-        _axisBox.AddChild(new UILabel(Host, $"{size.X} {size.Y}"));
-        Host.SetSize(size);
+        var scale = new Vector2f(16f / texture.Size.X, 16f / texture.Size.Y);
+        _rightBar.AddChild(new UIImageButton(_host, texture, scale, onSelect));
+    }
+
+    private readonly AxisBox _topBar;
+    private readonly ClickArea _overlayArea = new(default, false);
+
+    public void EnableOverlay(Action action)
+    {
+        _overlayArea.Rect = Root.Rect;
+        _overlayArea.OnClick = action;
+        _overlayArea.Overlay = true;
+    }
+
+    public void HideOverlay()
+    {
+        _overlayArea.OnClick = null;
+        _overlayArea.Overlay = false;
     }
     
-    public void Update(RenderWindow window)
+    public void AddToolPanelCategory(string title, Dictionary<string, Action?> actions)
     {
-        Host.Update(window);
+        var category = new ToolPanelCategory(this, _host, title, actions);
+        _topBar.AddChild(category.Button);
+    }
+}
+
+class ToolPanelCategory
+{
+    private UIEditor _editor;
+    private AUIElement _menu;
+    public UIButton Button;
+
+    public ToolPanelCategory(UIEditor editor, UIHost host, string title, Dictionary<string, Action?> actions)
+    {
+        _editor = editor;
+        _menu = new StackBox(host, [
+            new UIRect(host, new Color(0x495057FF)),
+            new AxisBox(host, UIAxis.Vertical,
+                actions.AsEnumerable()
+                    .Select(pair => new UIButton(host, pair.Key, pair.Value))
+                    .ToArray<AUIElement>()
+            )
+        ]);
+        
+        Button = new UIButton(host, title, Show);
     }
 
-    public void Draw(RenderWindow window)
+    private void Show()
     {
-        Host.Draw(window);
+        var anchor = new Anchor();
+        
+        _editor.EnableOverlay(Hide);
+        _editor.Root.AddChild(anchor, _menu);
+    }
+
+    private void Hide()
+    {
+        _editor.Root.RemoveChild(_menu);
+        _editor.HideOverlay();
     }
 }

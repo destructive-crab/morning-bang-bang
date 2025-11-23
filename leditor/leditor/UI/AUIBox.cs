@@ -10,10 +10,11 @@ public abstract class AUIBox(UIHost host, Vector2f minimalSize) : AUIElement(hos
 
     protected abstract void UpdateMinimalSize();
 
-    protected override void OnClickViewUpdate()
+    public override void ProcessClicks()
     {
-        foreach (var child in GetChildren())
-            child.SetClickView(ClickView);
+        var children = GetChildren();
+        foreach (var child in children)
+            Host.ClickHandlersStack.Push(child.ProcessClicks);
     }
 
     public void OnChildUpdate()

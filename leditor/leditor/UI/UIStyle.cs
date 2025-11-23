@@ -7,43 +7,41 @@ public class UIStyle()
 {
     private static Font PrepareFont()
     {
-        var font = new Font("./Autistic.ttf");
-        
-        font.SetSmooth(false);
+        var font = new Font("./assets/Roboto.ttf");
 
         return font;
     }
     
     // Text
     public readonly Font Font = PrepareFont();
-    public readonly uint FontSize = 16;
+    public readonly uint FontSize = 12;
     
     // Label
-    public readonly Color LabelColor = Color.White;
+    public readonly Color LabelColor = new(0xdee2e6FF);
     
     // AxisBox
     public readonly int AxisBoxSpace = 2;
     
     // SplitBox
-    public readonly int SplitSeparatorThickness = 5;
-    public readonly Color SplitSeparatorColor = Color.Cyan;
+    public readonly int SplitSeparatorThickness = 4;
+    public readonly Color SplitSeparatorColor = new(0x212529FF);
     
     // Button
-    public readonly Vector2f ButtonSpace = new(6, 3);
+    public readonly Vector2f ButtonSpace = new(8, 8);
     public readonly ButtonStateStyle NormalButton = new()
     {
-        TextOffset = new Vector2f(3, 0),
-        TextColor = Color.Black,
-        BgColor = Color.White
+        ContentOffset = new Vector2f(4, 4),
+        TextColor = new Color(0xdee2e6FF),
+        BgColor = new Color(0x495057FF)
     };
     public readonly ButtonStateStyle HoveredButton = new()
     {
-        TextOffset = new Vector2f(3, 0),
-        TextColor = Color.White,
-        BgColor = Color.Black
+        ContentOffset = new Vector2f(4, 4),
+        TextColor = new Color(0xe9ecefFF),
+        BgColor = new Color(0x6c757dFF)
     };
     
     //ScrollBox
-    public readonly float ScrollerThickness = 12;
-    public readonly Color ScrollerColor = Color.Cyan;
+    public readonly float ScrollerThickness = 8;
+    public readonly Color ScrollerColor = new(0x6c757dFF);
 }
