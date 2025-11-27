@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using SFML.Graphics;
 
 namespace leditor.root;
 
@@ -6,7 +7,7 @@ namespace leditor.root;
 public sealed class TextureData
 {
     [JsonProperty] public string textureID;
-    [JsonProperty] public string pathToTexture;
+    [JsonProperty] public string pathToTexture { get; private set; }
     
     [JsonProperty] public int StartX;
     [JsonProperty] public int StartY;
@@ -15,26 +16,33 @@ public sealed class TextureData
     [JsonProperty] public int Height;
     
     public Rect rectangle => new Rect(StartX, StartY, Width, Height);
-
-    public TextureData()
-    {
-        
-    }
+    
+    //json requirement 
+    public TextureData() { }
     
     public TextureData(string id, string path)
     {
         textureID = id;
-        pathToTexture = path;
+        SetTexture(path);
     }
     
     public TextureData(string id, string path, Rect rectangle)
     {
         textureID = id;
-        pathToTexture = path;
+        SetTexture(path);
 
         StartX = rectangle.StartX;
         StartY = rectangle.StartY;
         Width = rectangle.Width;
         Height = rectangle.Height;
+    }
+
+    public void SetTexture(string path)
+    {
+        pathToTexture = path;
+        Texture texture = RenderCacher.GetTexture(path);
+        
+        Width = (int)texture.Size.X;
+        Height = (int)texture.Size.Y;
     }
 }

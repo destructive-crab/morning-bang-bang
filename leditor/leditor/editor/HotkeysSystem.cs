@@ -6,31 +6,38 @@ public sealed class HotkeysSystem
 {
     public class Hotkey
     {
-        public Keyboard.Key Key;
+        public Keyboard.Key[] Key;
         public Action Callback;
 
-        public Hotkey(Keyboard.Key key, Action callback)
+        public Hotkey(Keyboard.Key[] key, Action callback)
         {
             Key = key;
             Callback = callback;
         }
     }
 
-    private readonly Dictionary<Keyboard.Key, Hotkey> map = new();
+    private readonly Dictionary<Keyboard.Key[], Hotkey> map = new();
     
-    public void Push(Keyboard.Key key, Action callback)
+    public void Bind(Action callback, params Keyboard.Key[] key)
     {
         map.Add(key, new Hotkey(key, callback));
     }
 
     public void Update()
     {
-        foreach (KeyValuePair<Keyboard.Key, Hotkey> hotkey in map)
+        foreach (KeyValuePair<Keyboard.Key[], Hotkey> hotkey in map)
         {
- //           if (Raylib.IsKeyPressed(hotkey.Key))
- //           {
- //               hotkey.Value.Callback.Invoke();
- //           }
+            foreach (Keyboard.Key key in hotkey.Key)
+            {
+                if (key == Keyboard.Key.LControl && !App.InputsHandler.IsKeyPressed(key))
+                {
+                    break;
+                }
+                if (key != Keyboard.Key.LControl && App.InputsHandler.IsKeyDown(key))
+                {
+                    hotkey.Value.Callback.Invoke();
+                }
+            }
         }
     }
 }

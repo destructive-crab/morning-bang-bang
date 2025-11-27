@@ -5,9 +5,23 @@ public sealed class ProjectEnvironment
     public ProjectData Project;
     //modules
     public readonly Toolset       Toolset = new();
-    public readonly UnitSwitch    UnitSwitch = new();
+    public readonly UnitSwitcher    UnitSwitcher = new();
     public string OriginalPath { get; private set; }
 
+    public void OpenEmptyProject()
+    {
+        Project = new ProjectData();
+        
+        TextureData tex = Project.AddTexture("red", "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\tests\\red.png");
+        Project.AddTile("red", tex);
+    
+        Project.CreateTilesFromTileset("wall_up",
+            "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\tests\\wall_up.png");
+                    
+        
+        OriginalPath = string.Empty;
+        InitializeEnvironment();
+    }
     public void OpenProjectAtPath(string path)
     {
         if (File.Exists(path))
@@ -32,17 +46,18 @@ public sealed class ProjectEnvironment
         
         OriginalPath = path;
     }
-
-    public void SaveProjectAtOriginalPath()
+    public void SaveProject()
     {
+        if (OriginalPath == string.Empty)
+        {
+            OriginalPath = UTLS.OpenSaveProjectDialog();
+        }
+        
         File.WriteAllText(OriginalPath, Project.Export());
     }
 
-
     public void InitializeEnvironment()
     {
-        Toolset.BuildGUI();
-        UnitSwitch.BuildGUI();
     }
 
     public void ClearEnvironment()

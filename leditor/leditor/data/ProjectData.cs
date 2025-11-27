@@ -32,6 +32,8 @@ public sealed class ProjectData
 
     private readonly Dictionary<string, UnitData> unitsMap = new();
 
+    public event Action<object, object> OnEdited; 
+    
     public string Export()
     {
         ProjectDataExportRepresentation representation = new(Tilemaps, Tiles, Units, Textures);
@@ -63,7 +65,7 @@ public sealed class ProjectData
             foreach (TilemapData tilemap in representation.Tilemaps)
             {
                 projectData.AddMap(tilemap);
-                tilemap.Refresh();
+                tilemap.RefreshData();
                 Console.WriteLine($"IMPORT MAP {tilemap.id}");
             }
             
@@ -93,6 +95,8 @@ public sealed class ProjectData
     {
         tiles.Add(tileData);
         tilesMap.Add(tileData.id, tileData);
+        
+        OnEdited?.Invoke(Tiles, tileData);
     }
 
     public void AddMap(string mapID, KeyValuePair<Vector2, string>[] tiles)
@@ -106,6 +110,8 @@ public sealed class ProjectData
     {
         tilemaps.Add(tilemapData);
         tilemapsMap.Add(tilemapData.id, tilemapData);
+        
+        OnEdited?.Invoke(Tilemaps, tilemapData);
     }
 
     public void AddUnit(string unitID, string mapID, string overrideID)
@@ -114,10 +120,12 @@ public sealed class ProjectData
         AddUnit(unit);
     }
 
-    private void AddUnit(UnitData unitData)
+    public void AddUnit(UnitData unitData)
     {
         units.Add(unitData);
         unitsMap.Add(unitData.UnitID, unitData);
+        
+        OnEdited?.Invoke(Units, unitData);
     }
 
     public TextureData[] CreateTilesFromTileset(string generalID, string tilesetPath)
@@ -151,8 +159,8 @@ public sealed class ProjectData
     public TextureData AddTexture(string id, string texturePath)
     {
         TextureData newTexture = new TextureData(id, texturePath);
-        textures.Add(newTexture);
-        texturesMap.Add(id, newTexture);
+        
+        AddTexture(newTexture);
         
         return newTexture;
     }
@@ -160,8 +168,8 @@ public sealed class ProjectData
     public TextureData AddTexture(string id, string texturePath, Rect rectangle)
     {
         TextureData newTexture = new TextureData(id, texturePath, rectangle);
-        textures.Add(newTexture);
-        texturesMap.Add(id, newTexture);
+
+        AddTexture(newTexture);
         
         return newTexture;
     }
@@ -195,5 +203,7 @@ public sealed class ProjectData
     {
         textures.Add(textureData);
         texturesMap.Add(textureData.textureID, textureData);
+        
+        OnEdited?.Invoke(Textures, textureData);
     }
 }

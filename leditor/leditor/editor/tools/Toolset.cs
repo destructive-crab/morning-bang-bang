@@ -1,6 +1,7 @@
 using System.Numerics;
-using deGUISpace;
-using leditor.root.deGUILeditor;
+using leditor.UI;
+using SFML.Graphics;
+using SFML.System;
 
 namespace leditor.root;
 
@@ -18,32 +19,13 @@ public sealed class Toolset
 
     public void BuildGUI()
     {
-        GUIGroup group = new GUIGroup(new RectGUIArea(Anchor.LeftTop, 0, 50, 100, -1));
-
-        for (var i = 0; i < All.Length; i++)
-        {
-            Tool tool = All[i];
-            ToolButton toolButton = new (tool.Name, new RectGUIArea(Anchor.CenterTop, 0, 10 + 40 * i, -1, 30));
-            toolButton.ApplyTool(tool, this);
-            
-            group.AddChild(toolButton);
-        }
         
-        deGUI.PushGUIElement(group);
-        
-        foreach (Tool tool in All)
-        {
-            tool.BuildGUI();
-            tool.DisableGUIMenu();
-        }
     }
 
     public void SelectTool(Tool tool)
     {
-        CurrentTool?.DisableGUIMenu();
         PreviousTool = CurrentTool;
         CurrentTool = tool;
-        tool.EnableGUIMenu();
     }
 }
 
@@ -51,42 +33,30 @@ public sealed class PaintTool : Tool
 {
     public string SelectedTile { get; private set; }
 
-    private GUIGroup group;
-
     public void SelectTile(string id)
     {
         SelectedTile = id;
     }
-    
-    public override void BuildGUI()
+
+    public override Texture GetIcon()
     {
-        group = new GUIGroup(new RectGUIArea(Anchor.CenterBottom, 0, 0, -1, 30));
+        return RenderCacher.GetTexture("assets\\paint.png");
+    }
+
+    public override AUIElement BuildGUI(UIHost host)
+    {
+        AxisBox axisBox = new(host, UIAxis.Horizontal);
         
-        for (var i = 0; i < App.LeditorInstance.project.Tiles.Length; i++)
+        foreach (TileData tile in App.LeditorInstance.Project.Tiles)
         {
-            TileData tile = App.LeditorInstance.project.Tiles[i];
-
-            int x = 100;
-            int y = 30;
-
-            var button = new TileButton(tile.id, new RectGUIArea(Anchor.LeftBottom, x * i, 0, x, y));
-            button.ApplyTool(tile.id, this);
-            group.AddChild(button);
+            TextureData textureData = App.LeditorInstance.Project.GetTexture(tile.texture_id);
+            Texture tileTexture = RenderCacher.GetTexture(textureData.pathToTexture);
+            
+            axisBox.AddChild(new UIImageButton(host, tileTexture, textureData.rectangle, tile.id, new Vector2f(60f/textureData.Width, 60f/textureData.Height), () => SelectTile(tile.id)));
         }
-        
-        deGUI.PushGUIElement(group);
-    }
 
-    public override void EnableGUIMenu()
-    {
-        group.Show();
+        return axisBox;
     }
-
-    public override void DisableGUIMenu()
-    {
-        group.Hide();
-    }
-
     public override void OnClick(Vector2 gridCell, GridBuffer buffer)
     {
         buffer.SetTile(gridCell, SelectedTile);
@@ -97,6 +67,12 @@ public sealed class PaintTool : Tool
 
 internal sealed class Eraser : Tool
 {
+    public override Texture GetIcon() => RenderCacher.GetTexture("assets\\eraser.png");
+    public override AUIElement BuildGUI(UIHost host)
+    {
+        return new UIRect(host, Color.Transparent);
+    }
+
     public override void OnClick(Vector2 gridCell, GridBuffer buffer)
     {
         buffer.SetTile(gridCell, null);
@@ -107,9 +83,8 @@ internal sealed class Eraser : Tool
 
 public abstract class Tool
 {
-    public virtual void BuildGUI() {}
-    public virtual void EnableGUIMenu() {}
-    public virtual void DisableGUIMenu() {}
+    public abstract Texture GetIcon();
+    public abstract AUIElement BuildGUI(UIHost host); 
     public abstract void OnClick(Vector2 gridCell, GridBuffer buffer);
     public abstract string Name { get; }
 }

@@ -1,6 +1,9 @@
+using System.Drawing;
 using System.Numerics;
 using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
+using Color = SFML.Graphics.Color;
 
 namespace leditor.root;
 
@@ -23,9 +26,30 @@ public sealed class GridBuffer
     public int WorldMaxY => MaxY * CELL_SIZE;
     
     public KeyValuePair<Vector2, string>[] Get => map.ToArray();
+    public string Tag { get; private set; }
+
     private readonly Dictionary<Vector2, string> map = new();
 
     public const int CELL_SIZE = 80;
+    private Vector2i pointingOnCell;
+
+    public GridBuffer()
+    {
+        UpdateBufferRect();
+    }
+
+    public bool IsCellAvailableForActions(int x, int y) 
+        => x >= MinX - 1 && x <= MaxX + 1 && y >= MinY - 1 && y <= MaxY + 1;
+
+    public bool IsCellAvailableForActions(Vector2i vector2I) 
+        => IsCellAvailableForActions(vector2I.X, vector2I.Y);
+
+    public void UpdateBufferOutput(ProjectData data)
+    {
+        ProcessBufferInputs();
+        DrawTiles(data);
+        DrawGridLayout();
+    }
     
     public void DrawTiles(ProjectData project)
     {
@@ -38,6 +62,97 @@ public sealed class GridBuffer
             
             DrawTile(texture, pos);
         }
+    }
+
+    public void DrawGridLayout()
+    {
+        Console.WriteLine(BufferWidth + " " + BufferHeight);
+        Color color = Color.White;
+        color.A = 169;
+
+        int sx = (MinX - 1) * GridBuffer.CELL_SIZE;
+        int sy = (MinY - 1) * GridBuffer.CELL_SIZE;
+        
+        int x = sx;
+        int y = sy;
+        
+        int dx = GridBuffer.CELL_SIZE;
+        int dy = GridBuffer.CELL_SIZE;
+
+        int ex = (MaxX + 1) * GridBuffer.CELL_SIZE;
+        int ey = (MaxY + 1) * GridBuffer.CELL_SIZE;
+        
+        
+        for (; x <= ex; x += dx)
+        {
+            App.WindowHandler.DrawLine(x, sy, x, ey, color);
+        }
+        for (; y <= ey; y += dy) 
+        {
+            App.WindowHandler.DrawLine(sx, y, ex, y, color);
+        }
+
+        if(IsCellAvailableForActions(pointingOnCell.X, pointingOnCell.Y))
+        App.WindowHandler.DrawRectangle((int)(pointingOnCell.X * GridBuffer.CELL_SIZE), (int)(pointingOnCell.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
+    }
+
+    private void ProcessBufferInputs()
+    {
+        int w = App.WindowHandler.Width;
+        int h = App.WindowHandler.Height;
+
+        Rectangle area = new Rectangle(w / 2, h / 2, (int)(w * 0.85f), (int)(h * 0.8f));
+        Vector2i mousePos = Mouse.GetPosition();
+
+        //other
+        Vector2f worldPos = App.InputsHandler.WorldMousePosition;
+
+        var pointingOnRaw = worldPos / GridBuffer.CELL_SIZE;
+        
+        App.WindowHandler.DrawLine(w/2, 0, w/2, h, Color.Green);
+        App.WindowHandler.DrawLine(0, h/2, w, h/2, Color.Green);
+        
+        //idk why but x needs to be always floored
+        pointingOnCell.X = (int)MathF.Floor(pointingOnRaw.X);
+        pointingOnCell.Y = (int)MathF.Floor(pointingOnRaw.Y);
+
+        //zoom
+        View view = App.WindowHandler.View;
+
+        if (BufferHeight == 0 || BufferWidth == 0)
+        {
+            view.Size = new Vector2f(App.WindowHandler.Width, App.WindowHandler.Height);
+        }
+
+        App.WindowHandler.Zoom += App.InputsHandler.MouseWheelDelta / -10;
+        
+        //move and tools
+        if (App.InputsHandler.IsRightMouseButtonPressed)
+        {
+            Vector2f delta = (Vector2f)(prevMousePos - App.InputsHandler.MousePosition);
+            
+            delta.X *= (view.Size.X / w);
+            delta.Y *= (view.Size.Y / h);
+            
+            view.Move(delta);
+        }
+        else if(App.InputsHandler.IsLeftMouseButtonDown && IsCellAvailableForActions(pointingOnCell))
+        {
+            App.LeditorInstance.ProjectEnvironment.Toolset.CurrentTool?.OnClick(new Vector2(pointingOnCell.X, pointingOnCell.Y), this);
+        }
+
+ //       if (view.Target.X < buffer.WorldMinX - 300) view.Target.X = buffer.WorldMinX - 300;
+ //       if (view.Target.X > buffer.WorldMaxX + 300) view.Target.X = buffer.WorldMaxX + 300;
+ //       if (view.Target.Y < buffer.WorldMinY - 300) view.Target.Y = buffer.WorldMinY - 300;
+ //       if (view.Target.Y > buffer.WorldMaxY + 300) view.Target.Y = buffer.WorldMaxY + 300;
+
+        prevMousePos = App.InputsHandler.MousePosition;
+    }
+    private Vector2i prevMousePos;
+
+    public GridBuffer(string tag)
+    {
+        Tag = tag;
     }
 
     private static void DrawTile(TextureData textureData, Vector2f pos)
@@ -102,8 +217,10 @@ public sealed class GridBuffer
             MinY = 0;
             MaxX = 0;
             MaxY = 0;
-            BufferWidth = 0;
-            BufferHeight = 0;
+            BufferWidth = 1;
+            BufferHeight = 1;
+            
+            return;
         }
         
         int minX = Int32.MaxValue;
@@ -117,7 +234,7 @@ public sealed class GridBuffer
             {
                 minX = (int)pair.Key.X;
             }
-            else if (pair.Key.X > maxX)
+            if (pair.Key.X > maxX)
             {
                 maxX = (int)pair.Key.X;
             }
@@ -126,7 +243,7 @@ public sealed class GridBuffer
             {
                 minY = (int)pair.Key.Y;
             }
-            else if (pair.Key.Y > maxY)
+            if (pair.Key.Y > maxY)
             {
                 maxY = (int)pair.Key.Y;
             }
@@ -139,5 +256,28 @@ public sealed class GridBuffer
 
         BufferWidth = (int)MathF.Abs(MaxX - MinX);
         BufferHeight = (int)MathF.Abs(MaxY - MinY);
+    }
+    
+    public void FocusOnBufferCenter()
+    {
+        App.WindowHandler.View.Center = new Vector2f(
+            /* x */ WorldMinX + WorldBufferWidth  / 2f,
+            /* y */ WorldMinY + WorldBufferHeight / 2f);
+
+        float xZoom = App.WindowHandler.Width  / (float) (WorldBufferWidth  + 240);
+        float yZoom = App.WindowHandler.Height / (float) (WorldBufferHeight + 240);
+
+        float ratio = App.WindowHandler.Width / (float)App.WindowHandler.Height;
+            
+        if (BufferWidth > BufferHeight)
+        {
+            App.WindowHandler.ViewWidth = WorldBufferWidth + 340;
+            App.WindowHandler.ViewHeight = (int)((WorldBufferWidth + 340) * (1f/ratio));
+        }
+        else
+        {
+            App.WindowHandler.ViewWidth = (int)((WorldBufferHeight + 340) * ratio);
+            App.WindowHandler.ViewHeight = (WorldBufferHeight + 340);
+        }
     }
 }

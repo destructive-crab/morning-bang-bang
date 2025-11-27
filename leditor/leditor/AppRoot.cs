@@ -1,7 +1,4 @@
 ﻿using System.Numerics;
-using System.Runtime.InteropServices;
-using deGUISpace;
-using Newtonsoft.Json;
 using SFML.Graphics;
 
 namespace leditor.root
@@ -14,31 +11,25 @@ namespace leditor.root
         public static Leditor LeditorInstance { get; private set; }
         public static WindowHandler WindowHandler { get; private set; }
 
-        
+        public static string GeneralPath => "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor";
+
         public static void Main()
         {
             GeneralFont =
-                new Font("C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\Autistic.ttf");
+                new Font(GeneralPath + "\\assets\\Autistic.ttf");
             
             WindowHandler = new WindowHandler();
             WindowHandler.CreateWindow();
-
-            string output = InitTestProject().Export();
-            
-            File.WriteAllText("C:\\Users\\destructive_crab\\Desktop\\text.lep", output);
             
             LeditorInstance = new Leditor();
 
-            LeditorInstance.Initialize();
             LeditorInstance.DoLoop();
         }
         
         private static ProjectData InitTestProject()
         {
-            
-            
             ProjectData project = new ProjectData();
-            GridBuffer buffer = new GridBuffer();
+            GridBuffer buffer = new GridBuffer("_");
                     
             TextureData tex = project.AddTexture("red", "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\tests\\red.png");
             project.AddTile("red", tex);
@@ -82,23 +73,6 @@ namespace leditor.root
             project.AddUnit("unit_3", "map_3", UnitData.NO_OVERRIDE);
             
             return project;
-        }
-    
-        private static GUIGroup group;
-    
-        private static void RC()
-        {
-            Pr("RIGHT CLICK BUTTON");
-        }
-    
-        private static void LC()
-        {
-            Pr("LEFT CLICK BUTTON");
-        }
-        
-        private static void Pr(string str)
-        {
-            Console.WriteLine(str);
         }
     }
 }

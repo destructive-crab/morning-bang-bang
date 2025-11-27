@@ -9,6 +9,11 @@ public static class RenderCacher
     
     public static Texture GetTexture(string path)
     {
+        if (path.StartsWith("assets"))
+        {
+            path = Path.Combine(App.GeneralPath, path);
+        }
+        
         if (texturesMap.TryGetValue(path, out Texture tex))
         {
             return tex;

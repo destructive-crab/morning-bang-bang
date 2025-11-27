@@ -11,9 +11,7 @@ public sealed class PlacedTile
 
     [JsonProperty] public string tile_id;
 
-    public PlacedTile()
-    {
-    }
+    public PlacedTile() { }
 
     public PlacedTile(int x, int y, string tileId)
     {
@@ -33,19 +31,32 @@ public class TilemapData
     
     private readonly Dictionary<Vector2, string> map = new();
 
-    public void Refresh()
+    public TilemapData() { }
+
+    public TilemapData(string id)
+    {
+        this.id = id;
+    }
+    
+    public TilemapData(string id, KeyValuePair<Vector2, string>[] tiles)
+    {
+        this.id = id;
+        RewriteWith(tiles);
+    }
+
+    public void RefreshData()
     {
         foreach (PlacedTile tile in tiles)
         {
             map.Add(new Vector2(tile.x, tile.y), id);
         }
     }
-    
-    public TilemapData() { }
 
-    public TilemapData(string id, KeyValuePair<Vector2, string>[] tiles)
+    public void RewriteWith(KeyValuePair<Vector2,string>[] tiles)
     {
-        this.id = id;
+        map.Clear();
+        this.tiles.Clear();
+        
         foreach (KeyValuePair<Vector2,string> pair in tiles)
         {
             map.Add(pair.Key, pair.Value);

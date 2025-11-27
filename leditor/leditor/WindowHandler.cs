@@ -1,4 +1,3 @@
-using deGUISpace;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -31,9 +30,6 @@ public class WindowHandler
         if(IsWindowCreated) return;
 
         window = new RenderWindow(VideoMode.DesktopMode, "MORNING THRILLER LEVEL EDITOR", Styles.Default);
-
-        deGUI.ORIGINAL_WIDTH = (int)window.Size.X;
-        deGUI.ORIGINAL_HEIGHT = (int)window.Size.Y;
 
         InputsHandler = new InputsHandler(window);
         

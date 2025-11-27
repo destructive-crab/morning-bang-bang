@@ -23,6 +23,7 @@ public sealed class InputsHandler
     private RenderWindow window;
 
     private readonly List<Keyboard.Key> keysDown = new();
+    private readonly List<Keyboard.Key> stillPressed = new();
 
     public InputsHandler(RenderWindow window)
     {
@@ -34,6 +35,7 @@ public sealed class InputsHandler
         window.MouseButtonReleased += OnMouseButtonReleased;
         
         window.KeyPressed += OnKeyPressed;
+        window.KeyReleased += OnKeyReleased;
 
         window.Closed += WindowOnClosed; 
     }
@@ -42,10 +44,21 @@ public sealed class InputsHandler
     {
         return keysDown.Contains(key);
     }
-    
+
+    public bool IsKeyPressed(Keyboard.Key key)
+    {
+        return stillPressed.Contains(key);
+    }
+
+    private void OnKeyReleased(object? sender, KeyEventArgs e)
+    {
+        stillPressed.Remove(e.Code);
+    }
+
     private void OnKeyPressed(object? sender, KeyEventArgs e)
     {
         keysDown.Add(e.Code);
+        stillPressed.Add(e.Code);
     }
 
     private void WindowOnClosed(object? sender, EventArgs e)
