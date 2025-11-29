@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace leditor.root;
@@ -71,5 +72,33 @@ public static class UTLS
             return ofn.lpstrFile;
         
         return string.Empty;
+    }
+
+    public static IOrderedEnumerable<FieldInfo> GetDeriveOrderedFields(Type type)
+    {
+        Dictionary<Type, int> lookup = new Dictionary<Type, int>();
+
+        int order = 0;
+        lookup[type] = order++;
+        Type parent = type.BaseType;
+        while (parent != null)
+        {
+            lookup[parent] = order;
+            order++;
+            parent = parent.BaseType;
+        }
+
+        return type.GetFields()
+            .OrderByDescending(prop => lookup[prop.DeclaringType]); 
+    }
+    
+    public static bool ValidateRegarding(LEditorDataUnit toValidate, LEditorDataUnit[] regard)
+    {
+        foreach (LEditorDataUnit other in regard)
+        {
+            if (other.ID == toValidate.ID && other != toValidate) return false;
+        }
+        
+        return toValidate.ValidateExternalDataChange();
     }
 }

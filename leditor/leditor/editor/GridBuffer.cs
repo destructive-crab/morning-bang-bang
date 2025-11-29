@@ -58,7 +58,7 @@ public sealed class GridBuffer
             Vector2f pos = new Vector2f(mapPair.Key.X * CELL_SIZE, mapPair.Key.Y * CELL_SIZE);
             
             TileData tile = project.GetTile(mapPair.Value);
-            TextureData texture = project.GetTexture(tile.texture_id);
+            TextureData texture = project.GetTexture(tile.TextureID);
             
             DrawTile(texture, pos);
         }
@@ -157,7 +157,7 @@ public sealed class GridBuffer
 
     private static void DrawTile(TextureData textureData, Vector2f pos)
     {
-        Texture tex = RenderCacher.GetTexture(textureData.pathToTexture);
+        Texture tex = RenderCacher.GetTexture(textureData.PathToTexture);
 
         Sprite sprite = new Sprite(tex);
         sprite.TextureRect = textureData.rectangle.ToIntRect();

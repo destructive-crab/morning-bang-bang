@@ -87,7 +87,10 @@ public sealed class Leditor
     
     private void WriteCurrentBufferChanges()
     {
-        ProjectEnvironment.Project.GetMap(buffer.Tag).RewriteWith(buffer.Get);
+        foreach (KeyValuePair<string, GridBuffer> pair in buffers)
+        {
+            ProjectEnvironment.Project.GetMap(pair.Value.Tag).RewriteWith(pair.Value.Get);
+        }
         ProjectEnvironment.SaveProject();
     }
 
@@ -115,6 +118,7 @@ public sealed class Leditor
                     if (Project != null && ProjectDisplay == null)
                     {
                         ProjectDisplay = new ProjectDisplay(ProjectEnvironment);
+
                         CurrentDisplay = ProjectDisplay;
                     }
                     else if(Project == null)

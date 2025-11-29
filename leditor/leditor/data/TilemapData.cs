@@ -22,11 +22,10 @@ public sealed class PlacedTile
 }
 
 [JsonObject(MemberSerialization.OptIn)]
-public class TilemapData
+public class TilemapData : LEditorDataUnit
 {
     public PlacedTile[] Get => tiles.ToArray();
     
-    [JsonProperty] public string id;
     [JsonProperty] private readonly List<PlacedTile> tiles = new();
     
     private readonly Dictionary<Vector2, string> map = new();
@@ -35,12 +34,12 @@ public class TilemapData
 
     public TilemapData(string id)
     {
-        this.id = id;
+        this.ID = id;
     }
     
     public TilemapData(string id, KeyValuePair<Vector2, string>[] tiles)
     {
-        this.id = id;
+        this.ID = id;
         RewriteWith(tiles);
     }
 
@@ -48,7 +47,7 @@ public class TilemapData
     {
         foreach (PlacedTile tile in tiles)
         {
-            map.Add(new Vector2(tile.x, tile.y), id);
+            map.Add(new Vector2(tile.x, tile.y), ID);
         }
     }
 
@@ -61,6 +60,20 @@ public class TilemapData
         {
             map.Add(pair.Key, pair.Value);
             this.tiles.Add(new PlacedTile((int)pair.Key.X, (int)pair.Key.Y, pair.Value));
+        }
+    }
+
+    public override bool ValidateExternalDataChange()
+    {
+        return true;
+    }
+
+    public override void CopyDataFrom(LEditorDataUnit from)
+    {
+        if (from is TilemapData tilemapData)
+        {
+            ID = from.ID;
+            //TODO
         }
     }
 }

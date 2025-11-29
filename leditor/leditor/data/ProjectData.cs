@@ -7,29 +7,22 @@ namespace leditor.root;
 
 public sealed class ProjectData
 {
+    public readonly int TILE_HEIGHT = 512;
+    public readonly int TILE_WIDTH = 512;
+    
     public TextureData[] Textures => textures.ToArray();
     public TileData[] Tiles => tiles.ToArray();
     public TilemapData[] Tilemaps => tilemaps.ToArray();
     public UnitData[] Units => units.ToArray();
 
-    public readonly int TILE_HEIGHT = 512;
-
-    public readonly int TILE_WIDTH = 512;
-
     private readonly List<TextureData> textures = new();
-
     private readonly List<TileData> tiles = new();
-
     private readonly List<TilemapData> tilemaps = new();
-
     private readonly List<UnitData> units = new();
 
     private readonly Dictionary<string, TextureData> texturesMap = new();
-
     private readonly Dictionary<string, TileData> tilesMap = new();
-
     private readonly Dictionary<string, TilemapData> tilemapsMap = new();
-
     private readonly Dictionary<string, UnitData> unitsMap = new();
 
     public event Action<object, object> OnEdited; 
@@ -49,81 +42,112 @@ public sealed class ProjectData
 
         if (representation != null)
         {
-            Console.WriteLine("STARTING IMPORT");
+            LGR.PM("STARTING IMPORT");
             foreach (TextureData texture in representation.Textures)
             {
                 projectData.AddTexture(texture);
-                Console.WriteLine($"IMPORT TEXTURE {texture.textureID}");
+                LGR.PM($"IMPORT TEXTURE {texture.ID}");
             }
 
             foreach (TileData tile in representation.Tiles)
             {
                 projectData.AddTile(tile);
-                Console.WriteLine($"IMPORT TILE {tile.id}");
+                LGR.PM($"IMPORT TILE {tile.ID}");
             }
             
             foreach (TilemapData tilemap in representation.Tilemaps)
             {
                 projectData.AddMap(tilemap);
                 tilemap.RefreshData();
-                Console.WriteLine($"IMPORT MAP {tilemap.id}");
+                LGR.PM($"IMPORT MAP {tilemap.ID}");
             }
             
             foreach (UnitData unit in representation.Units)
             {
                 projectData.AddUnit(unit);
-                Console.WriteLine($"IMPORT UNIT {unit.UnitID}");
+                LGR.PM($"IMPORT UNIT {unit.ID}");
             }
         }
         else
         {
             LGR.PERR("CAN NOT IMPORT PROJECT");
-            Console.WriteLine("CAN NOT IMPORT PROJECT");
         }
 
+        LGR.PM("Successfully imported");
         return projectData;
     }
+    
+    public TextureData AddTexture(string id, string texturePath)
+    {
+        TextureData newTexture = new TextureData(id, texturePath);
+        
+        AddTexture(newTexture);
+        
+        return newTexture;
+    }
+    public TextureData AddTexture(string id, string texturePath, Rect rectangle)
+    {
+        TextureData newTexture = new TextureData(id, texturePath, rectangle);
 
+        AddTexture(newTexture);
+        
+        return newTexture;
+    }
+
+    public void AddTexture(TextureData textureData)
+    {
+        if(texturesMap.ContainsKey(textureData.ID)) return;
+        
+        textures.Add(textureData);
+        texturesMap.Add(textureData.ID, textureData);
+        
+        OnEdited?.Invoke(Textures, textureData);
+    }
+    
     public void AddTile(string tileID, TextureData data)
     {
         TileData newTile = new TileData(tileID);
-        newTile.texture_id = data.textureID;
+        newTile.TextureID = data.ID;
         AddTile(newTile);
     }
-
-    private void AddTile(TileData tileData)
+    public void AddTile(TileData tileData)
     {
+        if(tilesMap.ContainsKey(tileData.ID)) return;
+        //validate tileData
+        
         tiles.Add(tileData);
-        tilesMap.Add(tileData.id, tileData);
+        tilesMap.Add(tileData.ID, tileData);
         
         OnEdited?.Invoke(Tiles, tileData);
     }
-
+    
     public void AddMap(string mapID, KeyValuePair<Vector2, string>[] tiles)
     {
         TilemapData tilemapData = new TilemapData(mapID, tiles);
         
         AddMap(tilemapData);
     }
-
     public void AddMap(TilemapData tilemapData)
     {
+        if (tilemapsMap.ContainsKey(tilemapData.ID)) return;
+        
         tilemaps.Add(tilemapData);
-        tilemapsMap.Add(tilemapData.id, tilemapData);
+        tilemapsMap.Add(tilemapData.ID, tilemapData);
         
         OnEdited?.Invoke(Tilemaps, tilemapData);
     }
-
+    
     public void AddUnit(string unitID, string mapID, string overrideID)
     {
         UnitData unit = new UnitData(unitID, mapID, overrideID);
         AddUnit(unit);
     }
-
     public void AddUnit(UnitData unitData)
     {
+        if (unitsMap.ContainsKey(unitData.ID)) return;
+        
         units.Add(unitData);
-        unitsMap.Add(unitData.UnitID, unitData);
+        unitsMap.Add(unitData.ID, unitData);
         
         OnEdited?.Invoke(Units, unitData);
     }
@@ -155,33 +179,17 @@ public sealed class ProjectData
         
         return result.ToArray();
     }
-    
-    public TextureData AddTexture(string id, string texturePath)
-    {
-        TextureData newTexture = new TextureData(id, texturePath);
-        
-        AddTexture(newTexture);
-        
-        return newTexture;
-    }
-    
-    public TextureData AddTexture(string id, string texturePath, Rect rectangle)
-    {
-        TextureData newTexture = new TextureData(id, texturePath, rectangle);
 
-        AddTexture(newTexture);
-        
-        return newTexture;
-    }
-    
     public TextureData GetTexture(string id)
     {
+        if (id == null || !texturesMap.ContainsKey(id)) return null;
+        
         return texturesMap[id];
     }
 
     public TextureData GetTextureFromTileID(string tileID)
     {
-        return GetTexture(GetTile(tileID).texture_id);
+        return GetTexture(GetTile(tileID).TextureID);
     }
 
     public TileData GetTile(string id)
@@ -199,11 +207,72 @@ public sealed class ProjectData
         return unitsMap[id];
     }
 
-    public void AddTexture(TextureData textureData)
+    public void RemoveTexture(TextureData textureData)
     {
-        textures.Add(textureData);
-        texturesMap.Add(textureData.textureID, textureData);
-        
-        OnEdited?.Invoke(Textures, textureData);
+        if (!texturesMap.ContainsKey(textureData.ID)) return;
+        textures.Remove(textureData);
+        texturesMap.Remove(textureData.ID);
+    }
+
+    public void RemoveTile(TileData tileData)
+    {
+        if (!tilesMap.ContainsKey(tileData.ID)) return;
+        tiles.Remove(tileData);
+        tilesMap.Remove(tileData.ID);
+    }
+
+    public void RemoveUnit(UnitData unitData)
+    {
+        if (!unitsMap.ContainsKey(unitData.ID)) return;
+        units.Remove(unitData);
+        unitsMap.Remove(unitData.ID);
+    }
+
+    public void RemoveAllTextures()
+    {
+        foreach (TextureData textureData in Textures)
+        {
+            RemoveTexture(textureData);
+        }
+    }
+
+    public void RemoveAllTiles()
+    {
+        foreach (TileData tile in Tiles)
+        {
+            RemoveTile(tile);
+        }
+    }
+
+    public void RemoveAllUnits()
+    {
+        foreach (UnitData unitData in Units)
+        {
+            RemoveUnit(unitData);
+        }
+    }
+
+    public void AddTextures(TextureData[] data)
+    {
+        foreach (TextureData textureData in data)
+        {
+            AddTexture(textureData);
+        }
+    }
+    
+    public void AddTiles(TileData[] data)
+    {
+        foreach (TileData tileData in data)
+        {
+            AddTile(tileData);
+        }
+    }
+
+    public void AddUnits(UnitData[] data)
+    {
+        foreach (UnitData unitData in data)
+        {
+            AddUnit(unitData);
+        }
     }
 }

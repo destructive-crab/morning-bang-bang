@@ -3,21 +3,27 @@ using Newtonsoft.Json;
 namespace leditor.root;
 
 [JsonObject(MemberSerialization.OptIn)]
-public class UnitData
+public class UnitData : LEditorDataUnit
 {
     public const string NO_OVERRIDE = "NO_OV";
-    [JsonProperty] public string UnitID;
-    [JsonProperty] public string MapID;
-    [JsonProperty] public string OverrideID;
+    [JsonProperty] public string MapID = "_";
+    [JsonProperty] public string OverrideID = NO_OVERRIDE;
 
-    public UnitData()
-    {
-    }
+    public UnitData() { }
 
-    public UnitData(string unitId, string mapId, string overrideId)
+    public UnitData(string id, string mapId, string overrideId)
     {
-        UnitID = unitId;
+        ID = id;
         MapID = mapId;
         OverrideID = overrideId;
+    }
+
+    public override bool ValidateExternalDataChange()
+    {
+        return true;
+    }
+
+    public override void CopyDataFrom(LEditorDataUnit from)
+    {
     }
 }

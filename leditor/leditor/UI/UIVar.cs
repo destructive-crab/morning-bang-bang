@@ -14,4 +14,9 @@ public class UIVar<T>(T value)
     }
 
     public event Action<T>? OnSet;
+
+    public void ClearCallbacks()
+    {
+        OnSet = null;
+    }
 }

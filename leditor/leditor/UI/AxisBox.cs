@@ -61,11 +61,12 @@ public class AxisBox :
         UpdateMinimalSize();
     }
 
-    public void AddChild(AUIElement child)
+    public AUIElement AddChild(AUIElement child)
     {
         child.Parent = this;
         _children.Add(child);
         UpdateMinimalSize();
+        return child;
     }
     
     public override void UpdateLayout()

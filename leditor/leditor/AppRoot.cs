@@ -74,5 +74,9 @@ namespace leditor.root
             
             return project;
         }
+
+        public static void Quit()
+        {
+        }
     }
 }

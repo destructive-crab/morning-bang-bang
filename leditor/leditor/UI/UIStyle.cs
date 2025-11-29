@@ -35,11 +35,19 @@ public class UIStyle()
         TextColor = new Color(0xdee2e6FF),
         BgColor = new Color(0x495057FF)
     };
+    
     public readonly ButtonStateStyle HoveredButton = new()
     {
         ContentOffset = new Vector2f(4, 4),
         TextColor = new Color(0xe9ecefFF),
         BgColor = new Color(0x6c757dFF)
+    };
+    
+    public readonly ButtonStateStyle PressedButton = new()
+    {
+        ContentOffset = new Vector2f(4, 4),
+        TextColor = new Color(0xe9ecefFF),
+        BgColor = new Color(0x74768b)
     };
     
     //ScrollBox

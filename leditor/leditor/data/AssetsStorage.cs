@@ -27,6 +27,6 @@ public static class AssetsStorage
 
     public static Image GetImage(TextureData data)
     {
-        return GetImageAtPath(data.pathToTexture);
+        return GetImageAtPath(data.PathToTexture);
     }
 }
