@@ -66,13 +66,12 @@ public sealed class GridBuffer
 
     public void DrawGridLayout()
     {
-        Console.WriteLine(BufferWidth + " " + BufferHeight);
         Color color = Color.White;
         color.A = 169;
 
         int sx = (MinX - 1) * GridBuffer.CELL_SIZE;
         int sy = (MinY - 1) * GridBuffer.CELL_SIZE;
-        
+       
         int x = sx;
         int y = sy;
         

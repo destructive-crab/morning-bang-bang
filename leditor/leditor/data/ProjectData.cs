@@ -45,18 +45,23 @@ public sealed class ProjectData
             LGR.PM("STARTING IMPORT");
             foreach (TextureData texture in representation.Textures)
             {
+                texture.ValidateExternalDataChange();
                 projectData.AddTexture(texture);
+                
                 LGR.PM($"IMPORT TEXTURE {texture.ID}");
             }
 
             foreach (TileData tile in representation.Tiles)
             {
+                tile.ValidateExternalDataChange();
                 projectData.AddTile(tile);
+                
                 LGR.PM($"IMPORT TILE {tile.ID}");
             }
             
             foreach (TilemapData tilemap in representation.Tilemaps)
             {
+                tilemap.ValidateExternalDataChange();
                 projectData.AddMap(tilemap);
                 tilemap.RefreshData();
                 LGR.PM($"IMPORT MAP {tilemap.ID}");
@@ -64,6 +69,7 @@ public sealed class ProjectData
             
             foreach (UnitData unit in representation.Units)
             {
+                unit.ValidateExternalDataChange();
                 projectData.AddUnit(unit);
                 LGR.PM($"IMPORT UNIT {unit.ID}");
             }

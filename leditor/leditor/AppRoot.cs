@@ -15,8 +15,7 @@ namespace leditor.root
 
         public static void Main()
         {
-            GeneralFont =
-                new Font(GeneralPath + "\\assets\\Autistic.ttf");
+            GeneralFont = new Font(GeneralPath + "\\assets\\Autistic.ttf");
             
             WindowHandler = new WindowHandler();
             WindowHandler.CreateWindow();

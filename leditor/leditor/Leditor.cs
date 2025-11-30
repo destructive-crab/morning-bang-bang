@@ -8,7 +8,7 @@ namespace leditor.root;
 public sealed class Leditor
 {
     public ProjectData Project => ProjectEnvironment.Project;
-    public GridBuffer buffer;
+    public GridBuffer  buffer;
     
     private Dictionary<string, GridBuffer> buffers = new();
 
@@ -47,7 +47,6 @@ public sealed class Leditor
  //           if (args.Button != Mouse.Button.Left) return;
  //           _host.OnMouseClick(new Vector2f(args.X, args.Y));
  //       }; 
-        
     }
 
     public GridBuffer OpenBuffer(string tag)

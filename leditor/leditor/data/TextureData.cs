@@ -6,6 +6,10 @@ namespace leditor.root;
 [JsonObject(MemberSerialization.OptIn)]
 public sealed class TextureData : LEditorDataUnit
 {
+    public const string NO_TEXTURE = "NO_TEXTURE_DEFINED";
+    public static string GetNoTextureFound() 
+        => "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\NO_TEXTURE.png";
+    
     [PathField] [JsonProperty] public string PathToTexture = "";
     
     [JsonProperty] public int StartX;
@@ -13,8 +17,7 @@ public sealed class TextureData : LEditorDataUnit
     
     [JsonProperty] public int Width;
     [JsonProperty] public int Height;
-    private string NOT_DEFINED = "NOT_DEFINED";
-
+    
     public Rect rectangle => new Rect(StartX, StartY, Width, Height);
 
     public override bool ValidateExternalDataChange()
@@ -38,8 +41,8 @@ public sealed class TextureData : LEditorDataUnit
     //json requirement 
     public TextureData()
     {
-        ID = NOT_DEFINED;
-        SetTexture(NOT_DEFINED);
+        ID = NO_TEXTURE;
+        SetTexture(GetNoTextureFound());
     }
     
     public TextureData(string id, string path)
@@ -61,12 +64,19 @@ public sealed class TextureData : LEditorDataUnit
 
     public void SetTexture(string path)
     {
-        if (path == PathToTexture) return;
-        
-        PathToTexture = path;
-        if(path == NOT_DEFINED) return;
-        
-        Texture texture = RenderCacher.GetTexture(path);
+        if(!File.Exists(path))
+        {
+            Console.WriteLine("AAA");
+            PathToTexture = GetNoTextureFound();
+        }
+        else
+        {
+            if (path == PathToTexture) return;
+             
+            PathToTexture = path;           
+        }
+
+        Texture texture = RenderCacher.GetTexture(PathToTexture);
 
         if (Width == 0 || Width > (int)texture.Size.X)
         {
