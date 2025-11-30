@@ -6,14 +6,15 @@ namespace leditor.root;
 [JsonObject(MemberSerialization.OptIn)]
 public sealed class TextureData : LEditorDataUnit
 {
-    [JsonProperty] public string PathToTexture = "";
+    [PathField] [JsonProperty] public string PathToTexture = "";
     
     [JsonProperty] public int StartX;
     [JsonProperty] public int StartY;
     
     [JsonProperty] public int Width;
     [JsonProperty] public int Height;
-    
+    private string NOT_DEFINED = "NOT_DEFINED";
+
     public Rect rectangle => new Rect(StartX, StartY, Width, Height);
 
     public override bool ValidateExternalDataChange()
@@ -37,8 +38,8 @@ public sealed class TextureData : LEditorDataUnit
     //json requirement 
     public TextureData()
     {
-        ID = "NOT DEFINED";
-        SetTexture("NOT DEFINED");
+        ID = NOT_DEFINED;
+        SetTexture(NOT_DEFINED);
     }
     
     public TextureData(string id, string path)
@@ -60,12 +61,20 @@ public sealed class TextureData : LEditorDataUnit
 
     public void SetTexture(string path)
     {
+        if (path == PathToTexture) return;
+        
         PathToTexture = path;
-        if(path == "NOT DEFINED") return;
+        if(path == NOT_DEFINED) return;
         
         Texture texture = RenderCacher.GetTexture(path);
-        
-        Width = (int)texture.Size.X;
-        Height = (int)texture.Size.Y;
+
+        if (Width == 0 || Width > (int)texture.Size.X)
+        {
+            Width = (int)texture.Size.X;
+        }
+        if (Height == 0 || Height > (int)texture.Size.Y)
+        {
+            Height = (int)texture.Size.Y;
+        }
     }
 }

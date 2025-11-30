@@ -4,7 +4,7 @@ public sealed class TileData : LEditorDataUnit
 {
     public const string EMPTY = "empty";
     
-    public string TextureID;
+    [TextureDataReference] public string TextureID;
 
     public TileData()
     {

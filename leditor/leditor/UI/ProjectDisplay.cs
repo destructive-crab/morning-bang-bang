@@ -425,6 +425,7 @@ class DataEditorEntry<TData>
     private UILabel dataLabel;
 
     private readonly Dictionary<FieldInfo, UILabel>       labels       = new();
+    private readonly Dictionary<FieldInfo, UIImage>       images = new();
     private readonly Dictionary<FieldInfo, UIVar<string>> stringFields = new();
     private readonly Dictionary<FieldInfo, UIVar<string>> intFields    = new();
 
@@ -432,7 +433,7 @@ class DataEditorEntry<TData>
 
     private List<AUIElement> content = new();
     private ProjectEnvironment ProjectEnvironment;
-
+    
     public DataEditorEntry(TData originalData, ProjectEnvironment projectEnvironment)
     {
         OriginalData = originalData;
@@ -465,12 +466,37 @@ class DataEditorEntry<TData>
             content.Add(label);
             content.Add(entry);
 
+            PathFieldAttribute? pathAttribute = field.GetCustomAttribute<PathFieldAttribute>();
+            if (pathAttribute != null)
+            {
+                content.Add(new UIButton(host, "Choose", () =>
+                {
+                    string path = UTLS.OpenChooseFileDialog();
+                    if (path != String.Empty)
+                    {
+                        entry.Var.Value = path;
+                    }
+                }));
+            }
+
+            TextureDataReferenceAttribute? textureReference = field.GetCustomAttribute<TextureDataReferenceAttribute>();
+            if (textureReference != null)
+            {
+                TextureData? textureData = ProjectEnvironment.Project.GetTexture(field.GetValue(ChangedData).ToString());
+                if (textureData != null)
+                {
+                    UIImage image = new UIImage(host, RenderCacher.GetTexture(textureData.PathToTexture), textureData.rectangle.ToIntRect(), new Vector2i(50, 50));
+                    images.Add(field, image);
+                    content.Add(image);
+                }
+            }
+
             uiVar.OnSet += (value) => ProcessEntry(field, value);
         }
 
         removeButton = new UIButton(host, "REMOVE", RemoveThis);
         content.Add(removeButton);
-
+        
         content.Add(new UILabel(host, "\n"));
         root = new AxisBox(host, UIAxis.Vertical, content.ToArray());
     }
@@ -511,12 +537,17 @@ class DataEditorEntry<TData>
     {
         if (field.FieldType == typeof(int))
         {
-            int intValue = int.Parse(value);
+            if (int.TryParse(value, out int intValue) && (int)field.GetValue(ChangedData) == intValue) 
+                return;
+            
             field.SetValue(ChangedData, intValue);
             Console.WriteLine($"Set {field.Name} to {value}");
         }
         else if(field.FieldType == typeof(string))
         {
+            if ((string)field.GetValue(ChangedData) == value) 
+                return;
+            
             field.SetValue(ChangedData, value);
             Console.WriteLine($"Set {field.Name} of {ChangedData.ID} to {value}");
         }
@@ -528,6 +559,32 @@ class DataEditorEntry<TData>
         else if (dataLabel.Text.StartsWith("!") && !MarkedAsInvalidExternally)
         {
             dataLabel.Text = dataLabel.Text.Remove(0, 2);
+        }
+
+        if (images.TryGetValue(field, out UIImage image))
+        {
+            //TODO TEXTURE NOT FOUND TEXTURE
+            TextureData? textureData = ProjectEnvironment.Project.GetTexture(field.GetValue(ChangedData).ToString());
+            if (textureData != null)
+            {
+                image.Image = RenderCacher.GetTexture(textureData.PathToTexture);
+                image.Source = textureData.rectangle.ToIntRect();
+            }
+        }
+
+        UpdateVars();
+    }
+
+    private void UpdateVars()
+    {
+        foreach (KeyValuePair<FieldInfo,UIVar<string>> field in intFields)
+        {
+            field.Value.Value = field.Key.GetValue(ChangedData).ToString();
+        }
+        
+        foreach (KeyValuePair<FieldInfo,UIVar<string>> field in stringFields)
+        {
+            field.Value.Value = field.Key.GetValue(ChangedData).ToString();
         }
     }
 

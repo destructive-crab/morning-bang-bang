@@ -2,24 +2,31 @@ using SFML.Graphics;
 using SFML.System;
 namespace leditor.UI;
 
-public class UIImage(UIHost host, Texture image, IntRect? source = null, Color? color = null) : 
-    AUIElement(host, new Vector2f(source?.Size.X ?? (int)image.Size.X, source?.Size.Y ?? (int)image.Size.Y))
+public class UIImage : AUIElement
 {
-    private readonly Sprite _sprite = new()
+    public UIImage(UIHost host, Texture image, IntRect? source = null, Vector2i scaleInPixels = default, Color? color = null) : base(host, new Vector2f(source?.Size.X ?? (int)image.Size.X, source?.Size.Y ?? (int)image.Size.Y))
     {
-        Texture = image,
-        TextureRect = source ?? new IntRect(0, 0, (int)image.Size.X, (int)image.Size.Y)
-    };
-    
+        ScaleInPixels = scaleInPixels;
+        _sprite = new()
+        {
+            Texture = image,
+        };
+        Source = source.Value;
+
+        UpdateLayout();
+    }
+
+    private readonly Sprite _sprite;
+
     public Texture Image
     {
         get => _sprite.Texture;
         set {
             _sprite.Texture = value;
-            MinimalSize = _sprite.GetLocalBounds().Size;
+            MinimalSize = new Vector2f(ScaleInPixels.X, ScaleInPixels.Y);
         }
     }
-    
+
     public Color Color
     {
         get => _sprite.Color;
@@ -32,11 +39,25 @@ public class UIImage(UIHost host, Texture image, IntRect? source = null, Color? 
         set
         {
             _sprite.TextureRect = value;
-            MinimalSize = _sprite.GetLocalBounds().Size;
+            MinimalSize = new Vector2f(ScaleInPixels.X, ScaleInPixels.Y);
         }
     }
-    
-    public override void UpdateLayout() {}
+
+    public Vector2i ScaleInPixels;
+
+    public override void UpdateLayout()
+    {
+        _sprite.Position = Rect.Position;
+
+        if (Source != null)
+        {
+            _sprite.Scale = new Vector2f((float)ScaleInPixels.X / Source.Width, (float)ScaleInPixels.Y / Source.Height);
+        }
+        else
+        {
+            _sprite.Scale = new Vector2f(ScaleInPixels.X / (float)Image.Size.X, ScaleInPixels.Y / (float)Image.Size.Y);
+        }
+    }
 
     public override void Draw(RenderTarget target)
         => target.Draw(_sprite);
