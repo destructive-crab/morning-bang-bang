@@ -63,7 +63,7 @@ public sealed class ProjectData
             {
                 tilemap.ValidateExternalDataChange();
                 projectData.AddMap(tilemap);
-                tilemap.RefreshData();
+                
                 LGR.PM($"IMPORT MAP {tilemap.ID}");
             }
             
@@ -71,6 +71,7 @@ public sealed class ProjectData
             {
                 unit.ValidateExternalDataChange();
                 projectData.AddUnit(unit);
+                
                 LGR.PM($"IMPORT UNIT {unit.ID}");
             }
         }

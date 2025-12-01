@@ -91,8 +91,10 @@ public sealed class GridBuffer
             App.WindowHandler.DrawLine(sx, y, ex, y, color);
         }
 
-        if(IsCellAvailableForActions(pointingOnCell.X, pointingOnCell.Y))
-        App.WindowHandler.DrawRectangle((int)(pointingOnCell.X * GridBuffer.CELL_SIZE), (int)(pointingOnCell.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
+        if (IsCellAvailableForActions(pointingOnCell.X, pointingOnCell.Y))
+        {
+            App.WindowHandler.DrawRectangle((int)(pointingOnCell.X * GridBuffer.CELL_SIZE), (int)(pointingOnCell.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
+        }
     }
 
     private void ProcessBufferInputs()
@@ -159,7 +161,7 @@ public sealed class GridBuffer
         Texture tex = RenderCacher.GetTexture(textureData.PathToTexture);
 
         Sprite sprite = new Sprite(tex);
-        sprite.TextureRect = textureData.rectangle.ToIntRect();
+        sprite.TextureRect = textureData.TextureRect.ToIntRect();
         sprite.Scale =new Vector2f((float)CELL_SIZE / sprite.TextureRect.Width, (float)CELL_SIZE / sprite.TextureRect.Height);
         sprite.Position = pos;
         
@@ -203,7 +205,7 @@ public sealed class GridBuffer
     {
         foreach (var pair in data.Get)
         {
-            map[new Vector2(pair.x, pair.y)] = pair.tile_id;
+            map[new Vector2(pair.X, pair.Y)] = pair.TileID;
         }
         UpdateBufferRect();
     }

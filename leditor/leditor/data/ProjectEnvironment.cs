@@ -22,6 +22,7 @@ public sealed class ProjectEnvironment
         OriginalPath = string.Empty;
         InitializeEnvironment();
     }
+    
     public void OpenProjectAtPath(string path)
     {
         if (File.Exists(path))

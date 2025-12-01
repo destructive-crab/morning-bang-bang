@@ -6,6 +6,7 @@ namespace leditor.root;
 public class UnitData : LEditorDataUnit
 {
     public const string NO_OVERRIDE = "NO_OV";
+    
     [JsonProperty] public string MapID = "_";
     [JsonProperty] public string OverrideID = NO_OVERRIDE;
 
@@ -25,5 +26,11 @@ public class UnitData : LEditorDataUnit
 
     public override void CopyDataFrom(LEditorDataUnit from)
     {
+        ID = from.ID;
+        
+        if (from is not UnitData unitData) return;
+        
+        MapID = unitData.MapID;
+        OverrideID = unitData.OverrideID;
     }
 }

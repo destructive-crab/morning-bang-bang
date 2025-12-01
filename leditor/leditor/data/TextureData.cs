@@ -7,9 +7,7 @@ namespace leditor.root;
 public sealed class TextureData : LEditorDataUnit
 {
     public const string NO_TEXTURE = "NO_TEXTURE_DEFINED";
-    public static string GetNoTextureFound() 
-        => "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\NO_TEXTURE.png";
-    
+
     [PathField] [JsonProperty] public string PathToTexture = "";
     
     [JsonProperty] public int StartX;
@@ -18,39 +16,21 @@ public sealed class TextureData : LEditorDataUnit
     [JsonProperty] public int Width;
     [JsonProperty] public int Height;
     
-    public Rect rectangle => new Rect(StartX, StartY, Width, Height);
-
-    public override bool ValidateExternalDataChange()
-    {
-        SetTexture(PathToTexture);
-        return true;
-    }
-
-    public override void CopyDataFrom(LEditorDataUnit from)
-    {
-        if (from is not TextureData casted) return;
-        
-        ID = casted.ID;
-        SetTexture(casted.PathToTexture);
-        StartX = casted.StartX;
-        StartY = casted.StartY;
-        Width = casted.Width;
-        Height = casted.Height;
-    }
+    public Rect TextureRect => new Rect(StartX, StartY, Width, Height);
 
     //json requirement 
     public TextureData()
     {
         ID = NO_TEXTURE;
-        SetTexture(GetNoTextureFound());
+        SetTexture(NO_TEXTURE);
     }
-    
+
     public TextureData(string id, string path)
     {
         ID = id;
         SetTexture(path);
     }
-    
+
     public TextureData(string id, string path, Rect rectangle)
     {
         ID = id;
@@ -62,12 +42,31 @@ public sealed class TextureData : LEditorDataUnit
         Height = rectangle.Height;
     }
 
+    public override bool ValidateExternalDataChange()
+    {
+        SetTexture(PathToTexture);
+        return true;
+    }
+
+    public override void CopyDataFrom(LEditorDataUnit from)
+    {
+        ID = from.ID;
+        
+        if (from is not TextureData textureData) return;
+        
+        StartX = textureData.StartX;
+        StartY = textureData.StartY;
+        Width = textureData.Width;
+        Height = textureData.Height;
+        
+        SetTexture(textureData.PathToTexture);
+    }
+
     public void SetTexture(string path)
     {
         if(!File.Exists(path))
         {
-            Console.WriteLine("AAA");
-            PathToTexture = GetNoTextureFound();
+            PathToTexture = NO_TEXTURE;
         }
         else
         {

@@ -479,18 +479,18 @@ class DataEditorEntry<TData>
                 }));
             }
 
-            TextureDataReferenceAttribute? textureReference = field.GetCustomAttribute<TextureDataReferenceAttribute>();
-            if (textureReference != null)
+            TextureDataReferenceAttribute? textureAttribute = field.GetCustomAttribute<TextureDataReferenceAttribute>();
+            if (textureAttribute != null)
             {
                 TextureData? textureData = ProjectEnvironment.Project.GetTexture(field.GetValue(ChangedData).ToString());
                 if (textureData != null)
                 {
-                    UIImage image = new UIImage(host, RenderCacher.GetTexture(textureData.PathToTexture), textureData.rectangle.ToIntRect(), new Vector2i(50, 50));
+                    UIImage image = new UIImage(host, RenderCacher.GetTexture(textureData.PathToTexture), textureData.TextureRect.ToIntRect(), new Vector2i(50, 50));
                     images.Add(field, image);
                     content.Add(image);
                 }
             }
-
+            
             uiVar.OnSet += (value) => ProcessEntry(field, value);
         }
 
@@ -563,12 +563,11 @@ class DataEditorEntry<TData>
 
         if (images.TryGetValue(field, out UIImage image))
         {
-            //TODO TEXTURE NOT FOUND TEXTURE
             TextureData? textureData = ProjectEnvironment.Project.GetTexture(field.GetValue(ChangedData).ToString());
             if (textureData != null)
             {
                 image.Image = RenderCacher.GetTexture(textureData.PathToTexture);
-                image.Source = textureData.rectangle.ToIntRect();
+                image.Source = textureData.TextureRect.ToIntRect();
             }
         }
 

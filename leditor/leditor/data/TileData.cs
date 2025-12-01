@@ -14,20 +14,17 @@ public sealed class TileData : LEditorDataUnit
 
     public TileData(string id)
     {
-        this.ID = id;
+        ID = id;
     }
 
-    public override bool ValidateExternalDataChange()
-    {
-        return true;
-    }
+    public override bool ValidateExternalDataChange() => true;
 
     public override void CopyDataFrom(LEditorDataUnit from)
     {
-        if (from is TileData tileData)
-        {
-            ID = tileData.ID;
-            TextureID = tileData.TextureID;
-        }
+        ID = from.ID;
+        
+        if (from is not TileData tileData) return;
+        
+        TextureID = tileData.TextureID;
     }
 }

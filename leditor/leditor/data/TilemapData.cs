@@ -6,18 +6,18 @@ namespace leditor.root;
 [JsonObject(MemberSerialization.OptIn)]
 public sealed class PlacedTile
 {
-    [JsonProperty] public int x;
-    [JsonProperty] public int y;
+    [JsonProperty] public int X;
+    [JsonProperty] public int Y;
 
-    [JsonProperty] public string tile_id;
+    [JsonProperty] public string TileID;
 
     public PlacedTile() { }
 
     public PlacedTile(int x, int y, string tileId)
     {
-        this.x = x;
-        this.y = y;
-        tile_id = tileId;
+        this.X = x;
+        this.Y = y;
+        TileID = tileId;
     }
 }
 
@@ -27,35 +27,40 @@ public class TilemapData : LEditorDataUnit
     public PlacedTile[] Get => tiles.ToArray();
     
     [JsonProperty] private readonly List<PlacedTile> tiles = new();
-    
     private readonly Dictionary<Vector2, string> map = new();
 
     public TilemapData() { }
+    public TilemapData(string id) => ID = id;
 
-    public TilemapData(string id)
-    {
-        this.ID = id;
-    }
-    
     public TilemapData(string id, KeyValuePair<Vector2, string>[] tiles)
     {
-        this.ID = id;
+        ID = id;
         RewriteWith(tiles);
     }
 
-    public void RefreshData()
+    public override bool ValidateExternalDataChange()
     {
         foreach (PlacedTile tile in tiles)
         {
-            map.Add(new Vector2(tile.x, tile.y), ID);
+            map.Add(new Vector2(tile.X, tile.Y), ID);
+            
+            if (tile == null)
+            {
+                return false;
+            }
         }
+        return true;
+    }
+
+    public void Clear()
+    {
+        map.Clear();
+        tiles.Clear();
     }
 
     public void RewriteWith(KeyValuePair<Vector2,string>[] tiles)
     {
-        map.Clear();
-        this.tiles.Clear();
-        
+        Clear();
         foreach (KeyValuePair<Vector2,string> pair in tiles)
         {
             map.Add(pair.Key, pair.Value);
@@ -63,17 +68,22 @@ public class TilemapData : LEditorDataUnit
         }
     }
 
-    public override bool ValidateExternalDataChange()
+    public void RewriteWith(PlacedTile[] tiles)
     {
-        return true;
+        Clear();
+        foreach (PlacedTile tile in tiles)
+        {
+            map.Add(new Vector2(tile.X, tile.Y), tile.TileID);
+            this.tiles.Add(new PlacedTile((int)tile.X, (int)tile.Y, tile.TileID));
+        }
     }
 
     public override void CopyDataFrom(LEditorDataUnit from)
     {
-        if (from is TilemapData tilemapData)
-        {
-            ID = from.ID;
-            //TODO
-        }
+        ID = from.ID;
+        
+        if (from is not TilemapData tilemapData) return;
+        
+        RewriteWith(tilemapData.Get);
     }
 }
