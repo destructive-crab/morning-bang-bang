@@ -1,19 +1,28 @@
+using leditor.root;
 using SFML.Graphics;
 using SFML.System;
 
 namespace leditor.UI;
 
-public class UIWorld(UIHost host) : AUIElement(host, new Vector2f())
+public class UIWorld : AUIElement
 {
-    private Text _text = host.Fabric.MakeText("World here!");
+    public bool IsHovered;
+    private ClickArea clickArea = new(default);
+
+    public UIWorld(UIHost host) : base(host, new Vector2f())
+    {
+        clickArea.OnHover += () => IsHovered = true;
+        clickArea.OnUnhover += () => IsHovered = false;
+    }
 
     public override void UpdateLayout()
     {
-        _text.Position = Rect.Position + Rect.Size / 2 - _text.GetLocalBounds().Size / 2;
+        clickArea.Rect = Rect;
     }
 
     public override void Draw(RenderTarget target)
     {
-        target.Draw(_text);
     }
+    public override void ProcessClicks()
+        => Host.Areas.Process(clickArea);
 }

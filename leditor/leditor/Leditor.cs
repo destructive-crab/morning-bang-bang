@@ -107,6 +107,7 @@ public sealed class Leditor
         
                 Hotkeys.Update();
                 CurrentDisplay.Host.Update(App.WindowHandler.window);
+                CurrentDisplay.Tick();
                 
                 //drawing
                 App.WindowHandler.BeginDrawing();

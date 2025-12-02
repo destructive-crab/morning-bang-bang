@@ -1,6 +1,5 @@
 using SFML.Graphics;
 using SFML.System;
-using SFML.Window;
 
 namespace leditor.UI;
 
@@ -12,8 +11,11 @@ class Scroller
     public FloatRect Limits;
     public Action<Vector2f> OnUpdate;
 
-    public Scroller(Action<Vector2f> onUpdate, FloatRect limits, Vector2f size, Color color)
+    public UIHost host;
+
+    public Scroller(UIHost host, Action<Vector2f> onUpdate, FloatRect limits, Vector2f size, Color color)
     {
+        this.host = host;
         Shape = new RectangleShape
         {
             FillColor = color,
@@ -21,7 +23,9 @@ class Scroller
         };
         Area = new ClickArea(new FloatRect(limits.Left, limits.Top, size.X, size.Y))
         {
-            OnMove = OnMove
+            OnMove = OnMove,
+            OnRightMouseButtonClick = () => { Shape.FillColor = host.Style.ScrollerPressedColor; },
+            OnRightMouseButtonReleased=  () => { Shape.FillColor = host.Style.ScrollerColor; }
         };
         Limits = limits;
         OnUpdate = onUpdate;
@@ -38,6 +42,8 @@ class Scroller
         Area.Rect.Left = pos.X;
         Area.Rect.Top = pos.Y;
 
+        Shape.FillColor = host.Style.ScrollerPressedColor;
+        
         if (Limits.Width != 0)
         {
             pos.X -= Limits.Left;
@@ -89,8 +95,8 @@ public class ScrollBox : AUIBox
         if (_child != null)
             _child.Parent = this;
 
-        _scrollerX = new Scroller(OnScrollX, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
-        _scrollerY = new Scroller(OnScrollY, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
+        _scrollerX = new Scroller(host, OnScrollX, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
+        _scrollerY = new Scroller(host, OnScrollY, new FloatRect(), new Vector2f(host.Style.ScrollerThickness, host.Style.ScrollerThickness), host.Style.ScrollerColor);
     }
 
     public override void ProcessClicks()
@@ -133,7 +139,7 @@ public class ScrollBox : AUIBox
             Child.Rect = new FloatRect (
             Rect.Left - _scroll.X * _difference.X , 
             Rect.Top - _scroll.Y * _difference.Y,
-            Rect.Width - Host.Style.ScrollerThickness,
+            Rect.Width - Host.Style.ScrollerThickness - 20,
             Rect.Height - Host.Style.ScrollerThickness
         );
     }
@@ -170,7 +176,7 @@ public class ScrollBox : AUIBox
     {
         if (_child == null) return;
 
-        var size = new Vector2f(Rect.Width - Host.Style.ScrollerThickness, Rect.Height - Host.Style.ScrollerThickness);
+        var size = new Vector2f(Rect.Width - Host.Style.ScrollerThickness - 20, Rect.Height - Host.Style.ScrollerThickness);
         _child.Rect = new FloatRect (
             Rect.Left - _scroll.X * _difference.X, 
             Rect.Top - _scroll.Y * _difference.Y,
@@ -188,7 +194,6 @@ public class ScrollBox : AUIBox
         _view.Center = Rect.Position + Rect.Size / 2;
         _view.Viewport = new FloatRect(
             Rect.Left / Host.Size.X,
-            
             Rect.Top / Host.Size.Y,
             Rect.Width / Host.Size.X,
             Rect.Height / Host.Size.Y

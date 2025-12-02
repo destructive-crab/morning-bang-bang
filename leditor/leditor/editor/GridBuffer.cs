@@ -33,6 +33,8 @@ public sealed class GridBuffer
     public const int CELL_SIZE = 80;
     private Vector2i pointingOnCell;
 
+    public bool BlockInputs = true;
+
     public GridBuffer()
     {
         UpdateBufferRect();
@@ -78,8 +80,8 @@ public sealed class GridBuffer
         int dx = GridBuffer.CELL_SIZE;
         int dy = GridBuffer.CELL_SIZE;
 
-        int ex = (MaxX + 1) * GridBuffer.CELL_SIZE;
-        int ey = (MaxY + 1) * GridBuffer.CELL_SIZE;
+        int ex = (MaxX + 2) * GridBuffer.CELL_SIZE;
+        int ey = (MaxY + 2) * GridBuffer.CELL_SIZE;
         
         
         for (; x <= ex; x += dx)
@@ -91,7 +93,7 @@ public sealed class GridBuffer
             App.WindowHandler.DrawLine(sx, y, ex, y, color);
         }
 
-        if (IsCellAvailableForActions(pointingOnCell.X, pointingOnCell.Y))
+        if (!BlockInputs && IsCellAvailableForActions(pointingOnCell.X, pointingOnCell.Y))
         {
             App.WindowHandler.DrawRectangle((int)(pointingOnCell.X * GridBuffer.CELL_SIZE), (int)(pointingOnCell.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
         }
@@ -99,6 +101,7 @@ public sealed class GridBuffer
 
     private void ProcessBufferInputs()
     {
+        if (BlockInputs) return;
         int w = App.WindowHandler.Width;
         int h = App.WindowHandler.Height;
 
@@ -110,10 +113,6 @@ public sealed class GridBuffer
 
         var pointingOnRaw = worldPos / GridBuffer.CELL_SIZE;
         
-        App.WindowHandler.DrawLine(w/2, 0, w/2, h, Color.Green);
-        App.WindowHandler.DrawLine(0, h/2, w, h/2, Color.Green);
-        
-        //idk why but x needs to be always floored
         pointingOnCell.X = (int)MathF.Floor(pointingOnRaw.X);
         pointingOnCell.Y = (int)MathF.Floor(pointingOnRaw.Y);
 
@@ -126,6 +125,7 @@ public sealed class GridBuffer
         }
 
         App.WindowHandler.Zoom += App.InputsHandler.MouseWheelDelta / -10;
+        App.WindowHandler.Zoom = Math.Clamp(App.WindowHandler.Zoom, 0.1f, 4f);
         
         //move and tools
         if (App.InputsHandler.IsRightMouseButtonPressed)
@@ -141,11 +141,6 @@ public sealed class GridBuffer
         {
             App.LeditorInstance.ProjectEnvironment.Toolset.CurrentTool?.OnClick(new Vector2(pointingOnCell.X, pointingOnCell.Y), this);
         }
-
- //       if (view.Target.X < buffer.WorldMinX - 300) view.Target.X = buffer.WorldMinX - 300;
- //       if (view.Target.X > buffer.WorldMaxX + 300) view.Target.X = buffer.WorldMaxX + 300;
- //       if (view.Target.Y < buffer.WorldMinY - 300) view.Target.Y = buffer.WorldMinY - 300;
- //       if (view.Target.Y > buffer.WorldMaxY + 300) view.Target.Y = buffer.WorldMaxY + 300;
 
         prevMousePos = App.InputsHandler.MousePosition;
     }
@@ -252,8 +247,8 @@ public sealed class GridBuffer
 
         MinX = minX;
         MinY = minY;
-        MaxX = maxX + 1;
-        MaxY = maxY + 1;
+        MaxX = maxX;
+        MaxY = maxY;
 
         BufferWidth = (int)MathF.Abs(MaxX - MinX);
         BufferHeight = (int)MathF.Abs(MaxY - MinY);

@@ -26,8 +26,8 @@ public class UIImageButton : AUIElement
     
     public Action? Action
     {
-        set => _area.OnClick = value;
-        get => _area.OnClick;
+        set => _area.OnRightMouseButtonClick = value;
+        get => _area.OnRightMouseButtonClick;
     }
 
     private Vector2f _styleTextOffset;
@@ -59,7 +59,7 @@ public class UIImageButton : AUIElement
         {
             _sprite.TextureRect = rect.ToIntRect();
         }
-        _area.OnClick = action;
+        _area.OnRightMouseButtonClick = action;
         _area.OnHover = OnHover;
         _area.OnUnhover = OnUnhover;
         host.Fabric.MakeTextOut(text, out Text textObj);

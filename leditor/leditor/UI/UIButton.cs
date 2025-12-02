@@ -30,8 +30,8 @@ public class UIButton : AUIElement
 
     public Action? Action
     {
-        set => _area.OnClick = value;
-        get => _area.OnClick;
+        set => _area.OnRightMouseButtonClick = value;
+        get => _area.OnRightMouseButtonClick;
     }
 
     private Vector2f _styleTextOffset;
@@ -53,7 +53,7 @@ public class UIButton : AUIElement
         base(host, host.Fabric.MakeTextOut(text, out var textObj) + host.Style.ButtonSpace)
     {
         _textObj = textObj;
-        _area.OnClick = action;
+        _area.OnRightMouseButtonClick = action;
         _area.OnHover = OnHover;
         _area.OnUnhover = OnUnhover;
 

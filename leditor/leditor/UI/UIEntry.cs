@@ -10,10 +10,8 @@ public class UIEntry : AUIElement
     public UIVar<string> Var { get; private set; }
     
     private View _view = new();
-    private RectangleShape _rectangle = new()
-    {
-        FillColor = new Color(0x495057FF)
-    };
+
+    private readonly RectangleShape background;
 
     private ClickArea _area = new(new FloatRect());
 
@@ -34,18 +32,22 @@ public class UIEntry : AUIElement
         }
     }
 
-    public UIEntry(UIHost host, UIVar<string> var) : base(host, host.Fabric.MakeTextOut("X", out var text) + new Vector2f(4, 4))
+    public UIEntry(UIHost host, UIVar<string> var) : base(host, host.Fabric.MakeTextOut("X", out var text) + new Vector2f(host.Style.BoxSizeX, host.Style.BoxSizeY))
     {
         text.DisplayedString = var.Value;
         Var = var;
         _text = text;
+
+        background = new RectangleShape();
+        background.FillColor = host.Style.EntryBackgroundColor;
+        
         _cursor = new RectangleShape
         {
-            Size = new Vector2f(1, host.Style.FontSize),
-            FillColor = host.Style.LabelColor
+            Size = new Vector2f(host.Style.CursorWidth, host.Style.FontSize+2),
+            FillColor = host.Style.CursorColor
         };
 
-        _area.OnClick += OnAreaClicked;
+        _area.OnRightMouseButtonClick += OnAreaClicked;
 
         Var.OnSet += OnVarUpdate;
     }
@@ -169,6 +171,7 @@ public class UIEntry : AUIElement
         }
 
         _cursor.Position = position + Rect.Position + new Vector2f(1, 1);
+        _cursor.Position = new Vector2f(_cursor.Position.X, _text.Position.Y);
 
         var inner = position.X - _xOffset;
         if (inner < 0)
@@ -190,9 +193,9 @@ public class UIEntry : AUIElement
             Rect.Height / Host.Size.Y
         );
 
-        _rectangle.Size = Rect.Size;
-        _rectangle.Position = Rect.Position;
-        _text.Position = Rect.Position + new Vector2f(2, 1);
+        background.Size = Rect.Size;
+        background.Position = Rect.Position;
+        _text.Position = Rect.Position + new Vector2f(Host.Style.BoxSizeX/2, Host.Style.BoxSizeY/2-2);
         
         UpdateCursor();
 
@@ -203,7 +206,7 @@ public class UIEntry : AUIElement
     
     public override void Draw(RenderTarget target)
     {
-        target.Draw(_rectangle);
+        target.Draw(background);
 
         Utils.CopyView(target.GetView(), _origView);
         target.SetView(_view);

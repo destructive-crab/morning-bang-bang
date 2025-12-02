@@ -16,6 +16,9 @@ public sealed class TextureData : LEditorDataUnit
     [JsonProperty] public int Width;
     [JsonProperty] public int Height;
     
+    [JsonProperty] public int PivotX; //from 0 to 100
+    [JsonProperty] public int PivotY; //from 0 to 100
+    
     public Rect TextureRect => new Rect(StartX, StartY, Width, Height);
 
     //json requirement 
@@ -45,6 +48,10 @@ public sealed class TextureData : LEditorDataUnit
     public override bool ValidateExternalDataChange()
     {
         SetTexture(PathToTexture);
+
+        PivotX = Math.Clamp(PivotX, 0, 100);
+        PivotY = Math.Clamp(PivotY, 0, 100);
+        
         return true;
     }
 

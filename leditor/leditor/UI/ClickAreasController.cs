@@ -10,7 +10,8 @@ public class ClickArea(FloatRect rect, bool overlay = true)
     public FloatRect Rect = rect;
     public bool Overlay = overlay;
     
-    public Action? OnClick;
+    public Action? OnRightMouseButtonClick;
+    public Action? OnRightMouseButtonReleased;
     public Action? OnHover;
     public Action? OnUnhover;
     public MoveAction? OnMove;
@@ -81,7 +82,7 @@ public class ClickAreasController
             if (_isClicked)
             {
                 area.IsGrabbed = true;
-                area.OnClick?.Invoke();
+                area.OnRightMouseButtonClick?.Invoke();
             }
         }
         else if (area.IsHovered)
@@ -90,6 +91,8 @@ public class ClickAreasController
         area.IsGrabbed = area.IsGrabbed && _isPressed;
         if (area.IsGrabbed && _mousePositionOld != _mousePosition)
             area.OnMove?.Invoke(_mousePositionOld, _mousePosition);
+        
+        if(!_isPressed && _isPressedOld) area.OnRightMouseButtonReleased?.Invoke();
             
         area.IsHovered = newIsHovered;
         _isOverlayed = area.IsHovered && area.Overlay;

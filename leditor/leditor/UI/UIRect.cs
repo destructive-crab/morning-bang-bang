@@ -3,11 +3,11 @@ using SFML.System;
 
 namespace leditor.UI;
 
-public class UIRect(UIHost host, Color? color = null) : AUIElement(host, new Vector2f())
+public class UIRect(UIHost host, Color? color = null, Vector2f size = default) : AUIElement(host, size)
 {
     private readonly RectangleShape _shape = new()
     {
-        FillColor = color ?? Color.White
+        FillColor = color ?? new Color(0x333648FF)
     };
 
     public Color Color

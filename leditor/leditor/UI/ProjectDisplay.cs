@@ -28,6 +28,8 @@ public class ProjectDisplay : EditorDisplay
     private StackBox leftSpace;
     private AxisBox leftPanel;
 
+    private UIWorld world;
+
     public ProjectDisplay(ProjectEnvironment projectEnvironment)
     {
         this.projectEnvironment = projectEnvironment;
@@ -39,6 +41,12 @@ public class ProjectDisplay : EditorDisplay
             (_, args) => host.OnKeyPressed(args.Code);
         App.WindowHandler.window.TextEntered +=
             (_, args) => host.OnTextEntered(args.Unicode);  
+    }
+
+    public override void Tick()
+    {
+        if(App.LeditorInstance.buffer != null)
+            App.LeditorInstance.buffer.BlockInputs = !world.IsHovered;
     }
 
     private void BuildContent()
@@ -64,11 +72,6 @@ public class ProjectDisplay : EditorDisplay
             {"Tiles", () => ShowPopup(GetTilesMenu())},
             {"Units", () => ShowPopup(GetUnisMenu())},
         });
-        
-        var popup = new AxisBox(host, UIAxis.Vertical, [
-            new UILabel(host, "Test!"),
-            new UIButton(host, "Close", null)
-        ]); 
     }
 
     private AUIElement GetTilesMenu()
@@ -158,13 +161,13 @@ public class ProjectDisplay : EditorDisplay
 
     public void EnableOverlay(Action action)
     {
-        _overlayArea.OnClick = action;
+        _overlayArea.OnRightMouseButtonClick = action;
         _overlayArea.Overlay = true;
     }
 
     public void HideOverlay()
     {
-        _overlayArea.OnClick = null;
+        _overlayArea.OnRightMouseButtonClick = null;
         _overlayArea.Overlay = false;
     }
 
@@ -209,7 +212,7 @@ public class ProjectDisplay : EditorDisplay
         _topBar = new AxisBox(host, UIAxis.Horizontal, []);
         
         var topBar = new StackBox(host, [
-            new UIRect(host, new Color(0x495057FF)),
+            new UIRect(host),
             _topBar
         ]);
 
@@ -220,7 +223,7 @@ public class ProjectDisplay : EditorDisplay
 
         _rightBar = new AxisBox(host, UIAxis.Vertical, []);
         var toolsBar = new StackBox(host, [
-            new UIRect(host, new Color(0x495057FF)),
+            new UIRect(host),
             _rightBar
         ]);
         
@@ -235,7 +238,7 @@ public class ProjectDisplay : EditorDisplay
        
         leftSpace = new StackBox(host, [
             new UILimit(host, new Vector2f(120, 120)),
-            new UIRect(host, new Color(0x343a40FF)),
+            new UIRect(host),
             new ScrollBox(host, leftPanel)
         ]);
         
@@ -244,13 +247,14 @@ public class ProjectDisplay : EditorDisplay
         
         var bottomSpace = new StackBox(host, [
             new UILimit(host, new Vector2f(120, 120)),
-            new UIRect(host, new Color(0x343a40FF)),
+            new UIRect(host),
             new ScrollBox(host, new StackBox(host, [_toolOptionsContainer], padding))
         ]);
-        
+
+        world = new UIWorld(host);
         var center = new SplitBox(host, UIAxis.Horizontal, 
             leftSpace,
-            new SplitBox(host, UIAxis.Vertical, new UIWorld(host), bottomSpace, PreserveSide.RightDown)
+            new SplitBox(host, UIAxis.Vertical, world, bottomSpace, PreserveSide.RightDown)
         );
         
         Root.AddChild(topBarAnchor, topBar);
@@ -266,10 +270,10 @@ public class ProjectDisplay : EditorDisplay
         _popupContainer = new SingleBox(host);
         _popupRoot = new SingleBox(host, 
             new StackBox(host, [
-                new UIRect(host, new Color(0x000000AA)),
+                new UIRect(host, new Color(0x00000080)),
                 new UIClickArea(host, new ClickArea(default)),
                 new StackBox(host, [new StackBox(host, [
-                    new UIRect(host, new Color(0x343a40FF)),
+                    new UIRect(host),
                     new StackBox(host, [_popupContainer], padding)
                 ])], centerX: true, centerY: true)
             ]), true
@@ -288,7 +292,7 @@ class DataEditor<TData>
     
     private AxisBox dataContainer;
     private AxisBox bottomMenuContainer;
-    private StackBox mainMenuContainer;
+    private AxisBox mainMenuContainer;
 
     private List<DataEditorEntry<TData>> entries = new();
     private UIHost host;
@@ -304,15 +308,13 @@ class DataEditor<TData>
     public AUIElement GetDataEditMenu(TData[] startValue, Action<TData[]> onApply)
     {
         dataContainer  = new AxisBox  (host, UIAxis.Vertical);
-        bottomMenuContainer = new AxisBox  (host, UIAxis.Horizontal);
-        mainMenuContainer  = new StackBox (host, [
+        bottomMenuContainer = new AxisBox  (host, UIAxis.Vertical);
+        mainMenuContainer  = new AxisBox(host, UIAxis.Horizontal, new StackBox (host, [
             new UILimit   (host, new Vector2f(600, App.WindowHandler.Height)),
-            new UIRect    (host, new Color(0x343a40FF)),
-            new ScrollBox (host, new AxisBox (host, UIAxis.Vertical, [dataContainer, bottomMenuContainer])),
-        ]);
+            new UIRect    (host),
+            new ScrollBox (host, new AxisBox (host, UIAxis.Vertical, [dataContainer, ])),
+        ]), bottomMenuContainer);
 
-        //dataContainer.AddChild(new UIRect(host, host.Style.NormalButton.BgColor));
-        
         foreach (TData data in startValue)
         {
             AddNew(data);
@@ -325,6 +327,10 @@ class DataEditor<TData>
         OnApply += onApply;
         
         return mainMenuContainer;
+    }
+
+    private void AddSeparatorToDataContainer()
+    {
     }
 
     private void AddNew(TData data)
@@ -494,8 +500,8 @@ class DataEditorEntry<TData>
 
         removeButton = new UIButton(host, "REMOVE", RemoveThis);
         content.Add(removeButton);
+        content.Add(new UISpace(host, new Vector2f(0, 10)));
         
-        content.Add(new UILabel(host, "\n"));
         root = new AxisBox(host, UIAxis.Vertical, content.ToArray());
     }
 
@@ -617,7 +623,7 @@ class ToolPanelCategory
     {
         _editor = editor;
         _menu = new StackBox(host, [
-            new UIRect(host, new Color(0x495057FF)),
+            new UIRect(host),
             new AxisBox(host, UIAxis.Vertical,
                 actions.AsEnumerable()
                     .Select(pair => new UIButton(host, pair.Key, () =>
