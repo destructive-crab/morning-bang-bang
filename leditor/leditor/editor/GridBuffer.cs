@@ -44,21 +44,21 @@ public sealed class GridBuffer
     public bool IsCellAvailableForActions(Vector2i vector2I) 
         => IsCellAvailableForActions(vector2I.X, vector2I.Y);
 
-    public void UpdateBufferOutput(ProjectData data)
+    public void UpdateBufferOutput(ProjectEnvironment projectEnvironment)
     {
         ProcessBufferInputs();
-        DrawTiles(data);
+        DrawTiles(projectEnvironment);
         DrawGridLayout();
     }
     
-    public void DrawTiles(ProjectData project)
+    public void DrawTiles(ProjectEnvironment projectEnvironment)
     {
         foreach (KeyValuePair<Vector2, string> mapPair in map)
         {
             Vector2f pos = new Vector2f(mapPair.Key.X * CELL_SIZE, mapPair.Key.Y * CELL_SIZE);
             
-            TileData tile = project.GetTile(mapPair.Value);
-            TextureData texture = project.GetTexture(tile.TextureID);
+            TileData tile = projectEnvironment.GetTile(mapPair.Value);
+            TextureData texture = projectEnvironment.GetTexture(tile.TextureID);
             
             DrawTile(texture, pos);
         }

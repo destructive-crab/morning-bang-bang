@@ -84,23 +84,40 @@ public sealed class ProjectData
         return projectData;
     }
     
-    public TextureData AddTexture(string id, string texturePath)
+    public TextureData? GetTexture(string id)
     {
-        TextureData newTexture = new TextureData(id, texturePath);
-        
-        AddTexture(newTexture);
-        
-        return newTexture;
+        if (!texturesMap.ContainsKey(id))
+        {
+            return null;
+        }
+
+        return texturesMap[id];
     }
-    public TextureData AddTexture(string id, string texturePath, Rect rectangle)
+    public TileData? GetTile(string id)
     {
-        TextureData newTexture = new TextureData(id, texturePath, rectangle);
-
-        AddTexture(newTexture);
-        
-        return newTexture;
+        if (!tilesMap.ContainsKey(id))
+        {
+            return null;
+        }
+        return tilesMap[id];
     }
-
+    public TilemapData? GetMap(string id)
+    {
+        if (!tilemapsMap.ContainsKey(id))
+        {
+            return null;
+        }
+        return tilemapsMap[id];
+    }
+    public UnitData? GetUnit(string id)
+    {
+        if (!unitsMap.ContainsKey(id))
+        {
+            return null;
+        }
+        return unitsMap[id];
+    }
+    
     public void AddTexture(TextureData textureData)
     {
         if(texturesMap.ContainsKey(textureData.ID)) return;
@@ -109,13 +126,6 @@ public sealed class ProjectData
         texturesMap.Add(textureData.ID, textureData);
         
         OnEdited?.Invoke(Textures, textureData);
-    }
-    
-    public void AddTile(string tileID, TextureData data)
-    {
-        TileData newTile = new TileData(tileID);
-        newTile.TextureID = data.ID;
-        AddTile(newTile);
     }
     public void AddTile(TileData tileData)
     {
@@ -127,13 +137,6 @@ public sealed class ProjectData
         
         OnEdited?.Invoke(Tiles, tileData);
     }
-    
-    public void AddMap(string mapID, KeyValuePair<Vector2, string>[] tiles)
-    {
-        TilemapData tilemapData = new TilemapData(mapID, tiles);
-        
-        AddMap(tilemapData);
-    }
     public void AddMap(TilemapData tilemapData)
     {
         if (tilemapsMap.ContainsKey(tilemapData.ID)) return;
@@ -142,12 +145,6 @@ public sealed class ProjectData
         tilemapsMap.Add(tilemapData.ID, tilemapData);
         
         OnEdited?.Invoke(Tilemaps, tilemapData);
-    }
-    
-    public void AddUnit(string unitID, string mapID, string overrideID)
-    {
-        UnitData unit = new UnitData(unitID, mapID, overrideID);
-        AddUnit(unit);
     }
     public void AddUnit(UnitData unitData)
     {
@@ -159,59 +156,26 @@ public sealed class ProjectData
         OnEdited?.Invoke(Units, unitData);
     }
 
-    public TextureData[] CreateTilesFromTileset(string generalID, string tilesetPath)
+    public void AddTextures(TextureData[] data)
     {
-        List<TextureData> result = new();
-        Image img = AssetsStorage.GetImageAtPath(tilesetPath);
-
-        int setW = (int)(img.Size.X / TILE_WIDTH);
-        int setH = (int)(img.Size.Y / TILE_HEIGHT);
-
-        int idIndex = 1;
-        for (int w = 0; w < setW; w++)
+        foreach (TextureData textureData in data)
         {
-            for (int h = 0; h < setH; h++)
-            {
-                Rect rec = new Rect(TILE_WIDTH * w, TILE_HEIGHT * h, TILE_WIDTH, TILE_HEIGHT);
-
-                Image croppedGuiImage = new Image(img);
-                TextureData textureData = AddTexture(generalID + $"_{idIndex}", tilesetPath, rec);
-
-                result.Add(textureData);
-                AddTile(generalID + $"_{idIndex}", textureData);
-                
-                idIndex++;
-            }
+            AddTexture(textureData);
         }
-        
-        return result.ToArray();
     }
-
-    public TextureData GetTexture(string id)
+    public void AddTiles(TileData[] data)
     {
-        if (id == null || !texturesMap.ContainsKey(id)) return null;
-        
-        return texturesMap[id];
+        foreach (TileData tileData in data)
+        {
+            AddTile(tileData);
+        }
     }
-
-    public TextureData GetTextureFromTileID(string tileID)
+    public void AddUnits(UnitData[] data)
     {
-        return GetTexture(GetTile(tileID).TextureID);
-    }
-
-    public TileData GetTile(string id)
-    {
-        return tilesMap[id];
-    }
-
-    public TilemapData GetMap(string id)
-    {
-        return tilemapsMap[id];
-    }
-
-    public UnitData GetUnit(string id)
-    {
-        return unitsMap[id];
+        foreach (UnitData unitData in data)
+        {
+            AddUnit(unitData);
+        }
     }
 
     public void RemoveTexture(TextureData textureData)
@@ -220,21 +184,19 @@ public sealed class ProjectData
         textures.Remove(textureData);
         texturesMap.Remove(textureData.ID);
     }
-
     public void RemoveTile(TileData tileData)
     {
         if (!tilesMap.ContainsKey(tileData.ID)) return;
         tiles.Remove(tileData);
         tilesMap.Remove(tileData.ID);
     }
-
     public void RemoveUnit(UnitData unitData)
     {
         if (!unitsMap.ContainsKey(unitData.ID)) return;
         units.Remove(unitData);
         unitsMap.Remove(unitData.ID);
     }
-
+    
     public void RemoveAllTextures()
     {
         foreach (TextureData textureData in Textures)
@@ -242,7 +204,6 @@ public sealed class ProjectData
             RemoveTexture(textureData);
         }
     }
-
     public void RemoveAllTiles()
     {
         foreach (TileData tile in Tiles)
@@ -250,36 +211,11 @@ public sealed class ProjectData
             RemoveTile(tile);
         }
     }
-
     public void RemoveAllUnits()
     {
         foreach (UnitData unitData in Units)
         {
             RemoveUnit(unitData);
-        }
-    }
-
-    public void AddTextures(TextureData[] data)
-    {
-        foreach (TextureData textureData in data)
-        {
-            AddTexture(textureData);
-        }
-    }
-    
-    public void AddTiles(TileData[] data)
-    {
-        foreach (TileData tileData in data)
-        {
-            AddTile(tileData);
-        }
-    }
-
-    public void AddUnits(UnitData[] data)
-    {
-        foreach (UnitData unitData in data)
-        {
-            AddUnit(unitData);
         }
     }
 }

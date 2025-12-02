@@ -49,7 +49,7 @@ public sealed class PaintTool : Tool
         
         foreach (TileData tile in App.LeditorInstance.Project.Tiles)
         {
-            TextureData textureData = App.LeditorInstance.Project.GetTexture(tile.TextureID);
+            TextureData textureData = App.LeditorInstance.ProjectEnvironment.GetTexture(tile.TextureID);
             Texture tileTexture = RenderCacher.GetTexture(textureData.PathToTexture);
             
             axisBox.AddChild(new UIImageButton(host, tileTexture, textureData.TextureRect, tile.ID, new Vector2f(60f/textureData.Width, 60f/textureData.Height), () => SelectTile(tile.ID)));

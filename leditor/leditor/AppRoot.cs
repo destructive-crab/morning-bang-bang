@@ -30,46 +30,7 @@ namespace leditor.root
             ProjectData project = new ProjectData();
             GridBuffer buffer = new GridBuffer("_");
                     
-            TextureData tex = project.AddTexture("red", "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\tests\\red.png");
-            project.AddTile("red", tex);
-    
-            project.CreateTilesFromTileset("wall_up",
-                "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\tests\\wall_up.png");
-                    
-            buffer.SetTile(new Vector2(3, 0), "wall_up_1");
-            buffer.SetTile(new Vector2(4, 0), "wall_up_3");
-            buffer.SetTile(new Vector2(5, 0), "wall_up_5");
-            buffer.SetTile(new Vector2(3, 1), "wall_up_2");
-            buffer.SetTile(new Vector2(4, 1), "wall_up_4");
-            buffer.SetTile(new Vector2(5, 1), "wall_up_6");
-            
-            project.AddMap("map_1", buffer.Get);
-    
-            buffer.Clear();
-            
-            buffer.SetTile(new Vector2(3, 0), "wall_up_1");
-            buffer.SetTile(new Vector2(4, 1), "wall_up_3");
-            buffer.SetTile(new Vector2(5, 2), "wall_up_5");
-            buffer.SetTile(new Vector2(3, 3), "wall_up_2");
-            buffer.SetTile(new Vector2(4, 4), "wall_up_4");
-            buffer.SetTile(new Vector2(5, 5), "wall_up_6");
-            
-            project.AddMap("map_2", buffer.Get);
-            
-            buffer.Clear();
-            
-            buffer.SetTile(new Vector2(1, 0), "wall_up_1");
-            buffer.SetTile(new Vector2(1, 1), "wall_up_3");
-            buffer.SetTile(new Vector2(1, 2), "wall_up_5");
-            buffer.SetTile(new Vector2(1, 3), "wall_up_2");
-            buffer.SetTile(new Vector2(1, 4), "wall_up_4");
-            buffer.SetTile(new Vector2(1, 5), "wall_up_6");
-            
-            project.AddMap("map_3", buffer.Get);
-            
-            project.AddUnit("unit_1", "map_1", UnitData.NO_OVERRIDE);
-            project.AddUnit("unit_2", "map_2", UnitData.NO_OVERRIDE);
-            project.AddUnit("unit_3", "map_3", UnitData.NO_OVERRIDE);
+
             
             return project;
         }

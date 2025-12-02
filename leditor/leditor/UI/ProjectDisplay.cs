@@ -482,13 +482,11 @@ class DataEditorEntry<TData>
             TextureDataReferenceAttribute? textureAttribute = field.GetCustomAttribute<TextureDataReferenceAttribute>();
             if (textureAttribute != null)
             {
-                TextureData? textureData = ProjectEnvironment.Project.GetTexture(field.GetValue(ChangedData).ToString());
-                if (textureData != null)
-                {
-                    UIImage image = new UIImage(host, RenderCacher.GetTexture(textureData.PathToTexture), textureData.TextureRect.ToIntRect(), new Vector2i(50, 50));
-                    images.Add(field, image);
-                    content.Add(image);
-                }
+                TextureData textureData = ProjectEnvironment.GetTexture(field.GetValue(ChangedData).ToString());
+
+                UIImage image = new UIImage(host, RenderCacher.GetTexture(textureData.PathToTexture), textureData.TextureRect.ToIntRect(), new Vector2i(50, 50));
+                images.Add(field, image);
+                content.Add(image);
             }
             
             uiVar.OnSet += (value) => ProcessEntry(field, value);
@@ -563,12 +561,10 @@ class DataEditorEntry<TData>
 
         if (images.TryGetValue(field, out UIImage image))
         {
-            TextureData? textureData = ProjectEnvironment.Project.GetTexture(field.GetValue(ChangedData).ToString());
-            if (textureData != null)
-            {
-                image.Image = RenderCacher.GetTexture(textureData.PathToTexture);
-                image.Source = textureData.TextureRect.ToIntRect();
-            }
+            TextureData textureData = ProjectEnvironment.GetTexture(field.GetValue(ChangedData).ToString());
+
+            image.Image = RenderCacher.GetTexture(textureData.PathToTexture);
+            image.Source = textureData.TextureRect.ToIntRect();
         }
 
         UpdateVars();

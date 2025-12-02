@@ -2,7 +2,13 @@ namespace leditor.root;
 
 public sealed class ProjectEnvironment
 {
+    public bool IsProjectAvailable => Project != null;
+    
     public ProjectData Project;
+    
+    public const string INVALID_TEXTURE_ID = "invalid_texture";
+    public const string INVALID_TILE_ID = "invalid_tile";
+    
     //modules
     public readonly Toolset       Toolset = new();
     public readonly UnitSwitcher    UnitSwitcher = new();
@@ -12,17 +18,9 @@ public sealed class ProjectEnvironment
     {
         Project = new ProjectData();
         
-        TextureData tex = Project.AddTexture("red", "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\tests\\red.png");
-        Project.AddTile("red", tex);
-    
-        Project.CreateTilesFromTileset("wall_up",
-            "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\tests\\wall_up.png");
-                    
-        
         OriginalPath = string.Empty;
         InitializeEnvironment();
     }
-    
     public void OpenProjectAtPath(string path)
     {
         if (File.Exists(path))
@@ -36,14 +34,12 @@ public sealed class ProjectEnvironment
 
     public void SaveProjectAtPath(string path)
     {
-        if (File.Exists(path))
-        {
-        }
-        else
+        if (!File.Exists(path))
         {
             File.Create(path);
-            File.WriteAllText(path, Project.Export());
         }
+        
+        File.WriteAllText(path, Project.Export());
         
         OriginalPath = path;
     }
@@ -57,12 +53,46 @@ public sealed class ProjectEnvironment
         File.WriteAllText(OriginalPath, Project.Export());
     }
 
-    public void InitializeEnvironment()
+    public TextureData GetInvalidTexture()
     {
+        TextureData invalidTexture = new TextureData();
+        return invalidTexture;
+    }
+    public TileData GetInvalidTile()
+    {
+        TileData invalidTile = new();
+        
+        invalidTile.ID = INVALID_TILE_ID;
+        invalidTile.TextureID = INVALID_TEXTURE_ID;
+
+        return invalidTile;
+    }
+    
+    public TextureData GetTexture(string textureID)
+    {
+        if (!IsProjectAvailable) return GetInvalidTexture();
+
+        TextureData? textureData = Project.GetTexture(textureID);
+
+        if (textureData == null) return GetInvalidTexture();
+
+        return textureData;
+    }
+    
+    public TileData GetTile(string tileID)
+    {
+        if (!IsProjectAvailable) return GetInvalidTile();
+        
+        TileData? tileFromProject = Project.GetTile(tileID);
+        
+        if (tileFromProject == null) return GetInvalidTile();
+
+        return tileFromProject;
     }
 
-    public void ClearEnvironment()
-    {
-        
-    }
+    public TilemapData? GetMap(string mapID) => Project.GetMap(mapID);
+    public UnitData? GetUnit(string unitID) => Project.GetUnit(unitID);
+
+    public void InitializeEnvironment() { }
+    public void ClearEnvironment() { }
 }

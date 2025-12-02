@@ -88,7 +88,8 @@ public sealed class Leditor
     {
         foreach (KeyValuePair<string, GridBuffer> pair in buffers)
         {
-            ProjectEnvironment.Project.GetMap(pair.Value.Tag).RewriteWith(pair.Value.Get);
+            //todo
+            ProjectEnvironment.GetMap(pair.Value.Tag).RewriteWith(pair.Value.Get);
         }
         ProjectEnvironment.SaveProject();
     }
@@ -112,7 +113,7 @@ public sealed class Leditor
                 {
                     if (Project != null && buffer != null)
                     {
-                        buffer.UpdateBufferOutput(Project);
+                        buffer.UpdateBufferOutput(ProjectEnvironment);
                     }
                     if (Project != null && ProjectDisplay == null)
                     {
