@@ -15,7 +15,19 @@ public class UIHost
     public Vector2f Size;
 
     public UIFabric Fabric;
-    
+
+    public UIHost(UIStyle style, Vector2f size)
+    {
+        Style = style;
+        Fabric = new UIFabric(this);
+        SetSize(size);
+    }
+
+    public void SetRoot(AUIElement root)
+    {
+        Root = root;
+        SetSize(Size);
+    }
     private bool AssertRoot(
         [MaybeNullWhen(false)] out AUIElement root,
         [CallerFilePath] string filePath = "", 
@@ -28,7 +40,7 @@ public class UIHost
         Logger.Warn("UI Root in null!", filePath, lineNumber);
         return false;
     }
-    
+
     public void SetSize(Vector2f size)
     {
         View.Size = size;
@@ -37,7 +49,7 @@ public class UIHost
         if (AssertRoot(out var root))
             root.Rect = new FloatRect(new Vector2f(0,0), size);
     }
-    
+
     internal Queue<Action> UpdateActionsQueue = [];
 
     private void ProcessUpdateActions()
@@ -45,9 +57,9 @@ public class UIHost
         while (UpdateActionsQueue.TryDequeue(out var action)) 
             action();
     }
-    
+
     public readonly Stack<Action> ClickHandlersStack = [];
-    
+
     public void Update(RenderWindow window)
     {
         if (!AssertRoot(out var root)) return;
@@ -60,10 +72,11 @@ public class UIHost
         
         ProcessUpdateActions();
     }
-    
+
     public delegate void DrawAction(RenderTarget target);
+
     public readonly Stack<DrawAction> DrawStack = [];
-    
+
     public void Draw(RenderTarget target)
     {
         if (!AssertRoot(out var root)) return;
@@ -78,14 +91,8 @@ public class UIHost
     }
 
     public readonly UIStyle Style;
-    
-    private AUIElement? _active;
 
-    public UIHost(UIStyle style)
-    {
-        Style = style;
-        Fabric = new UIFabric(this);
-    }
+    private AUIElement? _active;
 
     public void SetActive(AUIElement? element)
     {

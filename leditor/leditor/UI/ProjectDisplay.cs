@@ -61,9 +61,11 @@ public class ProjectDisplay : EditorDisplay
         
         AddToolPanelCategory("App", new Dictionary<string, Action?>()
         {
-            {"Save (Ctrl + S)", () => App.LeditorInstance.ProjectEnvironment.SaveProject()},
-            {"Load (Ctrl + O)", () => App.LeditorInstance.ProjectEnvironment.OpenProjectAtPath(UTLS.ShowOpenProjectDialog())},
-            {"Quit (Alt + F4)", () => App.Quit()}
+            {"Save    (Ctrl + S)", () => App.LeditorInstance.ProjectEnvironment.SaveProject()},
+            {"Save As (Shift + Ctrl + S)", () => App.LeditorInstance.ProjectEnvironment.SaveProjectAtPath(UTLS.OpenSaveProjectDialog())},
+            {"Load    (Ctrl + O)", () => App.LeditorInstance.OpenProject(UTLS.ShowOpenProjectDialog())},
+            {"New     (Ctrl + N)", () => App.LeditorInstance.OpenProject(string.Empty)},
+            {"Quit    (Alt + F4)", () => App.Quit()}
         });
         
         AddToolPanelCategory("Project", new Dictionary<string, Action?>()
@@ -201,7 +203,7 @@ public class ProjectDisplay : EditorDisplay
 
     private void BuildBase()
     {
-        host = new UIHost(new UIStyle());
+        host = new UIHost(new UIStyle(), new Vector2f(App.WindowHandler.Width, App.WindowHandler.Height));
         Root = new AnchorBox(host);
 
         var topBarAnchor = new Anchor(
@@ -280,7 +282,7 @@ public class ProjectDisplay : EditorDisplay
         );
         
         Root.AddChild(overlayAnchor, _popupRoot);
-        host.Root = Root;
+        host.SetRoot(Root);
     }
 }
 

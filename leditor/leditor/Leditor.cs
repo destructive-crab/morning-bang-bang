@@ -10,7 +10,7 @@ public sealed class Leditor
     public ProjectData Project => ProjectEnvironment.Project;
     public GridBuffer  buffer;
     
-    private Dictionary<string, GridBuffer> buffers = new();
+    private readonly Dictionary<string, GridBuffer> buffers = new();
 
     private readonly HotkeysSystem Hotkeys = new();
     public EditorCommandsSystem    Commands;
@@ -92,6 +92,30 @@ public sealed class Leditor
             ProjectEnvironment.GetMap(pair.Value.Tag).RewriteWith(pair.Value.Get);
         }
         ProjectEnvironment.SaveProject();
+    }
+
+    public void OpenProject(string path)
+    {
+        CloseProject();
+        
+        if(path != string.Empty) ProjectEnvironment.OpenProjectAtPath(path);
+        else                     ProjectEnvironment.OpenEmptyProject();
+    }
+
+    public void CloseProject()
+    {
+        if (!ProjectEnvironment.IsProjectAvailable) return;
+
+        ProjectEnvironment.ClearEnvironment();
+        ClearBuffers();
+        ProjectDisplay = null;
+        CurrentDisplay = HomeDisplay;
+    }
+
+    private void ClearBuffers()
+    {
+        buffers.Clear();
+        buffer = null;
     }
 
     public void DoLoop()

@@ -21,7 +21,7 @@ public sealed class ProjectEnvironment
         OriginalPath = string.Empty;
         InitializeEnvironment();
     }
-    public void OpenProjectAtPath(string path)
+    public bool OpenProjectAtPath(string path)
     {
         if (File.Exists(path))
         {
@@ -29,15 +29,23 @@ public sealed class ProjectEnvironment
             Project = ProjectData.Import(content);
             //checks if valid
             OriginalPath = path;
+            InitializeEnvironment();
+            return true;
         }
+
+        ClearEnvironment();
+        return false;
     }
 
     public void SaveProjectAtPath(string path)
     {
+        if (!path.EndsWith(".lep")) path += ".lep";
+        
         if (!File.Exists(path))
         {
-            File.Create(path);
+            File.Create(path).Close();
         }
+        
         
         File.WriteAllText(path, Project.Export());
         
@@ -93,6 +101,13 @@ public sealed class ProjectEnvironment
     public TilemapData? GetMap(string mapID) => Project.GetMap(mapID);
     public UnitData? GetUnit(string unitID) => Project.GetUnit(unitID);
 
-    public void InitializeEnvironment() { }
-    public void ClearEnvironment() { }
+    public void InitializeEnvironment()
+    {
+        
+    }
+
+    public void ClearEnvironment()
+    {
+        
+    }
 }

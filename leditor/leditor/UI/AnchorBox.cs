@@ -44,6 +44,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
     {
         child.Parent = this;
         _children.Add((anchor, child));
+        
         UpdateLayout();
     }
 
