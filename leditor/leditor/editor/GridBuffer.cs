@@ -62,7 +62,7 @@ public sealed class GridBuffer
             TileData tile = projectEnvironment.GetTile(mapPair.Value);
             TextureData texture = projectEnvironment.GetTexture(tile.TextureID);
             
-            DrawTile(texture, pos);
+            DrawTile(texture, pos, projectEnvironment);
         }
     }
 
@@ -151,14 +151,20 @@ public sealed class GridBuffer
         Tag = tag;
     }
 
-    private static void DrawTile(TextureData textureData, Vector2f pos)
+    private static void DrawTile(TextureData textureData, Vector2f pos, ProjectEnvironment projectEnvironment)
     {
         Texture tex = RenderCacher.GetTexture(textureData.PathToTexture);
 
-        Sprite sprite = new Sprite(tex);
+        float xScale = CELL_SIZE / (float)projectEnvironment.Project.TILE_WIDTH;
+        float yScale = CELL_SIZE / (float)projectEnvironment.Project.TILE_HEIGHT;
+        
+        Sprite sprite      = new Sprite(tex);
         sprite.TextureRect = textureData.TextureRect.ToIntRect();
-        sprite.Scale =new Vector2f((float)CELL_SIZE / sprite.TextureRect.Width, (float)CELL_SIZE / sprite.TextureRect.Height);
-        sprite.Position = pos;
+        sprite.Scale       = new Vector2f(xScale, yScale);
+        sprite.Position    = pos - new Vector2f(textureData.Width * xScale * textureData.PivotX / 100f, textureData.Height * yScale * textureData.PivotY / 100f);
+        
+        Console.WriteLine(new Vector2f(textureData.Width * xScale * textureData.PivotX / 100f, textureData.Height * yScale * textureData.PivotY / 100f));
+        Console.WriteLine(new Vector2f(textureData.Width * xScale * textureData.PivotX / 100f, textureData.Height * yScale * textureData.PivotY / 100f));
         
         App.WindowHandler.Draw(sprite);
     }
@@ -168,6 +174,7 @@ public sealed class GridBuffer
         if (id == null && map.ContainsKey(pos))
         {
             map.Remove(pos);
+            SortTiles();
             UpdateBufferRect();
             
             return;
@@ -179,9 +186,38 @@ public sealed class GridBuffer
         }
 
         map[pos] = id;
+        SortTiles();
         UpdateBufferRect();
     }
-    
+
+    private void SortTiles()
+    {
+        KeyValuePair<Vector2, string>[] tiles = Get;
+        var tilesList = new List<KeyValuePair<Vector2, string>>(tiles);
+        tilesList.Sort((pair1, pair2) =>
+        {
+            var v1 = pair1.Key;
+            var v2 = pair2.Key;
+
+            if ((int)v1.Y == (int)v2.Y)
+            {
+                if (v1.X < v2.X) return -1;
+                if (v1.X > v2.X) return 1;
+            }
+            
+            if (v1.Y < v2.Y) return -1;
+            if (v1.Y > v2.Y) return 1;
+
+            return 0;
+        });
+        
+        map.Clear();
+        foreach (KeyValuePair<Vector2,string> pair in tilesList)
+        {
+            map.Add(pair.Key, pair.Value);
+        }
+    }
+
     public void Foreach(Action<Vector2, string> tileID)
     {
         foreach (KeyValuePair<Vector2,string> pair in map)

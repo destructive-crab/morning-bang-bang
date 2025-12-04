@@ -1,8 +1,15 @@
 namespace leditor.UI;
 
-public class UIVar<T>(T value)
+public class UIVar<T>
 {
-    private T _value = value;
+    private T _value;
+
+    public UIVar(T value, Action<T> onSet = null)
+    {
+        _value = value;
+        OnSet += onSet;
+    }
+
     public T Value
     {
         get => _value;

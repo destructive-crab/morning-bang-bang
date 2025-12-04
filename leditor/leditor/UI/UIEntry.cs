@@ -32,7 +32,7 @@ public class UIEntry : AUIElement
         }
     }
 
-    public UIEntry(UIHost host, UIVar<string> var) : base(host, host.Fabric.MakeTextOut("X", out var text) + new Vector2f(host.Style.BoxSizeX, host.Style.BoxSizeY))
+    public UIEntry(UIHost host, UIVar<string> var, int minX = 0) : base(host, host.Fabric.MakeTextOut("X", out var text) + new Vector2f(host.Style.BoxSizeX+minX, host.Style.BoxSizeY))
     {
         text.DisplayedString = var.Value;
         Var = var;

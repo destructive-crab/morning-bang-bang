@@ -392,7 +392,7 @@ class DataEditor<TData>
         {
             foreach (DataEditorEntry<TData> entry in entries)
             {
-                entry.ApplyData();
+                entry.CanApplyData();
             }
             OnApply?.Invoke(GetAllCurrentData());
             CloseEditDataMenu();
@@ -429,6 +429,7 @@ class DataEditorEntry<TData>
 
     private AxisBox root;
     private UILabel dataLabel;
+    private UIHost host;
 
     private readonly Dictionary<FieldInfo, UILabel>       labels       = new();
     private readonly Dictionary<FieldInfo, UIImage>       images = new();
@@ -448,51 +449,46 @@ class DataEditorEntry<TData>
         ChangedData.CopyDataFrom(originalData);
     }
 
-    public void Build(UIHost host)
+    public void Build(UIHost host, CustomDataDrawer<TData> customDataDrawer = null)
     {
+        this.host = host;
         dataLabel = new UILabel(host, typeof(TData).Name);
         content.Add(dataLabel);
 
         FieldInfo[] fields = UTLS.GetDeriveOrderedFields(typeof(TData)).ToArray();
-        
+
         foreach (FieldInfo field in fields)
         {
             if (field.IsLiteral) continue;
             if (field.IsInitOnly) continue;
-            
-            UILabel label = new(host, field.Name);
 
             UIVar<string> uiVar = new UIVar<string>(field.GetValue(this.OriginalData).ToString());
-            
-            if (field.FieldType == typeof(int))    intFields.Add(field, uiVar); 
-            if (field.FieldType == typeof(string)) stringFields.Add(field, uiVar); 
-            
-            UIEntry entry = new UIEntry(host, uiVar);
-            
-            content.Add(label);
-            content.Add(entry);
+
+            if (field.FieldType == typeof(int)) intFields.Add(field, uiVar);
+            if (field.FieldType == typeof(string)) stringFields.Add(field, uiVar);
 
             PathFieldAttribute? pathAttribute = field.GetCustomAttribute<PathFieldAttribute>();
+            XYAxisStartAttribute? xyAxisStartAttribute = field.GetCustomAttribute<XYAxisStartAttribute>();
+            TextureDataReferenceAttribute? textureAttribute = field.GetCustomAttribute<TextureDataReferenceAttribute>();
+            
             if (pathAttribute != null)
             {
-                content.Add(new UIButton(host, "Choose", () =>
-                {
-                    string path = UTLS.OpenChooseFileDialog();
-                    if (path != String.Empty)
-                    {
-                        entry.Var.Value = path;
-                    }
-                }));
+                BuildPathField(field, uiVar, content);
             }
-
-            TextureDataReferenceAttribute? textureAttribute = field.GetCustomAttribute<TextureDataReferenceAttribute>();
-            if (textureAttribute != null)
+            else if (xyAxisStartAttribute != null)
             {
-                TextureData textureData = ProjectEnvironment.GetTexture(field.GetValue(ChangedData).ToString());
-
-                UIImage image = new UIImage(host, RenderCacher.GetTexture(textureData.PathToTexture), textureData.TextureRect.ToIntRect(), new Vector2i(50, 50));
-                images.Add(field, image);
-                content.Add(image);
+                BuildAxisField(field, xyAxisStartAttribute, uiVar, content);
+            }
+            else if (textureAttribute != null)
+            {
+                BuildTextureReferenceField(field, uiVar, content);
+            }
+            else
+            {
+                UILabel label = new(host, field.Name);
+                content.Add(label);
+                UIEntry entry = new UIEntry(host, uiVar, 215);
+                content.Add(entry);
             }
             
             uiVar.OnSet += (value) => ProcessEntry(field, value);
@@ -503,6 +499,60 @@ class DataEditorEntry<TData>
         content.Add(new UISpace(host, new Vector2f(0, 10)));
         
         root = new AxisBox(host, UIAxis.Vertical, content.ToArray());
+    }
+
+    private void BuildTextureReferenceField(FieldInfo field, UIVar<string> var, List<AUIElement> content)
+    {
+        TextureData textureData = ProjectEnvironment.GetTexture(field.GetValue(ChangedData).ToString());
+
+        UILabel label = new(host, field.Name);
+        UIEntry entry = new UIEntry(host, var);
+        UIImage image = new UIImage(host, RenderCacher.GetTexture(textureData.PathToTexture), textureData.TextureRect.ToIntRect(), new Vector2i(50, 50));
+        
+        images.Add(field, image);
+        content.Add(label);
+        content.Add(entry);
+        content.Add(image);
+    }
+
+    AxisBox? xyAxisContainer = null;
+    private void BuildAxisField(FieldInfo field, XYAxisStartAttribute xyAxisStartAttribute, UIVar<string> var, List<AUIElement> content)
+    {
+        UIEntry entry = new UIEntry(host, var, 110);
+        if (xyAxisContainer == null)
+        {
+            UILabel label = new(host, xyAxisStartAttribute.LabelName);
+            
+            content.Add(label);
+            xyAxisContainer = new AxisBox(host, UIAxis.Horizontal);
+            xyAxisContainer.AddChild(new UILabel(host, "X:"));
+            xyAxisContainer.AddChild(entry);
+            content.Add(xyAxisContainer);   
+        }
+        else
+        {
+            xyAxisContainer.AddChild(new UILabel(host, "Y:"));
+            xyAxisContainer.AddChild(entry);
+            xyAxisContainer = null;
+        }
+    }
+
+    private void BuildPathField(FieldInfo field, UIVar<string> var, List<AUIElement> content)
+    {
+        UIEntry entry = new UIEntry(host, var, 480);
+        UILabel label = new(host, field.Name);
+        
+        content.Add(label);
+        content.Add(new AxisBox(host, UIAxis.Horizontal,
+            entry,
+            new UIButton(host, "Choose", () =>
+            {
+                string path = UTLS.OpenChooseFileDialog();
+                if (path != String.Empty)
+                {
+                    entry.Var.Value = path;
+                }
+            })));
     }
 
     public void RemoveThis()
@@ -519,11 +569,10 @@ class DataEditorEntry<TData>
         Removed = true;
     }
 
-    public bool ApplyData()
+    public bool CanApplyData()
     {
         if (ValidateAsSingleData())
         {
-            //OriginalData.CopyDataFrom(ChangedData);
             return true;
         }
 

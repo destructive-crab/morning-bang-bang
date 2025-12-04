@@ -8,16 +8,16 @@ public sealed class TextureData : LEditorDataUnit
 {
     public const string NO_TEXTURE = "NO_TEXTURE_DEFINED";
 
-    [PathField] [JsonProperty] public string PathToTexture = "";
+    [JsonProperty] [PathField] public string PathToTexture = "";
     
-    [JsonProperty] public int StartX;
-    [JsonProperty] public int StartY;
+    [XYAxisStart("Texture Start")][JsonProperty] public int StartX;
+    [XYAxisStart("")][JsonProperty] public int StartY;
     
-    [JsonProperty] public int Width;
-    [JsonProperty] public int Height;
+    [XYAxisStart("Texture Size")][JsonProperty] public int Width;
+    [XYAxisStart("")][JsonProperty] public int Height;
     
-    [JsonProperty] public int PivotX; //from 0 to 100
-    [JsonProperty] public int PivotY; //from 0 to 100
+    [XYAxisStart("Pivot")][JsonProperty] public int PivotX; //from 0 to 100
+    [XYAxisStart("")][JsonProperty] public int PivotY; //from 0 to 100
     
     public Rect TextureRect => new Rect(StartX, StartY, Width, Height);
 
@@ -65,6 +65,8 @@ public sealed class TextureData : LEditorDataUnit
         StartY = textureData.StartY;
         Width = textureData.Width;
         Height = textureData.Height;
+        PivotX = textureData.PivotX;
+        PivotY = textureData.PivotY;
         
         SetTexture(textureData.PathToTexture);
     }
