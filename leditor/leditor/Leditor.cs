@@ -1,226 +1,141 @@
-using System.Numerics;
-using deGUISpace;
-using Raylib_cs;
-using rlImGui_cs;
+using leditor.actions;
+using leditor.UI;
+using SFML.System;
+using SFML.Window;
 
 namespace leditor.root;
 
 public sealed class Leditor
 {
-    //data
-    public ProjectData project;
-    public GridBuffer buffer = new();
-    private Camera2D camera;
+    public ProjectData Project => ProjectEnvironment.Project;
+    public GridBuffer  buffer;
+    
+    private Dictionary<string, GridBuffer> buffers = new();
 
-    private Vector2 pointingOn;
-    
-    //modules
-    private readonly Toolset       Toolset = new();
     private readonly HotkeysSystem Hotkeys = new();
+    public EditorCommandsSystem    Commands;
+
+    public EditorDisplay CurrentDisplay { get; private set; }
     
+    public readonly HomeDisplay    HomeDisplay;
+    public ProjectDisplay          ProjectDisplay;
+
+    public ProjectEnvironment ProjectEnvironment { get; private set; } = new();
+
+    private float currentZoom = 0;
+
+    public Leditor()
+    {
+        Commands = new EditorCommandsSystem();
+        Commands.BuildGUI();
+        
+        Hotkeys.Bind(WriteCurrentBufferChanges, Keyboard.Key.LControl, Keyboard.Key.S);
+        
+        //
+        HomeDisplay = new HomeDisplay();
+        CurrentDisplay = HomeDisplay;
+        
+        //_window.Closed += (_, _) => _window.Close();
+        App.WindowHandler.window.Resized += 
+            (_, args) => CurrentDisplay?.Host?.SetSize(new Vector2f(args.Width, args.Height));
+ //       _window.KeyPressed +=
+ //           (_, args) => _host.OnKeyPressed(args.Code);
+ //       _window.TextEntered +=
+ //           (_, args) => _host.OnTextEntered(args.Unicode);
+ //       _window.MouseButtonReleased += (_, args) =>
+ //       {
+ //           if (args.Button != Mouse.Button.Left) return;
+ //           _host.OnMouseClick(new Vector2f(args.X, args.Y));
+ //       }; 
+    }
+
+    public GridBuffer OpenBuffer(string tag)
+    {
+        if (buffers.ContainsKey(tag))
+        {
+            buffer = buffers[tag];
+            return buffer;
+        }
+        else
+        {
+            GridBuffer newBuffer = new(tag);
+            
+            buffers.Add(tag, newBuffer);
+            buffer = newBuffer;
+    
+            return buffer;            
+        }
+    }
+    
+    public bool OpenBuffer(string tag, out GridBuffer buffer)
+    {
+        bool isNewlyCreated = false;
+        
+        if (buffers.ContainsKey(tag))
+        {
+            isNewlyCreated = false;
+        }
+        else
+        {
+            isNewlyCreated = true;
+        }
+        
+        buffer = OpenBuffer(tag);
+        return isNewlyCreated;
+    }
+    
+    private void WriteCurrentBufferChanges()
+    {
+        foreach (KeyValuePair<string, GridBuffer> pair in buffers)
+        {
+            //todo
+            ProjectEnvironment.GetMap(pair.Value.Tag).RewriteWith(pair.Value.Get);
+        }
+        ProjectEnvironment.SaveProject();
+    }
+
     public void DoLoop()
     {
-        camera = new Camera2D(new Vector2(0, 0), new Vector2(550, 450), 0, 0.1f);
-        
-        while (!Raylib.WindowShouldClose())
+        while (App.WindowHandler.IsOpen)
         {
-            if(project == null)
+            App.WindowHandler.BeginFrame();
             {
-                InitTestProject();
-
-                continue;
-            }
-
-            //inputs
-            ProcessInputs();
-            
-            //drawing
-            Raylib.BeginDrawing();
-            rlImGui.Begin();
-            {
-                Raylib.ClearBackground(new Color(19, 38, 35));
-
-                Raylib.BeginMode2D(camera);
-                
-                buffer.DrawTiles(project);
-                DrawGrid();
-
-//                Toolset.DrawToolsetGUI(project);
-                
-                Raylib.EndMode2D();
-                
-                deGUI.Draw();
+                if (App.WindowHandler.InputsHandler.IsKeyDown(Keyboard.Key.Space))
+                {
+                    Commands.OpenInvokeMenu();
+                }
+        
                 Hotkeys.Update();
-            }
-            rlImGui.End();
-            Raylib.EndDrawing();
-        }
-        rlImGui.Shutdown();
-    }
-
-    public void DrawGrid()
-    {
-        int sx = 0;
-        int sy = GridBuffer.CELL_SIZE * 30;
-        
-        int x = sx;
-        int y = sy;
-        
-        int dx = GridBuffer.CELL_SIZE;
-        int dy = -GridBuffer.CELL_SIZE;
-
-        int ex = 10000;
-        int ey = -10000;
-        
-        Color color = Color.White;
-        color.A = 169;
-        
-        for (; x < ex; x += dx)
-        {
-            Raylib.DrawLine(x, sy, x, ey, color);
-        }
-        for (; y > ey; y += dy) 
-        {
-            Raylib.DrawLine(sx, y, ex, y, color);
-        }
-        
-        Raylib.DrawRectangle((int)(pointingOn.X * GridBuffer.CELL_SIZE), (int)(pointingOn.Y * GridBuffer.CELL_SIZE),  GridBuffer.CELL_SIZE, GridBuffer.CELL_SIZE, new Color(255, 255, 255, 50));
-    }
-    
-    private void ProcessInputs()
-    {
-        int w = Raylib.GetScreenWidth();
-        int h = Raylib.GetScreenHeight();
-        
-        Rectangle area = new Rectangle(new Vector2(w/2, h/2), w*0.85f, h*0.8f);
-        Vector2 mousePos = Raylib.GetMousePosition();
-
-        var color = Color.Green;
-        color.A = 50;
-        
-        //other
-        Vector2 worldPos = Raylib.GetScreenToWorld2D(Raylib.GetMousePosition(), camera);
-        
-        pointingOn = worldPos / GridBuffer.CELL_SIZE;
-        pointingOn.X = (int)(pointingOn.X);
-        pointingOn.Y = (int)(pointingOn.Y);
-            
-        if (!area.Fits(mousePos.X, mousePos.Y))
-        {
-            prevMousePos = Raylib.GetMousePosition();
-            return;
-        }
-        
-        //zoom
-        camera.Zoom = camera.Zoom + 0.05f * Raylib.GetMouseWheelMove();
-        
-        if (camera.Zoom > 4f) camera.Zoom = 4;
-        if (camera.Zoom < 0.2f) camera.Zoom = 0.2f;
-        
-        //move and tools
-        if (Raylib.IsMouseButtonDown(MouseButton.Right))
-        {
-            Vector2 delta = prevMousePos - Raylib.GetMousePosition();
-            camera.Target += delta  / camera.Zoom;
-        }
-        else if(Raylib.IsMouseButtonPressed(MouseButton.Left))
-        {
-            Toolset.CurrentTool?.OnClick(pointingOn, buffer);
-        }
-        
-        prevMousePos = Raylib.GetMousePosition();
-    }
-
-    private Vector2 prevMousePos;
-
-    private void InitTestProject()
-    {
-        project = new ProjectData();
+                CurrentDisplay.Host.Update(App.WindowHandler.window);
+                CurrentDisplay.Tick();
                 
-        TextureData tex = project.AddTexture("red", "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\tests\\red.png");
-        project.AddTile("red", tex);
+                //drawing
+                App.WindowHandler.BeginDrawing();
+                {
+                    if (Project != null && buffer != null)
+                    {
+                        buffer.UpdateBufferOutput(ProjectEnvironment);
+                    }
+                    if (Project != null && ProjectDisplay == null)
+                    {
+                        ProjectDisplay = new ProjectDisplay(ProjectEnvironment);
 
-        project.CreateTilesFromTileset("wall_up",
-            "C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\tests\\wall_up.png");
-                
-        buffer.SetTile(new Vector2(3, 0), "wall_up_1");
-        buffer.SetTile(new Vector2(4, 0), "wall_up_3");
-        buffer.SetTile(new Vector2(5, 0), "wall_up_5");
-        buffer.SetTile(new Vector2(3, 1), "wall_up_2");
-        buffer.SetTile(new Vector2(4, 1), "wall_up_4");
-        buffer.SetTile(new Vector2(5, 1), "wall_up_6");
-       
-        //anchor test
-       // deGUI.ButtonManager.Push(Anchor.RightBottom, -100, -40, 160, 40, "RightBottom", LC, RC);
-       // deGUI.ButtonManager.Push(Anchor.RightTop, -100, 40, 160, 40, "RIGHT TOP", LC, RC);
-       // deGUI.ButtonManager.Push(Anchor.LeftTop, 100, 40, 160, 40, "TOP LEFT", LC, RC);
-       // deGUI.ButtonManager.Push(Anchor.LeftBottom, 100, -40, 160, 40, "BOTTOM LEFT", LC, RC);
-
-       // deGUI.ButtonManager.Push(Anchor.LeftCenter, 100, 0, 160, 40, "LEFT CENTER", LC, RC);
-       // deGUI.ButtonManager.Push(Anchor.RightCenter, -100, 0, 160, 40, "RIGHT CENTER", LC, RC);
-       // deGUI.ButtonManager.Push(Anchor.CenterBottom, 0, -40, 160, 40, "BOTTOM CENTER", LC, RC);
-       // deGUI.ButtonManager.Push(Anchor.CenterTop, 0, 40, 160, 40, "TOP CENTER", LC, RC);
-       
-        var r1 = new GUIRectangle(new Color(33, 33, 38, 90), 5, Color.Black);
-        r1.GUIArea = new RectGUIArea(Anchor.LeftTop, 0, 0, 100, deGUI.STRETCH);
-
-        deGUI.PushGUIElement(r1);
-        var b1 = deGUI.PushButton(Anchor.RightBottom, 0, -10, deGUI.STRETCH, 30, "MENU ITEM 1", LC, RC);
-        var b2 = deGUI.PushButton(Anchor.LeftTop, 0, 10, deGUI.STRETCH, 30, "MENU ITEM 2", LC, RC);
-        var b3 = deGUI.PushButton(Anchor.LeftTop, 0, 50, -1, 30, "MENU ITEM 3", LC, RC);
-
-        b1.SetParent(r1);
-        b2.SetParent(r1);
-        b3.SetParent(r1);
-        
-        group = new GUIGroup(new RectGUIArea(Anchor.LeftTop, 0, 0, 500, 300), r1);
-        
-        group.Hide();
-        deGUI.PushGUIElement(group);
-        
-        var r2 = new GUIRectangle(new Color(0, 255, 0, 100), 5, Color.Black);
-        r2.GUIArea = new RectGUIArea(Anchor.Center, 0, 0, 200, -1);
-        r2.Show();
-        
-        var b4 = deGUI.PushButton(Anchor.LeftTop, 0, 0, 50, 30, "1", LC, RC);
-        var b5 = deGUI.PushButton(Anchor.RightTop, 0, 0, 50, 30, "2", LC, RC);
-        var b6 = deGUI.PushButton(Anchor.LeftBottom, 0, 0, 50, 30, "3", LC, RC);
-        var b7 = deGUI.PushButton(Anchor.RightBottom, 0, 0, 50, 30, "4", LC, RC);
-        
-        r2.AddChild(b4);
-        r2.AddChild(b5);
-        r2.AddChild(b6);
-        r2.AddChild(b7);
-        
-        deGUI.PushGUIElement(r2);
-        
-        Hotkeys.Push(KeyboardKey.Space, () =>
-        {
-            if(group.Active)
-            {
-                group.Hide();
+                        CurrentDisplay = ProjectDisplay;
+                    }
+                    else if(Project == null)
+                    {
+                        CurrentDisplay = HomeDisplay;
+                    }
+                            
+                    App.WindowHandler.BeginGUIMode();
+                    {
+                        CurrentDisplay.Host.Draw(App.WindowHandler.window);
+                    }
+                    App.WindowHandler.CompleteGUIMode();
+                }
+                App.WindowHandler.CompleteDrawing();   
             }
-            else
-            {
-                group.Show();
-            }
-        });
-    }
-
-    private GUIGroup group;
-
-    private void RC()
-    {
-        Pr("RIGHT CLICK BUTTON");
-    }
-
-    private void LC()
-    {
-        Pr("LEFT CLICK BUTTON");
-    }
-    
-    private void Pr(string str)
-    {
-        Console.WriteLine(str);
+            App.WindowHandler.CompleteFrame();
+        }
     }
 }
