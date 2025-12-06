@@ -28,14 +28,26 @@ public class UIButton : AUIElement
 
     private readonly ClickArea _area = new(default);
 
-    public Action? Action
-    {
-        set => _area.OnRightMouseButtonClick = value;
-        get => _area.OnRightMouseButtonClick;
-    }
+    public Action? Action;
 
     private Vector2f _styleTextOffset;
-    private void ApplyStyle(ButtonStateStyle style)
+
+    public UIButton(UIHost host, string text, Action? action = null) : 
+        base(host, host.Fabric.MakeTextOut(text, out var textObj) + host.Style.ButtonSpace)
+    {
+        _textObj = textObj;
+
+        Action = action;
+        
+        _area.OnRightMouseButtonClick = OnPress;
+        _area.OnRightMouseButtonReleased = OnReleased;
+        _area.OnHover = OnHover;
+        _area.OnUnhover = OnUnhover;
+        
+        ApplyStyle(host.Style.NormalButton);
+    }
+
+    protected virtual void ApplyStyle(ButtonStateStyle style)
     {
         _styleTextOffset = style.ContentOffset;
         _textObj.FillColor = style.TextColor;
@@ -43,23 +55,26 @@ public class UIButton : AUIElement
         _shape.FillColor = style.BgColor;
     }
 
-    private void OnHover()
-        => ApplyStyle(Host.Style.HoveredButton);
-
-    private void OnUnhover()
-        => ApplyStyle(Host.Style.NormalButton);
-    
-    public UIButton(UIHost host, string text, Action? action = null) : 
-        base(host, host.Fabric.MakeTextOut(text, out var textObj) + host.Style.ButtonSpace)
+    protected virtual void OnHover()
     {
-        _textObj = textObj;
-        _area.OnRightMouseButtonClick = action;
-        _area.OnHover = OnHover;
-        _area.OnUnhover = OnUnhover;
-
-        ApplyStyle(host.Style.NormalButton);
+        ApplyStyle(Host.Style.HoveredButton);
     }
-    
+
+    protected virtual void OnUnhover()
+    {
+        ApplyStyle(Host.Style.NormalButton);
+    }
+
+    protected virtual void OnPress()
+    {
+        ApplyStyle(Host.Style.PressedButton);
+    }
+
+    protected virtual void OnReleased()
+    {
+        Action?.Invoke();
+    }
+
     public override void ProcessClicks()
         => Host.Areas.Process(_area);
 

@@ -11,15 +11,13 @@ public sealed class Toolset
     public Tool CurrentTool { get; private set; }
 
     public readonly Tool[] All;
-    
-    public Toolset()
+    private ProjectData attachedTo;
+
+    public Toolset(ProjectData projectData)
     {
         All = new[] { (Tool)new Eraser(), new PaintTool() };
-    }
-
-    public void BuildGUI()
-    {
-        
+        attachedTo = projectData;
+        attachedTo.OnEdited += (_,_) => CurrentTool?.ProjectDataChanged();
     }
 
     public void SelectTool(Tool tool)
@@ -32,10 +30,31 @@ public sealed class Toolset
 public sealed class PaintTool : Tool
 {
     public string SelectedTile { get; private set; }
+    public string SelectedLayer { get; private set; }
+
+    private SplitBox guiRoot;
+    private UISelectionList layerOptions;
+    private AxisBox tiles;
+
+    public PaintTool()
+    {
+        UISelectionList layersChooser = UTLS.BuildLayersList(true, (l) => SelectedLayer = l);
+
+        layerOptions = layersChooser;
+        
+    }
 
     public void SelectTile(string id)
     {
         SelectedTile = id;
+        string[] allowed = App.LeditorInstance.ProjectEnvironment.GetTile(id).AllowLayers;
+        
+        if (allowed.Contains(SelectedLayer))
+        {
+            return;
+        }
+
+        SelectedLayer = allowed[0];
     }
 
     public override Texture GetIcon()
@@ -43,23 +62,37 @@ public sealed class PaintTool : Tool
         return RenderCacher.GetTexture("assets\\paint.png");
     }
 
-    public override AUIElement BuildGUI(UIHost host)
+    public override AUIElement BuildUI(UIHost host)
     {
-        AxisBox axisBox = new(host, UIAxis.Horizontal);
-        
+        tiles = new AxisBox(host, UIAxis.Horizontal);
+        StackBox layersContainer = new StackBox(host, [new UIRect(host), layerOptions]);
+
+        AddTilesToUI();
+
+        guiRoot = new SplitBox(host, UIAxis.Horizontal, layersContainer, tiles);
+        return guiRoot;
+    }
+
+    private void AddTilesToUI()
+    {
         foreach (TileData tile in App.LeditorInstance.Project.Tiles)
         {
             TextureData textureData = App.LeditorInstance.ProjectEnvironment.GetTexture(tile.TextureID);
             Texture tileTexture = RenderCacher.GetTexture(textureData.PathToTexture);
             
-            axisBox.AddChild(new UIImageButton(host, tileTexture, textureData.TextureRect, tile.ID, new Vector2f(60f/textureData.Width, 60f/textureData.Height), () => SelectTile(tile.ID)));
+            tiles.AddChild(new UIImageButton(App.UIHost, tileTexture, textureData.TextureRect, tile.ID, new Vector2f(60f/textureData.Width, 60f/textureData.Height), () => SelectTile(tile.ID)));
         }
-
-        return axisBox;
     }
+
+    public override void ProjectDataChanged()
+    {
+        tiles.RemoveAllChildren();
+        AddTilesToUI();
+    }
+
     public override void OnClick(Vector2 gridCell, GridBuffer buffer)
     {
-        buffer.SetTile(gridCell, SelectedTile);
+        buffer.SetTileAt(SelectedLayer, gridCell, SelectedTile);
     }
 
     public override string Name => nameof(PaintTool);
@@ -67,15 +100,22 @@ public sealed class PaintTool : Tool
 
 internal sealed class Eraser : Tool
 {
+    public string SelectedLayer { get; private set; }
     public override Texture GetIcon() => RenderCacher.GetTexture("assets\\eraser.png");
-    public override AUIElement BuildGUI(UIHost host)
+    public override AUIElement BuildUI(UIHost host)
     {
-        return new UIRect(host, Color.Transparent);
+        UISelectionList layersChooser = UTLS.BuildLayersList(true, (l) => SelectedLayer = l);
+        return layersChooser;
+    }
+
+    public override void ProjectDataChanged()
+    {
+        
     }
 
     public override void OnClick(Vector2 gridCell, GridBuffer buffer)
     {
-        buffer.SetTile(gridCell, null);
+        buffer.SetTileAt(SelectedLayer, gridCell, null);
     }
 
     public override string Name => nameof(Eraser);
@@ -84,7 +124,8 @@ internal sealed class Eraser : Tool
 public abstract class Tool
 {
     public abstract Texture GetIcon();
-    public abstract AUIElement BuildGUI(UIHost host); 
+    public abstract AUIElement BuildUI(UIHost host);
+    public abstract void ProjectDataChanged();
     public abstract void OnClick(Vector2 gridCell, GridBuffer buffer);
     public abstract string Name { get; }
 }

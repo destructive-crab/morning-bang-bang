@@ -54,7 +54,7 @@ public class UIStyle()
     {
         ContentOffset = new Vector2f(4, 4),
         TextColor = new Color(0xd8dee9FF),
-        BgColor = new Color(0x3b4252)
+        BgColor = new Color(0x2c3342FF)
     };
     
     //ScrollBox

@@ -1,10 +1,13 @@
 ﻿using System.Numerics;
+using leditor.UI;
 using SFML.Graphics;
+using SFML.System;
 
 namespace leditor.root
 {
     public static class App
     {
+        public static UIHost UIHost;
         public static Font GeneralFont { get; private set; }
         
         public static InputsHandler InputsHandler => WindowHandler.InputsHandler;
@@ -20,6 +23,8 @@ namespace leditor.root
             WindowHandler = new WindowHandler();
             WindowHandler.CreateWindow();
             
+            UIHost = new UIHost(new UIStyle(), new Vector2f(App.WindowHandler.Height, App.WindowHandler.Width));
+            
             LeditorInstance = new Leditor();
 
             LeditorInstance.DoLoop();
@@ -29,9 +34,7 @@ namespace leditor.root
         {
             ProjectData project = new ProjectData();
             GridBuffer buffer = new GridBuffer("_");
-                    
 
-            
             return project;
         }
 

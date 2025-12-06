@@ -10,7 +10,7 @@ public sealed class ProjectEnvironment
     public const string INVALID_TILE_ID = "invalid_tile";
     
     //modules
-    public readonly Toolset       Toolset = new();
+    public Toolset         Toolset;
     public readonly UnitSwitcher    UnitSwitcher = new();
     public string OriginalPath { get; private set; }
 
@@ -45,7 +45,6 @@ public sealed class ProjectEnvironment
         {
             File.Create(path).Close();
         }
-        
         
         File.WriteAllText(path, Project.Export());
         
@@ -98,12 +97,12 @@ public sealed class ProjectEnvironment
         return tileFromProject;
     }
 
-    public TilemapData? GetMap(string mapID) => Project.GetMap(mapID);
+    public MapData? GetMap(string mapID) => Project.GetMap(mapID);
     public UnitData? GetUnit(string unitID) => Project.GetUnit(unitID);
 
     public void InitializeEnvironment()
     {
-        
+        Toolset = new(Project);
     }
 
     public void ClearEnvironment()

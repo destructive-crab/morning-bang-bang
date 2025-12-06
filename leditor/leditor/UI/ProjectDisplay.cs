@@ -117,7 +117,7 @@ public class ProjectDisplay : EditorDisplay
 
     private void ProjectOnEdited(object arg1, object arg2)
     {
-        if (arg2 is UnitData || arg2 is TilemapData)
+        if (arg2 is UnitData || arg2 is MapData)
         {
             UpdateLeftPanel();
         }
@@ -130,7 +130,7 @@ public class ProjectDisplay : EditorDisplay
     }
 
     private void UpdateToolOptions() 
-        => ShowToolOptions(projectEnvironment.Toolset.CurrentTool.BuildGUI(host));
+        => ShowToolOptions(projectEnvironment.Toolset.CurrentTool.BuildUI(host));
 
     private void UpdateLeftPanel()
     {
@@ -139,10 +139,13 @@ public class ProjectDisplay : EditorDisplay
         leftPanel.AddChild(new UILabel(host, "\n \n TILEMAPS"));
         
         leftPanel.AddChild(new UILabel(host, "\n \n UNITS"));
+        UISelectionList unitsList = new(host);
         foreach (UnitData unit in projectEnvironment.Project.Units)
         {
-            leftPanel.AddChild(new UIButton(host, unit.ID, () => SwitchToUnitButton(unit)));
+            unitsList.AddChild(new UISelectionOptionButton(host, unit.ID, () => SwitchToUnitButton(unit)));
         }
+
+        leftPanel.AddChild(unitsList);
         leftPanel.AddChild(new UIButton(host, "Create New Unit", CreateNewUnit));
     }
 
@@ -203,7 +206,7 @@ public class ProjectDisplay : EditorDisplay
 
     private void BuildBase()
     {
-        host = new UIHost(new UIStyle(), new Vector2f(App.WindowHandler.Width, App.WindowHandler.Height));
+        host = App.UIHost;
         Root = new AnchorBox(host);
 
         var topBarAnchor = new Anchor(

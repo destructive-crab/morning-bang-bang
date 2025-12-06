@@ -8,7 +8,7 @@ namespace leditor.root;
 public sealed class Leditor
 {
     public ProjectData Project => ProjectEnvironment.Project;
-    public GridBuffer  buffer;
+    public GridBuffer?  buffer;
     
     private readonly Dictionary<string, GridBuffer> buffers = new();
 
@@ -89,7 +89,7 @@ public sealed class Leditor
         foreach (KeyValuePair<string, GridBuffer> pair in buffers)
         {
             //todo
-            ProjectEnvironment.GetMap(pair.Value.Tag).RewriteWith(pair.Value.Get);
+ //           ProjectEnvironment.GetMap(pair.Value.Tag).RewriteWith(pair.Value.Get);
         }
         ProjectEnvironment.SaveProject();
     }
@@ -130,6 +130,7 @@ public sealed class Leditor
                 }
         
                 Hotkeys.Update();
+                CurrentDisplay.Host.SetSize(new Vector2f(App.WindowHandler.Width, App.WindowHandler.Height));
                 CurrentDisplay.Host.Update(App.WindowHandler.window);
                 CurrentDisplay.Tick();
                 

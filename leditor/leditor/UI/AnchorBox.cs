@@ -34,9 +34,11 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
     public override void RemoveChild(AUIElement child)
     {
         child.Parent = null;
-        _children.Remove(
-            _children.First(tuple => tuple.Item2 == child)
-        );
+        (Anchor, AUIElement) match = _children.FirstOrDefault(tuple => tuple.Item2 == child);
+        if (match.Item2 != null)
+        {
+            _children.Remove(match);
+        }
         UpdateLayout();
     }
 

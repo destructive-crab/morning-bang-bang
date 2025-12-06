@@ -1,10 +1,19 @@
+using Newtonsoft.Json;
+
 namespace leditor.root;
 
+
+[JsonObject(MemberSerialization.OptIn)]
 public sealed class TileData : LEditorDataUnit
 {
+
     public const string EMPTY = "empty";
     
-    [TextureDataReference] public string TextureID;
+    [TextureDataReference] 
+    [JsonProperty] public string TextureID;
+    
+    [LayersList]
+    [JsonProperty] public string[] AllowLayers = MapData.AllLayers;
 
     public TileData()
     {
@@ -17,7 +26,22 @@ public sealed class TileData : LEditorDataUnit
         ID = id;
     }
 
-    public override bool ValidateExternalDataChange() => true;
+    public override bool ValidateExternalDataChange()
+    {
+        List<string> validatedLayers = new(AllowLayers);
+        
+        foreach (string layer in AllowLayers)
+        {
+            if (!MapData.AllLayers.Contains(layer))
+            {
+                validatedLayers.Remove(layer);
+            }
+        }
+
+        AllowLayers = validatedLayers.ToArray();
+
+        return true;
+    }
 
     public override void CopyDataFrom(LEditorDataUnit from)
     {

@@ -5,7 +5,7 @@ namespace leditor.root.export;
 [JsonObject(MemberSerialization.OptIn)]
 public class ProjectDataExportRepresentation
 {
-    [JsonProperty] public TilemapData[] Tilemaps;
+    [JsonProperty] public MapData[] Tilemaps;
     [JsonProperty] public TileData[] Tiles;
     [JsonProperty] public UnitData[] Units;
     [JsonProperty] public TextureData[] Textures;
@@ -14,7 +14,7 @@ public class ProjectDataExportRepresentation
     {
     }
 
-    public ProjectDataExportRepresentation(TilemapData[] tilemaps, TileData[] tiles, UnitData[] units, TextureData[] textures)
+    public ProjectDataExportRepresentation(MapData[] tilemaps, TileData[] tiles, UnitData[] units, TextureData[] textures)
     {
         Tilemaps = tilemaps;
         Tiles = tiles;

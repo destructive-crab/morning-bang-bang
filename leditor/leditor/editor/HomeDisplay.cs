@@ -13,7 +13,7 @@ public sealed class HomeDisplay : EditorDisplay
 
     public HomeDisplay()
     {
-        host = new UIHost(new UIStyle(), new Vector2f(App.WindowHandler.Width, App.WindowHandler.Height));
+        host = App.UIHost;
         
         host.SetRoot(new AxisBox(host, UIAxis.Vertical,
             new UILimit(host, new Vector2f(100, 50)),

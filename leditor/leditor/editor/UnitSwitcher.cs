@@ -6,18 +6,18 @@ public class UnitSwitcher
     
     public void OpenEmptyUnit(string id)
     {
-        TilemapData tilemapData = new TilemapData(id);
+        MapData mapData = new MapData(id);
         
         UnitData unitData = new UnitData(id, id, UnitData.NO_OVERRIDE);
         
-        Project.AddMap(tilemapData);
+        Project.AddMap(mapData);
         Project.AddUnit(unitData);
     }
     
     public void SwitchTo(string id)
     {
         UnitData unit = App.LeditorInstance.ProjectEnvironment.GetUnit(id);
-        TilemapData data = App.LeditorInstance.ProjectEnvironment.GetMap(unit.MapID);
+        MapData data = App.LeditorInstance.ProjectEnvironment.GetMap(unit.MapID);
         
         if (App.LeditorInstance.OpenBuffer(unit.MapID, out GridBuffer buffer))
         {

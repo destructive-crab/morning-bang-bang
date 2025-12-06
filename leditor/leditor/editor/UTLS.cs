@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
+using leditor.UI;
 
 namespace leditor.root;
 
@@ -118,5 +119,19 @@ public static class UTLS
         }
         
         return toValidate.ValidateExternalDataChange();
+    }
+
+    public static UISelectionList BuildLayersList(bool singleSelection, Action<string> selectAction)
+    {
+        UISelectionList layersChooser = new(App.UIHost);
+        foreach (string layer in MapData.AllLayers)
+        {
+            layersChooser.AddChild(new UISelectionOptionButton(App.UIHost, layer, () =>
+            {
+                selectAction?.Invoke(layer);
+            }, false));
+        }
+        layersChooser.IsSingleSelection = singleSelection;
+        return layersChooser;
     }
 }

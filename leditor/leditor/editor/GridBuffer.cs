@@ -25,10 +25,9 @@ public sealed class GridBuffer
     public int WorldMaxX => MaxX * CELL_SIZE;
     public int WorldMaxY => MaxY * CELL_SIZE;
     
-    public KeyValuePair<Vector2, string>[] Get => map.ToArray();
     public string Tag { get; private set; }
 
-    private readonly Dictionary<Vector2, string> map = new();
+    private readonly Dictionary<string, Dictionary<Vector2, string>> map = new();
 
     public const int CELL_SIZE = 80;
     private Vector2i pointingOnCell;
@@ -55,14 +54,17 @@ public sealed class GridBuffer
     
     public void DrawTiles(ProjectEnvironment projectEnvironment)
     {
-        foreach (KeyValuePair<Vector2, string> mapPair in map)
+        foreach (KeyValuePair<string, Dictionary<Vector2, string>> layer in map)
         {
-            Vector2f pos = new Vector2f(mapPair.Key.X * CELL_SIZE, mapPair.Key.Y * CELL_SIZE);
-            
-            TileData tile = projectEnvironment.GetTile(mapPair.Value);
-            TextureData texture = projectEnvironment.GetTexture(tile.TextureID);
-            
-            DrawTile(texture, pos, projectEnvironment);
+            foreach (KeyValuePair<Vector2, string> tilePair in layer.Value)
+            {
+                Vector2f pos = new Vector2f(tilePair.Key.X * CELL_SIZE, tilePair.Key.Y * CELL_SIZE);
+                
+                TileData tile = projectEnvironment.GetTile(tilePair.Value);
+                TextureData texture = projectEnvironment.GetTexture(tile.TextureID);
+                
+                DrawTile(texture, pos, projectEnvironment);
+            }   
         }
     }
 
@@ -82,7 +84,6 @@ public sealed class GridBuffer
 
         int ex = (MaxX + 2) * GridBuffer.CELL_SIZE;
         int ey = (MaxY + 2) * GridBuffer.CELL_SIZE;
-        
         
         for (; x <= ex; x += dx)
         {
@@ -149,6 +150,7 @@ public sealed class GridBuffer
     public GridBuffer(string tag)
     {
         Tag = tag;
+        Clear();
     }
 
     private static void DrawTile(TextureData textureData, Vector2f pos, ProjectEnvironment projectEnvironment)
@@ -169,11 +171,11 @@ public sealed class GridBuffer
         App.WindowHandler.Draw(sprite);
     }
 
-    public void SetTile(Vector2 pos, string id)
+    public void SetTileAt(string layerID, Vector2 pos, string id)
     {
-        if (id == null && map.ContainsKey(pos))
+        if (id == null && map[layerID].ContainsKey(pos))
         {
-            map.Remove(pos);
+            map[layerID].Remove(pos);
             SortTiles();
             UpdateBufferRect();
             
@@ -185,65 +187,76 @@ public sealed class GridBuffer
             return;
         }
 
-        map[pos] = id;
+        map[layerID][pos] = id;
         SortTiles();
         UpdateBufferRect();
     }
 
     private void SortTiles()
     {
-        KeyValuePair<Vector2, string>[] tiles = Get;
-        var tilesList = new List<KeyValuePair<Vector2, string>>(tiles);
-        tilesList.Sort((pair1, pair2) =>
+        foreach (KeyValuePair<string, Dictionary<Vector2,string>> layer in map)
         {
-            var v1 = pair1.Key;
-            var v2 = pair2.Key;
-
-            if ((int)v1.Y == (int)v2.Y)
+            var tiles = layer.Value;
+            var tilesList = new List<KeyValuePair<Vector2, string>>(tiles);
+            tilesList.Sort((pair1, pair2) =>
             {
-                if (v1.X < v2.X) return -1;
-                if (v1.X > v2.X) return 1;
-            }
-            
-            if (v1.Y < v2.Y) return -1;
-            if (v1.Y > v2.Y) return 1;
+                var v1 = pair1.Key;
+                var v2 = pair2.Key;
+    
+                if ((int)v1.Y == (int)v2.Y)
+                {
+                    if (v1.X < v2.X) return -1;
+                    if (v1.X > v2.X) return 1;
+                }
+                
+                if (v1.Y < v2.Y) return -1;
+                if (v1.Y > v2.Y) return 1;
+    
+                return 0;
+            });
 
-            return 0;
-        });
-        
-        map.Clear();
-        foreach (KeyValuePair<Vector2,string> pair in tilesList)
-        {
-            map.Add(pair.Key, pair.Value);
-        }
-    }
-
-    public void Foreach(Action<Vector2, string> tileID)
-    {
-        foreach (KeyValuePair<Vector2,string> pair in map)
-        {
-            tileID.Invoke(pair.Key, pair.Value);
+            map[layer.Key].Clear();
+            foreach (KeyValuePair<Vector2,string> pair in tilesList)
+            {
+                map[layer.Key].Add(pair.Key, pair.Value);
+            }    
         }
     }
 
     public void Clear()
     {
         map.Clear();
+        foreach (string layer in MapData.AllLayers)
+        {
+            map.Add(layer, new Dictionary<Vector2, string>());
+        }
         UpdateBufferRect();
     }
 
-    public void AddAbove(TilemapData data)
+    public void AddAbove(MapData data)
     {
-        foreach (var pair in data.Get)
+        foreach (var pair in data.Floor.Get)
         {
-            map[new Vector2(pair.X, pair.Y)] = pair.TileID;
+            map[MapData.FloorID][new Vector2(pair.X, pair.Y)] = pair.TileID;
+        }
+        foreach (var pair in data.FloorOverlay.Get)
+        {
+            map[MapData.FloorOverlayID][new Vector2(pair.X, pair.Y)] = pair.TileID;
+        }
+        foreach (var pair in data.Obstacles.Get)
+        {
+            map[MapData.ObstaclesID][new Vector2(pair.X, pair.Y)] = pair.TileID;
+        }
+        foreach (var pair in data.ObstaclesOverlay.Get)
+        {
+            map[MapData.ObstaclesOverlayID][new Vector2(pair.X, pair.Y)] = pair.TileID;
         }
         UpdateBufferRect();
     }
 
     public void UpdateBufferRect()
     {
-        if (map.Count == 0)
+        if (map[MapData.FloorID].Count == 0 && map[MapData.ObstaclesID].Count == 0)
         {
             MinX = 0;
             MinY = 0;
@@ -259,26 +272,29 @@ public sealed class GridBuffer
         int maxX = Int32.MinValue;
         int minY = Int32.MaxValue;
         int maxY = Int32.MinValue;
-        
-        foreach (KeyValuePair<Vector2,string> pair in map)
+
+        foreach (var layer in map)
         {
-            if (pair.Key.X < minX)
+            foreach (KeyValuePair<Vector2,string> pair in layer.Value)
             {
-                minX = (int)pair.Key.X;
-            }
-            if (pair.Key.X > maxX)
-            {
-                maxX = (int)pair.Key.X;
-            }
-            
-            if (pair.Key.Y < minY)
-            {
-                minY = (int)pair.Key.Y;
-            }
-            if (pair.Key.Y > maxY)
-            {
-                maxY = (int)pair.Key.Y;
-            }
+                if (pair.Key.X < minX)
+                {
+                    minX = (int)pair.Key.X;
+                }
+                if (pair.Key.X > maxX)
+                {
+                    maxX = (int)pair.Key.X;
+                }
+                
+                if (pair.Key.Y < minY)
+                {
+                    minY = (int)pair.Key.Y;
+                }
+                if (pair.Key.Y > maxY)
+                {
+                    maxY = (int)pair.Key.Y;
+                }
+            }           
         }
 
         MinX = minX;

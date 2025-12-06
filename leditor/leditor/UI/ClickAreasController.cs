@@ -92,7 +92,7 @@ public class ClickAreasController
         if (area.IsGrabbed && _mousePositionOld != _mousePosition)
             area.OnMove?.Invoke(_mousePositionOld, _mousePosition);
         
-        if(!_isPressed && _isPressedOld) area.OnRightMouseButtonReleased?.Invoke();
+        if(!_isPressed && _isPressedOld && newIsHovered) area.OnRightMouseButtonReleased?.Invoke();
             
         area.IsHovered = newIsHovered;
         _isOverlayed = area.IsHovered && area.Overlay;

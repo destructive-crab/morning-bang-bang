@@ -12,17 +12,17 @@ public sealed class ProjectData
     
     public TextureData[] Textures => textures.ToArray();
     public TileData[] Tiles => tiles.ToArray();
-    public TilemapData[] Tilemaps => tilemaps.ToArray();
+    public MapData[] Tilemaps => tilemaps.ToArray();
     public UnitData[] Units => units.ToArray();
 
     private readonly List<TextureData> textures = new();
     private readonly List<TileData> tiles = new();
-    private readonly List<TilemapData> tilemaps = new();
+    private readonly List<MapData> tilemaps = new();
     private readonly List<UnitData> units = new();
 
     private readonly Dictionary<string, TextureData> texturesMap = new();
     private readonly Dictionary<string, TileData> tilesMap = new();
-    private readonly Dictionary<string, TilemapData> tilemapsMap = new();
+    private readonly Dictionary<string, MapData> tilemapsMap = new();
     private readonly Dictionary<string, UnitData> unitsMap = new();
 
     public event Action<object, object> OnEdited; 
@@ -59,7 +59,7 @@ public sealed class ProjectData
                 LGR.PM($"IMPORT TILE {tile.ID}");
             }
             
-            foreach (TilemapData tilemap in representation.Tilemaps)
+            foreach (MapData tilemap in representation.Tilemaps)
             {
                 tilemap.ValidateExternalDataChange();
                 projectData.AddMap(tilemap);
@@ -101,7 +101,7 @@ public sealed class ProjectData
         }
         return tilesMap[id];
     }
-    public TilemapData? GetMap(string id)
+    public MapData? GetMap(string id)
     {
         if (!tilemapsMap.ContainsKey(id))
         {
@@ -137,14 +137,14 @@ public sealed class ProjectData
         
         OnEdited?.Invoke(Tiles, tileData);
     }
-    public void AddMap(TilemapData tilemapData)
+    public void AddMap(MapData mapData)
     {
-        if (tilemapsMap.ContainsKey(tilemapData.ID)) return;
+        if (tilemapsMap.ContainsKey(mapData.ID)) return;
         
-        tilemaps.Add(tilemapData);
-        tilemapsMap.Add(tilemapData.ID, tilemapData);
+        tilemaps.Add(mapData);
+        tilemapsMap.Add(mapData.ID, mapData);
         
-        OnEdited?.Invoke(Tilemaps, tilemapData);
+        OnEdited?.Invoke(Tilemaps, mapData);
     }
     public void AddUnit(UnitData unitData)
     {
