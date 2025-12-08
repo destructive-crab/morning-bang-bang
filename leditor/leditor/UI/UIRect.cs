@@ -7,7 +7,7 @@ public class UIRect(UIHost host, Color? color = null, Vector2f size = default) :
 {
     private readonly RectangleShape _shape = new()
     {
-        FillColor = color ?? new Color(0x333648FF)
+        FillColor = color ?? host.Style.RectDefault
     };
 
     public Color Color

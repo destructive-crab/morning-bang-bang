@@ -36,6 +36,7 @@ public class SplitBox: AUIBox
     private AUIElement? _second;
 
     private RectangleShape _separator;
+    private Vector2f separatorSize;
     
     public SplitBox(UIHost host, UIAxis axis, AUIElement? first, AUIElement? second, PreserveSide preserve = PreserveSide.LeftUp):
         base(host, GetMinimalSize(host.Style, axis, first, second))
@@ -61,11 +62,20 @@ public class SplitBox: AUIBox
         _area = new ClickArea(
             new FloatRect(
                 new Vector2f(), 
-                host.Style.SplitSeparatorThickness * (axis == UIAxis.Horizontal ? new Vector2f(1, 0) : new Vector2f(0, 1))
+                host.Style.SplitSeparatorThickness * (axis == UIAxis.Horizontal ? new Vector2f(4, 0) : new Vector2f(0, 4))
             ), false);
         _area.OnMove = OnMove;
-        
-        _separator = new RectangleShape(_area.Rect.Size);
+
+        if (axis == UIAxis.Horizontal)
+        {
+            separatorSize = new Vector2f(_area.Rect.Size.X, 2);
+        }
+        else
+        {
+            separatorSize = new Vector2f(2, _area.Rect.Size.Y);
+        }
+
+        _separator = new RectangleShape(separatorSize);
         _separator.Position = _area.Rect.Position;
         _separator.FillColor = Host.Style.SplitSeparatorColor;
     }
@@ -156,7 +166,17 @@ public class SplitBox: AUIBox
         }
         
         _separator.Position = _area.Rect.Position;
-        _separator.Size = _area.Rect.Size;
+
+        if (_axis == UIAxis.Vertical)
+        {
+            separatorSize = new Vector2f(_area.Rect.Size.X, 2);
+        }
+        else
+        {
+            separatorSize = new Vector2f(2, _area.Rect.Size.Y);
+        }
+
+        _separator.Size = separatorSize;
     }
 
     public override void Draw(RenderTarget target)

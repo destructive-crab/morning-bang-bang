@@ -173,7 +173,9 @@ public sealed class GridBuffer
 
     public void SetTileAt(string layerID, Vector2 pos, string id)
     {
-        if (id == null && map[layerID].ContainsKey(pos))
+        if (!map[layerID].ContainsKey(pos)) return;
+        
+        if (id == null )
         {
             map[layerID].Remove(pos);
             SortTiles();

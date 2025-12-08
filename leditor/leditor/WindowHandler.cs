@@ -82,7 +82,7 @@ public class WindowHandler
     
     public void BeginDrawing()
     {
-        window.Clear(new Color(31, 29, 43));
+        window.Clear(new Color(0x1c0717FF));
     }
 
     public void CompleteDrawing()

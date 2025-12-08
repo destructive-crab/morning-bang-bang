@@ -45,6 +45,7 @@ public sealed class UISelectionOptionButton : UIButton
     {
         if (IsSelected)
         {
+            base.ApplyStyle(appliedStyle);
         }
         else
         {

@@ -6,7 +6,7 @@ namespace leditor.UI;
 
 public class UIImageButton : AUIElement
 {
-    private readonly RectangleShape _shape = new();
+    private readonly RectangleShape outlineShape = new();
     private readonly Sprite _sprite;
 
     private readonly ClickArea _area = new(default);
@@ -31,22 +31,26 @@ public class UIImageButton : AUIElement
     }
 
     private Vector2f _styleTextOffset;
+    private ButtonStateStyle appliedStyle;
+
     private void ApplyStyle(ButtonStateStyle style)
     {
-        _styleTextOffset = style.ContentOffset;
-        _sprite.Position = Rect.Position + style.ContentOffset;
-        _shape.FillColor = style.BgColor;
+        _styleTextOffset        = style.ContentOffset;
+        _sprite.Position        = Rect.Position + new Vector2f(style.Outline, style.Outline);
         
-        _textObj.FillColor = style.TextColor;
-        _textObj.Position = Rect.Position + style.ContentOffset;
-        _shape.FillColor = style.BgColor;
+        outlineShape.FillColor  = style.OutlineColor;
+        outlineShape.Position   = _sprite.Position - new Vector2f(style.Outline, style.Outline);
+        outlineShape.Size       = (Vector2f)((_sprite.TextureRect.Size * (int)_sprite.Scale.X) + new Vector2i((int)style.Outline, (int)style.Outline) * 2);
+        outlineShape.FillColor  = style.OutlineColor;
+        
+        //_textObj.FillColor = style.TextColor;
+        //_textObj.Position = Rect.Position + style.ContentOffset;
+        
+        appliedStyle = style;
     }
 
-    private void OnHover()
-        => ApplyStyle(Host.Style.HoveredButton);
-
-    private void OnUnhover()
-        => ApplyStyle(Host.Style.NormalButton);
+    private void OnHover()   => ApplyStyle(Host.Style.HoveredButton);
+    private void OnUnhover() => ApplyStyle(Host.Style.NormalButton);
     
     public UIImageButton(UIHost host, Texture texture, Rect rect, string text = "", Vector2f scale = default, Action? action = null) : 
         base(host, Utils.ScaleVec(Utils.VecI2F(rect.ToIntRect().Size), scale) + host.Style.ButtonSpace)
@@ -55,15 +59,18 @@ public class UIImageButton : AUIElement
         {
             Scale = scale,
         };
+        
         if (rect != UTLS.FULL)
         {
             _sprite.TextureRect = rect.ToIntRect();
         }
+        
         _area.OnRightMouseButtonClick = action;
         _area.OnHover = OnHover;
         _area.OnUnhover = OnUnhover;
-        host.Fabric.MakeTextOut(text, out Text textObj);
-        _textObj = textObj;
+        
+        //host.Fabric.MakeTextOut(text, out Text textObj);
+        //_textObj = textObj;
 
         ApplyStyle(host.Style.NormalButton);
     }
@@ -76,16 +83,13 @@ public class UIImageButton : AUIElement
     public override void UpdateLayout()
     {
         _area.Rect = Rect;
-        _sprite.Position = Rect.Position + _styleTextOffset;
-        _shape.Size = Rect.Size;
-        _shape.Position = Rect.Position;
-        _textObj.Position = Rect.Position + _styleTextOffset;
+        ApplyStyle(appliedStyle);
     }
 
     public override void Draw(RenderTarget target)
     {
-        target.Draw(_shape);
+        target.Draw(outlineShape);
         target.Draw(_sprite);
-        target.Draw(_textObj);
+        //target.Draw(_textObj);
     }
 }
