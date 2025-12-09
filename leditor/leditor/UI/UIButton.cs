@@ -1,4 +1,3 @@
-using leditor.root;
 using SFML.Graphics;
 using SFML.System;
 
@@ -21,20 +20,18 @@ public class UIButton : AUIElement
     private readonly RectangleShape shapeBottom  = new();
     private readonly RectangleShape shapeOutline = new();
     
-    private readonly Text _textObj;
+    private readonly Text textObj;
     
     public string Text
     {
-        get => _textObj.DisplayedString;
+        get => textObj.DisplayedString;
         set
         {
-            _textObj.DisplayedString = value;
-            
-            MinimalSize = Utils.TextSize(_textObj) + Host.Style.ButtonSpace;
+            textObj.DisplayedString = value;
         }
     }
 
-    private readonly ClickArea _area = new(default);
+    private readonly ClickArea area = new(default);
 
     public Action? Action;
 
@@ -43,16 +40,17 @@ public class UIButton : AUIElement
     protected ButtonStateStyle appliedStyle;
     
     public UIButton(UIHost host, string text, Action? action = null) : 
-        base(host, host.Fabric.MakeTextOut(text, out var textObj) + host.Style.ButtonSpace + new Vector2f(0, host.Style.NormalButton.BottomHeight))
+        base(host, 
+/*minimal size*/ host.Fabric.MakeTextOut(text, out Text textObj) + host.Style.ButtonSpace + new Vector2f(0, host.Style.NormalButton.BottomHeight + host.Style.NormalButton.Outline))
     {
-        _textObj = textObj;
+        this.textObj = textObj;
 
         Action = action;
         
-        _area.OnRightMouseButtonClick = OnPress;
-        _area.OnRightMouseButtonReleased = OnReleased;
-        _area.OnHover = OnHover;
-        _area.OnUnhover = OnUnhover;
+        area.OnRightMouseButtonClick = OnPress;
+        area.OnRightMouseButtonReleased = OnReleased;
+        area.OnHover = OnHover;
+        area.OnUnhover = OnUnhover;
         
         ApplyStyle(host.Style.NormalButton);
     }
@@ -61,7 +59,7 @@ public class UIButton : AUIElement
     {
         int bottomY      = (int)(Rect.Position.Y + MinimalSize.Y);
         
-        int topHeight    = (int)(_textObj.CharacterSize + Host.Style.ButtonSpace.Y);
+        int topHeight    = (int)(textObj.CharacterSize + Host.Style.ButtonSpace.Y);
         int bottomHeight = (int)(style.BottomHeight);
 
         int x            = (int)(Rect.Size.X - style.Outline - 2);
@@ -81,35 +79,34 @@ public class UIButton : AUIElement
         shapeOutline.FillColor = style.OutlineColor;
         
         _styleTextOffset       = Host.Style.ButtonSpace / 2;
-        _textObj.Position      = shapeTop.Position + _styleTextOffset;
+        textObj.Position       = shapeTop.Position + _styleTextOffset;
+        textObj.FillColor      = style.TextColor;
 
         appliedStyle = style;
     }
 
-    protected virtual void OnHover()     => ApplyStyle(Host.Style.HoveredButton);
-    protected virtual void OnUnhover()   => ApplyStyle(Host.Style.NormalButton);
-    protected virtual void OnPress()     => ApplyStyle(Host.Style.PressedButton);
-    protected virtual void OnReleased()  => Action?.Invoke();
+    protected virtual void OnHover()   => ApplyStyle(Host.Style.HoveredButton);
+    protected virtual void OnUnhover() => ApplyStyle(Host.Style.NormalButton);
+    protected virtual void OnPress()   => ApplyStyle(Host.Style.PressedButton);
 
-    public override void ProcessClicks() => Host.Areas.Process(_area);
+    protected virtual void OnReleased()
+    {
+        ApplyStyle(Host.Style.HoveredButton);
+        Action?.Invoke();
+    }
+
+    public override void ProcessClicks() => Host.Areas.Process(area);
     public override void UpdateLayout()
     {
-        _area.Rect = Rect;
+        area.Rect = Rect;
      
         ApplyStyle(appliedStyle);
-        
- //       shapeTop.Position = Re
-   //     _textObj.Position = Rect.Position + _styleTextOffset;
-        //shapeTop.Size = Rect.Size;
-        //shapeTop.Position = Rect.Position;
-        //shapeBottom.Position = Rect.Position;
-        //shapeOutline.Position = Rect.Position - new Vector2f(appliedStyle.Outline, appliedStyle.Outline);
     }
     public override void Draw(RenderTarget target)
     {
         target.Draw(shapeOutline);
         target.Draw(shapeBottom);
         target.Draw(shapeTop);
-        target.Draw(_textObj);
+        target.Draw(textObj);
     }
 }

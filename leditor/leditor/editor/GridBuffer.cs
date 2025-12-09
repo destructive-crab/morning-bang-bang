@@ -173,7 +173,7 @@ public sealed class GridBuffer
 
     public void SetTileAt(string layerID, Vector2 pos, string id)
     {
-        if (!map[layerID].ContainsKey(pos)) return;
+        if (!map.ContainsKey(layerID)) return;
         
         if (id == null )
         {

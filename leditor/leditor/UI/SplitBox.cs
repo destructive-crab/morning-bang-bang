@@ -133,7 +133,7 @@ public class SplitBox: AUIBox
             
             if (_second != null)
                 _second.Rect = new FloatRect(
-                    Rect.Left + _distance + Host.Style.SplitSeparatorThickness, Rect.Top, 
+                    Rect.Left  + _distance + Host.Style.SplitSeparatorThickness, Rect.Top, 
                     Rect.Width - _distance - Host.Style.SplitSeparatorThickness, Rect.Height
                 );
             
@@ -155,8 +155,8 @@ public class SplitBox: AUIBox
             
             if (_second != null)
                 _second.Rect = new FloatRect(
-                    Rect.Left, Rect.Top + _distance + Host.Style.SplitSeparatorThickness, 
-                    Rect.Width, Rect.Height - _distance - Host.Style.SplitSeparatorThickness
+                    Rect.Left , Rect.Top + _distance + (Host.Style.SplitSeparatorThickness), 
+                    Rect.Width, Rect.Height - _distance - (Host.Style.SplitSeparatorThickness)
                 );
             
             _area.Rect.Left = Rect.Left;

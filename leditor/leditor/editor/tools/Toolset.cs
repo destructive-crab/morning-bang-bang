@@ -80,7 +80,10 @@ public sealed class PaintTool : Tool
             TextureData textureData = App.LeditorInstance.ProjectEnvironment.GetTexture(tile.TextureID);
             Texture tileTexture = RenderCacher.GetTexture(textureData.PathToTexture);
             
-            tiles.AddChild(new UIImageButton(App.UIHost, tileTexture, textureData.TextureRect, tile.ID, new Vector2f(60f/textureData.Width, 60f/textureData.Height), () => SelectTile(tile.ID)));
+            tiles.AddChild(new AxisBox(App.UIHost, UIAxis.Vertical, [
+                new UILabel(App.UIHost, tile.ID),
+                new UIImageButton(App.UIHost, tileTexture, textureData.TextureRect, new Vector2f(60f/textureData.Width, 60f/textureData.Height), () => SelectTile(tile.ID))])
+                );
         }
     }
 

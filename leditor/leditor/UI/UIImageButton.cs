@@ -7,89 +7,72 @@ namespace leditor.UI;
 public class UIImageButton : AUIElement
 {
     private readonly RectangleShape outlineShape = new();
-    private readonly Sprite _sprite;
+    private readonly Sprite sprite;
 
-    private readonly ClickArea _area = new(default);
+    private readonly ClickArea area = new(default);
 
-    private readonly Text _textObj;
-    
-    public string Text
-    {
-        get => _textObj.DisplayedString;
-        set
-        {
-            _textObj.DisplayedString = value;
-            
-            MinimalSize = Utils.TextSize(_textObj) + Host.Style.ButtonSpace;
-        }
-    }
-    
-    public Action? Action
-    {
-        set => _area.OnRightMouseButtonClick = value;
-        get => _area.OnRightMouseButtonClick;
-    }
+    public Action? Action;
 
-    private Vector2f _styleTextOffset;
     private ButtonStateStyle appliedStyle;
 
-    private void ApplyStyle(ButtonStateStyle style)
-    {
-        _styleTextOffset        = style.ContentOffset;
-        _sprite.Position        = Rect.Position + new Vector2f(style.Outline, style.Outline);
-        
-        outlineShape.FillColor  = style.OutlineColor;
-        outlineShape.Position   = _sprite.Position - new Vector2f(style.Outline, style.Outline);
-        outlineShape.Size       = (Vector2f)((_sprite.TextureRect.Size * (int)_sprite.Scale.X) + new Vector2i((int)style.Outline, (int)style.Outline) * 2);
-        outlineShape.FillColor  = style.OutlineColor;
-        
-        //_textObj.FillColor = style.TextColor;
-        //_textObj.Position = Rect.Position + style.ContentOffset;
-        
-        appliedStyle = style;
-    }
-
-    private void OnHover()   => ApplyStyle(Host.Style.HoveredButton);
-    private void OnUnhover() => ApplyStyle(Host.Style.NormalButton);
-    
-    public UIImageButton(UIHost host, Texture texture, Rect rect, string text = "", Vector2f scale = default, Action? action = null) : 
+    public UIImageButton(UIHost host, Texture texture, Rect rect, Vector2f scale = default, Action? action = null) : 
         base(host, Utils.ScaleVec(Utils.VecI2F(rect.ToIntRect().Size), scale) + host.Style.ButtonSpace)
     {
-        _sprite = new Sprite(texture)
+        sprite = new Sprite(texture)
         {
             Scale = scale,
         };
         
         if (rect != UTLS.FULL)
         {
-            _sprite.TextureRect = rect.ToIntRect();
+            sprite.TextureRect = rect.ToIntRect();
         }
         
-        _area.OnRightMouseButtonClick = action;
-        _area.OnHover = OnHover;
-        _area.OnUnhover = OnUnhover;
-        
-        //host.Fabric.MakeTextOut(text, out Text textObj);
-        //_textObj = textObj;
+        area.OnRightMouseButtonClick = OnPress;
+        area.OnRightMouseButtonReleased = OnReleased;
+        area.OnHover = OnHover;
+        area.OnUnhover = OnUnhover;
 
+        Action = action;
         ApplyStyle(host.Style.NormalButton);
     }
 
+    private void ApplyStyle(ButtonStateStyle style)
+    {
+        sprite.Position         = Rect.Position + new Vector2f(style.Outline, style.Outline);
+        
+        outlineShape.FillColor  = style.OutlineColor;
+        outlineShape.Position   = sprite.Position - new Vector2f(style.Outline, style.Outline);
+
+        outlineShape.Size       = sprite.GetGlobalBounds().Size + 2 * new Vector2f(style.Outline, style.Outline);
+        outlineShape.FillColor  = style.OutlineColor;
+        
+        appliedStyle = style;
+    }
+
+    private void OnHover()           => ApplyStyle(Host.Style.HoveredButton);
+    private void OnUnhover()         => ApplyStyle(Host.Style.NormalButton);
+    protected virtual void OnPress() => ApplyStyle(Host.Style.PressedButton);
+    protected virtual void OnReleased()
+    {
+        ApplyStyle(Host.Style.HoveredButton);
+        Action?.Invoke();
+    }
+    
     public override void ProcessClicks()
     {
-        Host.Areas.Process(_area);
+        Host.Areas.Process(area);
     }
 
     public override void UpdateLayout()
     {
-        _area.Rect = Rect;
+        area.Rect = Rect;
         ApplyStyle(appliedStyle);
     }
 
     public override void Draw(RenderTarget target)
     {
         target.Draw(outlineShape);
-        target.Draw(_sprite);
-        //target.Draw(_textObj);
+        target.Draw(sprite);
     }
 }

@@ -75,8 +75,8 @@ public class UIStyle()
         BottomColor =   new Color(0x42652bFF),
         
         Outline = 2,
-        BottomHeight = 2
-
+        BottomHeight = 2,
+        OutlineColor =  new Color(0x42652bFF),
     };
     
     //ScrollBox

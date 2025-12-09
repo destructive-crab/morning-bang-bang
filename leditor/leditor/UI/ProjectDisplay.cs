@@ -72,7 +72,7 @@ public class ProjectDisplay : EditorDisplay
         {
             {"Textures", () => ShowPopup(GetTexturesMenu())},
             {"Tiles", () => ShowPopup(GetTilesMenu())},
-            {"Units", () => ShowPopup(GetUnisMenu())},
+            {"Units", () => ShowPopup(GetUnitsMenu())},
         });
     }
 
@@ -102,7 +102,7 @@ public class ProjectDisplay : EditorDisplay
         }
     }
     
-    private AUIElement GetUnisMenu()
+    private AUIElement GetUnitsMenu()
     {
         DataEditor<UnitData> editor = new(projectEnvironment, host);
         editor.OnClosed += ClosePopup;
@@ -134,6 +134,7 @@ public class ProjectDisplay : EditorDisplay
 
     private void UpdateLeftPanel()
     {
+        LGR.PM("UPDATE LEFT");
         leftPanel.RemoveAllChildren();
         
         leftPanel.AddChild(new UILabel(host, "\n \n TILEMAPS"));
@@ -161,7 +162,7 @@ public class ProjectDisplay : EditorDisplay
     public void AddTool(Action onSelect, Texture texture, string name)
     {
         var scale = new Vector2f(16f / texture.Size.X, 16f / texture.Size.Y);
-        _rightBar.AddChild(new UIImageButton(host, texture, new Rect(0,0, (int)texture.Size.X, (int)texture.Size.Y), name, scale, onSelect));
+        _rightBar.AddChild(new UIImageButton(host, texture, new Rect(0,0, (int)texture.Size.X, (int)texture.Size.Y), scale, onSelect));
     }
 
     public void EnableOverlay(Action action)
@@ -178,7 +179,7 @@ public class ProjectDisplay : EditorDisplay
 
     public void AddToolPanelCategory(string title, Dictionary<string, Action?> actions)
     {
-        var category = new ToolPanelCategory(this, host, title, actions);
+        ToolPanelCategory category = new ToolPanelCategory(this, host, title, actions);
         _topBar.AddChild(category.Button);
     }
     
@@ -210,7 +211,7 @@ public class ProjectDisplay : EditorDisplay
         Root = new AnchorBox(host);
 
         var topBarAnchor = new Anchor(
-            new FloatRect(0, 0, 0, 24),
+            new FloatRect(0, 0, 0, 40),
             new FloatRect(0, 0, 1, 0)
         );
 
@@ -222,7 +223,7 @@ public class ProjectDisplay : EditorDisplay
         ]);
 
         var toolsBarAnchor = new Anchor(
-            new FloatRect(-24, 24, 24, -24),
+            new FloatRect(-24, topBarAnchor.BaseRect.Height, 24, -24),
             new FloatRect(1, 0, 0, 1)
         );
 
@@ -233,7 +234,7 @@ public class ProjectDisplay : EditorDisplay
         ]);
         
         var centerAnchor = new Anchor(
-            new FloatRect(0, 24, -24, -24),
+            new FloatRect(0, topBarAnchor.BaseRect.Height, -24, -24),
             new FloatRect(0, 0, 1, 1)
         );
 
@@ -677,7 +678,7 @@ class ToolPanelCategory
     {
         _editor = editor;
         _menu = new StackBox(host, [
-            new UIRect(host),
+            new UIRect(host, null, new Vector2f(4, 4)),
             new AxisBox(host, UIAxis.Vertical,
                 actions.AsEnumerable()
                     .Select(pair => new UIButton(host, pair.Key, () =>

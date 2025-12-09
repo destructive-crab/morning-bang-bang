@@ -3,25 +3,41 @@ using SFML.System;
 
 namespace leditor.UI;
 
-public class UIRect(UIHost host, Color? color = null, Vector2f size = default) : AUIElement(host, size)
+public class UIRect : AUIElement
 {
-    private readonly RectangleShape _shape = new()
+    private Vector2f outline;
+    private readonly RectangleShape shape;
+    private readonly RectangleShape outlineShape;
+
+    public UIRect(UIHost host, Color? color = null, Vector2f outline = default) : base(host, default)
     {
-        FillColor = color ?? host.Style.RectDefault
-    };
+        shape = new RectangleShape
+        {
+            FillColor = color ?? host.Style.RectDefault
+        };
+        this.outline = outline;
+        this.outlineShape = new RectangleShape();
+        outlineShape.FillColor = host.Style.RectDefault;
+    }
 
     public Color Color
     {
-        get => _shape.FillColor;
-        set => _shape.FillColor = value;
+        get => shape.FillColor;
+        set => shape.FillColor = value;
     }
 
     public override void UpdateLayout()
     {
-        _shape.Position = Rect.Position;
-        _shape.Size = Rect.Size;
+        outlineShape.Position = Rect.Position;
+        outlineShape.Size = Rect.Size + 2 * outline;
+        
+        shape.Position = Rect.Position + outline;
+        shape.Size = Rect.Size;
     }
 
     public override void Draw(RenderTarget target)
-        => target.Draw(_shape);
+    {
+        target.Draw(outlineShape);
+        target.Draw(shape);
+    }
 }
