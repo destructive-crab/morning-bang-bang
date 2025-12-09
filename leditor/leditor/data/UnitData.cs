@@ -21,6 +21,7 @@ public class UnitData : LEditorDataUnit
 
     public override bool ValidateExternalDataChange()
     {
+        if(!UTLS.ValidString(ID)) return false;
         return true;
     }
 

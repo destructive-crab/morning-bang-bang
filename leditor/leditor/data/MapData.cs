@@ -77,16 +77,18 @@ public class MapData : LEditorDataUnit
 
     public static readonly string[] AllLayers = {FloorID, FloorOverlayID, ObstaclesID, ObstaclesOverlayID };
 
-    public MapLayer Floor                   = new(FloorID);
-    public MapLayer FloorOverlay            = new(FloorOverlayID);
-    public MapLayer Obstacles               = new(ObstaclesID);    
-    public MapLayer ObstaclesOverlay        = new(ObstaclesOverlayID);
+    public readonly MapLayer Floor                   = new(FloorID);
+    public readonly MapLayer FloorOverlay            = new(FloorOverlayID);
+    public readonly MapLayer Obstacles               = new(ObstaclesID);    
+    public readonly MapLayer ObstaclesOverlay        = new(ObstaclesOverlayID);
 
     public MapData() { }
     public MapData(string id) => ID = id;
 
     public override bool ValidateExternalDataChange()
     {
+        if(!UTLS.ValidString(ID)) return false;
+        
         if (Floor.ID != FloorID)                       return false;
         if (FloorOverlay.ID != FloorOverlayID)         return false;
         if (Obstacles.ID != ObstaclesID)               return false;

@@ -28,6 +28,7 @@ public sealed class TileData : LEditorDataUnit
 
     public override bool ValidateExternalDataChange()
     {
+        if(!UTLS.ValidString(ID)) return false;
         List<string> validatedLayers = new(AllowLayers);
         
         foreach (string layer in AllowLayers)

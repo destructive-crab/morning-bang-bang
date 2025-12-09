@@ -126,12 +126,39 @@ public static class UTLS
         UISelectionList layersChooser = new(App.UIHost);
         foreach (string layer in MapData.AllLayers)
         {
-            layersChooser.AddChild(new UISelectionOptionButton(App.UIHost, layer, () =>
+            layersChooser.AddChild(new UIOption(App.UIHost, layer, () =>
             {
                 selectAction?.Invoke(layer);
             }, false));
         }
         layersChooser.IsSingleSelection = singleSelection;
         return layersChooser;
+    }
+
+    public static bool ValidString(string s)
+    {
+        if (s.Length == 0) return false;
+        
+        char[] availableSymbols = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '_'];
+        
+        foreach (char c in s)
+        {
+            if (!availableSymbols.Contains(c))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static bool ValidStrings(params string[] ss)
+    {
+        foreach (string s in ss)
+        {
+            if (!ValidString(s)) return false;
+        }
+
+        return true;
     }
 }

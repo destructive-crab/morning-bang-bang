@@ -47,6 +47,7 @@ public sealed class TextureData : LEditorDataUnit
 
     public override bool ValidateExternalDataChange()
     {
+        if(!UTLS.ValidString(ID)) return false;
         SetTexture(PathToTexture);
 
         PivotX = Math.Clamp(PivotX, 0, 100);

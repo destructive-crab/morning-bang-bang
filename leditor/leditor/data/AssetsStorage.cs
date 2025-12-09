@@ -7,12 +7,20 @@ public static class AssetsStorage
     public static Image GetInvalidImage()
     {
         if (invalidImage != null) return invalidImage;
+
+        int width = 100;
+        int height = 100;
         
-        Color[,] pixels = new Color[100, 100];
-        
-        for (int x = 0; x < 100; x++)
+        if (App.LeditorInstance.ProjectEnvironment.IsProjectAvailable)
         {
-            for (int y = 0; y < 100; y++)
+            width = App.LeditorInstance.Project.TILE_WIDTH;
+            height = App.LeditorInstance.Project.TILE_HEIGHT;
+        }
+        Color[,] pixels = new Color[width, height];
+        
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
             {
                 pixels[x, y] = Color.Magenta;
             }

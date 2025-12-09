@@ -71,8 +71,22 @@ public class ProjectDisplay : EditorDisplay
         {
             {"Textures", () => ShowPopup(GetTexturesMenu())},
             {"Tiles", () => ShowPopup(GetTilesMenu())},
+            {"Maps", () => ShowPopup(GetMapsMenu())},
             {"Units", () => ShowPopup(GetUnitsMenu())},
         });
+    }
+
+    private AUIElement GetMapsMenu()
+    {
+        DataEditor<MapData> editor = new DataEditor<MapData>(projectEnvironment, host);
+        editor.OnClosed += ClosePopup;
+        return editor.GetDataEditMenu(projectEnvironment.Project.Maps, OnApply);
+
+        void OnApply(MapData[] data)
+        {
+            projectEnvironment.Project.RemoveAllMaps();
+            projectEnvironment.Project.AddMaps(data);
+        }
     }
 
     private AUIElement GetTilesMenu()
@@ -702,11 +716,12 @@ sealed class EnterDataPopup
     private AxisBox list;
     private UILabel message;
     
-    public EnterDataPopup(Func<bool, string> onEntered, params string[] keys)
+    public EnterDataPopup(Func<bool, string> onEntered, string label, params string[] keys)
     {
         OnEntered += onEntered;
 
         list = new AxisBox(App.UIHost, UIAxis.Vertical);
+        list.AddChild(new UILabel(App.UIHost, label));
 
         foreach (string key in keys)
         {
@@ -752,8 +767,8 @@ sealed class LeftPanel
     
     private AxisBox leftPanel;
     
-    private AxisBox mapsList;
-    private AxisBox unitsList;
+    private UISelectionList mapsList;
+    private UISelectionList unitsList;
 
     private AxisBox controlsList;
 
@@ -761,10 +776,7 @@ sealed class LeftPanel
     private readonly Dictionary<string, UIButton> unitButtons = new();
 
     private UIButton createMapButton;
-    //private UIButton removeMapButton;
-
     private UIButton createUnitButton;
-    private UIButton removeUnitButton;
 
     private ProjectDisplay display;
      
@@ -773,20 +785,22 @@ sealed class LeftPanel
         this.env = env;
         this.display = display;
 
-        mapsList = new AxisBox(App.UIHost, UIAxis.Vertical);
-        unitsList = new AxisBox(App.UIHost, UIAxis.Vertical);
+        mapsList = new UISelectionList(App.UIHost);
+        unitsList = new UISelectionList(App.UIHost);
         controlsList = new AxisBox(App.UIHost, UIAxis.Vertical);
         
         createMapButton = new UIButton(App.UIHost, "New Map", CreateMapCallback);
-        
+        createUnitButton = new UIButton(App.UIHost, "New Unit", CreateUnitCallback);
+
         leftPanel = new AxisBox(App.UIHost, UIAxis.Vertical, [
             new UILabel(App.UIHost, "Maps"),
             mapsList,
+            createMapButton,
+            
             new UILabel(App.UIHost, "Units"),
             unitsList,
-            createMapButton,
-            controlsList]);
-
+            createUnitButton]);
+        
         //removeMapButton = new UIButton(App.UIHost, "Remove Map", RemoveMapCallback);
        
         leftSpace = new StackBox(App.UIHost, [
@@ -796,41 +810,13 @@ sealed class LeftPanel
         ]);
     }
 
-    EnterDataPopup popup;
-    private void CreateMapCallback()
-    {
-        popup = new EnterDataPopup(Finish, "Map ID");
-        display.ShowPopup(popup.GetRoot());
-        
-        string Finish(bool choice)
-        {
-            if (choice)
-            {
-                string id = popup.Get("Map ID");
-
-                if (id != string.Empty && env.Project.GetMap(id) == null)
-                {
-                    env.Project.AddMap(new MapData(id));
-                }
-                else
-                {
-                    return "Invalid ID";
-                }
-            }
-
-            display.ClosePopup();
-            popup = null;
-            return "";
-        }
-    }
-
     public void UpdateContent()
     {
         UpdateUnit(env.Project.Maps, mapButtons, mapsList, env.Project.GetMap, (d) => Create(d as MapData));
         UpdateUnit(env.Project.Units, unitButtons, unitsList, env.Project.GetUnit, (d) => Create(d as UnitData));
     }
 
-    private void UpdateUnit(LEditorDataUnit[] data, Dictionary<string, UIButton> buttons, AxisBox list, Func<string, object?> dataGetter, Func<LEditorDataUnit, UIButton> createButton)
+    private void UpdateUnit(LEditorDataUnit[] data, Dictionary<string, UIButton> buttons, UISelectionList list, Func<string, object?> dataGetter, Func<LEditorDataUnit, UIOption> createButton)
     {
         List<string> removed = new();
         List<KeyValuePair<string, UIButton>> added = new();
@@ -847,18 +833,86 @@ sealed class LeftPanel
         //defining which buttons we need to add
         foreach (var d in data)
         {
-            if (!mapButtons.ContainsKey(d.ID))
+            if (!buttons.ContainsKey(d.ID))
             {
-                UIButton button = createButton(d);
+                UIOption button = createButton(d);
                 list.AddChild(button);
                 added.Add(new KeyValuePair<string, UIButton>(d.ID, button));
             }
         }
         
         foreach (string s in removed) { buttons.Remove(s); }
-        foreach (KeyValuePair<string,UIButton> pair in added) { buttons.Add(pair.Key, pair.Value); }
+
+        foreach (KeyValuePair<string, UIButton> pair in added)
+        {
+            buttons.Add(pair.Key, pair.Value);
+        }
+    }
+    
+    EnterDataPopup popup;
+    
+    private void CreateMapCallback()
+    {
+        popup = new EnterDataPopup(Finish, "Create Map", "Map ID");
+        display.ShowPopup(popup.GetRoot());
+        
+        string Finish(bool choice)
+        {
+            if (choice)
+            {
+                string id = popup.Get("Map ID");
+
+                if (UTLS.ValidString(id) && env.Project.GetMap(id) == null)
+                {
+                    env.Project.AddMap(new MapData(id));
+                }
+                else
+                {
+                    return "Invalid ID";
+                }
+            }
+
+            display.ClosePopup();
+            popup = null;
+            return "";
+        }
+    }
+    private void CreateUnitCallback()
+    {
+        popup = new EnterDataPopup(Finish, "Create Unit", "Unit ID", "Map ID", "Override Map ID");
+        display.ShowPopup(popup.GetRoot());
+        
+        string Finish(bool choice)
+        {
+            if (choice)
+            {
+                string id = popup.Get("Unit ID");
+                string mapID = popup.Get("Map ID");
+                string overrideID = popup.Get("Override Map ID");
+
+                if (UTLS.ValidStrings(id, mapID, overrideID) && env.Project.GetUnit(id) == null)
+                {
+                    env.Project.AddUnit(new UnitData(id, mapID, overrideID));
+                }
+                else
+                {
+                    string msg = "";
+                    
+                    if (!UTLS.ValidString(id))           msg += "Invalid Unit ID";
+                    if (env.Project.GetUnit(id) != null) msg += "\nUnit with the same ID already exists";
+                    if (!UTLS.ValidString(mapID))        msg += "\nInvalid Map ID";
+                    if (!UTLS.ValidString(overrideID))   msg += "\nInvalid Override ID";
+                    
+                    return msg;
+                }
+            }
+
+            display.ClosePopup();
+            popup = null;
+            return "";
+        }
     }
 
-    private UIButton Create(MapData mapData) => new(App.UIHost, mapData.ID, () => env.BufferSwitcher.SwitchTo(mapData.ID));
-    private UIButton Create(UnitData unitData) => new(App.UIHost, unitData.ID, () => env.BufferSwitcher.SwitchTo(unitData.ID));
+    private UIOption Create(MapData mapData) => new(App.UIHost, mapData.ID, () => env.BufferSwitcher.SwitchTo(mapData.ID));
+    private UIOption Create(UnitData unitData) => new(App.UIHost, unitData.ID, () => env.BufferSwitcher.SwitchTo(unitData.ID));
 }

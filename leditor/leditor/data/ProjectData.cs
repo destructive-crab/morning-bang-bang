@@ -172,6 +172,13 @@ public sealed class ProjectData
             AddUnit(unitData);
         }
     }
+    public void AddMaps(MapData[] data)
+    {
+        foreach (MapData mapData in data)
+        {
+            AddMap(mapData);
+        }
+    }
 
     public void RemoveTexture(TextureData textureData)
     {
@@ -227,6 +234,13 @@ public sealed class ProjectData
             RemoveUnit(unitData);
         }
     }
+    public void RemoveAllMaps()
+    {
+        foreach (MapData mapData in Maps)
+        {
+            RemoveMap(mapData);
+        }
+    }
 
     private readonly List<EditEntry> edits = new();
     private readonly List<EditEntry> editsOnFrame = new();
@@ -271,4 +285,5 @@ public sealed class ProjectData
         
         return edits;
     }
+
 }

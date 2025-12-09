@@ -1,10 +1,10 @@
 namespace leditor.UI;
 
-public sealed class UISelectionOptionButton : UIButton
+public sealed class UIOption : UIButton
 {
     private bool isSelected;
 
-    public event Action<UISelectionOptionButton> SelectionChange;
+    public event Action<UIOption> SelectionChange;
     public bool IsSelected
     {
         get
@@ -28,7 +28,7 @@ public sealed class UISelectionOptionButton : UIButton
         }
     }
 
-    public UISelectionOptionButton(UIHost host, string text, Action? action = null, bool startState = false) 
+    public UIOption(UIHost host, string text, Action? action = null, bool startState = false) 
         : base(host, text, action)
     {
         ApplyStyle(host.Style.NormalButton);
