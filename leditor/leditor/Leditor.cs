@@ -122,6 +122,8 @@ public sealed class Leditor
     {
         while (App.WindowHandler.IsOpen)
         {
+            if(ProjectEnvironment.IsProjectAvailable) ProjectEnvironment.Project.PullEdits();
+            
             App.WindowHandler.BeginFrame();
             {
                 if (App.WindowHandler.InputsHandler.IsKeyDown(Keyboard.Key.Space))

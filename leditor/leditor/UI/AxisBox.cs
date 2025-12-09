@@ -94,7 +94,9 @@ public class AxisBox :
     
     public override void Draw(RenderTarget target)
     {
-        foreach (var child in _children)
+        foreach (AUIElement child in _children)
+        {
             Host.DrawStack.Push(child.Draw);
+        }
     }
 }

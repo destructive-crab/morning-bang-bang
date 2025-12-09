@@ -64,7 +64,9 @@ public class SingleBox : AUIBox
     public override void Draw(RenderTarget target)
     {
         if (_child != null && !_hide)
+        {
             Host.DrawStack.Push(_child.Draw);
+        }
     }
 
     public override void ProcessClicks()

@@ -17,7 +17,7 @@ public sealed class Toolset
     {
         All = new[] { (Tool)new Eraser(), new PaintTool() };
         attachedTo = projectData;
-        attachedTo.OnEdited += (_,_) => CurrentTool?.ProjectDataChanged();
+        attachedTo.OnEdited += (_) => CurrentTool?.ProjectDataChanged();
     }
 
     public void SelectTool(Tool tool)

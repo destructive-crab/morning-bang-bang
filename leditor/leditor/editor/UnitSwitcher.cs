@@ -16,10 +16,9 @@ public class UnitSwitcher
     
     public void SwitchTo(string id)
     {
-        UnitData unit = App.LeditorInstance.ProjectEnvironment.GetUnit(id);
-        MapData data = App.LeditorInstance.ProjectEnvironment.GetMap(unit.MapID);
+        MapData data = App.LeditorInstance.ProjectEnvironment.GetMap(id);
         
-        if (App.LeditorInstance.OpenBuffer(unit.MapID, out GridBuffer buffer))
+        if (App.LeditorInstance.OpenBuffer(id, out GridBuffer buffer))
         {
             buffer.AddAbove(data);           
         }

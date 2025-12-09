@@ -11,7 +11,7 @@ public sealed class ProjectEnvironment
     
     //modules
     public Toolset         Toolset;
-    public readonly UnitSwitcher    UnitSwitcher = new();
+    public readonly UnitSwitcher    BufferSwitcher = new();
     public string OriginalPath { get; private set; }
 
     public void OpenEmptyProject()

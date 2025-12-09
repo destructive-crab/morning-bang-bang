@@ -55,6 +55,8 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
     public override void Draw(RenderTarget target)
     {
         foreach (var child in _children.AsEnumerable().Reverse())
-            Host.DrawStack.Push(child.Item2.Draw);
+        {
+            child.Item2.Draw(target);
+        }
     }
 }

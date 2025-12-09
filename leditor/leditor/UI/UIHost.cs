@@ -79,12 +79,12 @@ public class UIHost
 
     public void Draw(RenderTarget target)
     {
-        if (!AssertRoot(out var root)) return;
+        if (!AssertRoot(out AUIElement? root)) return;
 
         target.SetView(View);
         root.Draw(target);
         
-        while (DrawStack.TryPop(out var draw))
+        while (DrawStack.TryPop(out DrawAction? draw))
         {
             draw(target);
         }
