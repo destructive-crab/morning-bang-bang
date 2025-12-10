@@ -192,6 +192,10 @@ public sealed class GridBuffer
         map[layerID][pos] = id;
         SortTiles();
         UpdateBufferRect();
+        
+        //TEMP TODO
+        
+        App.LeditorInstance.ProjectEnvironment.EditsRegistry.MarkAsDirty(Tag, App.LeditorInstance.ProjectEnvironment.Project.GetMap(Tag));
     }
 
     private void SortTiles()

@@ -808,6 +808,26 @@ sealed class LeftPanel
             new UIRect(App.UIHost),
             new ScrollBox(App.UIHost, leftPanel)
         ]);
+        
+        env.EditsRegistry.OnObjectMarkedAsDirty += OnMarkedAsDirty;
+        env.EditsRegistry.OnObjectUnmarkedAsDirty += OnUnmarkedAsDirty;
+    }
+
+    private void OnMarkedAsDirty(string tag, object o)
+    {
+        if (o is MapData map)
+        {
+            mapButtons[map.ID].Text += "*";
+        }
+    }
+
+    private void OnUnmarkedAsDirty(object o)
+    {
+        if (o is MapData map)
+        {
+            var t = mapButtons[map.ID].Text;
+            mapButtons[map.ID].Text = t.Substring(0, t.Length-1);
+        }
     }
 
     public void UpdateContent()

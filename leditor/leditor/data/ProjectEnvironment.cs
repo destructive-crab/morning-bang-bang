@@ -1,3 +1,5 @@
+using leditor.editor;
+
 namespace leditor.root;
 
 public sealed class ProjectEnvironment
@@ -10,8 +12,9 @@ public sealed class ProjectEnvironment
     public const string INVALID_TILE_ID = "invalid_tile";
     
     //modules
-    public Toolset         Toolset;
+    public Toolset                  Toolset;
     public readonly UnitSwitcher    BufferSwitcher = new();
+    public ProjectDataEditsRegistry EditsRegistry { get; private set; }
     public string OriginalPath { get; private set; }
 
     public void OpenEmptyProject()
@@ -47,8 +50,9 @@ public sealed class ProjectEnvironment
         }
         
         File.WriteAllText(path, Project.Export());
-        
+
         OriginalPath = path;
+        EditsRegistry.ClearAllRegistry();
     }
     public void SaveProject()
     {
@@ -58,6 +62,7 @@ public sealed class ProjectEnvironment
         }
         
         File.WriteAllText(OriginalPath, Project.Export());
+        EditsRegistry.ClearAllRegistry();
     }
 
     public TextureData GetInvalidTexture()
@@ -103,10 +108,13 @@ public sealed class ProjectEnvironment
     public void InitializeEnvironment()
     {
         Toolset = new(Project);
+        EditsRegistry = new ProjectDataEditsRegistry(this, Project);
     }
 
     public void ClearEnvironment()
     {
         
     }
+    
+    
 }

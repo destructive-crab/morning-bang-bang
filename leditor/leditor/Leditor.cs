@@ -122,7 +122,7 @@ public sealed class Leditor
     {
         while (App.WindowHandler.IsOpen)
         {
-            if(ProjectEnvironment.IsProjectAvailable) ProjectEnvironment.Project.PullEdits();
+            if(ProjectEnvironment.IsProjectAvailable) ProjectEnvironment.EditsRegistry.PullThisFrameEdits();
             
             App.WindowHandler.BeginFrame();
             {

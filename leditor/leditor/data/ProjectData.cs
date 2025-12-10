@@ -242,8 +242,6 @@ public sealed class ProjectData
         }
     }
 
-    private readonly List<EditEntry> edits = new();
-    private readonly List<EditEntry> editsOnFrame = new();
 
     public struct EditEntry
     {
@@ -253,37 +251,20 @@ public sealed class ProjectData
         public const string Maps     = "maps_edit";
         public const string Units    = "units_edit";
         
-        public readonly string ID;
+        public readonly string Tag;
         public readonly object Where;
         public readonly object Who;
 
-        public EditEntry(string id, object where, object who)
+        public EditEntry(string tag, object where, object who)
         {
-            this.ID = id;
+            this.Tag = tag;
             this.Where = where;
             this.Who = who;
         }
     }
     
-    public void PushProjectEdit(string optionalID, object where, object who)
+    public void PushProjectEdit(string tag, object where, object who)
     {
-        editsOnFrame.Add(new EditEntry(optionalID, where, who));
+        OnEdited?.Invoke(new EditEntry(tag, where, who));
     }
-
-    public EditEntry[] PullEdits()
-    {
-        EditEntry[] edits = new EditEntry[editsOnFrame.Count];
-        for (var i = 0; i < edits.Length; i++)
-        {
-            var edit = editsOnFrame[i];
-            edits[i] = edit;
-            OnEdited?.Invoke(edit);
-        }
-
-        editsOnFrame.Clear();
-        this.edits.AddRange(edits);
-        
-        return edits;
-    }
-
 }
