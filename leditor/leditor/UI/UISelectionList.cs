@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 
@@ -18,6 +20,7 @@ public sealed class UISelectionList : AUIBox
         box = new AxisBox(host, UIAxis.Vertical);
 
         if(options==null) return;
+        
         foreach (UIOption option in options)
         {
             AddChild(option);
@@ -30,20 +33,13 @@ public sealed class UISelectionList : AUIBox
         option.SelectionChange += ChangeSelection;
         box.AddChild(option);
         UpdateLayout();
-    }
-
-    private void ChangeSelection(UIOption changedOption)
-    {
-        if (!changedOption.IsSelected || !IsSingleSelection) return;
         
-        foreach (UIOption option in options)
+        if(option.IsSelected)
         {
-            if(option == changedOption) continue;
             option.IsSelected = false;
+            option.IsSelected = true;
         }
 
-        Current = changedOption;
-        OnChanged?.Invoke(Current);
     }
 
     public override void RemoveChild(AUIElement child)
@@ -52,6 +48,27 @@ public sealed class UISelectionList : AUIBox
         {
             options.Remove(uiSelectionOptionButton);
         }
+    }
+
+    private void ChangeSelection(UIOption changedOption)
+    {
+        if (!changedOption.IsSelected || !IsSingleSelection) return;
+        
+        if (IsSingleSelection && changedOption == Current)
+        {
+            return;
+        }
+        
+        foreach (UIOption option in options)
+        {
+            if (option == changedOption) { option.IsLocked = true; continue; }
+            
+            option.IsSelected = false;
+            option.IsLocked   = false;
+        }
+
+        Current = changedOption;
+        OnChanged?.Invoke(Current);
     }
 
     public override IEnumerable<AUIElement> GetChildren()

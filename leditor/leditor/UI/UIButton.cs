@@ -1,3 +1,4 @@
+using System;
 using SFML.Graphics;
 using SFML.System;
 
@@ -51,7 +52,24 @@ public class UIButton : AUIElement
         area.OnRightMouseButtonReleased = OnReleased;
         area.OnHover = OnHover;
         area.OnUnhover = OnUnhover;
+
+        ApplyStyle(host.Style.NormalButton);
+    }
+    
+    public UIButton(UIHost host, string text, Vector2f minimalSize, Action? action = null) : 
+        base(host, 
+/*minimal size*/ minimalSize)
+    {
+        host.Fabric.MakeTextOut(text, out Text textObj);
+        this.textObj = textObj;
+
+        Action = action;
         
+        area.OnRightMouseButtonClick = OnPress;
+        area.OnRightMouseButtonReleased = OnReleased;
+        area.OnHover = OnHover;
+        area.OnUnhover = OnUnhover;
+
         ApplyStyle(host.Style.NormalButton);
     }
 
