@@ -11,6 +11,10 @@
       <PackageReference Include="Microsoft.NETCore.Windows.ApiSets" Version="1.0.1" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
       <PackageReference Include="SFML.Net" Version="2.6.1" />
+	  
+	  <EmbeddedResource Include="assets/fonts/Main.ttf" />
+	  <EmbeddedResource Include="assets/icons/eraser.png" />
+	  <EmbeddedResource Include="assets/icons/paint.png" />
     </ItemGroup>
 
 </Project>

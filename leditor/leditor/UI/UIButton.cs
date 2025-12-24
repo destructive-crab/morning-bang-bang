@@ -41,7 +41,7 @@ public class UIButton : AUIElement
     
     public UIButton(UIHost host, string text, Action? action = null) : 
         base(host, 
-/*minimal size*/ host.Fabric.MakeTextOut(text, out Text textObj) + host.Style.ButtonSpace + new Vector2f(0, host.Style.NormalButton.BottomHeight + host.Style.NormalButton.Outline))
+/*minimal size*/ host.Fabric.MakeTextOut(text, out Text textObj) + host.Style.ButtonSpace + new Vector2f(8, host.Style.NormalButton.BottomHeight + host.Style.NormalButton.Outline))
     {
         this.textObj = textObj;
 

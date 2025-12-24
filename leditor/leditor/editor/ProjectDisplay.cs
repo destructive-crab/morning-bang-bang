@@ -45,7 +45,9 @@ public class ProjectDisplay : EditorDisplay
     public override void Tick()
     {
         if(App.LeditorInstance.buffer != null)
+        {
             App.LeditorInstance.buffer.BlockInputs = !world.IsHovered;
+        }
     }
 
     private void BuildContent()
@@ -60,19 +62,19 @@ public class ProjectDisplay : EditorDisplay
         
         AddToolPanelCategory("App", new Dictionary<string, Action?>()
         {
-            {"Save    (Ctrl + S)", () => App.LeditorInstance.ProjectEnvironment.SaveProject()},
+            {"Save    (Ctrl + S)",         () => App.LeditorInstance.ProjectEnvironment.SaveProject()},
             {"Save As (Shift + Ctrl + S)", () => App.LeditorInstance.ProjectEnvironment.SaveProjectAtPath(UTLS.OpenSaveProjectDialog())},
-            {"Load    (Ctrl + O)", () => App.LeditorInstance.OpenProject(UTLS.ShowOpenProjectDialog())},
-            {"New     (Ctrl + N)", () => App.LeditorInstance.OpenProject(string.Empty)},
-            {"Quit    (Alt + F4)", () => App.Quit()}
+            {"Load    (Ctrl + O)",         () => App.LeditorInstance.OpenProject(UTLS.ShowOpenProjectDialog())},
+            {"New     (Ctrl + N)",         () => App.LeditorInstance.OpenProject(string.Empty)},
+            {"Quit    (Alt + F4)",         () => App.Quit()}
         });
         
         AddToolPanelCategory("Project", new Dictionary<string, Action?>()
         {
             {"Textures", () => ShowPopup(GetTexturesMenu())},
-            {"Tiles", () => ShowPopup(GetTilesMenu())},
-            {"Maps", () => ShowPopup(GetMapsMenu())},
-            {"Units", () => ShowPopup(GetUnitsMenu())},
+            {"Tiles",    () => ShowPopup(GetTilesMenu())},
+            {"Maps",     () => ShowPopup(GetMapsMenu())},
+            {"Units",    () => ShowPopup(GetUnitsMenu())},
         });
     }
 
@@ -93,6 +95,7 @@ public class ProjectDisplay : EditorDisplay
     {
         DataEditor<TileData> editor = new DataEditor<TileData>(projectEnvironment, host);
         editor.OnClosed += ClosePopup;
+        
         return editor.GetDataEditMenu(projectEnvironment.Project.Tiles, OnApply);
 
         void OnApply(TileData[] data)
@@ -142,8 +145,10 @@ public class ProjectDisplay : EditorDisplay
         UpdateToolOptions();
     }
 
-    private void UpdateToolOptions() 
-        => ShowToolOptions(projectEnvironment.Toolset.CurrentTool.BuildUI(host));
+    private void UpdateToolOptions()
+    {
+        ShowToolOptions(projectEnvironment.Toolset.GetUIRoot);
+    }
 
     private void UpdateLeftPanel()
     {
@@ -284,7 +289,7 @@ public class ProjectDisplay : EditorDisplay
     }
 }
 
-class DataEditor<TData>
+public class DataEditor<TData>
     where TData : LEditorDataUnit, new()
 {
     public event Action OnClosed;
@@ -418,7 +423,7 @@ class DataEditor<TData>
     }
 }
 
-class DataEditorEntry<TData>
+public class DataEditorEntry<TData>
     where TData : LEditorDataUnit, new()
 {
     public readonly TData OriginalData;
@@ -662,7 +667,7 @@ class DataEditorEntry<TData>
     }
 }
 
-class ToolPanelCategory
+public sealed class ToolPanelCategory
 {
     private readonly ProjectDisplay _editor;
     private readonly AUIElement _menu;
@@ -707,7 +712,7 @@ class ToolPanelCategory
 }
 
 //todo: normal serialization logic
-sealed class EnterDataPopup
+public sealed class EnterDataPopup
 {
     private readonly Dictionary<string, UIVar<string>> vars = new();
     private Func<bool, string> OnEntered;
@@ -757,7 +762,7 @@ sealed class EnterDataPopup
     }
 }
 
-sealed class LeftPanel
+public sealed class LeftPanel
 {
     public AUIElement GetRoot() => leftSpace;
     
@@ -851,7 +856,7 @@ sealed class LeftPanel
             }
         }
         //defining which buttons we need to add
-        foreach (var d in data)
+        foreach (LEditorDataUnit d in data)
         {
             if (!buttons.ContainsKey(d.ID))
             {

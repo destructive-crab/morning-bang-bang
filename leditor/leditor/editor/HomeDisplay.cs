@@ -5,21 +5,31 @@ namespace leditor.root;
 
 public sealed class HomeDisplay : EditorDisplay
 {
-    public override UIHost Host => host;
+    public override UIHost Host => h;
     
     public bool Hidden { get; private set; } = true;
     
-    private UIHost host;
+    private UIHost h;
 
     public HomeDisplay()
     {
-        host = App.UIHost;
+        h = App.UIHost;
         
-        host.SetRoot(new AxisBox(host, UIAxis.Vertical,
-            new UILimit(host, new Vector2f(100, 50)),
-            new UILabel(host, "Home (-) . (-)"),
-            new UIButton(host, "Load Project", LoadProjectButton),
-            new UIButton(host, "Create New Project", NewProjectButton)));
+        h.SetRoot(new AxisBox(h, UIAxis.Vertical,
+            new UILimit(h, new Vector2f(100, 50)),
+            new UILabel(h, "Home (-) . (-)"),
+            new UIButton(h, "Load Project", LoadProjectButton),
+            new UIButton(h, "Create New Project", NewProjectButton)));
+
+        return;
+        var t = RuntimeAssetsStorage.GetInvalidTexture();
+        var r = new Rect(0, 0, 100, 100);
+        
+        h.SetRoot(new AxisBox(h, UIAxis.Vertical,
+    [ new AxisBox(h, UIAxis.Horizontal, new UIImageButton(h, t, r, new Vector2f(1,1)), new UIImageButton(h, t, r, new Vector2f(1,1)), new UIImageButton(h, t, r, new Vector2f(1,1))), 
+    new AxisBox(h, UIAxis.Horizontal, new UIImageButton(h, t, r, new Vector2f(1,1)), new UIImageButton(h, t, r, new Vector2f(1,1)), new UIImageButton(h, t, r, new Vector2f(1,1))), 
+    new AxisBox(h, UIAxis.Horizontal, new UIImageButton(h, t, r, new Vector2f(1,1)), new UIImageButton(h, t, r, new Vector2f(1,1)), new UIImageButton(h, t, r, new Vector2f(1,1))), ]));
+        
     }
 
     private void LoadProjectButton()

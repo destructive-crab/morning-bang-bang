@@ -1,3 +1,4 @@
+using leditor.root;
 using SFML.Graphics;
 using SFML.System;
 
@@ -7,8 +8,7 @@ public class UIStyle()
 {
     private static Font PrepareFont()
     {
-        Font font 
-        = new("C:\\Users\\destructive_crab\\dev\\band-bang\\leditor\\leditor\\assets\\Main.ttf");
+        Font font = new(EditorAssets.LoadFont("Main.ttf"));
 
         return font;
     }

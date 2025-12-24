@@ -11,37 +11,50 @@ public sealed class Toolset
     public Tool CurrentTool { get; private set; }
 
     public readonly Tool[] All;
-    private ProjectData attachedTo;
+    
+    private readonly ProjectData attachedTo;
+
+    public AUIElement GetUIRoot => guiRoot;
+    private SplitBox guiRoot;
+    private SingleBox toolGUIPlace;
+
+    public string SelectedLayer { get; private set; }
 
     public Toolset(ProjectData projectData)
     {
-        All = new[] { (Tool)new Eraser(), new PaintTool() };
+        All = new[] { (Tool)new Eraser(this), new PaintTool(this) };
+        
         attachedTo = projectData;
         attachedTo.OnEdited += (_) => CurrentTool?.ProjectDataChanged();
+
+        UISelectionList layerSelector = UTLS.BuildLayersList(true, (s) => SelectedLayer = s);
+        toolGUIPlace = new SingleBox(App.UIHost);
+        guiRoot = new SplitBox(App.UIHost, UIAxis.Horizontal, layerSelector, toolGUIPlace);
     }
 
     public void SelectTool(Tool tool)
     {
         PreviousTool = CurrentTool;
         CurrentTool = tool;
+        toolGUIPlace.Child = tool.BuildUI();
+    }
+
+    public void SelectLayer(string id)
+    {
+        
     }
 }
 
 public sealed class PaintTool : Tool
 {
     public string SelectedTile { get; private set; }
-    public string SelectedLayer { get; private set; }
 
-    private SplitBox guiRoot;
-    private UISelectionList layerOptions;
     private AxisBox tiles;
+    private readonly Texture icon;
 
-    public PaintTool()
+    public PaintTool(Toolset toolset) : base(toolset)
     {
-        UISelectionList layersChooser = UTLS.BuildLayersList(true, (l) => SelectedLayer = l);
-
-        layerOptions = layersChooser;
-        
+        icon = new Texture(EditorAssets.LoadIcon("paint.png"));
     }
 
     public void SelectTile(string id)
@@ -49,28 +62,27 @@ public sealed class PaintTool : Tool
         SelectedTile = id;
         string[] allowed = App.LeditorInstance.ProjectEnvironment.GetTile(id).AllowLayers;
         
-        if (allowed.Contains(SelectedLayer))
+        if (allowed.Contains(Toolset.SelectedLayer))
         {
             return;
         }
 
-        SelectedLayer = allowed[0];
+        Toolset.SelectLayer(allowed[0]);
     }
 
     public override Texture GetIcon()
     {
-        return RenderCacher.GetTexture("assets\\paint.png");
+        return icon;
     }
 
-    public override AUIElement BuildUI(UIHost host)
+    public override AUIElement BuildUI()
     {
+        UIHost host = App.UIHost;
         tiles = new AxisBox(host, UIAxis.Horizontal);
-        StackBox layersContainer = new StackBox(host, [new UIRect(host), layerOptions]);
 
         AddTilesToUI();
 
-        guiRoot = new SplitBox(host, UIAxis.Horizontal, layersContainer, tiles);
-        return guiRoot;
+        return tiles;
     }
 
     private void AddTilesToUI()
@@ -95,7 +107,7 @@ public sealed class PaintTool : Tool
 
     public override void OnClick(Vector2 gridCell, GridBuffer buffer)
     {
-        buffer.SetTileAt(SelectedLayer, gridCell, SelectedTile);
+        buffer.SetTileAt(Toolset.SelectedLayer, gridCell, SelectedTile);
     }
 
     public override string Name => nameof(PaintTool);
@@ -104,11 +116,18 @@ public sealed class PaintTool : Tool
 internal sealed class Eraser : Tool
 {
     public string SelectedLayer { get; private set; }
-    public override Texture GetIcon() => RenderCacher.GetTexture("assets\\eraser.png");
-    public override AUIElement BuildUI(UIHost host)
+    private Texture icon;
+
+    public Eraser(Toolset toolset) : base(toolset)
     {
-        UISelectionList layersChooser = UTLS.BuildLayersList(true, (l) => SelectedLayer = l);
-        return layersChooser;
+        icon = new Texture(EditorAssets.LoadIcon("eraser.png"));
+    }
+
+    public override Texture GetIcon() => icon;
+
+    public override AUIElement BuildUI()
+    {
+        return null;
     }
 
     public override void ProjectDataChanged()
@@ -126,8 +145,15 @@ internal sealed class Eraser : Tool
 
 public abstract class Tool
 {
+    protected readonly Toolset Toolset;
+
+    protected Tool(Toolset toolset)
+    {
+        Toolset = toolset;
+    }
+
     public abstract Texture GetIcon();
-    public abstract AUIElement BuildUI(UIHost host);
+    public abstract AUIElement BuildUI();
     public abstract void ProjectDataChanged();
     public abstract void OnClick(Vector2 gridCell, GridBuffer buffer);
     public abstract string Name { get; }

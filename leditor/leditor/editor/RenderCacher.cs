@@ -9,17 +9,12 @@ public static class RenderCacher
     
     public static Texture GetTexture(string path)
     {
-        if (path.StartsWith("assets"))
-        {
-            path = Path.Combine(App.GeneralPath, path);
-        }
-        
         if (texturesMap.TryGetValue(path, out Texture tex))
         {
             return tex;
         }
         
-        Image rawImage = AssetsStorage.GetImageAtPath(path);
+        Image rawImage = RuntimeAssetsStorage.GetImageAtPath(path);
         Texture texture = new Texture(rawImage);
         
         texturesMap.Add(path, texture);
