@@ -59,15 +59,15 @@ public sealed class PaintTool : Tool
 
     public void SelectTile(string id)
     {
-        SelectedTile = id;
-        string[] allowed = App.LeditorInstance.ProjectEnvironment.GetTile(id).AllowLayers;
-        
-        if (allowed.Contains(Toolset.SelectedLayer))
-        {
-            return;
-        }
-
-        Toolset.SelectLayer(allowed[0]);
+ //       SelectedTile = id;
+ //       LayerID[] allowed = App.LeditorInstance.ProjectEnvironment.GetTile(id).AllowLayers;
+ //       
+ //       if (allowed.Contains(Toolset.SelectedLayer))
+ //       {
+ //           return;
+ //       }
+//
+ //       Toolset.SelectLayer(allowed[0]);
     }
 
     public override Texture GetIcon()
@@ -87,16 +87,16 @@ public sealed class PaintTool : Tool
 
     private void AddTilesToUI()
     {
-        foreach (TileData tile in App.LeditorInstance.Project.Tiles)
-        {
-            TextureData textureData = App.LeditorInstance.ProjectEnvironment.GetTexture(tile.TextureID);
-            Texture tileTexture = RenderCacher.GetTexture(textureData.PathToTexture);
-            
-            tiles.AddChild(new AxisBox(App.UIHost, UIAxis.Vertical, [
-                new UILabel(App.UIHost, tile.ID),
-                new UIImageButton(App.UIHost, tileTexture, textureData.TextureRect, new Vector2f(60f/textureData.Width, 60f/textureData.Height), () => SelectTile(tile.ID))])
-                );
-        }
+  //      foreach (TileData tile in App.LeditorInstance.Project.Tiles)
+  //      {
+  //          TextureData textureData = App.LeditorInstance.ProjectEnvironment.GetTexture(tile.TextureReference);
+  //          Texture tileTexture = RenderCacher.GetTexture(textureData.PathToTexture);
+  //          
+  //          tiles.AddChild(new AxisBox(App.UIHost, UIAxis.Vertical, [
+  //              new UILabel(App.UIHost, tile.ID),
+  //              new UIImageButton(App.UIHost, tileTexture, textureData.TextureRect, new Vector2f(60f/textureData.Width, 60f/textureData.Height), () => SelectTile(tile.ID))])
+  //              );
+  //      }
     }
 
     public override void ProjectDataChanged()
@@ -107,7 +107,7 @@ public sealed class PaintTool : Tool
 
     public override void OnClick(Vector2 gridCell, GridBuffer buffer)
     {
-        buffer.SetTileAt(Toolset.SelectedLayer, gridCell, SelectedTile);
+    //    buffer.SetTileAt(Toolset.SelectedLayer, gridCell, SelectedTile);
     }
 
     public override string Name => nameof(PaintTool);
@@ -137,7 +137,7 @@ internal sealed class Eraser : Tool
 
     public override void OnClick(Vector2 gridCell, GridBuffer buffer)
     {
-        buffer.SetTileAt(SelectedLayer, gridCell, null);
+     //   buffer.SetTileAt(SelectedLayer, gridCell, null);
     }
 
     public override string Name => nameof(Eraser);

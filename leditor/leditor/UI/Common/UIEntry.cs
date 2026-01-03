@@ -12,6 +12,7 @@ public class UIEntry : AUIElement
     private View _view = new();
 
     private readonly RectangleShape background;
+    private readonly RectangleShape backgroundOutline;
 
     private ClickArea _area = new(new FloatRect());
 
@@ -32,7 +33,7 @@ public class UIEntry : AUIElement
         }
     }
 
-    public UIEntry(UIHost host, UIVar<string> var, int minX = 0) : base(host, host.Fabric.MakeTextOut("X", out var text) + new Vector2f(host.Style.BoxSizeX+minX, host.Style.BoxSizeY))
+    public UIEntry(UIHost host, UIVar<string> var, int minX = 0) : base(host, host.Fabric.MakeTextOut("X", out var text, (int)(host.Style.FontSize-2)) + new Vector2f(host.Style.BoxSizeX+minX, host.Style.BoxSizeY))
     {
         text.DisplayedString = var.Value;
         Var = var;
@@ -40,6 +41,8 @@ public class UIEntry : AUIElement
 
         background = new RectangleShape();
         background.FillColor = host.Style.EntryBackgroundColor;
+        backgroundOutline = new RectangleShape();
+        backgroundOutline.FillColor = host.Style.EntryOutlineColor;
         
         _cursor = new RectangleShape
         {
@@ -195,7 +198,11 @@ public class UIEntry : AUIElement
 
         background.Size = Rect.Size;
         background.Position = Rect.Position;
-        _text.Position = Rect.Position + new Vector2f(Host.Style.BoxSizeX/2, Host.Style.BoxSizeY/2-2);
+        
+        backgroundOutline.Size = Rect.Size + new Vector2f(Host.Style.EntryOutline*2, Host.Style.EntryOutline*2);
+        backgroundOutline.Position = Rect.Position - new Vector2f(Host.Style.EntryOutline, Host.Style.EntryOutline);
+        
+        _text.Position = background.Position + new Vector2f(0, background.Size.Y / 2 - (int)_text.GetLocalBounds().Size.Y / 2f);
         
         UpdateCursor();
 
@@ -206,6 +213,7 @@ public class UIEntry : AUIElement
     
     public override void Draw(RenderTarget target)
     {
+        target.Draw(backgroundOutline);
         target.Draw(background);
 
         Utils.CopyView(target.GetView(), _origView);

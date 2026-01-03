@@ -75,7 +75,7 @@ public sealed class ProjectEnvironment
         TileData invalidTile = new();
         
         invalidTile.ID = INVALID_TILE_ID;
-        invalidTile.TextureID = INVALID_TEXTURE_ID;
+        invalidTile.TextureReference = TextureReference.INVALID;
 
         return invalidTile;
     }
@@ -115,6 +115,4 @@ public sealed class ProjectEnvironment
     {
         
     }
-    
-    
 }

@@ -1,3 +1,4 @@
+using leditor.UI;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -82,7 +83,7 @@ public class WindowHandler
     
     public void BeginDrawing()
     {
-        window.Clear(new Color(0x1c0717FF));
+        window.Clear(new Color(App.UIHost.Style.RectDefault));
     }
 
     public void CompleteDrawing()

@@ -9,15 +9,15 @@ public sealed class PlacedTile
     [JsonProperty] public int X;
     [JsonProperty] public int Y;
 
-    [JsonProperty] public string TileID;
+    [JsonProperty] public TileReference TileReference;
 
     public PlacedTile() { }
 
-    public PlacedTile(int x, int y, string tileId)
+    public PlacedTile(int x, int y, TileReference tileReference)
     {
         this.X = x;
         this.Y = y;
-        TileID = tileId;
+        TileReference = tileReference;
     }
 }
 
@@ -48,10 +48,10 @@ public sealed class MapLayer
         tiles.Clear();
     }
 
-    public void RewriteWith(KeyValuePair<Vector2,string>[] tiles)
+    public void RewriteWith(KeyValuePair<Vector2,TileReference>[] tiles)
     {
         Clear();
-        foreach (KeyValuePair<Vector2,string> pair in tiles)
+        foreach (KeyValuePair<Vector2,TileReference> pair in tiles)
         {
             this.tiles.Add(new PlacedTile((int)pair.Key.X, (int)pair.Key.Y, pair.Value));
         }
@@ -62,7 +62,7 @@ public sealed class MapLayer
         Clear();
         foreach (PlacedTile tile in tiles)
         {
-            this.tiles.Add(new PlacedTile((int)tile.X, (int)tile.Y, tile.TileID));
+            this.tiles.Add(new PlacedTile((int)tile.X, (int)tile.Y, tile.TileReference));
         }
     }
 }
@@ -70,17 +70,10 @@ public sealed class MapLayer
 [JsonObject(MemberSerialization.OptIn)]
 public class MapData : LEditorDataUnit
 {
-    public const string FloorID             = "floor";
-    public const string FloorOverlayID      = "floor_overlay";
-    public const string ObstaclesID         = "obstacles";
-    public const string ObstaclesOverlayID  = "obstacles_overlay";
-
-    public static readonly string[] AllLayers = {FloorID, FloorOverlayID, ObstaclesID, ObstaclesOverlayID };
-
-    public readonly MapLayer Floor                   = new(FloorID);
-    public readonly MapLayer FloorOverlay            = new(FloorOverlayID);
-    public readonly MapLayer Obstacles               = new(ObstaclesID);    
-    public readonly MapLayer ObstaclesOverlay        = new(ObstaclesOverlayID);
+    public readonly MapLayer Floor            = new(LayerID.FloorID);
+    public readonly MapLayer FloorOverlay     = new(LayerID.FloorOverlayID);
+    public readonly MapLayer Obstacles        = new(LayerID.ObstaclesID);    
+    public readonly MapLayer ObstaclesOverlay = new(LayerID.ObstaclesOverlayID);
 
     public MapData() { }
     public MapData(string id) => ID = id;
@@ -89,10 +82,10 @@ public class MapData : LEditorDataUnit
     {
         if(!UTLS.ValidString(ID)) return false;
         
-        if (Floor.ID != FloorID)                       return false;
-        if (FloorOverlay.ID != FloorOverlayID)         return false;
-        if (Obstacles.ID != ObstaclesID)               return false;
-        if (ObstaclesOverlay.ID != ObstaclesOverlayID) return false;
+        if (Floor.ID            != LayerID.FloorID)            return false;
+        if (FloorOverlay.ID     != LayerID.FloorOverlayID)     return false;
+        if (Obstacles.ID        != LayerID.ObstaclesID)        return false;
+        if (ObstaclesOverlay.ID != LayerID.ObstaclesOverlayID) return false;
         
         Floor           .ValidateTiles();
         FloorOverlay    .ValidateTiles();

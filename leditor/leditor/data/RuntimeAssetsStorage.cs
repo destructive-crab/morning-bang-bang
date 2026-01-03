@@ -72,6 +72,6 @@ public static class RuntimeAssetsStorage
 
     public static Image GetImage(TextureData data)
     {
-        return GetImageAtPath(data.PathToTexture);
+        return GetImageAtPath(data.PathToTexture.Path);
     }
 }

@@ -27,16 +27,25 @@ public sealed class GridBuffer
     
     public string Tag { get; private set; }
 
-    private readonly Dictionary<string, Dictionary<Vector2, string>> map = new();
+    private readonly Dictionary<LayerID, Dictionary<Vector2, TileReference>> map = new();
 
     public const int CELL_SIZE = 80;
+    
+    //selection
     private Vector2i pointingOnCell;
+    private readonly List<Vector2i> selection = new();
 
     public bool BlockInputs = true;
 
     public GridBuffer()
     {
         UpdateBufferRect();
+    }
+
+    public GridBuffer(string tag)
+    {
+        Tag = tag;
+        Clear();
     }
 
     public bool IsCellAvailableForActions(int x, int y) 
@@ -54,14 +63,14 @@ public sealed class GridBuffer
     
     public void DrawTiles(ProjectEnvironment projectEnvironment)
     {
-        foreach (KeyValuePair<string, Dictionary<Vector2, string>> layer in map)
+        foreach (var layer in map)
         {
-            foreach (KeyValuePair<Vector2, string> tilePair in layer.Value)
+            foreach (var tilePair in layer.Value)
             {
                 Vector2f pos = new Vector2f(tilePair.Key.X * CELL_SIZE, tilePair.Key.Y * CELL_SIZE);
                 
-                TileData tile = projectEnvironment.GetTile(tilePair.Value);
-                TextureData texture = projectEnvironment.GetTexture(tile.TextureID);
+                TileData tile = projectEnvironment.GetTile(tilePair.Value.ID);
+                TextureData texture = projectEnvironment.GetTexture(tile.TextureReference.ID);
                 
                 DrawTile(texture, pos, projectEnvironment);
             }   
@@ -146,16 +155,9 @@ public sealed class GridBuffer
         prevMousePos = App.InputsHandler.MousePosition;
     }
     private Vector2i prevMousePos;
-
-    public GridBuffer(string tag)
-    {
-        Tag = tag;
-        Clear();
-    }
-
     private static void DrawTile(TextureData textureData, Vector2f pos, ProjectEnvironment projectEnvironment)
     {
-        Texture tex = RenderCacher.GetTexture(textureData.PathToTexture);
+        Texture tex = RenderCacher.GetTexture(textureData.PathToTexture.Path);
 
         float xScale = CELL_SIZE / (float)projectEnvironment.Project.TILE_WIDTH;
         float yScale = CELL_SIZE / (float)projectEnvironment.Project.TILE_HEIGHT;
@@ -163,15 +165,15 @@ public sealed class GridBuffer
         Sprite sprite      = new Sprite(tex);
         sprite.TextureRect = textureData.TextureRect.ToIntRect();
         sprite.Scale       = new Vector2f(xScale, yScale);
-        sprite.Position    = pos - new Vector2f(textureData.Width * xScale * textureData.PivotX / 100f, textureData.Height * yScale * textureData.PivotY / 100f);
+        sprite.Position    = pos - new Vector2f(textureData.Size.X * xScale * textureData.Pivot.X / 100f, textureData.Size.Y * yScale * textureData.Pivot.Y / 100f);
         
-        Console.WriteLine(new Vector2f(textureData.Width * xScale * textureData.PivotX / 100f, textureData.Height * yScale * textureData.PivotY / 100f));
-        Console.WriteLine(new Vector2f(textureData.Width * xScale * textureData.PivotX / 100f, textureData.Height * yScale * textureData.PivotY / 100f));
+        Console.WriteLine(new Vector2f(textureData.Size.X * xScale * textureData.Pivot.X / 100f, textureData.Size.Y * yScale * textureData.Pivot.Y / 100f));
+        Console.WriteLine(new Vector2f(textureData.Size.X * xScale * textureData.Pivot.X / 100f, textureData.Size.Y * yScale * textureData.Pivot.Y / 100f));
         
         App.WindowHandler.Draw(sprite);
     }
 
-    public void SetTileAt(string layerID, Vector2 pos, string id)
+    public void SetTileAt(LayerID layerID, Vector2 pos, string id)
     {
         if (!map.ContainsKey(layerID)) return;
         
@@ -189,7 +191,7 @@ public sealed class GridBuffer
             return;
         }
 
-        map[layerID][pos] = id;
+        map[layerID][pos] = new TileReference(id);
         SortTiles();
         UpdateBufferRect();
         
@@ -200,10 +202,10 @@ public sealed class GridBuffer
 
     private void SortTiles()
     {
-        foreach (KeyValuePair<string, Dictionary<Vector2,string>> layer in map)
+        foreach (var layer in map)
         {
             var tiles = layer.Value;
-            var tilesList = new List<KeyValuePair<Vector2, string>>(tiles);
+            var tilesList = new List<KeyValuePair<Vector2, TileReference>>(tiles);
             tilesList.Sort((pair1, pair2) =>
             {
                 var v1 = pair1.Key;
@@ -222,7 +224,7 @@ public sealed class GridBuffer
             });
 
             map[layer.Key].Clear();
-            foreach (KeyValuePair<Vector2,string> pair in tilesList)
+            foreach (var pair in tilesList)
             {
                 map[layer.Key].Add(pair.Key, pair.Value);
             }    
@@ -232,9 +234,9 @@ public sealed class GridBuffer
     public void Clear()
     {
         map.Clear();
-        foreach (string layer in MapData.AllLayers)
+        foreach (LayerID layer in LayerID.AllLayers)
         {
-            map.Add(layer, new Dictionary<Vector2, string>());
+            map.Add(layer, new Dictionary<Vector2, TileReference>());
         }
         UpdateBufferRect();
     }
@@ -243,26 +245,26 @@ public sealed class GridBuffer
     {
         foreach (var pair in data.Floor.Get)
         {
-            map[MapData.FloorID][new Vector2(pair.X, pair.Y)] = pair.TileID;
+            map[LayerID.Floor][new Vector2(pair.X, pair.Y)] = pair.TileReference;
         }
         foreach (var pair in data.FloorOverlay.Get)
         {
-            map[MapData.FloorOverlayID][new Vector2(pair.X, pair.Y)] = pair.TileID;
+            map[LayerID.FloorOverlay][new Vector2(pair.X, pair.Y)] = pair.TileReference;
         }
         foreach (var pair in data.Obstacles.Get)
         {
-            map[MapData.ObstaclesID][new Vector2(pair.X, pair.Y)] = pair.TileID;
+            map[LayerID.Obstacles][new Vector2(pair.X, pair.Y)] = pair.TileReference;
         }
         foreach (var pair in data.ObstaclesOverlay.Get)
         {
-            map[MapData.ObstaclesOverlayID][new Vector2(pair.X, pair.Y)] = pair.TileID;
+            map[LayerID.ObstaclesOverlay][new Vector2(pair.X, pair.Y)] = pair.TileReference;
         }
         UpdateBufferRect();
     }
 
     public void UpdateBufferRect()
     {
-        if (map[MapData.FloorID].Count == 0 && map[MapData.ObstaclesID].Count == 0)
+        if (map[LayerID.Floor].Count == 0 && map[LayerID.Obstacles].Count == 0)
         {
             MinX = 0;
             MinY = 0;
@@ -281,7 +283,7 @@ public sealed class GridBuffer
 
         foreach (var layer in map)
         {
-            foreach (KeyValuePair<Vector2,string> pair in layer.Value)
+            foreach (var pair in layer.Value)
             {
                 if (pair.Key.X < minX)
                 {

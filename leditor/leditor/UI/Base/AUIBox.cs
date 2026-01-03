@@ -24,6 +24,7 @@ public abstract class AUIBox(UIHost host, Vector2f minimalSize) : AUIElement(hos
     public override void ProcessClicks()
     {
         var children = GetChildren();
+        
         foreach (var child in children)
             Host.ClickHandlersStack.Push(child.ProcessClicks);
     }

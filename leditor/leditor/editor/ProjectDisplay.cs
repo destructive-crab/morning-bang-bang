@@ -454,7 +454,7 @@ public class DataEditorEntry<TData>
         ChangedData.CopyDataFrom(originalData);
     }
 
-    public void Build(UIHost host, CustomDataDrawer<TData> customDataDrawer = null)
+    public void Build(UIHost host)
     {
         this.host = host;
         dataLabel = new UILabel(host, typeof(TData).Name);
@@ -512,7 +512,7 @@ public class DataEditorEntry<TData>
 
         UILabel label = new(host, field.Name);
         UIEntry entry = new UIEntry(host, var);
-        UIImage image = new UIImage(host, RenderCacher.GetTexture(textureData.PathToTexture), textureData.TextureRect.ToIntRect(), new Vector2i(50, 50));
+        UIImage image = new UIImage(host, RenderCacher.GetTexture(textureData.PathToTexture.Path), textureData.TextureRect.ToIntRect(), new Vector2i(50, 50));
         
         images.Add(field, image);
         content.Add(label);
@@ -623,7 +623,7 @@ public class DataEditorEntry<TData>
         {
             TextureData textureData = ProjectEnvironment.GetTexture(field.GetValue(ChangedData).ToString());
 
-            image.Image = RenderCacher.GetTexture(textureData.PathToTexture);
+            image.Image = RenderCacher.GetTexture(textureData.PathToTexture.Path);
             image.Source = textureData.TextureRect.ToIntRect();
         }
 

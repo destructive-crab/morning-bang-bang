@@ -123,16 +123,17 @@ public static class UTLS
 
     public static UISelectionList BuildLayersList(bool singleSelection, Action<string> selectAction)
     {
-        UISelectionList layersChooser = new(App.UIHost);
-        foreach (string layer in MapData.AllLayers)
-        {
-            layersChooser.AddChild(new UIOption(App.UIHost, layer, () =>
-            {
-                selectAction?.Invoke(layer);
-            }, false));
-        }
-        layersChooser.IsSingleSelection = singleSelection;
-        return layersChooser;
+ //       UISelectionList layersChooser = new(App.UIHost);
+ //       foreach (string layer in LayerID.AllLayers)
+ //       {
+ //           layersChooser.AddChild(new UIOption(App.UIHost, layer, () =>
+ //           {
+ //               selectAction?.Invoke(layer);
+ //           }, false));
+ //       }
+ //       layersChooser.IsSingleSelection = singleSelection;
+ //       return layersChooser;
+ return null;
     }
 
     public static bool ValidString(string s)

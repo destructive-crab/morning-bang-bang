@@ -1,3 +1,4 @@
+using leditor.root.UI.Serializer;
 using leditor.UI;
 using SFML.System;
 
@@ -16,10 +17,12 @@ public sealed class HomeDisplay : EditorDisplay
         h = App.UIHost;
         
         h.SetRoot(new AxisBox(h, UIAxis.Vertical,
-            new UILimit(h, new Vector2f(100, 50)),
             new UILabel(h, "Home (-) . (-)"),
             new UIButton(h, "Load Project", LoadProjectButton),
-            new UIButton(h, "Create New Project", NewProjectButton)));
+            new UIButton(h, "Create New Project", NewProjectButton),
+            new PathEntry("FOLDER", "a"),
+            new UI.Serializer.TextureReference("TEXTURE", "test"),
+            new UIIntVecEntry("Test", 100, 100, 800)));
 
         return;
         var t = RuntimeAssetsStorage.GetInvalidTexture();
