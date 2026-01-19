@@ -1,7 +1,5 @@
-using System.Numerics;
 using leditor.root.export;
 using Newtonsoft.Json;
-using SFML.Graphics;
 
 namespace leditor.root;
 
@@ -10,22 +8,42 @@ public sealed class ProjectData
     public readonly int TILE_HEIGHT = 512;
     public readonly int TILE_WIDTH = 512;
     
-    public TextureData[] Textures => textures.ToArray();
-    public TileData[] Tiles => tiles.ToArray();
-    public MapData[] Maps => maps.ToArray();
-    public UnitData[] Units => units.ToArray();
+    public TextureData[] Textures => TexturesStorage.Data;
+    public TileData[]    Tiles    => TilesStorage   .Data;
+    public MapData[]     Maps     => MapsStorage    .Data;
+    public UnitData[]    Units    => UnitsStorage   .Data;
 
-    private readonly List<TextureData> textures = new();
-    private readonly List<TileData> tiles = new();
-    private readonly List<MapData> maps = new();
-    private readonly List<UnitData> units = new();
+    public readonly DataStorage<TextureData> TexturesStorage;
+    public readonly DataStorage<TileData>    TilesStorage;
+    public readonly DataStorage<MapData>     MapsStorage;
+    public readonly DataStorage<UnitData>    UnitsStorage;
 
-    private readonly Dictionary<string, TextureData> texturesMap = new();
-    private readonly Dictionary<string, TileData> tilesMap = new();
-    private readonly Dictionary<string, MapData> mapsMap = new();
-    private readonly Dictionary<string, UnitData> unitsMap = new();
+    private readonly Dictionary<Type, object> storages = new();
 
     public event Action<EditEntry> OnEdited; 
+
+    public ProjectData()
+    {
+        TexturesStorage = new DataStorage<TextureData>();
+        TilesStorage    = new DataStorage<TileData>   ();
+        MapsStorage     = new DataStorage<MapData>    ();
+        UnitsStorage    = new DataStorage<UnitData>   ();
+        
+        TexturesStorage.AfterAdded += (d) => PushProjectEdit(EditEntry.Textures, TexturesStorage, d);
+        TexturesStorage.AfterAdded += (d) => PushProjectEdit(EditEntry.Tiles,  TilesStorage, d);
+        TexturesStorage.AfterAdded += (d) => PushProjectEdit(EditEntry.Maps, MapsStorage, d);
+        TexturesStorage.AfterAdded += (d) => PushProjectEdit(EditEntry.Units, UnitsStorage, d);
+        
+        TexturesStorage.AfterRemoved += (d) => PushProjectEdit(EditEntry.Textures, TexturesStorage, d);
+        TexturesStorage.AfterRemoved += (d) => PushProjectEdit(EditEntry.Tiles,  TilesStorage, d);
+        TexturesStorage.AfterRemoved += (d) => PushProjectEdit(EditEntry.Maps, MapsStorage, d);
+        TexturesStorage.AfterRemoved += (d) => PushProjectEdit(EditEntry.Units, UnitsStorage, d);
+        
+        storages.Add(typeof(TextureData), TexturesStorage);
+        storages.Add(typeof(TileData),    TilesStorage);
+        storages.Add(typeof(MapData),     MapsStorage);
+        storages.Add(typeof(UnitData),    UnitsStorage);
+    }
     
     public string Export()
     {
@@ -84,165 +102,31 @@ public sealed class ProjectData
         return projectData;
     }
     
-    public TextureData? GetTexture(string id)
-    {
-        if (!texturesMap.ContainsKey(id))
-        {
-            return null;
-        }
+    public TextureData? GetTexture(string id) => TexturesStorage.Get(id);
+    public TileData?    GetTile(string id)    => TilesStorage   .Get(id);
+    public MapData?     GetMap(string id)     => MapsStorage    .Get(id);
+    public UnitData?    GetUnit(string id)    => UnitsStorage   .Get(id);
 
-        return texturesMap[id];
-    }
-    public TileData? GetTile(string id)
-    {
-        if (!tilesMap.ContainsKey(id))
-        {
-            return null;
-        }
-        return tilesMap[id];
-    }
-    public MapData? GetMap(string id)
-    {
-        if (!mapsMap.ContainsKey(id))
-        {
-            return null;
-        }
-        return mapsMap[id];
-    }
-    public UnitData? GetUnit(string id)
-    {
-        if (!unitsMap.ContainsKey(id))
-        {
-            return null;
-        }
-        return unitsMap[id];
-    }
+    public void AddTexture(TextureData textureData) => TexturesStorage.Add(textureData);
+    public void AddTile(TileData tileData)          => TilesStorage   .Add(tileData);
+    public void AddMap(MapData mapData)             => MapsStorage    .Add(mapData);
+    public void AddUnit(UnitData unitData)          => UnitsStorage   .Add(unitData);
+
+    public void AddTextures(TextureData[] data) => TexturesStorage.AddMultiple(data);
+    public void AddTiles(TileData[] data)       => TilesStorage   .AddMultiple(data);
+    public void AddUnits(UnitData[] data)       => UnitsStorage   .AddMultiple(data);
+    public void AddMaps(MapData[] data)         => MapsStorage    .AddMultiple(data);
+
+    public void RemoveTexture(TextureData textureData) => TexturesStorage.Remove(textureData);
+    public void RemoveTile(TileData tileData)          => TilesStorage   .Remove(tileData);
+    public void RemoveMap(MapData mapData)             => MapsStorage    .Remove(mapData);
+    public void RemoveUnit(UnitData unitData)          => UnitsStorage   .Remove(unitData);
+
+    public void RemoveAllTextures() => TexturesStorage.RemoveAll();
+    public void RemoveAllTiles()    => TilesStorage   .RemoveAll();
+    public void RemoveAllMaps()     => MapsStorage    .RemoveAll();
+    public void RemoveAllUnits()    => UnitsStorage   .RemoveAll();
     
-    public void AddTexture(TextureData textureData)
-    {
-        if(texturesMap.ContainsKey(textureData.ID)) return;
-        textures.Add(textureData);
-        texturesMap.Add(textureData.ID, textureData);
-        
-        PushProjectEdit(EditEntry.Textures, Textures, textureData);
-    }
-    public void AddTile(TileData tileData)
-    {
-        if(tilesMap.ContainsKey(tileData.ID)) return;
-        tiles.Add(tileData);
-        tilesMap.Add(tileData.ID, tileData);
-        
-        PushProjectEdit(EditEntry.Tiles, Tiles, tileData);
-    }
-    public void AddMap(MapData mapData)
-    {
-        if (mapsMap.ContainsKey(mapData.ID)) return;
-        maps.Add(mapData);
-        mapsMap.Add(mapData.ID, mapData);
-        
-        PushProjectEdit(EditEntry.Maps, Maps, mapData);
-    }
-    public void AddUnit(UnitData unitData)
-    {
-        if (unitsMap.ContainsKey(unitData.ID)) return;
-        units.Add(unitData);
-        unitsMap.Add(unitData.ID, unitData);
-        
-        PushProjectEdit(EditEntry.Units, Units, unitData);
-    }
-
-    public void AddTextures(TextureData[] data)
-    {
-        foreach (TextureData textureData in data)
-        {
-            AddTexture(textureData);
-        }
-    }
-    public void AddTiles(TileData[] data)
-    {
-        foreach (TileData tileData in data)
-        {
-            AddTile(tileData);
-        }
-    }
-    public void AddUnits(UnitData[] data)
-    {
-        foreach (UnitData unitData in data)
-        {
-            AddUnit(unitData);
-        }
-    }
-    public void AddMaps(MapData[] data)
-    {
-        foreach (MapData mapData in data)
-        {
-            AddMap(mapData);
-        }
-    }
-
-    public void RemoveTexture(TextureData textureData)
-    {
-        if (!texturesMap.ContainsKey(textureData.ID)) return;
-        textures.Remove(textureData);
-        texturesMap.Remove(textureData.ID);
-        
-        PushProjectEdit(EditEntry.Textures, Textures, textureData);
-    }
-    public void RemoveTile(TileData tileData)
-    {
-        if (!tilesMap.ContainsKey(tileData.ID)) return;
-        tiles.Remove(tileData);
-        tilesMap.Remove(tileData.ID);
-        
-        PushProjectEdit(EditEntry.Tiles, Tiles, tileData);
-    }
-    public void RemoveMap(MapData mapData)
-    {
-        if (!mapsMap.ContainsKey(mapData.ID)) return;
-        maps.Remove(mapData);
-        mapsMap.Remove(mapData.ID);
-        
-        PushProjectEdit(EditEntry.Maps, Maps, Units);
-    }
-    public void RemoveUnit(UnitData unitData)
-    {
-        if (!unitsMap.ContainsKey(unitData.ID)) return;
-        units.Remove(unitData);
-        unitsMap.Remove(unitData.ID);
-        
-        PushProjectEdit(EditEntry.Units, Units, unitData);
-    }
-    
-    public void RemoveAllTextures()
-    {
-        foreach (TextureData textureData in Textures)
-        {
-            RemoveTexture(textureData);
-        }
-    }
-    public void RemoveAllTiles()
-    {
-        foreach (TileData tile in Tiles)
-        {
-            RemoveTile(tile);
-        }
-    }
-    public void RemoveAllUnits()
-    {
-        foreach (UnitData unitData in Units)
-        {
-            RemoveUnit(unitData);
-        }
-    }
-    public void RemoveAllMaps()
-    {
-        foreach (MapData mapData in Maps)
-        {
-            RemoveMap(mapData);
-        }
-    }
-
-
     public struct EditEntry
     {
         //generic ids
@@ -266,5 +150,102 @@ public sealed class ProjectData
     public void PushProjectEdit(string tag, object where, object who)
     {
         OnEdited?.Invoke(new EditEntry(tag, where, who));
+    }
+
+    public sealed class DataStorage<TData>
+        where TData : LEditorDataUnit
+    {
+        public TData[] Data => dataMap.Values.ToArray();
+        private readonly Dictionary<string, TData> dataMap = new();
+
+        public readonly Predicate<TData> CanBeAddedChecker;
+        public event Action<TData> AfterAdded;
+        
+        public readonly Predicate<TData> CanBeRemovedChecker;
+        public event Action<TData> BeforeRemoved;
+        public event Action<TData> AfterRemoved;
+        
+        public DataStorage() { }
+
+        public DataStorage(Predicate<TData> canBeAddedChecker, Action<TData> afterAdded, Predicate<TData> canBeRemovedChecker, Action<TData> beforeRemoved, Action<TData> afterRemoved)
+        {
+            CanBeAddedChecker    = canBeAddedChecker;
+            CanBeRemovedChecker  = canBeRemovedChecker;
+            
+            AfterAdded    += afterAdded;
+            BeforeRemoved += beforeRemoved;
+            AfterRemoved  += afterRemoved;
+        }
+
+        public DataStorage(Action<TData> afterAdded, Action<TData> afterRemoved)
+        {
+            AfterAdded   += afterAdded;
+            AfterRemoved += afterRemoved;
+        }
+
+        public DataStorage(Predicate<TData> canBeAddedChecker, Predicate<TData> canBeRemovedChecker)
+        {
+            CanBeAddedChecker   = canBeAddedChecker;
+            CanBeRemovedChecker = canBeRemovedChecker;
+        }
+        
+        public TData? Get(string id)
+        {
+            if (!dataMap.ContainsKey(id))
+            {
+                return null;
+            }
+            
+            return dataMap[id];
+        }
+
+        public void Add(TData data)
+        {
+            if(CanBeAdded(data))
+            {
+                return;
+            }
+            
+            dataMap.Add(data.ID, data);
+            AfterAdded?.Invoke(data);
+        }
+
+        public void Remove(TData data)
+        {
+            if (CanBeRemoved(data))
+            {
+                return;
+            }
+
+            BeforeRemoved?.Invoke(data);
+            dataMap.Remove(data.ID);
+            AfterRemoved?.Invoke(data);
+        }
+
+        public void RemoveAll()
+        {
+            foreach (TData data in dataMap.Values)
+            {
+                Remove(data);
+            }
+        }
+
+        public void AddMultiple(TData[] data)
+        {
+            foreach (TData d in data)
+            {
+                Add(d);
+            }
+        }
+
+        private bool CanBeAdded(TData data)
+        {
+            return !dataMap.ContainsKey(data.ID) && (CanBeAddedChecker == null || CanBeAddedChecker.Invoke(data));
+        }
+
+        private bool CanBeRemoved(TData data)
+        {
+            return dataMap.ContainsKey(data.ID) && (CanBeRemovedChecker == null || CanBeRemovedChecker.Invoke(data));
+        }
     }
 }
