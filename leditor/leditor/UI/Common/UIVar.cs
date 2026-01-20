@@ -1,3 +1,5 @@
+using System;
+
 namespace leditor.UI;
 
 public class UIVar<T>

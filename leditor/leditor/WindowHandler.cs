@@ -83,7 +83,7 @@ public class WindowHandler
     
     public void BeginDrawing()
     {
-        window.Clear(new Color(App.UIHost.Style.RectDefault));
+        window.Clear(new Color(App.UIHost.Style.SecondBackgroundColor()));
     }
 
     public void CompleteDrawing()

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using leditor.root;
@@ -37,7 +39,7 @@ public class UIHost
         
         if (root != null) return true;
         
-        Logger.Warn("UI Root in null!", filePath, lineNumber);
+        //Logger.Warn("UI Root in null!", filePath, lineNumber);
         return false;
     }
 
@@ -54,8 +56,10 @@ public class UIHost
 
     private void ProcessUpdateActions()
     {
-        while (UpdateActionsQueue.TryDequeue(out var action)) 
-            action();
+        while (UpdateActionsQueue.TryDequeue(out Action? action))
+        {
+            action?.Invoke();
+        }
     }
 
     public readonly Stack<Action> ClickHandlersStack = [];

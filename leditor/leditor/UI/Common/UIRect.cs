@@ -13,11 +13,11 @@ public class UIRect : AUIElement
     {
         shape = new RectangleShape
         {
-            FillColor = color ?? host.Style.RectDefault
+            FillColor = color ?? Host.Style.RectDefault()
         };
         this.outline = outline;
         this.outlineShape = new RectangleShape();
-        outlineShape.FillColor = host.Style.RectDefault;
+        outlineShape.FillColor = Host.Style.RectDefault();
     }
 
     public Color Color

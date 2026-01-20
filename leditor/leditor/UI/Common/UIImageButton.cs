@@ -1,3 +1,4 @@
+using System;
 using leditor.root;
 using SFML.Graphics;
 using SFML.System;
@@ -16,7 +17,7 @@ public class UIImageButton : AUIElement
     private ButtonStateStyle appliedStyle;
 
     public UIImageButton(UIHost host, Texture texture, Rect rect, Vector2f scale = default, Action? action = null) : 
-        base(host, Utils.ScaleVec(Utils.VecI2F(rect.ToIntRect().Size), scale) + host.Style.ButtonSpace)
+        base(host, Utils.ScaleVec(Utils.VecI2F(rect.ToIntRect().Size), scale) + host.Style.ButtonSpace())
     {
         sprite = new Sprite(texture)
         {
@@ -34,7 +35,7 @@ public class UIImageButton : AUIElement
         area.OnUnhover = OnUnhover;
 
         Action = action;
-        ApplyStyle(host.Style.NormalButton);
+        ApplyStyle(host.Style.NormalButton());
     }
 
     private void ApplyStyle(ButtonStateStyle style)
@@ -50,12 +51,12 @@ public class UIImageButton : AUIElement
         appliedStyle = style;
     }
 
-    private void OnHover()           => ApplyStyle(Host.Style.HoveredButton);
-    private void OnUnhover()         => ApplyStyle(Host.Style.NormalButton);
-    protected virtual void OnPress() => ApplyStyle(Host.Style.PressedButton);
+    private void OnHover()           => ApplyStyle(Host.Style.HoveredButton());
+    private void OnUnhover()         => ApplyStyle(Host.Style.NormalButton());
+    protected virtual void OnPress() => ApplyStyle(Host.Style.PressedButton());
     protected virtual void OnReleased()
     {
-        ApplyStyle(Host.Style.HoveredButton);
+        ApplyStyle(Host.Style.HoveredButton());
         Action?.Invoke();
     }
     

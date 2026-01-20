@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 
@@ -77,13 +75,14 @@ public sealed class UISelectionList : AUIBox
     }
     
     protected override void UpdateMinimalSize() { }
-    public override void UpdateLayout() { }
+
+    public override void UpdateLayout()
+    {
+        box.Rect = Rect;
+    }
 
     public override void Draw(RenderTarget target)
-    {
-        box.Rect = new FloatRect(Rect.Position, new(Rect.Width, box.Rect.Size.Y));
-        MinimalSize = box.MinimalSize;
-        Rect = box.Rect;
+    {   
         box.Draw(target);
     }
 }

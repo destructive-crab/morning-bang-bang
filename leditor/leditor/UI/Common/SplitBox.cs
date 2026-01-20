@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using SFML.Graphics;
 using SFML.System;
 
@@ -15,13 +17,13 @@ public class SplitBox: AUIBox
     {
         if (axis == UIAxis.Horizontal)
             return new Vector2f(
-                (first?.MinimalSize.X ?? 0) + (second?.MinimalSize.X ?? 0) + style.SplitSeparatorThickness,
+                (first?.MinimalSize.X ?? 0) + (second?.MinimalSize.X ?? 0) + style.SplitSeparatorThickness(),
                 float.Max(first?.MinimalSize.Y ?? 0, second?.MinimalSize.Y ?? 0)
             );
         
         return new Vector2f(
             float.Max(first?.MinimalSize.X ?? 0, second?.MinimalSize.X ?? 0),
-            (first?.MinimalSize.Y ?? 0) + (second?.MinimalSize.Y ?? 0) + style.SplitSeparatorThickness
+            (first?.MinimalSize.Y ?? 0) + (second?.MinimalSize.Y ?? 0) + style.SplitSeparatorThickness()
         );
     }
 
@@ -57,12 +59,12 @@ public class SplitBox: AUIBox
         else
             _distance = first?.MinimalSize.Y ?? 0;
 
-        _axisSize = _distance + Host.Style.SplitSeparatorThickness;
+        _axisSize = _distance + Host.Style.SplitSeparatorThickness();
 
         _area = new ClickArea(
             new FloatRect(
                 new Vector2f(), 
-                host.Style.SplitSeparatorThickness * (axis == UIAxis.Horizontal ? new Vector2f(4, 0) : new Vector2f(0, 4))
+                host.Style.SplitSeparatorThickness() * (axis == UIAxis.Horizontal ? new Vector2f(4, 0) : new Vector2f(0, 4))
             ), false);
         _area.OnMove = OnMove;
 
@@ -77,7 +79,7 @@ public class SplitBox: AUIBox
 
         _separator = new RectangleShape(separatorSize);
         _separator.Position = _area.Rect.Position;
-        _separator.FillColor = Host.Style.SplitSeparatorColor;
+        _separator.FillColor = Host.Style.SplitSeparatorColor();
     }
     
     public override void ProcessClicks()
@@ -96,7 +98,7 @@ public class SplitBox: AUIBox
         else
             _distance = newPosition.Y - Rect.Top;
 
-        _distance -= (float)Host.Style.SplitSeparatorThickness / 2;
+        _distance -= (float)Host.Style.SplitSeparatorThickness() / 2;
         
         UpdateLayout();
     }
@@ -125,7 +127,7 @@ public class SplitBox: AUIBox
          
             _distance = float.Max(
                 _first?.MinimalSize.X ?? 0,
-                float.Min(_distance, Rect.Width - (_second?.MinimalSize.X ?? 0) - Host.Style.SplitSeparatorThickness)
+                float.Min(_distance, Rect.Width - (_second?.MinimalSize.X ?? 0) - Host.Style.SplitSeparatorThickness())
             );
             
             if (_first != null)
@@ -133,8 +135,8 @@ public class SplitBox: AUIBox
             
             if (_second != null)
                 _second.Rect = new FloatRect(
-                    Rect.Left  + _distance + Host.Style.SplitSeparatorThickness, Rect.Top, 
-                    Rect.Width - _distance - Host.Style.SplitSeparatorThickness, Rect.Height
+                    Rect.Left  + _distance + Host.Style.SplitSeparatorThickness(), Rect.Top, 
+                    Rect.Width - _distance - Host.Style.SplitSeparatorThickness(), Rect.Height
                 );
             
             _area.Rect.Left = Rect.Left + _distance;
@@ -147,7 +149,7 @@ public class SplitBox: AUIBox
             
             _distance = float.Max(
                 _first?.MinimalSize.Y ?? 0,
-                float.Min(_distance, Rect.Height - (_second?.MinimalSize.Y ?? 0) - Host.Style.SplitSeparatorThickness)
+                float.Min(_distance, Rect.Height - (_second?.MinimalSize.Y ?? 0) - Host.Style.SplitSeparatorThickness())
             );
 
             if (_first != null)
@@ -155,8 +157,8 @@ public class SplitBox: AUIBox
             
             if (_second != null)
                 _second.Rect = new FloatRect(
-                    Rect.Left , Rect.Top + _distance + (Host.Style.SplitSeparatorThickness), 
-                    Rect.Width, Rect.Height - _distance - (Host.Style.SplitSeparatorThickness)
+                    Rect.Left , Rect.Top + _distance + (Host.Style.SplitSeparatorThickness()), 
+                    Rect.Width, Rect.Height - _distance - (Host.Style.SplitSeparatorThickness())
                 );
             
             _area.Rect.Left = Rect.Left;

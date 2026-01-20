@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using SFML.Graphics;
 using SFML.System;
 
@@ -42,12 +44,13 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
         UpdateLayout();
     }
 
-    public void AddChild(Anchor anchor, AUIElement child)
+    public AnchorBox AddChild(Anchor anchor, AUIElement child)
     {
         child.Parent = this;
         _children.Add((anchor, child));
         
         UpdateLayout();
+        return this;
     }
 
     protected override void UpdateMinimalSize() { }

@@ -214,7 +214,6 @@ public sealed class ProjectData
             }
             
             dataMap.Add(data.ID, data);
-            Console.WriteLine("with " + data.ID + $" {dataMap.Count} {Data.Length}");
             AfterAdded?.Invoke(data);
         }
 

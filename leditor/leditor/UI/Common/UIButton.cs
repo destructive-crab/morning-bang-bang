@@ -1,3 +1,4 @@
+using System;
 using SFML.Graphics;
 using SFML.System;
 
@@ -41,42 +42,39 @@ public class UIButton : AUIElement
     
     public UIButton(UIHost host, string text, Action? action = null) : 
         base(host, 
-/*minimal size*/ host.Fabric.MakeTextOut(text, out Text textObj) + host.Style.ButtonSpace + new Vector2f(8, host.Style.NormalButton.BottomHeight + host.Style.NormalButton.Outline))
+/*minimal size*/ host.Fabric.MakeTextOut(text, out Text textObj) + host.Style.ButtonSpace() + new Vector2f(8, host.Style.NormalButton().BottomHeight + host.Style.NormalButton().Outline))
     {
         this.textObj = textObj;
 
         Action = action;
-        
-        area.OnRightMouseButtonClick = OnPress;
-        area.OnRightMouseButtonReleased = OnReleased;
-        area.OnHover = OnHover;
-        area.OnUnhover = OnUnhover;
-
-        ApplyStyle(host.Style.NormalButton);
+        BuildClickArea();
+        ApplyStyle(host.Style.NormalButton());
     }
     
     public UIButton(UIHost host, string text, Vector2f minimalSize, Action? action = null) : 
-        base(host, 
-/*minimal size*/ minimalSize)
+        base(host, minimalSize)
     {
         host.Fabric.MakeTextOut(text, out Text textObj);
         this.textObj = textObj;
 
         Action = action;
-        
-        area.OnRightMouseButtonClick = OnPress;
-        area.OnRightMouseButtonReleased = OnReleased;
-        area.OnHover = OnHover;
-        area.OnUnhover = OnUnhover;
+        BuildClickArea();
+        ApplyStyle(host.Style.NormalButton());
+    }
 
-        ApplyStyle(host.Style.NormalButton);
+    private void BuildClickArea()
+    {
+        area.OnRightMouseButtonClick    = OnPress;
+        area.OnRightMouseButtonReleased = OnReleased;
+        area.OnHover                    = OnHover;
+        area.OnUnhover                  = OnUnhover;
     }
 
     protected virtual void ApplyStyle(ButtonStateStyle style)
     {
         int bottomY      = (int)(Rect.Position.Y + MinimalSize.Y);
         
-        int topHeight    = (int)(textObj.CharacterSize + Host.Style.ButtonSpace.Y);
+        int topHeight    = (int)(textObj.CharacterSize + Host.Style.ButtonSpace().Y);
         int bottomHeight = (int)(style.BottomHeight);
 
         int x            = (int)(Rect.Size.X - style.Outline - 2);
@@ -95,20 +93,20 @@ public class UIButton : AUIElement
         shapeOutline.Size      = new Vector2f(Rect.Size.X, shapeTop.Size.Y + shapeBottom.Size.Y + style.Outline);
         shapeOutline.FillColor = style.OutlineColor;
         
-        _styleTextOffset       = Host.Style.ButtonSpace / 2;
-        textObj.Position       = shapeTop.Position + _styleTextOffset;
+        _styleTextOffset       = Host.Style.ButtonSpace() / 2;
+        textObj.Position       = shapeTop.Position + new Vector2f(shapeTop.Size.X / 2f - textObj.GetGlobalBounds().Size.X / 2f, 0) + style.ContentOffset;
         textObj.FillColor      = style.TextColor;
 
         appliedStyle = style;
     }
 
-    protected virtual void OnHover()   => ApplyStyle(Host.Style.HoveredButton);
-    protected virtual void OnUnhover() => ApplyStyle(Host.Style.NormalButton);
-    protected virtual void OnPress()   => ApplyStyle(Host.Style.PressedButton);
+    protected virtual void OnHover()   => ApplyStyle(Host.Style.HoveredButton());
+    protected virtual void OnUnhover() => ApplyStyle(Host.Style.NormalButton());
+    protected virtual void OnPress()   => ApplyStyle(Host.Style.PressedButton());
 
     protected virtual void OnReleased()
     {
-        ApplyStyle(Host.Style.HoveredButton);
+        ApplyStyle(Host.Style.HoveredButton());
         Action?.Invoke();
     }
 

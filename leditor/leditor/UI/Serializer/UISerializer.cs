@@ -53,7 +53,7 @@ public sealed class PathEntry : AUIElement
 
     private const int LABEL_Y_OFFSET = 5;
 
-    public PathEntry(string name, string startValue = "", int width = 100) : base(App.UIHost, new(width, App.UIHost.Style.NormalButton.BottomHeight + App.UIHost.Style.FontSize * 2))
+    public PathEntry(string name, string startValue = "", int width = 100) : base(App.UIHost, new(width, App.UIHost.Style.NormalButton().BottomHeight + App.UIHost.Style.FontSize() * 2))
     {
         label = new UILabel(App.UIHost, name);
         chooseButton = new UIButton(App.UIHost, "Choose", ChoosePath);
@@ -105,7 +105,7 @@ public sealed class UIIntVecEntry : AUIElement
 
     private readonly AUIElement root;
     
-    public UIIntVecEntry(string name, int x, int y, int width = 300) : base(App.UIHost, new(App.UIHost.Style.FontSize*2, width))
+    public UIIntVecEntry(string name, int x, int y, int width = 300) : base(App.UIHost, new(App.UIHost.Style.FontSize()*2, width))
     {
         X = new UIVar<string>(x.ToString());
         Y = new UIVar<string>(y.ToString());
