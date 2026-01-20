@@ -13,6 +13,7 @@ public sealed class ProjectData
     public MapData[]     Maps     => MapsStorage    .Data;
     public UnitData[]    Units    => UnitsStorage   .Data;
 
+    public readonly DataStorage<LayerData>   LayersStorage;
     public readonly DataStorage<TextureData> TexturesStorage;
     public readonly DataStorage<TileData>    TilesStorage;
     public readonly DataStorage<MapData>     MapsStorage;
@@ -24,21 +25,25 @@ public sealed class ProjectData
 
     public ProjectData()
     {
+        LayersStorage   = new DataStorage<LayerData>  ();
         TexturesStorage = new DataStorage<TextureData>();
         TilesStorage    = new DataStorage<TileData>   ();
         MapsStorage     = new DataStorage<MapData>    ();
         UnitsStorage    = new DataStorage<UnitData>   ();
         
+        LayersStorage  .AfterAdded += (d) => PushProjectEdit(EditEntry.Layers, LayersStorage, d);
         TexturesStorage.AfterAdded += (d) => PushProjectEdit(EditEntry.Textures, TexturesStorage, d);
-        TexturesStorage.AfterAdded += (d) => PushProjectEdit(EditEntry.Tiles,  TilesStorage, d);
-        TexturesStorage.AfterAdded += (d) => PushProjectEdit(EditEntry.Maps, MapsStorage, d);
-        TexturesStorage.AfterAdded += (d) => PushProjectEdit(EditEntry.Units, UnitsStorage, d);
+        TilesStorage   .AfterAdded += (d) => PushProjectEdit(EditEntry.Tiles,  TilesStorage, d);
+        MapsStorage    .AfterAdded += (d) => PushProjectEdit(EditEntry.Maps, MapsStorage, d);
+        UnitsStorage   .AfterAdded += (d) => PushProjectEdit(EditEntry.Units, UnitsStorage, d);
         
+        LayersStorage  .AfterRemoved += (d) => PushProjectEdit(EditEntry.Textures, TexturesStorage, d);
         TexturesStorage.AfterRemoved += (d) => PushProjectEdit(EditEntry.Textures, TexturesStorage, d);
-        TexturesStorage.AfterRemoved += (d) => PushProjectEdit(EditEntry.Tiles,  TilesStorage, d);
-        TexturesStorage.AfterRemoved += (d) => PushProjectEdit(EditEntry.Maps, MapsStorage, d);
-        TexturesStorage.AfterRemoved += (d) => PushProjectEdit(EditEntry.Units, UnitsStorage, d);
+        TilesStorage   .AfterRemoved += (d) => PushProjectEdit(EditEntry.Tiles,  TilesStorage, d);
+        MapsStorage    .AfterRemoved += (d) => PushProjectEdit(EditEntry.Maps, MapsStorage, d);
+        UnitsStorage   .AfterRemoved += (d) => PushProjectEdit(EditEntry.Units, UnitsStorage, d);
         
+        storages.Add(typeof(LayerData),   LayersStorage);
         storages.Add(typeof(TextureData), TexturesStorage);
         storages.Add(typeof(TileData),    TilesStorage);
         storages.Add(typeof(MapData),     MapsStorage);
@@ -130,6 +135,7 @@ public sealed class ProjectData
     public struct EditEntry
     {
         //generic ids
+        public const string Layers   = "layers_edit";
         public const string Textures = "texture_edit";
         public const string Tiles    = "tiles_edit";
         public const string Maps     = "maps_edit";
@@ -145,6 +151,7 @@ public sealed class ProjectData
             this.Where = where;
             this.Who = who;
         }
+
     }
     
     public void PushProjectEdit(string tag, object where, object who)
@@ -201,18 +208,19 @@ public sealed class ProjectData
 
         public void Add(TData data)
         {
-            if(CanBeAdded(data))
+            if(!CanBeAdded(data))
             {
                 return;
             }
             
             dataMap.Add(data.ID, data);
+            Console.WriteLine("with " + data.ID + $" {dataMap.Count} {Data.Length}");
             AfterAdded?.Invoke(data);
         }
 
         public void Remove(TData data)
         {
-            if (CanBeRemoved(data))
+            if (!CanBeRemoved(data))
             {
                 return;
             }

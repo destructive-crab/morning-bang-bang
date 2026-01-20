@@ -27,7 +27,7 @@ public sealed class GridBuffer
     
     public string Tag { get; private set; }
 
-    private readonly Dictionary<LayerID, Dictionary<Vector2, TileReference>> map = new();
+    private readonly Dictionary<string, Dictionary<Vector2, TileReference>> map = new();
 
     public const int CELL_SIZE = 80;
     
@@ -173,7 +173,7 @@ public sealed class GridBuffer
         App.WindowHandler.Draw(sprite);
     }
 
-    public void SetTileAt(LayerID layerID, Vector2 pos, string id)
+    public void SetTileAt(string layerID, Vector2 pos, string id)
     {
         if (!map.ContainsKey(layerID)) return;
         
@@ -234,37 +234,29 @@ public sealed class GridBuffer
     public void Clear()
     {
         map.Clear();
-        foreach (LayerID layer in LayerID.AllLayers)
-        {
-            map.Add(layer, new Dictionary<Vector2, TileReference>());
-        }
         UpdateBufferRect();
     }
 
     public void AddAbove(MapData data)
     {
-        foreach (var pair in data.Floor.Get)
+        foreach (MapLayer layer in data.LayersList)
         {
-            map[LayerID.Floor][new Vector2(pair.X, pair.Y)] = pair.TileReference;
-        }
-        foreach (var pair in data.FloorOverlay.Get)
-        {
-            map[LayerID.FloorOverlay][new Vector2(pair.X, pair.Y)] = pair.TileReference;
-        }
-        foreach (var pair in data.Obstacles.Get)
-        {
-            map[LayerID.Obstacles][new Vector2(pair.X, pair.Y)] = pair.TileReference;
-        }
-        foreach (var pair in data.ObstaclesOverlay.Get)
-        {
-            map[LayerID.ObstaclesOverlay][new Vector2(pair.X, pair.Y)] = pair.TileReference;
+            if (!map.TryGetValue(layer.ID, out var dict))
+            {
+                dict = new Dictionary<Vector2, TileReference>();
+                map.Add(layer.ID, dict);
+            }
+            foreach (PlacedTile tile in layer.Get)
+            {
+                dict[new Vector2(tile.X, tile.Y)] = tile.TileReference;   
+            }
         }
         UpdateBufferRect();
     }
 
     public void UpdateBufferRect()
     {
-        if (map[LayerID.Floor].Count == 0 && map[LayerID.Obstacles].Count == 0)
+        if (map.Count == 0)
         {
             MinX = 0;
             MinY = 0;

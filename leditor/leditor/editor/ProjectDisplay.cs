@@ -109,6 +109,9 @@ public class ProjectDisplay : EditorDisplay
     {
         DataEditor<TextureData> editor = new DataEditor<TextureData>(projectEnvironment, host);
         editor.OnClosed += ClosePopup;
+        
+        Console.WriteLine(projectEnvironment.Project.Textures.Length);
+        
         return editor.GetDataEditMenu(projectEnvironment.Project.Textures, OnApply);
 
         void OnApply(TextureData[] data)
@@ -415,7 +418,6 @@ public class DataEditor<TData>
             if (!entry.Removed)
             {
                 res.Add(entry.ChangedData);
-                Console.WriteLine(entry.ChangedData.ID + " Added");
             }
         }
 

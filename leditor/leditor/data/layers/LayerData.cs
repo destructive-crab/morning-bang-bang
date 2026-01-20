@@ -1,25 +1,14 @@
-using Newtonsoft.Json;
-
 namespace leditor.root;
 
-public class LayerData
+public class LayerData : LEditorDataUnit
 {
-    [JsonProperty] public LayerID[] Layers;
-
-    private readonly Dictionary<string, LayerID> stringIDToLayer = new();
-
-    public LayerData(LayerID[] layers)
+    public override bool ValidateExternalDataChange()
     {
-        Layers = layers;
+        return true;
     }
 
-    public void ChangeLayers(string[] newLayers)
+    public override void CopyDataFrom(LEditorDataUnit from)
     {
-        Layers = new LayerID[newLayers.Length];
-        for (var i = 0; i < newLayers.Length; i++)
-        {
-            var layer = newLayers[i];
-            Layers[i] = new LayerID(layer);
-        }
+        ID = from.ID;
     }
 }

@@ -70,37 +70,41 @@ public sealed class MapLayer
 [JsonObject(MemberSerialization.OptIn)]
 public class MapData : LEditorDataUnit
 {
-    public readonly MapLayer Floor            = new(LayerID.FloorID);
-    public readonly MapLayer FloorOverlay     = new(LayerID.FloorOverlayID);
-    public readonly MapLayer Obstacles        = new(LayerID.ObstaclesID);    
-    public readonly MapLayer ObstaclesOverlay = new(LayerID.ObstaclesOverlayID);
-
+    [JsonProperty] public  readonly List<MapLayer> LayersList = new();
+    [JsonProperty] private readonly Dictionary<string, MapLayer> layers = new();
+    
     public MapData() { }
+
     public MapData(string id) => ID = id;
+
+    public MapLayer Get(string id)
+    {
+        if (!layers.ContainsKey(id))
+        {
+            MapLayer layer = new MapLayer(id);
+            
+            layers.Add(id, layer);
+            LayersList.Add(layer);
+
+            return layer;
+        }
+
+        return layers[id];
+    }
 
     public override bool ValidateExternalDataChange()
     {
         if(!UTLS.ValidString(ID)) return false;
-        
-        if (Floor.ID            != LayerID.FloorID)            return false;
-        if (FloorOverlay.ID     != LayerID.FloorOverlayID)     return false;
-        if (Obstacles.ID        != LayerID.ObstaclesID)        return false;
-        if (ObstaclesOverlay.ID != LayerID.ObstaclesOverlayID) return false;
-        
-        Floor           .ValidateTiles();
-        FloorOverlay    .ValidateTiles();
-        Obstacles       .ValidateTiles();
-        ObstaclesOverlay.ValidateTiles();
         
         return true;
     }
 
     public void Clear()
     {
-        Floor           .Clear();
-        FloorOverlay    .Clear();
-        Obstacles       .Clear();
-        ObstaclesOverlay.Clear();
+        foreach (MapLayer layer in LayersList)
+        {
+            layer.Clear();
+        }
     }
 
     public override void CopyDataFrom(LEditorDataUnit from)
@@ -108,10 +112,5 @@ public class MapData : LEditorDataUnit
         ID = from.ID;
         
         if (from is not MapData other) return;
-        
-        Floor           .RewriteWith(other.Floor.Get);
-        FloorOverlay    .RewriteWith(other.FloorOverlay.Get);
-        Obstacles       .RewriteWith(other.Obstacles.Get);
-        ObstaclesOverlay.RewriteWith(other.ObstaclesOverlay.Get);
     }
 }

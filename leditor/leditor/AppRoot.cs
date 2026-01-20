@@ -1,7 +1,4 @@
-﻿using System.Numerics;
-using System.Reflection;
-using leditor.UI;
-using SFML.Graphics;
+﻿using leditor.UI;
 using SFML.System;
 
 namespace leditor.root
@@ -27,8 +24,6 @@ namespace leditor.root
             LeditorInstance.DoLoop();
         }       
         
-        public static void Quit()
-        {
-        }
+        public static void Quit() { }
     }
 }

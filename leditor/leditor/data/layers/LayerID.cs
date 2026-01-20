@@ -15,12 +15,14 @@ public struct IntVec
 public struct LayerID
 {
     public static readonly string[]  AllIDs = { FloorID, FloorOverlayID, ObstaclesID, ObstaclesOverlayID };
+    
     public const string FloorID             = "floor";
     public const string FloorOverlayID      = "floor_overlay";
     public const string ObstaclesID         = "obstacles";
     public const string ObstaclesOverlayID  = "obstacles_overlay";
     
     public static readonly LayerID[] AllLayers = { new LayerID(FloorID), new LayerID(FloorOverlayID), new LayerID(ObstaclesID), new LayerID(ObstaclesOverlayID)};
+    
     public static readonly LayerID Floor            = new(FloorID);
     public static readonly LayerID FloorOverlay     = new(FloorOverlayID);
     public static readonly LayerID Obstacles        = new(ObstaclesID);
