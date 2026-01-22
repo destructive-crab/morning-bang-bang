@@ -12,6 +12,7 @@ public class UIEntry : AUIElement
     private View _view = new();
 
     private readonly RectangleShape background;
+    private readonly RectangleShape backgroundOutline;
 
     private ClickArea _area = new(new FloatRect());
 
@@ -39,7 +40,10 @@ public class UIEntry : AUIElement
         _text = text;
 
         background = new RectangleShape();
+        backgroundOutline = new RectangleShape();
+        
         background.FillColor = host.Style.EntryBackgroundColor();
+        backgroundOutline.FillColor = host.Style.OutlineColor();
         
         _cursor = new RectangleShape
         {
@@ -160,10 +164,10 @@ public class UIEntry : AUIElement
     {
         _cursorPosition = int.Clamp(_cursorPosition, 0, _text.DisplayedString.Length);
         
-        var sub = _text.DisplayedString[.._cursorPosition];
-        var position = new Vector2f();
+        string? sub = _text.DisplayedString[.._cursorPosition];
+        Vector2f position = new Vector2f();
 
-        var prevSymbl = 0u;
+        uint prevSymbl = 0u;
         foreach (var symbl in sub)
         {   
             position.X += 
@@ -172,15 +176,23 @@ public class UIEntry : AUIElement
             prevSymbl = symbl;
         }
 
-        _cursor.Position = position + Rect.Position + new Vector2f(1, 1);
-        _cursor.Position = new Vector2f(_cursor.Position.X, _text.Position.Y);
+        _cursor.Position = position + _text.Position;
+        _cursor.Position = new Vector2f(_cursor.Position.X, background.Position.Y);
 
-        var inner = position.X - _xOffset;
-        if (inner < 0)
-            _xOffset = position.X;
-        else if (inner > Rect.Width - 2)
-            _xOffset = position.X - (Rect.Width - 2);
+        float inner = position.X - _xOffset;
         
+        if (!(inner < 0))
+        {
+            if (inner > Rect.Width - 2)
+            {
+                _xOffset = position.X - (Rect.Width - 2);
+            }
+        }
+        else
+        {
+            _xOffset = position.X;
+        }
+
         _view.Center = Rect.Position + Rect.Size / 2 + new Vector2f(_xOffset, 0);
     }
     
@@ -194,10 +206,18 @@ public class UIEntry : AUIElement
             Rect.Width / Host.Size.X,
             Rect.Height / Host.Size.Y
         );
+        
+        int outline = Host.Style.BaseOutline() / 2;
+        
+        background.Size = Rect.Size - new Vector2f(outline, outline);
+        background.Position = Rect.Position + new Vector2f(outline, outline);
+        
+        backgroundOutline.Size = Rect.Size + new Vector2f(outline, outline);
+        backgroundOutline.Position = Rect.Position;
 
-        background.Size = Rect.Size;
-        background.Position = Rect.Position;
-        _text.Position = Rect.Position + new Vector2f(Host.Style.BoxSizeX()/2, Host.Style.BoxSizeY()/2-2);
+        _cursor.Size = new Vector2f(_text.LetterSpacing+1, background.Size.Y);
+        
+        _text.Position = background.Position + new Vector2f(Host.Style.BoxSizeX()/2, Host.Style.BoxSizeY()/2-2);
         
         UpdateCursor();
 
@@ -208,6 +228,7 @@ public class UIEntry : AUIElement
     
     public override void Draw(RenderTarget target)
     {
+        if(_active) target.Draw(backgroundOutline);
         target.Draw(background);
 
         Utils.CopyView(target.GetView(), _origView);
@@ -219,7 +240,6 @@ public class UIEntry : AUIElement
         {
             lastTicks = DateTime.Now.Ticks;
             draw = !draw;
-            Console.WriteLine("SWITCH");
         }
         
         if (_active && draw)

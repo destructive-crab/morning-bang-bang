@@ -118,9 +118,9 @@ public sealed class UIIntVecEntry : AUIElement
         
         root = new AxisBox(App.UIHost, UIAxis.Vertical,
                     new UILabel(App.UIHost, name),
-                    new AxisBox(App.UIHost, UIAxis.Horizontal, 
-                        xLabel, new UIEntry(App.UIHost, X, entryWidth), 
-                        yLabel, new UIEntry(App.UIHost, Y, entryWidth)));
+                    new AxisBox(App.UIHost, UIAxis.Horizontal, true, 
+                        xLabel, new UIEntry(App.UIHost, X), 
+                        yLabel, new UIEntry(App.UIHost, Y)));
     }
 
     public override void ProcessClicks()
