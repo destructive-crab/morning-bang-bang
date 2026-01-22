@@ -14,11 +14,11 @@ public class UIEntry : AUIElement
     private readonly View view = new();
     private readonly View origView = new();
     
-    private readonly RectangleShape background;
-    private readonly RectangleShape backgroundOutline;
-    private readonly RectangleShape cursor;
-    private readonly RectangleShape selection;
-    private readonly Text text;
+    private readonly RectangleShape backgroundShape;
+    private readonly RectangleShape backgroundOutlineShape;
+    private readonly RectangleShape cursorShape;
+    private readonly RectangleShape selectionShape;
+    private readonly Text textObject;
 
     private bool isActive;
     private bool draw = false;
@@ -31,6 +31,7 @@ public class UIEntry : AUIElement
     private long lastTicks = 0;
 
     private string? origValue;
+
     private float xOffset;
 
     private int CursorPosition
@@ -61,18 +62,18 @@ public class UIEntry : AUIElement
     {
         text.DisplayedString = var.Value;
         Var = var;
-        this.text = text;
+        this.textObject = text;
 
-        background = new RectangleShape();
-        backgroundOutline = new RectangleShape();
+        backgroundShape = new RectangleShape();
+        backgroundOutlineShape = new RectangleShape();
         
-        background.FillColor = host.Style.EntryBackgroundColor();
-        backgroundOutline.FillColor = host.Style.OutlineColor();
+        backgroundShape.FillColor = host.Style.EntryBackgroundColor();
+        backgroundOutlineShape.FillColor = host.Style.OutlineColor();
 
-        selection = new RectangleShape();
-        selection.FillColor = new Color(0xFFFFFF70);
+        selectionShape = new RectangleShape();
+        selectionShape.FillColor = new Color(0xFFFFFF70);
         
-        cursor = new RectangleShape
+        cursorShape = new RectangleShape
         {
             Size = new Vector2f(host.Style.CursorWidth(), host.Style.FontSize()+2),
             FillColor = host.Style.CursorColor()
@@ -83,15 +84,50 @@ public class UIEntry : AUIElement
         Var.OnSet += OnVarUpdate;
     }
 
+    public override void Draw(RenderTarget target)
+    {
+        if(isActive)
+        {
+            target.Draw(backgroundOutlineShape);
+        }
+
+        target.Draw(backgroundShape);
+
+        Utils.CopyView(target.GetView(), origView);
+        target.SetView(view);
+        
+        target.Draw(textObject);
+
+        if (HasSelection())
+        {
+            target.Draw(selectionShape);
+        }
+
+        if (isActive && DateTime.Now.Ticks - lastTicks >= 5000000)
+        {
+            lastTicks = DateTime.Now.Ticks;
+            draw = !draw;
+        }
+        
+        if (isActive && draw)
+        {
+            target.Draw(cursorShape);
+        }
+
+        target.SetView(origView);
+    }
+
     public override void ProcessClicks() => Host.Areas.Process(clickArea);
+
     private void OnAreaClicked()
     {
         Host.SetActive(this);
         isActive = true;
         draw = true;
         lastTicks = DateTime.Now.Ticks;
-        CursorPosition = text.DisplayedString.Length;
+        CursorPosition = textObject.DisplayedString.Length;
     }
+
     public override void OnTextEntered(string text) 
     {
         for (var i = 0; i < text.Length; i++)
@@ -102,41 +138,31 @@ public class UIEntry : AUIElement
 
     private void AppendCharacter(char c)
     {
-        if (selectionLength != 0)
+        if (c == '\b' && textObject.DisplayedString.Length == 0) return;
+        
+        if (HasSelection())
         {
-            int removeStart = 0;
-                
-            if (selectionLength > 0) removeStart = selectionStart;
-            else                     removeStart = selectionStart + selectionLength;
-                
-            text.DisplayedString = text.DisplayedString.Remove(removeStart, Math.Abs(selectionLength));
+            textObject.DisplayedString = textObject.DisplayedString.Remove(GetSelectionStart(), GetAbsSelectionLength());
+            CursorPosition = GetSelectionStart();
+            ResetSelection();
             
-            if (c == '\b')
-            {
-            }
-            else
-            {
-                text.DisplayedString = text.DisplayedString.Insert(selectionStart, c.ToString());
-            }
-
-            selectionLength = 0;
-            CursorPosition = removeStart;
+            if (c != '\b') AppendCharacter(c);
         }
         else
         {
             if (c == '\b')
             {
-                text.DisplayedString = text.DisplayedString.Remove(cursorPosition-1);
+                textObject.DisplayedString = textObject.DisplayedString.Remove(cursorPosition-1, 1);
                 CursorPosition--;
             }
             else
             {
-                text.DisplayedString = text.DisplayedString.Insert(cursorPosition, c.ToString());
+                textObject.DisplayedString = textObject.DisplayedString.Insert(cursorPosition, c.ToString());
                 CursorPosition++;
             }
         }
     }
-    
+
     public override void OnKeyPressed(Keyboard.Key key)
     {
         switch (key)
@@ -148,32 +174,40 @@ public class UIEntry : AUIElement
                 CursorPosition += 1;
                 break;
             case Keyboard.Key.Delete:
-                if (cursorPosition != text.DisplayedString.Length)
+                if (cursorPosition != textObject.DisplayedString.Length)
                 {
-                    text.DisplayedString = text.DisplayedString.Remove(cursorPosition, 1);
+                    if (HasSelection())
+                    {
+                        AppendCharacter('\b');
+                    }
+                    else
+                    {
+                        textObject.DisplayedString = textObject.DisplayedString.Remove(cursorPosition, 1);   
+                    }
                 }
                 break;
             case Keyboard.Key.Home:
                 CursorPosition = 0;
                 break;
             case Keyboard.Key.End:
-                CursorPosition = text.DisplayedString.Length;
+                CursorPosition = textObject.DisplayedString.Length;
                 break;
             case Keyboard.Key.Enter:
                 Host.SetActive(null);
                 break;
         }
     }
+
     public override void OnMouseClick(Vector2f pos)
     {
         if (clickArea.IsHovered) return;
         
         Host.SetActive(null);
     }
-    
+
     public override void Deactivate()
     {
-        UpdateVar(text.DisplayedString);
+        UpdateVar(textObject.DisplayedString);
         isActive = false;
         CursorPosition = 0;
     }
@@ -184,6 +218,7 @@ public class UIEntry : AUIElement
         Var.Value = text;
         origValue = null;
     }
+
     private void OnVarUpdate(string val)
     {
         if (origValue == val)
@@ -191,17 +226,17 @@ public class UIEntry : AUIElement
             return;
         }
 
-        text.DisplayedString = val;
+        textObject.DisplayedString = val;
     }
-    
+
     private void UpdateCursor()
     {
-        cursorPosition = int.Clamp(cursorPosition, 0, text.DisplayedString.Length);
-        var positionX = GetXPositionInText(text, cursorPosition);
+        cursorPosition = int.Clamp(cursorPosition, 0, textObject.DisplayedString.Length);
+        var positionX = textObject.GetXPositionOfCharacter(cursorPosition);
 
-        cursor.Position = new Vector2f(positionX, background.Position.Y);
+        cursorShape.Position = new Vector2f(positionX, backgroundShape.Position.Y);
 
-        positionX -= text.Position.X;
+        positionX -= textObject.Position.X;
         float inner = positionX - xOffset;
         
         if (!(inner < 0))
@@ -218,32 +253,13 @@ public class UIEntry : AUIElement
 
         view.Center = Rect.Position + Rect.Size / 2 + new Vector2f(xOffset, 0);
     }
-
-    private float GetXPositionInText(Text providedText, int position)
-    {
-        string sub = this.text.DisplayedString[..position];
-        float positionX = 0f;
-
-        uint previousSymbol = 0u;
-        foreach (char symbol in sub)
-        {   
-            positionX += 
-                providedText.Font.GetGlyph(symbol, providedText.CharacterSize, true, providedText.OutlineThickness).Advance + 
-                providedText.Font.GetBoldKerning(previousSymbol, symbol, providedText.CharacterSize);
-            
-            previousSymbol = symbol;
-        }
-
-        return providedText.Position.X + positionX;
-    }
-
     private void UpdateSelection()
     {
-        selectionLength = int.Clamp(selectionLength, -selectionStart, text.DisplayedString.Length-selectionStart);
-        string sub = text.DisplayedString;
+        selectionLength = int.Clamp(selectionLength, -selectionStart, textObject.DisplayedString.Length-selectionStart);
+        string sub = textObject.DisplayedString;
         
-        float startPosition = GetXPositionInText(text, selectionStart);
-        float endPosition = GetXPositionInText(text, selectionStart+selectionLength);
+        float startPosition = textObject.GetXPositionOfCharacter(selectionStart);
+        float endPosition = textObject.GetXPositionOfCharacter(selectionStart+selectionLength);
         
         float length = Math.Abs(startPosition - endPosition);
 
@@ -252,12 +268,12 @@ public class UIEntry : AUIElement
         if (startPosition < endPosition) selectionX = startPosition;
         else selectionX = endPosition;
         
-        selection.Size = new Vector2f(length, cursor.Size.Y);
-        selection.Position = new Vector2f(selectionX, cursor.Position.Y);
+        selectionShape.Size = new Vector2f(length, cursorShape.Size.Y);
+        selectionShape.Position = new Vector2f(selectionX, cursorShape.Position.Y);
         
         Console.WriteLine(selectionLength + " " + startPosition + " " + endPosition + " " + length);
     }
-    
+
     public override void UpdateLayout()
     {
         view.Center = Rect.Position + Rect.Size / 2;
@@ -271,47 +287,49 @@ public class UIEntry : AUIElement
         
         int outline = Host.Style.BaseOutline() / 2;
         
-        background.Size = Rect.Size - new Vector2f(outline, outline);
-        background.Position = Rect.Position + new Vector2f(outline, outline);
+        backgroundShape.Size = Rect.Size - new Vector2f(outline, outline);
+        backgroundShape.Position = Rect.Position + new Vector2f(outline, outline);
         
-        backgroundOutline.Size = Rect.Size + new Vector2f(outline, outline);
-        backgroundOutline.Position = Rect.Position;
+        backgroundOutlineShape.Size = Rect.Size + new Vector2f(outline, outline);
+        backgroundOutlineShape.Position = Rect.Position;
 
-        cursor.Size = new Vector2f(text.LetterSpacing+1, background.Size.Y);
+        cursorShape.Size = new Vector2f(textObject.LetterSpacing+1, backgroundShape.Size.Y);
         
-        text.Position = background.Position + new Vector2f(Host.Style.BoxSizeX()/2f, Host.Style.BoxSizeY()/2f-2f);
+        textObject.Position = backgroundShape.Position + new Vector2f(Host.Style.BoxSizeX()/2f, Host.Style.BoxSizeY()/2f-2f);
         
         UpdateCursor();
 
         clickArea.Rect = Rect;
     }
+    
+    
 
-    public override void Draw(RenderTarget target)
+    protected bool HasSelection() => selectionLength != 0;
+
+    protected int GetSelectionStart()
     {
-        if(isActive) target.Draw(backgroundOutline);
-        target.Draw(background);
-
-        Utils.CopyView(target.GetView(), origView);
-        target.SetView(view);
-        
-        target.Draw(text);
-
-        if (selectionLength != 0)
+        if (selectionLength < 0)
         {
-            target.Draw(selection);
+            return selectionStart + selectionLength;
         }
 
-        if (isActive && DateTime.Now.Ticks - lastTicks >= 5000000)
-        {
-            lastTicks = DateTime.Now.Ticks;
-            draw = !draw;
-        }
-        
-        if (isActive && draw)
-        {
-            target.Draw(cursor);
-        }
-
-        target.SetView(origView);
+        return selectionStart;
     }
+
+    protected int GetSelectionEnd()
+    {
+        if (selectionLength < 0)
+        {
+            return selectionStart;
+        }
+
+        return selectionStart + selectionLength;
+    }
+
+    protected void ResetSelection()
+    {
+        selectionLength = 0;
+    }
+
+    protected int GetAbsSelectionLength() => Math.Abs(selectionLength);
 }
