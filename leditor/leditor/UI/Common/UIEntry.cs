@@ -1,4 +1,4 @@
-using System.Text;
+using leditor.root;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -9,112 +9,134 @@ public class UIEntry : AUIElement
 {
     public UIVar<string> Var { get; private set; }
     
-    private View _view = new();
-
+    private readonly ClickArea clickArea = new(new FloatRect());
+    
+    private readonly View view = new();
+    private readonly View origView = new();
+    
     private readonly RectangleShape background;
     private readonly RectangleShape backgroundOutline;
+    private readonly RectangleShape cursor;
+    private readonly RectangleShape selection;
+    private readonly Text text;
 
-    private ClickArea _area = new(new FloatRect());
+    private bool isActive;
+    private bool draw = false;
+    
+    private int cursorPosition;
 
-    private Text _text;
+    private int selectionStart;
+    private int selectionLength;
+    
+    private long lastTicks = 0;
 
-    private bool _active;
+    private string? origValue;
+    private float xOffset;
 
-    private RectangleShape _cursor;
-    private int _cursorPosition;
-
-    public int CursorPosition
+    private int CursorPosition
     {
-        get => _cursorPosition;
+        get => cursorPosition;
         set
         {
-            _cursorPosition = value;
+            if (App.WindowHandler.InputsHandler.IsKeyPressed(Keyboard.Key.LShift) ||
+                App.WindowHandler.InputsHandler.IsKeyPressed(Keyboard.Key.RShift))
+            {
+                if (selectionLength == 0) selectionStart = cursorPosition;
+                
+                selectionLength += (value - cursorPosition);
+                UpdateSelection();
+            }
+            else
+            {
+                selectionStart = value;
+                selectionLength = 0;
+            }
+            cursorPosition = value;
             UpdateCursor();
         }
     }
 
-    public UIEntry(UIHost host, UIVar<string> var, int minX = 0) : base(host, host.Fabric.MakeTextOut("X", out var text) + new Vector2f(host.Style.BoxSizeX()+minX, host.Style.BoxSizeY()))
+    public UIEntry(UIHost host, UIVar<string> var, int minX = 0)
+        : base(host, host.Fabric.MakeTextOut("X", out var text) + new Vector2f(host.Style.BoxSizeX()+minX, host.Style.BoxSizeY()))
     {
         text.DisplayedString = var.Value;
         Var = var;
-        _text = text;
+        this.text = text;
 
         background = new RectangleShape();
         backgroundOutline = new RectangleShape();
         
         background.FillColor = host.Style.EntryBackgroundColor();
         backgroundOutline.FillColor = host.Style.OutlineColor();
+
+        selection = new RectangleShape();
+        selection.FillColor = new Color(0xFFFFFF70);
         
-        _cursor = new RectangleShape
+        cursor = new RectangleShape
         {
             Size = new Vector2f(host.Style.CursorWidth(), host.Style.FontSize()+2),
             FillColor = host.Style.CursorColor()
         };
 
-        _area.OnRightMouseButtonClick += OnAreaClicked;
+        clickArea.OnRightMouseButtonClick += OnAreaClicked;
 
         Var.OnSet += OnVarUpdate;
     }
 
-    public override void ProcessClicks()
-        => Host.Areas.Process(_area);
-
+    public override void ProcessClicks() => Host.Areas.Process(clickArea);
     private void OnAreaClicked()
     {
         Host.SetActive(this);
-        _active = true;
+        isActive = true;
         draw = true;
         lastTicks = DateTime.Now.Ticks;
-        CursorPosition = _text.DisplayedString.Length;
+        CursorPosition = text.DisplayedString.Length;
     }
-
-    public override void Deactivate()
+    public override void OnTextEntered(string text) 
     {
-        UpdateVar(_text.DisplayedString);
-        _active = false;
-        CursorPosition = 0;
-    }
-
-    public override void OnTextEntered(string text)
-    {
-        var begin = new StringBuilder(_text.DisplayedString[.._cursorPosition]);
-        var end = new StringBuilder(_text.DisplayedString[_cursorPosition..]);
-        
         for (var i = 0; i < text.Length; i++)
         {
-            if (text[i] == '\b')
-            {
-                var remove = 0;
-                while (i < text.Length && text[i] == '\b')
-                {
-                    remove++;
-                    i++;
-                }
+            AppendCharacter(text[i]);
+        }
+    }
 
-                remove = int.Min(remove, begin.Length);
-                begin.Remove(begin.Length - remove, remove);
+    private void AppendCharacter(char c)
+    {
+        if (selectionLength != 0)
+        {
+            int removeStart = 0;
+                
+            if (selectionLength > 0) removeStart = selectionStart;
+            else                     removeStart = selectionStart + selectionLength;
+                
+            text.DisplayedString = text.DisplayedString.Remove(removeStart, Math.Abs(selectionLength));
+            
+            if (c == '\b')
+            {
             }
             else
             {
-                var start = i;
-                var subEnd = i;
-                while (i < text.Length && text[i] != '\b')
-                {
-                    i++;
-                    subEnd = i;
-                }
+                text.DisplayedString = text.DisplayedString.Insert(selectionStart, c.ToString());
+            }
 
-                begin.Append(text[start..subEnd]);
+            selectionLength = 0;
+            CursorPosition = removeStart;
+        }
+        else
+        {
+            if (c == '\b')
+            {
+                text.DisplayedString = text.DisplayedString.Remove(cursorPosition-1);
+                CursorPosition--;
+            }
+            else
+            {
+                text.DisplayedString = text.DisplayedString.Insert(cursorPosition, c.ToString());
+                CursorPosition++;
             }
         }
-        
-        var pos = begin.Length;
-        begin.Append(end);
-
-        _text.DisplayedString = begin.ToString();
-        CursorPosition = pos;
     }
-
+    
     public override void OnKeyPressed(Keyboard.Key key)
     {
         switch (key)
@@ -126,81 +148,121 @@ public class UIEntry : AUIElement
                 CursorPosition += 1;
                 break;
             case Keyboard.Key.Delete:
-                if (_cursorPosition != _text.DisplayedString.Length)
-                    _text.DisplayedString = _text.DisplayedString.Remove(_cursorPosition, 1);
+                if (cursorPosition != text.DisplayedString.Length)
+                {
+                    text.DisplayedString = text.DisplayedString.Remove(cursorPosition, 1);
+                }
+                break;
+            case Keyboard.Key.Home:
+                CursorPosition = 0;
+                break;
+            case Keyboard.Key.End:
+                CursorPosition = text.DisplayedString.Length;
                 break;
             case Keyboard.Key.Enter:
                 Host.SetActive(null);
                 break;
         }
     }
-
-    private string? _origValue;
-
-    private void UpdateVar(string text)
-    {
-        _origValue = text;
-        Var.Value = text;
-        _origValue = null;
-    }
-
-    private void OnVarUpdate(string val)
-    {
-        if (_origValue == val) return;
-        
-        _text.DisplayedString = val;
-    }
-
     public override void OnMouseClick(Vector2f pos)
     {
-        if (_area.IsHovered) return;
+        if (clickArea.IsHovered) return;
         
         Host.SetActive(null);
     }
+    
+    public override void Deactivate()
+    {
+        UpdateVar(text.DisplayedString);
+        isActive = false;
+        CursorPosition = 0;
+    }
 
-    private float _xOffset;
+    private void UpdateVar(string text)
+    {
+        origValue = text;
+        Var.Value = text;
+        origValue = null;
+    }
+    private void OnVarUpdate(string val)
+    {
+        if (origValue == val)
+        {
+            return;
+        }
+
+        text.DisplayedString = val;
+    }
     
     private void UpdateCursor()
     {
-        _cursorPosition = int.Clamp(_cursorPosition, 0, _text.DisplayedString.Length);
-        
-        string? sub = _text.DisplayedString[.._cursorPosition];
-        Vector2f position = new Vector2f();
+        cursorPosition = int.Clamp(cursorPosition, 0, text.DisplayedString.Length);
+        var positionX = GetXPositionInText(text, cursorPosition);
 
-        uint prevSymbl = 0u;
-        foreach (var symbl in sub)
-        {   
-            position.X += 
-                _text.Font.GetGlyph(symbl, _text.CharacterSize, true, _text.OutlineThickness).Advance + 
-                _text.Font.GetBoldKerning(prevSymbl, symbl, _text.CharacterSize);
-            prevSymbl = symbl;
-        }
+        cursor.Position = new Vector2f(positionX, background.Position.Y);
 
-        _cursor.Position = position + _text.Position;
-        _cursor.Position = new Vector2f(_cursor.Position.X, background.Position.Y);
-
-        float inner = position.X - _xOffset;
+        positionX -= text.Position.X;
+        float inner = positionX - xOffset;
         
         if (!(inner < 0))
         {
             if (inner > Rect.Width - 2)
             {
-                _xOffset = position.X - (Rect.Width - 2);
+                xOffset = positionX - (Rect.Width - 2);
             }
         }
         else
         {
-            _xOffset = position.X;
+            xOffset = positionX;
         }
 
-        _view.Center = Rect.Position + Rect.Size / 2 + new Vector2f(_xOffset, 0);
+        view.Center = Rect.Position + Rect.Size / 2 + new Vector2f(xOffset, 0);
+    }
+
+    private float GetXPositionInText(Text providedText, int position)
+    {
+        string sub = this.text.DisplayedString[..position];
+        float positionX = 0f;
+
+        uint previousSymbol = 0u;
+        foreach (char symbol in sub)
+        {   
+            positionX += 
+                providedText.Font.GetGlyph(symbol, providedText.CharacterSize, true, providedText.OutlineThickness).Advance + 
+                providedText.Font.GetBoldKerning(previousSymbol, symbol, providedText.CharacterSize);
+            
+            previousSymbol = symbol;
+        }
+
+        return providedText.Position.X + positionX;
+    }
+
+    private void UpdateSelection()
+    {
+        selectionLength = int.Clamp(selectionLength, -selectionStart, text.DisplayedString.Length-selectionStart);
+        string sub = text.DisplayedString;
+        
+        float startPosition = GetXPositionInText(text, selectionStart);
+        float endPosition = GetXPositionInText(text, selectionStart+selectionLength);
+        
+        float length = Math.Abs(startPosition - endPosition);
+
+        float selectionX = 0;
+        
+        if (startPosition < endPosition) selectionX = startPosition;
+        else selectionX = endPosition;
+        
+        selection.Size = new Vector2f(length, cursor.Size.Y);
+        selection.Position = new Vector2f(selectionX, cursor.Position.Y);
+        
+        Console.WriteLine(selectionLength + " " + startPosition + " " + endPosition + " " + length);
     }
     
     public override void UpdateLayout()
     {
-        _view.Center = Rect.Position + Rect.Size / 2;
-        _view.Size = Rect.Size;
-        _view.Viewport = new FloatRect(
+        view.Center = Rect.Position + Rect.Size / 2;
+        view.Size = Rect.Size;
+        view.Viewport = new FloatRect(
             Rect.Left / Host.Size.X - 0.0000001f,
             Rect.Top / Host.Size.Y,
             Rect.Width / Host.Size.X,
@@ -215,41 +277,41 @@ public class UIEntry : AUIElement
         backgroundOutline.Size = Rect.Size + new Vector2f(outline, outline);
         backgroundOutline.Position = Rect.Position;
 
-        _cursor.Size = new Vector2f(_text.LetterSpacing+1, background.Size.Y);
+        cursor.Size = new Vector2f(text.LetterSpacing+1, background.Size.Y);
         
-        _text.Position = background.Position + new Vector2f(Host.Style.BoxSizeX()/2, Host.Style.BoxSizeY()/2-2);
+        text.Position = background.Position + new Vector2f(Host.Style.BoxSizeX()/2f, Host.Style.BoxSizeY()/2f-2f);
         
         UpdateCursor();
 
-        _area.Rect = Rect;
+        clickArea.Rect = Rect;
     }
 
-    private View _origView = new();
-    
     public override void Draw(RenderTarget target)
     {
-        if(_active) target.Draw(backgroundOutline);
+        if(isActive) target.Draw(backgroundOutline);
         target.Draw(background);
 
-        Utils.CopyView(target.GetView(), _origView);
-        target.SetView(_view);
+        Utils.CopyView(target.GetView(), origView);
+        target.SetView(view);
         
-        target.Draw(_text);
+        target.Draw(text);
 
-        if (_active && DateTime.Now.Ticks - lastTicks >= 5000000)
+        if (selectionLength != 0)
+        {
+            target.Draw(selection);
+        }
+
+        if (isActive && DateTime.Now.Ticks - lastTicks >= 5000000)
         {
             lastTicks = DateTime.Now.Ticks;
             draw = !draw;
         }
         
-        if (_active && draw)
+        if (isActive && draw)
         {
-            target.Draw(_cursor);
+            target.Draw(cursor);
         }
 
-        target.SetView(_origView);
+        target.SetView(origView);
     }
-
-    private long lastTicks = 0;
-    private bool draw = false;
 }
