@@ -59,6 +59,8 @@ public class UIEntry : AUIElement
     {
         Host.SetActive(this);
         _active = true;
+        draw = true;
+        lastTicks = DateTime.Now.Ticks;
         CursorPosition = _text.DisplayedString.Length;
     }
 
@@ -212,10 +214,22 @@ public class UIEntry : AUIElement
         target.SetView(_view);
         
         target.Draw(_text);
+
+        if (_active && DateTime.Now.Ticks - lastTicks >= 5000000)
+        {
+            lastTicks = DateTime.Now.Ticks;
+            draw = !draw;
+            Console.WriteLine("SWITCH");
+        }
         
-        if (_active)
+        if (_active && draw)
+        {
             target.Draw(_cursor);
-        
+        }
+
         target.SetView(_origView);
     }
+
+    private long lastTicks = 0;
+    private bool draw = false;
 }

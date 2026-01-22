@@ -105,7 +105,8 @@ public sealed class UIIntVecEntry : AUIElement
 
     private readonly AUIElement root;
     
-    public UIIntVecEntry(string name, int x, int y, int width = 300) : base(App.UIHost, new(App.UIHost.Style.FontSize()*2, width))
+    public UIIntVecEntry(string name, int x, int y, int width = 300) 
+        : base(App.UIHost, new Vector2f(App.UIHost.Style.FontSize() * 2, width))
     {
         X = new UIVar<string>(x.ToString());
         Y = new UIVar<string>(y.ToString());
@@ -131,7 +132,6 @@ public sealed class UIIntVecEntry : AUIElement
     public override void UpdateLayout()
     {
         root.Rect = Rect;
-        root.UpdateLayout();
     }
 
     public override void Draw(RenderTarget target)

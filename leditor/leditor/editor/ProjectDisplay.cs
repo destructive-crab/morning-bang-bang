@@ -35,11 +35,6 @@ public class ProjectDisplay : EditorDisplay
        
         BuildBase();
         BuildContent();
-        
-        App.WindowHandler.window.KeyPressed +=
-            (_, args) => host.OnKeyPressed(args.Code);
-        App.WindowHandler.window.TextEntered +=
-            (_, args) => host.OnTextEntered(args.Unicode);  
     }
 
     public override void Tick()

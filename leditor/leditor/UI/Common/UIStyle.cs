@@ -6,11 +6,11 @@ namespace leditor.UI;
 
 public class UIStyle
 {
-    public virtual Color FirstBackgroundColor()  => new(0x333333FF);
-    public virtual Color SecondBackgroundColor() => new(0x2c2c30FF);
+    public virtual Color FirstBackgroundColor()  => new(0x282c34FF);
+    public virtual Color SecondBackgroundColor() => new(0x15171bFF);
     
     public virtual int   BaseOutline()           => 5;
-    public virtual Color OutlineColor()          => new(0x000000FF);
+    public virtual Color OutlineColor()          => new(0x4f545eFF);
 
     private static Font PrepareFont() => new(EditorAssets.LoadFont("Main.ttf"));
 
@@ -19,29 +19,29 @@ public class UIStyle
     public virtual uint FontSize() => 16;
     
     // Rect
-    public virtual Color RectDefault() => SecondBackgroundColor();
+    public virtual Color RectDefault() => FirstBackgroundColor();
     
     //Label
     public virtual Color LabelColor() => new(0xc0c0c0FF);
     
     //AxisBox
-    public virtual int AxisBoxSpace() => 5;
+    public virtual int AxisBoxSpace() => 8;
     
     //SplitBox
     public virtual int SplitSeparatorThickness() => 2;
-    public virtual Color SplitSeparatorColor() => new(0xeadb94FF);
+    public virtual Color SplitSeparatorColor() => new(0x181a1fFF);
     
     //Entry
-    public virtual Color EntryBackgroundColor() => new(0x240e1dFF);
-    public virtual Color CursorColor() => new(0xeadb94FF);
+    public virtual Color EntryBackgroundColor() => SecondBackgroundColor();
+    public virtual Color CursorColor() => new(0x6086d1FF);
     public virtual int CursorWidth() => 4;
     public virtual int BoxSizeX() => 4;
     public virtual int BoxSizeY() => 12;
     
     //Button
     public virtual Vector2f ButtonSpace() => new(8, 8);
-    public virtual Color ButtonTop() => FirstBackgroundColor();
-    public virtual Color ButtonBottom() => SecondBackgroundColor();
+    public virtual Color ButtonTop() => new(0x5d84d1FF);
+    public virtual Color ButtonBottom() => new(0x3c424fFF);
     
     public virtual ButtonStateStyle NormalButton() => new()
     {
@@ -55,7 +55,7 @@ public class UIStyle
         Outline       = 2,
         OutlineColor  = Color.Black,
         
-        BottomHeight  = 10
+        BottomHeight  = 4
     };
 
     public virtual ButtonStateStyle HoveredButton() => new()
@@ -70,7 +70,7 @@ public class UIStyle
         OutlineColor  = new Color(0xfdea70FF),
         Outline       = 2,
         
-        BottomHeight  = 10
+        BottomHeight  = 2
 
     };
 
@@ -85,7 +85,7 @@ public class UIStyle
         
         BottomHeight  = 2,
         
-        Outline       = 2,
+        Outline       = 1,
         OutlineColor  = Color.Black,
     };
 

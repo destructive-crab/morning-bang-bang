@@ -36,17 +36,13 @@ public sealed class Leditor
         CurrentDisplay = HomeDisplay;
         
         //_window.Closed += (_, _) => _window.Close();
+        
         App.WindowHandler.window.Resized += 
             (_, args) => CurrentDisplay?.Host?.SetSize(new Vector2f(args.Width, args.Height));
- //       _window.KeyPressed +=
- //           (_, args) => _host.OnKeyPressed(args.Code);
- //       _window.TextEntered +=
- //           (_, args) => _host.OnTextEntered(args.Unicode);
- //       _window.MouseButtonReleased += (_, args) =>
- //       {
- //           if (args.Button != Mouse.Button.Left) return;
- //           _host.OnMouseClick(new Vector2f(args.X, args.Y));
- //       }; 
+        App.WindowHandler.window.KeyPressed +=
+            (_, args) => CurrentDisplay?.Host?.OnKeyPressed(args.Code);
+        App.WindowHandler.window.TextEntered +=
+            (_, args) => CurrentDisplay?.Host?.OnTextEntered(args.Unicode);  
     }
 
     public GridBuffer OpenBuffer(string tag)
