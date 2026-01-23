@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+using leditor.root;
 using SFML.Graphics;
 using SFML.System;
 
@@ -7,44 +6,73 @@ namespace leditor.UI;
 
 class Scroller
 {
-    public RectangleShape Shape;
+    public readonly UIHost host;
+    
+    public readonly ClickArea Area;
+    
+    private readonly RectangleShape shape;
+    private readonly RectangleShape backgroundShape;
 
-    public ClickArea Area;
-    public FloatRect Limits;
+    public FloatRect Limits { get; private set; }
+    
     public Action<Vector2f> OnUpdate;
+    
+    public bool Selected { get; private set; }
 
-    public UIHost host;
-
-    public Scroller(UIHost host, Action<Vector2f> onUpdate, FloatRect limits, Vector2f size, Color color)
+    public Scroller(UIHost host, Action<Vector2f> onUpdate, FloatRect limits, Vector2f size)
     {
         this.host = host;
-        Shape = new RectangleShape
+        
+        shape = new RectangleShape
         {
-            FillColor = color,
+            FillColor = host.Style.ScrollerColor(),
             Size = size
         };
+        
+        backgroundShape = new RectangleShape
+        {
+            FillColor = host.Style.SecondBackgroundColor(),
+            Position = Limits.Position,
+            Size = Limits.Size,  
+        };
+        
         Area = new ClickArea(new FloatRect(limits.Left, limits.Top, size.X, size.Y))
         {
             OnMove = OnMove,
-            OnRightMouseButtonClick    = () => { Shape.FillColor = host.Style.ScrollerPressedColor(); },
-            OnRightMouseButtonReleased = () => { Shape.FillColor = host.Style.ScrollerColor(); },
+            OnRightMouseButtonClick    = Select,
+            OnRightMouseButtonReleased = Deselect,
         };
-        Limits = limits;
+        
+        SetLimits(limits);
         OnUpdate = onUpdate;
     }
-    
+
+    public void Deselect()
+    {
+        shape.FillColor = host.Style.ScrollerColor();
+        Selected = false;
+    }
+
+    public void Select()
+    {
+        shape.FillColor = host.Style.ScrollerPressedColor();
+        Selected = true;
+    }
+
     private void OnMove(Vector2f oldPos, Vector2f newPos)
     {
-        var pos = new Vector2f(
-            float.Clamp(newPos.X - Area.Rect.Width / 2, Limits.Left, Limits.Left + Limits.Width),
-            float.Clamp(newPos.Y - Area.Rect.Height / 2, Limits.Top, Limits.Top + Limits.Height)
+        if (!Selected) return;
+        
+        Vector2f pos = new Vector2f(
+            float.Clamp(shape.Position.X + (newPos.X - oldPos.X), Limits.Left, Limits.Left + Limits.Width),
+            float.Clamp(shape.Position.Y + (newPos.Y - oldPos.Y), Limits.Top, Limits.Top + Limits.Height)
         );
 
-        Shape.Position = pos;
+        shape.Position = pos;
         Area.Rect.Left = pos.X;
         Area.Rect.Top = pos.Y;
 
-        Shape.FillColor = host.Style.ScrollerPressedColor();
+        shape.FillColor = host.Style.ScrollerPressedColor();
         
         if (Limits.Width != 0)
         {
@@ -65,182 +93,234 @@ class Scroller
 
     public void SetPosition(Vector2f pos)
     {
-        Shape.Position = pos;
+        shape.Position = pos;
         Area.Rect.Left = pos.X;
         Area.Rect.Top = pos.Y;
     }
     
-    public void SetSize(Vector2f size)
+    public void SetSize(Vector2f size, Vector2f background)
     {
-        Shape.Size = size;
+        shape.Size = size;
+        
         Area.Rect.Width = size.X;
         Area.Rect.Height = size.Y;
+        
+        backgroundShape.Size = background;
+    }
+
+    public void SetLimits(FloatRect limits)
+    {
+        Limits = limits;
+        backgroundShape.Position = Limits.Position;
+    }
+    
+    public void Draw(RenderTarget target)
+    {
+        target.Draw(backgroundShape);
+        target.Draw(shape);
     }
 }
 
 public class ScrollBox : AUIBox
 {
-    private AUIElement? _child;
-    private View _view = new();
+    private readonly Scroller scrollerX;
+    private readonly Scroller scrollerY;
 
-    private Vector2f _difference;
-    private Vector2f _scroll;
+    private readonly View view = new();
 
-    private readonly Scroller _scrollerY;
-    private readonly Scroller _scrollerX;
+    private Vector2f difference;
+    private Vector2f scroll;
+    
+    private FloatRect clickView;
+    private ClickArea scrollArea;
+    
+    private AUIElement? child;
+    public AUIElement? Child
+    {
+        get => child;
+        set
+        {
+            child = value;
+            if (child == null) return;
 
-    private FloatRect _clickView;
+            child.Parent = this;
+            child.Rect = Rect;
+        }
+    }
 
     public ScrollBox(UIHost host, AUIElement? child) : base(host, new Vector2f(host.Style.ScrollerThickness() * 2, host.Style.ScrollerThickness() * 2))
     {
         Child = child;
-        if (_child != null)
-            _child.Parent = this;
+        if (this.child != null)
+        {
+            this.child.Parent = this;
+        }
 
-        _scrollerX = new Scroller(host, OnScrollX, new FloatRect(), new Vector2f(host.Style.ScrollerThickness(), host.Style.ScrollerThickness()), host.Style.ScrollerColor());
-        _scrollerY = new Scroller(host, OnScrollY, new FloatRect(), new Vector2f(host.Style.ScrollerThickness(), host.Style.ScrollerThickness()), host.Style.ScrollerColor());
+        scrollArea = new ClickArea(default, false);
+        
+        scrollerX = new Scroller(host, OnScrollX, new FloatRect(), new Vector2f(host.Style.ScrollerThickness(), host.Style.ScrollerThickness()));
+        scrollerY = new Scroller(host, OnScrollY, new FloatRect(), new Vector2f(host.Style.ScrollerThickness(), host.Style.ScrollerThickness()));
     }
 
     public override void ProcessClicks()
     {
-        if (_child != null)
+        if (child != null)
         {
             Host.ClickHandlersStack.Push(
                 () => Host.Areas.PopViewport()
             );
             
-            Host.ClickHandlersStack.Push(_child.ProcessClicks);
+            Host.ClickHandlersStack.Push(child.ProcessClicks);
             
             Host.ClickHandlersStack.Push(
-                () => Host.Areas.SetViewport(_clickView)
+                () => Host.Areas.SetViewport(clickView)
             );
         }
             
-        Host.Areas.Process(_scrollerX.Area);
-        Host.Areas.Process(_scrollerY.Area);
+        Host.Areas.Process(scrollerX.Area);
+        Host.Areas.Process(scrollerY.Area);
+        
+        Host.Areas.Process(scrollArea);
+            
+        if (scrollArea.IsHovered && Rect.Contains(App.WindowHandler.InputsHandler.MousePosition) && App.WindowHandler.InputsHandler.MouseWheelDelta != 0)
+        {
+            OnScrollY(new(scroll.X, scroll.Y - App.WindowHandler.InputsHandler.MouseWheelDelta/20));
+        }
+
+        if (scrollerX.Selected && App.WindowHandler.InputsHandler.IsLeftMouseButtonReleased)
+        {
+            scrollerX.Deselect();   
+        }
+        
+        if (scrollerY.Selected && App.WindowHandler.InputsHandler.IsLeftMouseButtonReleased)
+        {
+            scrollerY.Deselect();
+        }
     }
 
     private void OnScrollX(Vector2f vec)
     {
-        SetScroll(new Vector2f(vec.X, _scroll.Y));
+        SetScroll(new Vector2f(vec.X, scroll.Y));
     }
     
     private void OnScrollY(Vector2f vec)
     {
-        SetScroll(new Vector2f(_scroll.X, vec.Y));
+        SetScroll(new Vector2f(scroll.X, vec.Y));
     }
 
     private void SetScroll(Vector2f scroll)
     {
-        _scroll = new Vector2f(
+        this.scroll = new Vector2f(
             float.Clamp(scroll.X, 0, 1),
             float.Clamp(scroll.Y, 0, 1)
         );
 
         if (Child != null)
             Child.Rect = new FloatRect (
-            Rect.Left - _scroll.X * _difference.X , 
-            Rect.Top - _scroll.Y * _difference.Y,
+            Rect.Left - this.scroll.X * difference.X , 
+            Rect.Top - this.scroll.Y * difference.Y,
             Rect.Width - Host.Style.ScrollerThickness() - 20,
             Rect.Height - Host.Style.ScrollerThickness()
         );
     }
-    
-    public AUIElement? Child
-    {
-        get => _child;
-        set
-        {
-            _child = value;
-            if (_child == null) return;
-
-            _child.Parent = this;
-            _child.Rect = Rect;
-        }
-    }
 
     public override IEnumerable<AUIElement> GetChildren()
-        => _child != null ? [_child] : [];
+        => child != null ? [child] : [];
 
     public override void RemoveChild(AUIElement child)
     {
-        if (_child == child)
+        if (this.child == child)
         {
-            _child.Parent = null;
-            _child = null;
+            this.child.Parent = null;
+            this.child = null;
         }
     }
 
-    protected override void UpdateMinimalSize()
-    {
-    }
+    protected override void UpdateMinimalSize() { }
     
     public override void UpdateLayout()
     {
-        if (_child == null) return;
+        if (child == null) return;
 
-        var size = new Vector2f(Rect.Width - Host.Style.ScrollerThickness() - 20, Rect.Height - Host.Style.ScrollerThickness());
-        _child.Rect = new FloatRect (
-            Rect.Left - _scroll.X * _difference.X, 
-            Rect.Top - _scroll.Y * _difference.Y,
+        scrollArea.Rect = Rect;
+        Vector2f size = new Vector2f(Rect.Width - Host.Style.ScrollerThickness() - 20, Rect.Height - Host.Style.ScrollerThickness());
+        
+        child.Rect = new FloatRect (
+            Rect.Left - scroll.X * difference.X, 
+            Rect.Top - scroll.Y * difference.Y,
             size.X, size.Y
         );
         
-        _difference = new Vector2f(
-            float.Max(0, _child.Rect.Width - size.X),
-            float.Max(0, _child.Rect.Height - size.Y)
+        difference = new Vector2f(
+            float.Max(0, child.Rect.Width - size.X),
+            float.Max(0, child.Rect.Height - size.Y)
         );
 
-        _clickView = Rect;
+        clickView = Rect;
         
-        _view.Size = Rect.Size;
-        _view.Center = Rect.Position + Rect.Size / 2;
-        _view.Viewport = new FloatRect(
+        view.Size = Rect.Size;
+        view.Center = Rect.Position + Rect.Size / 2;
+        view.Viewport = new FloatRect(
             Rect.Left / Host.Size.X,
             Rect.Top / Host.Size.Y,
             Rect.Width / Host.Size.X,
             Rect.Height / Host.Size.Y
         );
 
-        var inner = Rect.Size - new Vector2f(Host.Style.ScrollerThickness(), Host.Style.ScrollerThickness());
+        UpdateScrollerXLayout();
+        UpdateScrollerYLayout();
+    }
 
-        var len = float.Min(1, inner.Y / _child.Rect.Height) * inner.Y;
-        var limits = new FloatRect(
-            Rect.Left + Rect.Width - Host.Style.ScrollerThickness(),
-            Rect.Top,
-            0,
-            inner.Y - len
-        );
-        _scrollerY.SetPosition(new Vector2f(limits.Left, limits.Top + _scroll.Y * limits.Height));
-        _scrollerY.SetSize(new Vector2f(Host.Style.ScrollerThickness(), len));
-        _scrollerY.Limits = limits;
-        
-        len = float.Min(1, inner.X / _child.Rect.Width) * inner.X;
+    private void UpdateScrollerXLayout()
+    {
+        Vector2f inner = Rect.Size - new Vector2f(Host.Style.ScrollerThickness(), Host.Style.ScrollerThickness());
+
+        float len;
+        FloatRect limits;
+        len = float.Min(1, inner.X / child.Rect.Width) * inner.X;
         limits = new FloatRect(
             Rect.Left,
             Rect.Top + Rect.Height - Host.Style.ScrollerThickness(),
             inner.X - len, 
             0
         );
-        _scrollerX.SetPosition(new Vector2f(limits.Left + _scroll.X * limits.Width, limits.Top));
-        _scrollerX.SetSize(new Vector2f(len, Host.Style.ScrollerThickness()));
-        _scrollerX.Limits = limits;
+        scrollerX.SetPosition(new Vector2f(limits.Left + scroll.X * limits.Width, limits.Top));
+        scrollerX.SetSize(new Vector2f(len, Host.Style.ScrollerThickness()), new Vector2f(Rect.Width, Host.Style.ScrollerThickness()));
+        scrollerX.SetLimits(limits);
+    }
+
+    private void UpdateScrollerYLayout()
+    {
+        Vector2f inner = Rect.Size - new Vector2f(Host.Style.ScrollerThickness(), Host.Style.ScrollerThickness());
+
+        float len = float.Min(1, inner.Y / child.Rect.Height) * inner.Y;
+        FloatRect limits = new FloatRect(
+            Rect.Left + Rect.Width - Host.Style.ScrollerThickness(),
+            Rect.Top,
+            0,
+            inner.Y - len
+        );
+        
+        scrollerY.SetPosition(new Vector2f(limits.Left, limits.Top + scroll.Y * limits.Height));
+        scrollerY.SetSize(new Vector2f(Host.Style.ScrollerThickness(), len), new Vector2f(Host.Style.ScrollerThickness(), Rect.Height));
+        scrollerY.SetLimits(limits);
     }
 
     private void FinishDraw(RenderTarget target)
     {
- //       target.Draw(_scrollerX.Shape);
-        target.Draw(_scrollerY.Shape);
+        scrollerX.Draw(target);
+        scrollerY.Draw(target);
+        
         target.SetView(Host.View);
     }
     
     public override void Draw(RenderTarget target)
     {
-        if (_child == null) return;
+        if (child == null) return;
         
-        target.SetView(_view);
+        target.SetView(view);
         
         Host.DrawStack.Push(FinishDraw);
-        Host.DrawStack.Push(_child.Draw);
+        Host.DrawStack.Push(child.Draw);
     }
 }

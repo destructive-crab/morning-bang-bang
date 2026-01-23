@@ -19,7 +19,7 @@ public sealed class InputsHandler
     
     public Vector2f WorldMousePosition => window.MapPixelToCoords(Mouse.GetPosition(window));
     public Vector2i MousePosition => Mouse.GetPosition(window);
-    
+
     private RenderWindow window;
 
     private readonly List<Keyboard.Key> keysDown = new();
