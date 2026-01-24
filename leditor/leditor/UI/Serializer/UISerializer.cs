@@ -114,13 +114,16 @@ public sealed class UIIntVecEntry : AUIElement
         UILabel xLabel = new UILabel(App.UIHost, "X:");
         UILabel yLabel = new UILabel(App.UIHost, "Y:");
 
-        int entryWidth = (int)(width - xLabel.MinimalSize.X * 2) / 2;
+        var axisLine = new AxisBox(App.UIHost, UIAxis.Horizontal, true,
+            xLabel, new UIEntry(App.UIHost, X),
+            yLabel, new UIEntry(App.UIHost, Y));
+        
+        axisLine.UseMinimalSizeFor(xLabel);
+        axisLine.UseMinimalSizeFor(yLabel);
         
         root = new AxisBox(App.UIHost, UIAxis.Vertical,
                     new UILabel(App.UIHost, name),
-                    new AxisBox(App.UIHost, UIAxis.Horizontal, true, 
-                        xLabel, new UIEntry(App.UIHost, X), 
-                        yLabel, new UIEntry(App.UIHost, Y)));
+                    axisLine);
     }
 
     public override void ProcessClicks()

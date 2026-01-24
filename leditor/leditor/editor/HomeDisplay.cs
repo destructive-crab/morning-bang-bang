@@ -17,12 +17,15 @@ public sealed class HomeDisplay : EditorDisplay
         h = App.UIHost;
         
         h.SetRoot(new AxisBox(h, UIAxis.Vertical,
+            false,
+            new AxisBox(h, UIAxis.Vertical, true, 
+                new UILabel(h, "Home (-) . (-)"), 
+                new UILabel(h, "Home (-) . (-)"), 
+                new UIButton(h, "firxst", LoadProjectButton),
+                new UILabel(h, "Home (-) . (-)")),
             new UILabel(h, "Home (-) . (-)"),
             new UIButton(h, "Load Project", LoadProjectButton),
-            new UIButton(h, "Create New Project", NewProjectButton),
-            new PathEntry("FOLDER", "a"),
-            new UI.Serializer.TextureReference("TEXTURE", "test"),
-            new UIIntVecEntry("Test", 100, 100, 800)));
+            new UIButton(h, "Create New Project", NewProjectButton)));
 
         return;
         var t = RuntimeAssetsStorage.GetInvalidTexture();
