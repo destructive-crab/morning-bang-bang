@@ -5,7 +5,7 @@ namespace leditor.UI;
 
 public sealed class UISpace(UIHost host, Vector2f minimalSize) : AUIElement(host, minimalSize)
 {
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
     }
 

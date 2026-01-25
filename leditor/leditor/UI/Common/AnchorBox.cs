@@ -14,8 +14,8 @@ public struct Anchor(FloatRect baseRect, FloatRect relative)
 public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
 {
     private readonly List<(Anchor, AUIElement)> _children = [];
-    
-    public override void UpdateLayout()
+
+    protected override void UpdateLayout()
     {
         foreach (var (anchor, child) in _children)
         {
@@ -24,7 +24,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
             rect.Top += Rect.Top + anchor.Relative.Top * Rect.Height;
             rect.Width += anchor.Relative.Width * Rect.Width;
             rect.Height += anchor.Relative.Height * Rect.Height;
-            child.Rect = rect;
+            child.SetRect(rect);
         }
     }
     

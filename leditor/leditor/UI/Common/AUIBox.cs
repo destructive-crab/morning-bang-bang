@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using SFML.System;
 
 namespace leditor.UI;
@@ -35,6 +34,8 @@ public abstract class AUIBox(UIHost host, Vector2f minimalSize) : AUIElement(hos
         UpdateMinimalSize();
         
         if (size == MinimalSize)
-            Host.UpdateActionsQueue.Enqueue(UpdateLayout);
+        {
+            Host.UpdateActionsQueue.Enqueue(UpdateLayoutP);
+        }
     }
 }

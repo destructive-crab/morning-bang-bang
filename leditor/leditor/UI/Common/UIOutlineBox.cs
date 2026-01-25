@@ -51,11 +51,11 @@ public sealed class UIOutlineBox : AUIBox
         return [Child];
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
         if (Child == null) return;
         
-        Child.Rect = Rect;
+        Child.SetRect(Rect);
     }
 
     public override void RemoveChild(AUIElement child)

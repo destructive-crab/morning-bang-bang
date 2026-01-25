@@ -24,10 +24,10 @@ public sealed class TextureReference : AUIElement
         MinimalSize = new Vector2f(100, uiLabel.MinimalSize.Y + entry.MinimalSize.Y);
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
-        uiLabel.Rect = new FloatRect(Rect.Position, new Vector2f(Rect.Size.X, uiLabel.Rect.Size.Y));
-        entry.Rect = new FloatRect(Rect.Position + new Vector2f(0, uiLabel.Rect.Size.Y), new Vector2f(Rect.Size.X, entry.Rect.Size.Y));
+        uiLabel.SetRect(new FloatRect(Rect.Position, new Vector2f(Rect.Size.X, uiLabel.Rect.Size.Y)));
+        entry.SetRect(new FloatRect(Rect.Position + new Vector2f(0, uiLabel.Rect.Size.Y), new Vector2f(Rect.Size.X, entry.Rect.Size.Y)));
     }
 
     public override void ProcessClicks()
@@ -60,7 +60,7 @@ public sealed class PathEntry : AUIElement
         PathVar = new UIVar<string>(startValue);
         pathEntry = new UIEntry(App.UIHost, PathVar);
         MinimalSize = new Vector2f(100, label.MinimalSize.Y + pathEntry.MinimalSize.Y + LABEL_Y_OFFSET * 2);
-        Rect = new FloatRect(new Vector2f(0, 0), MinimalSize);
+        SetRect(new FloatRect(new Vector2f(0, 0), MinimalSize));
     }
 
     private void ChoosePath()
@@ -72,16 +72,16 @@ public sealed class PathEntry : AUIElement
         }
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
-        label.Rect = new FloatRect(Rect.Position, label.MinimalSize);
+        label.SetRect(new FloatRect(Rect.Position, label.MinimalSize));
         int labelHeight = (int)label.MinimalSize.Y;
-        pathEntry.Rect = new FloatRect(Rect.Position + new Vector2f(0, labelHeight + LABEL_Y_OFFSET), new Vector2f(Rect.Size.X - chooseButton.MinimalSize.X - 10, chooseButton.MinimalSize.Y));
-        chooseButton.Rect = new FloatRect(pathEntry.Rect.Position + new Vector2f(pathEntry.Rect.Size.X, 0), chooseButton.Rect.Size);
+        pathEntry.SetRect(new FloatRect(Rect.Position + new Vector2f(0, labelHeight + LABEL_Y_OFFSET), new Vector2f(Rect.Size.X - chooseButton.MinimalSize.X - 10, chooseButton.MinimalSize.Y)));
+        chooseButton.SetRect(new FloatRect(pathEntry.Rect.Position + new Vector2f(pathEntry.Rect.Size.X, 0), chooseButton.Rect.Size));
         
-        label.UpdateLayout();
-        pathEntry.UpdateLayout();
-        chooseButton.UpdateLayout();
+        label.UpdateLayoutP();
+        pathEntry.UpdateLayoutP();
+        chooseButton.UpdateLayoutP();
     }
 
     public override void ProcessClicks()
@@ -132,9 +132,9 @@ public sealed class UIIntVecEntry : AUIElement
         root.ProcessClicks();
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
-        root.Rect = Rect;
+        root.SetRect(Rect);
     }
 
     public override void Draw(RenderTarget target)

@@ -21,7 +21,7 @@ public class UILabel : AUIElement
         }
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
         _textObj.Position = Rect.Position;
     }

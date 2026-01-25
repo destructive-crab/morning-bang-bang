@@ -15,7 +15,7 @@ public class UIWorld : AUIElement
         clickArea.OnUnhover += () => IsHovered = false;
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
         clickArea.Rect = Rect;
     }

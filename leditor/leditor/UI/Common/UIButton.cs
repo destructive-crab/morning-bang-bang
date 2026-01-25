@@ -111,7 +111,8 @@ public class UIButton : AUIElement
     }
 
     public override void ProcessClicks() => Host.Areas.Process(area);
-    public override void UpdateLayout()
+
+    protected override void UpdateLayout()
     {
         area.Rect = Rect;
      

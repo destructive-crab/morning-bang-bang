@@ -7,7 +7,7 @@ public class UIClickArea(UIHost host, ClickArea area, Vector2f minimalSize = def
 {
     public ClickArea Area = area;
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
         => Area.Rect = Rect;
 
     public override void ProcessClicks()

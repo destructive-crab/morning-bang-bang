@@ -144,7 +144,7 @@ public class ScrollBox : AUIBox
             if (child == null) return;
 
             child.Parent = this;
-            child.Rect = Rect;
+            child.SetRect(Rect);
         }
     }
 
@@ -216,12 +216,12 @@ public class ScrollBox : AUIBox
         );
 
         if (Child != null)
-            Child.Rect = new FloatRect (
-            Rect.Left - this.scroll.X * difference.X , 
-            Rect.Top - this.scroll.Y * difference.Y,
-            Rect.Width - Host.Style.ScrollerThickness() - 20,
-            Rect.Height - Host.Style.ScrollerThickness()
-        );
+            Child.SetRect(new FloatRect (
+                Rect.Left - this.scroll.X * difference.X , 
+                Rect.Top - this.scroll.Y * difference.Y,
+                Rect.Width - Host.Style.ScrollerThickness() - 20,
+                Rect.Height - Host.Style.ScrollerThickness()
+            ));
     }
 
     public override IEnumerable<AUIElement> GetChildren()
@@ -237,19 +237,19 @@ public class ScrollBox : AUIBox
     }
 
     protected override void UpdateMinimalSize() { }
-    
-    public override void UpdateLayout()
+
+    protected override void UpdateLayout()
     {
         if (child == null) return;
 
         scrollArea.Rect = Rect;
         Vector2f size = new Vector2f(Rect.Width - Host.Style.ScrollerThickness() - 20, Rect.Height - Host.Style.ScrollerThickness());
         
-        child.Rect = new FloatRect (
+        child.SetRect(new FloatRect (
             Rect.Left - scroll.X * difference.X, 
             Rect.Top - scroll.Y * difference.Y,
             size.X, size.Y
-        );
+        ));
         
         difference = new Vector2f(
             float.Max(0, child.Rect.Width - size.X),

@@ -1,3 +1,7 @@
+using System.Net.Mime;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using leditor.root;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -26,23 +30,28 @@ public abstract class AUIElement(UIHost host, Vector2f minimalSize)
         }
     }
 
-    private FloatRect _rect;
-    public FloatRect Rect
-    {
-        get => _rect; 
-        set
-        {
-            _rect = new FloatRect(
-                value.Left, value.Top,
-                float.Max(MinimalSize.X, value.Width),
-                float.Max(MinimalSize.Y, value.Height)
-            );
-            
-            Host.UpdateActionsQueue.Enqueue(UpdateLayout);
-        }
-    } 
+    public FloatRect Rect { get; private set; }
 
-    public abstract void UpdateLayout();
+    public void SetRect(FloatRect value)
+    {
+        bool a = Rect != value;
+        
+        Rect = new FloatRect(
+            value.Left, value.Top,
+            float.Max(MinimalSize.X, value.Width),
+            float.Max(MinimalSize.Y, value.Height)
+        );
+
+        if (a) Host.UpdateActionsQueue.Enqueue(UpdateLayoutP);
+    }
+
+    public void UpdateLayoutP()
+    {
+        Console.WriteLine($"UPDATE LAYOUT: {this.GetType()}");
+        UpdateLayout();
+    }
+
+    protected abstract void UpdateLayout();
 
     public abstract void Draw(RenderTarget target);
 

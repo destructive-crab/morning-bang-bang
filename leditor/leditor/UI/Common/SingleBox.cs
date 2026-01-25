@@ -21,7 +21,7 @@ public class SingleBox : AUIBox
 
             _child = value;
             UpdateMinimalSize();
-            UpdateLayout();
+            UpdateLayoutP();
         }
     }
     
@@ -55,11 +55,11 @@ public class SingleBox : AUIBox
             Child = null;
         }
     }
-    
-    public override void UpdateLayout()
+
+    protected override void UpdateLayout()
     {
         if (_child != null && !_hide)
-            _child.Rect = Rect;
+            _child.SetRect(Rect);
     }
 
     protected override void UpdateMinimalSize()

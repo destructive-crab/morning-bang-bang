@@ -46,7 +46,7 @@ public class UITabBox : AUIBox
         }
         
         SetActive(this.children[0]);
-        UpdateLayout();
+        UpdateLayoutP();
     }
 
     public override void Draw(RenderTarget target)
@@ -103,10 +103,10 @@ public class UITabBox : AUIBox
             activeElement = element;
         }
         
-        UpdateLayout();
+        UpdateLayoutP();
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
         int outline = App.UIHost.Style.BaseOutline();
         
@@ -133,9 +133,9 @@ public class UITabBox : AUIBox
 
         if(activeElement != null)
         {
-            activeElement.Rect = new FloatRect(
+            activeElement.SetRect(new FloatRect(
                 Rect.Position.X + outline, Rect.Position.Y + Host.Style.TabLineHeight() + outline, 
-                Rect.Size.X - outline * 2, Rect.Size.Y - Host.Style.TabLineHeight());
+                Rect.Size.X - outline * 2, Rect.Size.Y - Host.Style.TabLineHeight()));
         }
     }
 

@@ -81,16 +81,16 @@ public class AxisBox : AUIBox
         if (!children.Contains(child) || useMinimalRectWhenFitFor.Contains(child)) return;
         
         useMinimalRectWhenFitFor.Add(child);
-        UpdateLayout();
+        UpdateLayoutP();
     }
     
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
-        Console.WriteLine($"Start Updating Layout For {children.Count}; fit: {FitRect}; Rect: {Rect.Position} {Rect.Size}");
+        //Console.WriteLine($"Start Updating Layout For {children.Count}; fit: {FitRect}; Rect: {Rect.Position} {Rect.Size}");
         if (children.Count == 1)
         {
             AUIElement child = children[0];
-            child.Rect = Rect;
+            child.SetRect(Rect);
 
             return;
         }
@@ -101,16 +101,16 @@ public class AxisBox : AUIBox
             {
                 MakeChildrenFitRect((int)Rect.Width, (int)Rect.Height, 
                     (c) => (int)c.MinimalSize.X, 
-                    (c, v) => c.Rect = new FloatRect(c.Rect.Position, new Vector2f(v, Rect.Height)));
+                    (c, v) => c.SetRect(new FloatRect(c.Rect.Position, new Vector2f(v, Rect.Height))));
             }
             else
             {
                 foreach (AUIElement child in children)
                 {
-                    child.Rect = new FloatRect(
+                    child.SetRect(new FloatRect(
                         default, default,
                         child.MinimalSize.X, Rect.Height
-                    );
+                    ));
                 }
             }
             
@@ -122,23 +122,23 @@ public class AxisBox : AUIBox
             {
                 MakeChildrenFitRect((int)Rect.Height, (int)Rect.Width, 
                     (c) => (int)c.MinimalSize.Y, 
-                    (c, v) => c.Rect = new FloatRect(c.Rect.Position, new Vector2f(Rect.Width, v)));
+                    (c, v) => c.SetRect(new FloatRect(c.Rect.Position, new Vector2f(Rect.Width, v))));
             }
             else
             {
                 foreach (AUIElement child in children)
                 {
-                    Console.WriteLine($"Set Size For {child.GetType()} Y: {child.MinimalSize.Y}");
-                    child.Rect = new FloatRect(
+                    //Console.WriteLine($"Set Size For {child.GetType()} Y: {child.MinimalSize.Y}");
+                    child.SetRect(new FloatRect(
                         child.Rect.Position.X, child.Rect.Position.Y,
                         Rect.Width, child.MinimalSize.Y
-                    );
+                    ));
                 }
             }
             
             UpdatePositions((c) => new(0, c.Rect.Size.Y), () => new(0, Host.Style.AxisBoxSpace()));
         }
-        Console.WriteLine($"End Updating Layout For {children.Count}; fit: {FitRect}");
+        //Console.WriteLine($"End Updating Layout For {children.Count}; fit: {FitRect}");
     }
 
     private void MakeChildrenFitRect(
@@ -195,8 +195,8 @@ public class AxisBox : AUIBox
 
         foreach (AUIElement child in children)
         {
-            child.Rect = new FloatRect(position, child.Rect.Size);
-            Console.WriteLine($"Set Position For {child.GetType()} {position}");
+            child.SetRect(new FloatRect(position, child.Rect.Size));
+            //Console.WriteLine($"Set Position For {child.GetType()} {position}");
             position += getPositionStep(child) + getAxisSpace();
         }
     }
@@ -204,7 +204,7 @@ public class AxisBox : AUIBox
     protected override void UpdateMinimalSize()
     {
         MinimalSize = CalculateSize(Host.Style, _axis, children);
-        UpdateLayout();
+        UpdateLayoutP();
     }
 
     public override void Draw(RenderTarget target)

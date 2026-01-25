@@ -274,7 +274,7 @@ public class UIEntry : AUIElement
         Console.WriteLine(selectionLength + " " + startPosition + " " + endPosition + " " + length);
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
         view.Center = Rect.Position + Rect.Size / 2;
         view.Size = Rect.Size;

@@ -72,8 +72,8 @@ public class StackBox : AUIBox
             );
         }
     }
-    
-    public override void UpdateLayout()
+
+    protected override void UpdateLayout()
     {
         var baseRect = new FloatRect(
             Rect.Left + Padding.Left, 
@@ -92,12 +92,12 @@ public class StackBox : AUIBox
             if (_centerY)
                 baseRect.Height = child.MinimalSize.Y;
 
-            child.Rect = new FloatRect(
+            child.SetRect(new FloatRect(
                 baseRect.Left - baseRect.Width / 2,
                 baseRect.Top - baseRect.Height / 2,
                 baseRect.Width,
                 baseRect.Height
-            );
+            ));
         }
     }
 

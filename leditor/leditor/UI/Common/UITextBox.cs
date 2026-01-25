@@ -11,7 +11,7 @@ public class UITextBox : AUIElement
         set
         {
             displayString = value;
-            UpdateLayout();
+            UpdateLayoutP();
         }
     }
 
@@ -32,7 +32,7 @@ public class UITextBox : AUIElement
     private int currentWidth;
     private string currentDisplaying;
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
         textOriginal.Position = Rect.Position;
 
@@ -134,7 +134,7 @@ public class UITextBox : AUIElement
 
         linesCount = lines.Count;
         MinimalSize = minimalSize;
-        Rect = new FloatRect(Rect.Position, MinimalSize);
+        SetRect(new FloatRect(Rect.Position, MinimalSize));
         
         UpdatePositions();
     }

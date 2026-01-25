@@ -100,7 +100,7 @@ public class SplitBox: AUIBox
 
         _distance -= (float)Host.Style.SplitSeparatorThickness() / 2;
         
-        UpdateLayout();
+        UpdateLayoutP();
     }
 
     protected override void UpdateMinimalSize()
@@ -118,7 +118,7 @@ public class SplitBox: AUIBox
             _second = null;
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
         if (_axis == UIAxis.Horizontal)
         {
@@ -131,13 +131,13 @@ public class SplitBox: AUIBox
             );
             
             if (_first != null)
-                _first.Rect = new FloatRect(Rect.Position.X, Rect.Position.Y, _distance, Rect.Height);
+                _first.SetRect(new FloatRect(Rect.Position.X, Rect.Position.Y, _distance, Rect.Height));
             
             if (_second != null)
-                _second.Rect = new FloatRect(
+                _second.SetRect(new FloatRect(
                     Rect.Left  + _distance + Host.Style.SplitSeparatorThickness(), Rect.Top, 
                     Rect.Width - _distance - Host.Style.SplitSeparatorThickness(), Rect.Height
-                );
+                ));
             
             _area.Rect.Left = Rect.Left + _distance;
             _area.Rect.Top = Rect.Top;
@@ -153,13 +153,13 @@ public class SplitBox: AUIBox
             );
 
             if (_first != null)
-                _first.Rect = new FloatRect(Rect.Position.X, Rect.Position.Y, Rect.Width, _distance);
+                _first.SetRect(new FloatRect(Rect.Position.X, Rect.Position.Y, Rect.Width, _distance));
             
             if (_second != null)
-                _second.Rect = new FloatRect(
+                _second.SetRect(new FloatRect(
                     Rect.Left , Rect.Top + _distance + (Host.Style.SplitSeparatorThickness()), 
                     Rect.Width, Rect.Height - _distance - (Host.Style.SplitSeparatorThickness())
-                );
+                ));
             
             _area.Rect.Left = Rect.Left;
             _area.Rect.Top = Rect.Top + _distance;

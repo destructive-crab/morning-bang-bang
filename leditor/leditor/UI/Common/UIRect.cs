@@ -26,7 +26,7 @@ public class UIRect : AUIElement
         set => shape.FillColor = value;
     }
 
-    public override void UpdateLayout()
+    protected override void UpdateLayout()
     {
         outlineShape.Position = Rect.Position;
         outlineShape.Size = Rect.Size + 2 * outline;
