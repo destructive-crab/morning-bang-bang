@@ -13,7 +13,7 @@ public class UIImage : AUIElement
         };
         Source = source.Value;
 
-        UpdateLayoutP();
+        UpdateLayout();
     }
 
     private readonly Sprite _sprite;
@@ -45,7 +45,7 @@ public class UIImage : AUIElement
 
     public Vector2i ScaleInPixels;
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         _sprite.Position = Rect.Position;
 

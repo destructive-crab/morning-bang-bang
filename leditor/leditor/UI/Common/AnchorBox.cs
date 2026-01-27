@@ -15,7 +15,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
 {
     private readonly List<(Anchor, AUIElement)> _children = [];
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         foreach (var (anchor, child) in _children)
         {
@@ -41,7 +41,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
         {
             _children.Remove(match);
         }
-        UpdateLayout();
+        UpdateLayoutIm();
     }
 
     public AnchorBox AddChild(Anchor anchor, AUIElement child)
@@ -49,7 +49,7 @@ public class AnchorBox(UIHost host) : AUIBox(host, new Vector2f(0, 0))
         child.Parent = this;
         _children.Add((anchor, child));
         
-        UpdateLayout();
+        UpdateLayoutIm();
         return this;
     }
 

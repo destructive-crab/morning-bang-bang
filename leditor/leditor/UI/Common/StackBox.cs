@@ -73,7 +73,7 @@ public class StackBox : AUIBox
         }
     }
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         var baseRect = new FloatRect(
             Rect.Left + Padding.Left, 
@@ -116,7 +116,7 @@ public class StackBox : AUIBox
         set
         {
             _centerX = value;
-            UpdateLayout();
+            UpdateLayoutIm();
         }
     }
     
@@ -126,7 +126,7 @@ public class StackBox : AUIBox
         set
         {
             _centerY = value;
-            UpdateLayout();
+            UpdateLayoutIm();
         }
     }
 }

@@ -11,7 +11,7 @@ public class UITextBox : AUIElement
         set
         {
             displayString = value;
-            UpdateLayoutP();
+            UpdateLayout();
         }
     }
 
@@ -32,7 +32,7 @@ public class UITextBox : AUIElement
     private int currentWidth;
     private string currentDisplaying;
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         textOriginal.Position = Rect.Position;
 

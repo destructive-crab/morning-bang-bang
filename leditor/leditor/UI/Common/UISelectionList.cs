@@ -30,7 +30,7 @@ public sealed class UISelectionList : AUIBox
         options.Add(option);
         option.SelectionChange += ChangeSelection;
         box.AddChild(option);
-        UpdateLayoutP();
+        UpdateLayout();
         
         if(option.IsSelected)
         {
@@ -76,7 +76,7 @@ public sealed class UISelectionList : AUIBox
     
     protected override void UpdateMinimalSize() { }
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         box.SetRect(Rect);
     }

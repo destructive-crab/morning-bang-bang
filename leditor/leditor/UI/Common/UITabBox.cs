@@ -46,7 +46,7 @@ public class UITabBox : AUIBox
         }
         
         SetActive(this.children[0]);
-        UpdateLayoutP();
+        UpdateLayout();
     }
 
     public override void Draw(RenderTarget target)
@@ -103,10 +103,10 @@ public class UITabBox : AUIBox
             activeElement = element;
         }
         
-        UpdateLayoutP();
+        UpdateLayout();
     }
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         int outline = App.UIHost.Style.BaseOutline();
         
@@ -153,7 +153,7 @@ public class UITabBox : AUIBox
             SetActive(child);
         };
         
-        if(activeElement != null) UpdateLayout();
+        if(activeElement != null) UpdateLayoutIm();
     }
 
     public override void RemoveChild(AUIElement child)
@@ -161,7 +161,7 @@ public class UITabBox : AUIBox
         children.Remove(child);
         tabNamesMap.Remove(child);
         
-        if(activeElement != null) UpdateLayout();
+        if(activeElement != null) UpdateLayoutIm();
     }
 
     public void Rename(AUIElement child, string tabName)

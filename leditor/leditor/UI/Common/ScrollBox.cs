@@ -238,7 +238,7 @@ public class ScrollBox : AUIBox
 
     protected override void UpdateMinimalSize() { }
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         if (child == null) return;
 
@@ -258,6 +258,12 @@ public class ScrollBox : AUIBox
 
         clickView = Rect;
         
+        UpdateScrollerXLayout();
+        UpdateScrollerYLayout();
+    }
+
+    protected override void OnHostSizeChangedIm(Vector2f newSize)
+    {
         view.Size = Rect.Size;
         view.Center = Rect.Position + Rect.Size / 2;
         view.Viewport = new FloatRect(
@@ -266,9 +272,6 @@ public class ScrollBox : AUIBox
             Rect.Width / Host.Size.X,
             Rect.Height / Host.Size.Y
         );
-
-        UpdateScrollerXLayout();
-        UpdateScrollerYLayout();
     }
 
     private void UpdateScrollerXLayout()

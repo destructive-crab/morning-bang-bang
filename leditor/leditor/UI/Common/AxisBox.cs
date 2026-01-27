@@ -81,12 +81,11 @@ public class AxisBox : AUIBox
         if (!children.Contains(child) || useMinimalRectWhenFitFor.Contains(child)) return;
         
         useMinimalRectWhenFitFor.Add(child);
-        UpdateLayoutP();
+        UpdateLayoutIm();
     }
     
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
-        //Console.WriteLine($"Start Updating Layout For {children.Count}; fit: {FitRect}; Rect: {Rect.Position} {Rect.Size}");
         if (children.Count == 1)
         {
             AUIElement child = children[0];
@@ -128,7 +127,6 @@ public class AxisBox : AUIBox
             {
                 foreach (AUIElement child in children)
                 {
-                    //Console.WriteLine($"Set Size For {child.GetType()} Y: {child.MinimalSize.Y}");
                     child.SetRect(new FloatRect(
                         child.Rect.Position.X, child.Rect.Position.Y,
                         Rect.Width, child.MinimalSize.Y
@@ -138,7 +136,6 @@ public class AxisBox : AUIBox
             
             UpdatePositions((c) => new(0, c.Rect.Size.Y), () => new(0, Host.Style.AxisBoxSpace()));
         }
-        //Console.WriteLine($"End Updating Layout For {children.Count}; fit: {FitRect}");
     }
 
     private void MakeChildrenFitRect(
@@ -204,7 +201,7 @@ public class AxisBox : AUIBox
     protected override void UpdateMinimalSize()
     {
         MinimalSize = CalculateSize(Host.Style, _axis, children);
-        UpdateLayoutP();
+        UpdateLayoutIm();
     }
 
     public override void Draw(RenderTarget target)

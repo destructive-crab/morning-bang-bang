@@ -51,7 +51,7 @@ public sealed class UIOutlineBox : AUIBox
         return [Child];
     }
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         if (Child == null) return;
         

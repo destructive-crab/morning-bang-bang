@@ -5,7 +5,7 @@ namespace leditor.root
 {
     public static class App
     {
-        public static UIHost UIHost;
+        public static UIHost UIHost { get; private set; }
         public static InputsHandler InputsHandler => WindowHandler.InputsHandler;
         public static Leditor LeditorInstance { get; private set; }
         public static WindowHandler WindowHandler { get; private set; }

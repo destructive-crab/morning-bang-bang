@@ -35,7 +35,7 @@ public abstract class AUIBox(UIHost host, Vector2f minimalSize) : AUIElement(hos
         
         if (size == MinimalSize)
         {
-            Host.UpdateActionsQueue.Enqueue(UpdateLayoutP);
+            Host.UpdateActionsQueue.Enqueue(UpdateLayout);
         }
     }
 }

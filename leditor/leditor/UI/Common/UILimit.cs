@@ -5,7 +5,7 @@ namespace leditor.UI;
 
 public class UILimit(UIHost host, Vector2f minimalSize) : AUIElement(host, minimalSize)
 {
-    protected override void UpdateLayout() {}
+    protected override void UpdateLayoutIm() {}
 
     public override void Draw(RenderTarget target) {}
 }

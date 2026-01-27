@@ -100,15 +100,14 @@ public class SplitBox: AUIBox
 
         _distance -= (float)Host.Style.SplitSeparatorThickness() / 2;
         
-        UpdateLayoutP();
+        UpdateLayout();
     }
 
     protected override void UpdateMinimalSize()
         => MinimalSize = GetMinimalSize(Host.Style, _axis, _first, _second);
     
-    public override IEnumerable<AUIElement> GetChildren()
-        => new[] { _first, _second }
-            .OfType<AUIElement>();
+    public override IEnumerable<AUIElement> GetChildren() 
+        => new[] { _first, _second }.OfType<AUIElement>();
 
     public override void RemoveChild(AUIElement child)
     {
@@ -118,7 +117,7 @@ public class SplitBox: AUIBox
             _second = null;
     }
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         if (_axis == UIAxis.Horizontal)
         {
@@ -143,24 +142,32 @@ public class SplitBox: AUIBox
             _area.Rect.Top = Rect.Top;
             _area.Rect.Height = Rect.Height;
             _axisSize = Rect.Width;
-        } else {
+        } 
+        else 
+        {
             if (_preserve == PreserveSide.RightDown)
+            {
                 _distance += Rect.Height - _axisSize;
-            
+            }
+
             _distance = float.Max(
                 _first?.MinimalSize.Y ?? 0,
                 float.Min(_distance, Rect.Height - (_second?.MinimalSize.Y ?? 0) - Host.Style.SplitSeparatorThickness())
             );
 
             if (_first != null)
+            {
                 _first.SetRect(new FloatRect(Rect.Position.X, Rect.Position.Y, Rect.Width, _distance));
-            
+            }
+
             if (_second != null)
+            {
                 _second.SetRect(new FloatRect(
                     Rect.Left , Rect.Top + _distance + (Host.Style.SplitSeparatorThickness()), 
                     Rect.Width, Rect.Height - _distance - (Host.Style.SplitSeparatorThickness())
                 ));
-            
+            }
+
             _area.Rect.Left = Rect.Left;
             _area.Rect.Top = Rect.Top + _distance;
             _area.Rect.Width = Rect.Width;
@@ -186,9 +193,13 @@ public class SplitBox: AUIBox
         target.Draw(_separator);
 
         if (_second != null)
+        {
             Host.DrawStack.Push(_second.Draw);
-        
+        }
+
         if (_first != null)
+        {
             Host.DrawStack.Push(_first.Draw);
+        }
     }
 }

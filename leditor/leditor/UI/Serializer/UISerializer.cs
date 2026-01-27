@@ -24,7 +24,7 @@ public sealed class TextureReference : AUIElement
         MinimalSize = new Vector2f(100, uiLabel.MinimalSize.Y + entry.MinimalSize.Y);
     }
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         uiLabel.SetRect(new FloatRect(Rect.Position, new Vector2f(Rect.Size.X, uiLabel.Rect.Size.Y)));
         entry.SetRect(new FloatRect(Rect.Position + new Vector2f(0, uiLabel.Rect.Size.Y), new Vector2f(Rect.Size.X, entry.Rect.Size.Y)));
@@ -72,16 +72,16 @@ public sealed class PathEntry : AUIElement
         }
     }
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         label.SetRect(new FloatRect(Rect.Position, label.MinimalSize));
         int labelHeight = (int)label.MinimalSize.Y;
         pathEntry.SetRect(new FloatRect(Rect.Position + new Vector2f(0, labelHeight + LABEL_Y_OFFSET), new Vector2f(Rect.Size.X - chooseButton.MinimalSize.X - 10, chooseButton.MinimalSize.Y)));
         chooseButton.SetRect(new FloatRect(pathEntry.Rect.Position + new Vector2f(pathEntry.Rect.Size.X, 0), chooseButton.Rect.Size));
         
-        label.UpdateLayoutP();
-        pathEntry.UpdateLayoutP();
-        chooseButton.UpdateLayoutP();
+        label.UpdateLayout();
+        pathEntry.UpdateLayout();
+        chooseButton.UpdateLayout();
     }
 
     public override void ProcessClicks()
@@ -132,7 +132,7 @@ public sealed class UIIntVecEntry : AUIElement
         root.ProcessClicks();
     }
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         root.SetRect(Rect);
     }

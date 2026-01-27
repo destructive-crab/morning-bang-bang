@@ -79,10 +79,10 @@ public class UIButton : AUIElement
 
         int x            = (int)(Rect.Size.X - style.Outline - 2);
         
-        shapeBottom.Position   = new Vector2f(Rect.Position.X, bottomY-bottomHeight);
+        shapeBottom.Position   =  new Vector2f(Rect.Position.X, bottomY-bottomHeight);
         shapeBottom.Position   += new Vector2f(style.Outline, 0);
-        shapeBottom.Size       = new Vector2f(x, bottomHeight);
-        shapeBottom.FillColor  = style.BottomColor;
+        shapeBottom.Size       =  new Vector2f(x, bottomHeight);
+        shapeBottom.FillColor  =  style.BottomColor;
 
         shapeTop.Position      = new Vector2f(shapeBottom.Position.X, shapeBottom.Position.Y-topHeight);
         shapeTop.Size          = new Vector2f(x, topHeight);
@@ -112,7 +112,7 @@ public class UIButton : AUIElement
 
     public override void ProcessClicks() => Host.Areas.Process(area);
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         area.Rect = Rect;
      

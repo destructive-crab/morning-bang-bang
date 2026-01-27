@@ -65,7 +65,7 @@ public class UIImageButton : AUIElement
         Host.Areas.Process(area);
     }
 
-    protected override void UpdateLayout()
+    protected override void UpdateLayoutIm()
     {
         area.Rect = Rect;
         ApplyStyle(appliedStyle);

@@ -274,7 +274,7 @@ public class UIEntry : AUIElement
         Console.WriteLine(selectionLength + " " + startPosition + " " + endPosition + " " + length);
     }
 
-    protected override void UpdateLayout()
+    protected override void OnHostSizeChangedIm(Vector2f newSize)
     {
         view.Center = Rect.Position + Rect.Size / 2;
         view.Size = Rect.Size;
@@ -284,7 +284,10 @@ public class UIEntry : AUIElement
             Rect.Width / Host.Size.X,
             Rect.Height / Host.Size.Y
         );
-        
+    }
+
+    protected override void UpdateLayoutIm()
+    {
         int outline = Host.Style.BaseOutline() / 2;
         
         backgroundShape.Size = Rect.Size - new Vector2f(outline, outline);
@@ -301,8 +304,6 @@ public class UIEntry : AUIElement
 
         clickArea.Rect = Rect;
     }
-    
-    
 
     protected bool HasSelection() => selectionLength != 0;
 

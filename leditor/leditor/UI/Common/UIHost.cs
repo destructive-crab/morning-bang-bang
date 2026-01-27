@@ -49,6 +49,7 @@ public class UIHost
         if (AssertRoot(out var root))
         {
             root.SetRect(new FloatRect(new Vector2f(0,0), size));
+            root.OnHostSizeChanged(size);
         }
     }
 
@@ -70,8 +71,12 @@ public class UIHost
         
         Areas.Begin(Utils.VecI2F(Mouse.GetPosition(window)));
         root.ProcessClicks();
+        
         while (ClickHandlersStack.TryPop(out var action))
+        {
             action();
+        }
+
         Areas.End();
         
         ProcessUpdateActions();
